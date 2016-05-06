@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C1212DE81CCDA7D900F76D4E"
-               BuildableName = "dipai.app"
+               BuildableName = "Dipai.app"
                BlueprintName = "dipai"
                ReferencedContainer = "container:dipai.xcodeproj">
             </BuildableReference>
@@ -53,7 +53,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C1212DE81CCDA7D900F76D4E"
-            BuildableName = "dipai.app"
+            BuildableName = "Dipai.app"
             BlueprintName = "dipai"
             ReferencedContainer = "container:dipai.xcodeproj">
          </BuildableReference>
@@ -76,7 +76,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C1212DE81CCDA7D900F76D4E"
-            BuildableName = "dipai.app"
+            BuildableName = "Dipai.app"
             BlueprintName = "dipai"
             ReferencedContainer = "container:dipai.xcodeproj">
          </BuildableReference>
@@ -95,7 +95,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C1212DE81CCDA7D900F76D4E"
-            BuildableName = "dipai.app"
+            BuildableName = "Dipai.app"
             BlueprintName = "dipai"
             ReferencedContainer = "container:dipai.xcodeproj">
          </BuildableReference>
