@@ -26,6 +26,10 @@
  *  分割线
  */
 @property (nonatomic, strong) UIView * line;
+/**
+ *  显示图集中图片的张数
+ */
+@property (nonatomic, strong) UILabel * picNum;
 
 @property (nonatomic, strong) NSMutableArray * imageArr;
 
@@ -62,12 +66,28 @@
     for (int i = 0; i < 3; i ++) {
         UIImageView * imageView = [[UIImageView alloc] init];
         [_imageArr addObject:imageView];
-//        imageView.tag = ImageViewTag + i;
         CGFloat imageViewX = 0;
         CGFloat imageViewY = 0;
         CGFloat imageViewW = Margin224 * IPHONE6_W_SCALE;
         CGFloat imageViewH = Margin168 * IPHONE6_H_SCALE;
         imageView.frame = CGRectMake((imageViewX + imageViewW + Margin19 * IPHONE6_W_SCALE) * i , imageViewY, imageViewW, imageViewH);
+        
+        if (i == 2) {
+            UILabel * picNum = [[UILabel alloc] init];
+            picNum.backgroundColor = [UIColor colorWithRed:0 / 255.f green:0 / 255.f blue:0 / 255.f alpha:0.8];
+            picNum.font = Font11;
+            picNum.textAlignment = NSTextAlignmentCenter;
+            picNum.textColor = Color255;
+            [imageView addSubview:picNum];
+            _picNum = picNum;
+            [picNum mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.right.equalTo(imageView.mas_right);
+                make.bottom.equalTo(imageView.mas_bottom);
+                make.width.equalTo(@(Margin70 * IPHONE6_W_SCALE));
+                make.height.equalTo(@(Margin32 * IPHONE6_H_SCALE));
+            }];
+        }
+        
         [_picsView addSubview:imageView];
     }
     // 分类图片
@@ -142,19 +162,23 @@
 #pragma mark -----设置子控件的数据
 - (void)setCellData
 {
-//    NSLog(@"%s", __func__);
     // 标题
     _title.text = _newslistModel.title;
-    
+//    NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
+//    NSString * idStr = [NSString stringWithFormat:@"%d", _newslistModel.iD];
+//    NSNumber * num = [userDefaults objectForKey:idStr];
+//    if (num) {
+//        _title.textColor = Color178;
+//    }
     // 图集
-//    NSLog(@"图片数组：%@", _newslistModel.picname);
-    for (int i = 0; i < _imageArr.count; i ++) {
+    _picNum.text = [NSString stringWithFormat:@"%lu图", _newslistModel.covers.count];
+    for (int i = 0; i < 3; i ++) {
         UIImageView * imageView = _imageArr[i];
-        NSString * urlStr = _newslistModel.picname[0];
+        NSString * urlStr = [_newslistModel.covers objectForKey:@"cover3"];
         [imageView sd_setImageWithURL:[NSURL URLWithString:urlStr] placeholderImage:[UIImage imageNamed:@"123"]];
     }
     // 评论
-    _commentLbl.text = [NSString stringWithFormat:@"%d评论", _newslistModel.comment];
+    _commentLbl.text = [NSString stringWithFormat:@"%@评论", _newslistModel.commentNumber];
     // 分类  此处需要进行判断
     _markView.image = [UIImage imageNamed:@"tuji"];
 }
@@ -170,6 +194,11 @@
     
     return cell;
 }
+// 在点击单元格以后设置标题的颜色
+//- (void)setTitleTextColor
+//{
+//    _title.textColor = Color178;
+//}
 
 - (void)awakeFromNib {
     // Initialization code

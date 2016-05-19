@@ -8,6 +8,8 @@
 
 #import "DataTool.h"
 #import "HttpTool.h"
+// 资讯模型
+#import "InfomationModel.h"
 // 首页的三个模型
 #import "bannerModel.h"
 #import "TournamentModel.h"
@@ -17,18 +19,25 @@
 #import "WebDetailModel.h"
 
 @implementation DataTool
+#pragma mark --- 首页下拉刷新
 + (void)getNewDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure
 {
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) { // block是一个参数
-        
+        // 轮播页
         NSArray * bannerArr = responseObject[@"banner"];
         // 通过一个字典数组创建一个模型数组
         NSArray * bannerModelArr = [bannerModel objectArrayWithKeyValuesArray:bannerArr];
+        // 赛事
+        NSArray * tournamentArr = responseObject[@"rc"];
+        NSArray * tournamentModelArr = [TournamentModel objectArrayWithKeyValuesArray:tournamentArr];
+        // 列表
         NSArray * newsListArr = responseObject[@"newslist"];
         NSArray * newsListModelArr = [NewsListModel objectArrayWithKeyValuesArray:newsListArr];
         
+        
         NSMutableArray * modelArr = [NSMutableArray array];
         [modelArr addObject:bannerModelArr];
+        [modelArr addObject:tournamentModelArr];
         [modelArr addObject:newsListModelArr];
         
         if (success) {
@@ -44,24 +53,23 @@
         
     }];
 }
-
+#pragma mark --- 首页上拉加载
 + (void)getMoreDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure
 {
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) { // block是一个参数
         
-        NSArray * bannerArr = responseObject[@"banner"];
-        // 通过一个字典数组创建一个模型数组
-        NSArray * bannerModelArr = [bannerModel objectArrayWithKeyValuesArray:bannerArr];
+        NSMutableArray * array = [NSMutableArray array];
+        NSString * page = responseObject[@"page"];
+        
+        [array addObject:page];
+        
         NSArray * newsListArr = responseObject[@"newslist"];
         NSArray * newsListModelArr = [NewsListModel objectArrayWithKeyValuesArray:newsListArr];
-        
-        NSMutableArray * modelArr = [NSMutableArray array];
-        [modelArr addObject:bannerModelArr];
-        [modelArr addObject:newsListModelArr];
-        
+        [array addObject:newsListModelArr];
+
         if (success) {
             // block传递参数
-            success(modelArr);
+            success(array);
         }
         
         // 刷新表格
@@ -75,14 +83,24 @@
 
 + (void)getDataInWebViewWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure
 {
+    
+\
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) { // block是一个参数
+        
+        NSString * str = responseObject[@"type"];
         
         NSDictionary * dic = responseObject[@"content"];
         // 字典转模型
         WebDetailModel * webDetailModel = [WebDetailModel objectWithKeyValues:dic];
+        
+        NSMutableArray * array = [NSMutableArray array];
+        // 添加type
+        [array addObject:str];
+        // 添加模型
+        [array addObject:webDetailModel];
         if (success) {
             // block传递参数
-            success(webDetailModel);
+            success(array);
         }
         
         // 刷新表格

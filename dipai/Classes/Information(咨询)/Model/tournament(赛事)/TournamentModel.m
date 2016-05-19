@@ -10,4 +10,12 @@
 
 @implementation TournamentModel
 
++ (NSDictionary *)replacedKeyFromPropertyName
+
+{
+    
+    return @{@"iD" : @"id"};
+    
+}
+
 @end

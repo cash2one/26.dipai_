@@ -22,9 +22,24 @@
 *  ID 文章的唯一标识
 */
 @property (nonatomic, strong) NSNumber * iD;
+/**
+ *  文章标题
+ */
 @property (nonatomic, copy) NSString * title;
+/**
+ *  文章描述
+ */
 @property (nonatomic, copy) NSString * descriptioN;
-@property (nonatomic, assign) NSNumber * comment;
+/**
+ *  评论数
+ */
+@property (nonatomic, assign) NSString * commentNumber;
+/**
+ *   图片
+ */
 @property (nonatomic, copy) NSString * picname;
+/**
+ *  网页链接
+ */
 @property (nonatomic, copy) NSString * wapurl;
 @end

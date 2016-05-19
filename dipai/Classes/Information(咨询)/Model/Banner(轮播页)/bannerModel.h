@@ -10,13 +10,14 @@
 #import "MJExtension.h"
 @interface bannerModel : NSObject<MJKeyValue>
 /**
-*  轮播页上的图片
-*/
-@property (nonatomic, copy) NSString * picname;
-/**
  *  轮播页的标题
  */
 @property (nonatomic, copy) NSString * title;
+/**
+*  轮播页上的图片
+*/
+@property (nonatomic, copy) NSString * cover;
+
 /**
  *  跳转链接
  */

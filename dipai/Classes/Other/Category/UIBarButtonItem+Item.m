@@ -21,5 +21,15 @@
     
     return [[UIBarButtonItem alloc] initWithCustomView:btn];
 }
++ (UIBarButtonItem *)barButtonItemWithImage:(UIImage *)image target:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents
+{
+    UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [btn setBackgroundImage:image forState:UIControlStateNormal];
+    // 按钮大小适应背景图片的大小
+    [btn sizeToFit];
+    [btn addTarget:target action:action forControlEvents:controlEvents];
+    
+    return [[UIBarButtonItem alloc] initWithCustomView:btn];
+}
 
 @end

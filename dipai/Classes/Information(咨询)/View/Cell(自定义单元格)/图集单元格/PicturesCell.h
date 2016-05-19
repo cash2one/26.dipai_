@@ -12,4 +12,6 @@
 
 @property (nonatomic, strong) NewsListModel * newslistModel;
 + (instancetype)cellWithTableView:(UITableView *)tableView;
+
+- (void)setTitleTextColor;
 @end

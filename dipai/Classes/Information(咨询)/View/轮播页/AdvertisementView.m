@@ -53,6 +53,7 @@
 {
     UIScrollView * scroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HeaderViewHeight * IPHONE6_H_SCALE)];
 //    scroll.backgroundColor = [UIColor redColor];
+    scroll.scrollsToTop = NO;   // 这样就可以点击状态栏返回顶部了
     scroll.pagingEnabled = YES;
     scroll.bounces = NO;
     scroll.showsHorizontalScrollIndicator = NO;
@@ -79,7 +80,7 @@
         
         bannerModel * bannnerM = [[bannerModel alloc] init];
         bannnerM = bannerModelArray[i];
-        [picView sd_setImageWithURL:[NSURL URLWithString:bannnerM.picname] placeholderImage:[UIImage imageNamed:@"123"]];
+        [picView sd_setImageWithURL:[NSURL URLWithString:bannnerM.cover] placeholderImage:[UIImage imageNamed:@"123"]];
         
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
         btn.frame = _scroll.bounds;

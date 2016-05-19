@@ -23,13 +23,42 @@
  "/public/upload/atlas/146189596190024.jpg"
  ]
  */
-// 
-@property (nonatomic, assign) int iD;
-@property (nonatomic, assign) int type;
+//
+/**
+ *  文章ID
+ */
+@property (nonatomic, copy) NSString * iD;
+/**
+ *  文章类型
+    2:资讯
+    4:图集
+    11:视频
+ */
+@property (nonatomic, copy) NSString * type;
+/**
+ *  文章标题
+ */
 @property (nonatomic, copy) NSString * title;
+/**
+ *  文章的短标题
+ */
+@property (nonatomic, copy) NSString * shorttitle;
+/**
+ *  评论数
+ */
+@property (nonatomic, copy) NSString * commentNumber;
+/**
+ *  文章的描述
+ */
 @property (nonatomic, copy) NSString * descriptioN;
-@property (nonatomic, assign) int comment;
+/**
+ *  小图片
+ */
+@property (nonatomic, strong) NSMutableDictionary * covers;
+/**
+ *  跳转后页面接口
+ */
 @property (nonatomic, copy) NSString * url;
-@property (nonatomic, strong) NSArray * picname;
+
 
 @end

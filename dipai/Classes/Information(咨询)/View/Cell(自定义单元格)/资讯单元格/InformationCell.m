@@ -127,7 +127,7 @@
     _newslistModel = newslistModel;
     // 资讯单元格上子控件的数据
     
-    if (newslistModel.type == 2) {
+    if ([newslistModel.type isEqualToString:@"2"]) {
         [self setInfoData];
         [self setInfoFrame];
     } else
@@ -142,11 +142,7 @@
 
 - (void)setInfoData
 {
-    _titleLbl.text = _newslistModel.title;
-    _detailLbl.text = _newslistModel.descriptioN;
-    NSString * urlStr = _newslistModel.picname[0];
-//    NSLog(@"----urlstr----%@", urlStr);
-    [_picView sd_setImageWithURL:[NSURL URLWithString:urlStr] placeholderImage:[UIImage imageNamed:@"123"]];
+    [self setData];
 }
 
 #pragma mark ----- 设置子控件的位置  应该在传递模型的时候调用此方法
@@ -157,10 +153,7 @@
 
 - (void)setVideoData
 {
-    _titleLbl.text = _newslistModel.title;
-    _detailLbl.text = _newslistModel.descriptioN;
-    _commentsLbl.text = [NSString stringWithFormat:@"%d评论", _newslistModel.comment];
-    
+    [self setData];
     
 }
 - (void)setVideoFrame
@@ -168,8 +161,8 @@
     [self setFrame];
     // 视频标志图片
     [_videoPic mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(_picView.mas_left).offset(Margin14 * IPHONE6_W_SCALE);
-        make.bottom.equalTo(_picView.mas_bottom).offset(-Margin10 * IPHONE6_H_SCALE);
+        make.left.equalTo(_picView.mas_left).offset(Margin16 * IPHONE6_W_SCALE);
+        make.bottom.equalTo(_picView.mas_bottom).offset(-Margin14 * IPHONE6_H_SCALE);
         make.width.equalTo(@(Margin36 * IPHONE6_W_SCALE));
         make.height.equalTo(@(Margin36 * IPHONE6_W_SCALE));
     }];
@@ -180,6 +173,17 @@
         make.width.equalTo(@(Margin58 * IPHONE6_W_SCALE));
         make.height.equalTo(@(Margin28 * IPHONE6_H_SCALE));
     }];
+}
+
+#pragma mark -------- 设置公共部分（数据和Frame）
+- (void)setData
+{
+    _titleLbl.text = _newslistModel.title;
+    _detailLbl.text = _newslistModel.descriptioN;
+        
+    NSString * urlStr = [_newslistModel.covers objectForKey:@"cover1"];
+    _commentsLbl.text = [NSString stringWithFormat:@"%@评论", _newslistModel.commentNumber];
+    [_picView sd_setImageWithURL:[NSURL URLWithString:urlStr] placeholderImage:[UIImage imageNamed:@"123"]];
 }
 
 - (void)setFrame
@@ -201,7 +205,7 @@
     // 描述
     CGFloat detailX = titleX;
     CGFloat detailY = CGRectGetMaxY(_titleLbl.frame) + Margin30 * IPHONE6_H_SCALE;
-    CGFloat detailW = WIDTH - detailX;
+    CGFloat detailW = WIDTH - detailX - Margin20;
     NSMutableDictionary * detailDic = [NSMutableDictionary dictionary];
     detailDic[NSFontAttributeName] = Font13;
     NSString * detail = _newslistModel.descriptioN;
@@ -209,7 +213,7 @@
     _detailLbl.frame = (CGRect){{detailX,detailY},detailRect.size};
     _detailLbl.text = detail;
     // 评论数
-    NSString * commentNum = [NSString stringWithFormat:@"%d评论", _newslistModel.comment];
+    NSString * commentNum = [NSString stringWithFormat:@"%@评论", _newslistModel.commentNumber];
     _commentsLbl.text = commentNum;
     [_commentsLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.mas_right).offset(-Margin20 * IPHONE6_W_SCALE);
@@ -225,6 +229,11 @@
         make.height.equalTo(@(0.5));
     }];
 }
+
+//- (void)setTitlelLblTextColor
+//{
+//    _titleLbl.textColor = Color178;
+//}
 
 + (instancetype)cellWithTableView:(UITableView *)tableView
 {
