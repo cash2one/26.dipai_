@@ -21,7 +21,7 @@
 /**
 *  ID 文章的唯一标识
 */
-@property (nonatomic, strong) NSNumber * iD;
+@property (nonatomic, copy) NSString * iD;
 /**
  *  文章标题
  */
@@ -42,4 +42,10 @@
  *  网页链接
  */
 @property (nonatomic, copy) NSString * wapurl;
+/**
+ *  文章类型
+ */
+@property (nonatomic, copy) NSString * type;
+
+
 @end

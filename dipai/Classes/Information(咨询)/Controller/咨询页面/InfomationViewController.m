@@ -294,18 +294,18 @@
     if (self.tournamentArr.count > 0) {
         if (indexPath.row == 0) {
             TournamentModel * model = self.tournamentArr[0];
-            [self turnPageToDetailView:model.lurl];
+            NSLog(@"跳转到赛事。。。");
 //            [self turnPageToDetailView:@"http://192.168.1.102:8080/app/art/view/11/5096"];
         } else
         {
             NewsListModel * model = self.newslistArr[indexPath.row -1];
-            [self turnPageToDetailView:model.url];
+            [self turnPageToDetailView:model.url withNewsListModel:model];
         }
         
     } else
     {
         NewsListModel * model = self.newslistArr[indexPath.row];
-        [self turnPageToDetailView:model.url];
+        [self turnPageToDetailView:model.url withNewsListModel:model];
     }
    
 }
@@ -346,6 +346,15 @@
 {
     DetailWebViewController * detaiVC = [[DetailWebViewController alloc] init];
     detaiVC.url = url;
+    detaiVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:detaiVC animated:YES];
+}
+
+- (void)turnPageToDetailView:(NSString *)url withNewsListModel:(NewsListModel *)newsListModel
+{
+    DetailWebViewController * detaiVC = [[DetailWebViewController alloc] init];
+    detaiVC.url = url;
+    detaiVC.newsModel = newsListModel;
     detaiVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:detaiVC animated:YES];
 }

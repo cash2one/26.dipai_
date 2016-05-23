@@ -8,6 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "LSTextView.h"
+@class CommentView;
+@protocol CommentViewDelegate <NSObject>
+
+- (void)commnetView:(CommentView *)commentView sendMessage:(NSString *)message;
+
+@end
+
 @interface CommentView : UIView
 /**
  *  评论框
@@ -17,5 +24,9 @@
  *  发表按钮
  */
 @property (nonatomic, strong) UIButton * sendBtn;
+/**
+ *  
+ */
+@property (nonatomic, assign) id <CommentViewDelegate> delegate;
 
 @end

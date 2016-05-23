@@ -17,10 +17,12 @@
         [self setUpChildControl];
         // 对UITextView添加监听
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewChanged) name:UITextViewTextDidChangeNotification object:nil];
+        
     }
     
     return self;
 }
+
 
 // textView的内容发生变化后进行调用
 - (void)textViewChanged
@@ -28,11 +30,13 @@
     // 如果有内容就隐藏占位符，没有内容就显示占位符
     if (_textView.text.length) {
         _textView.hidePlaceHolder = YES;    // 隐藏占位符
-        _sendBtn.userInteractionEnabled = NO;   // 发表按钮可用
+        _sendBtn.userInteractionEnabled = YES;   // 发表按钮可用
+        [_sendBtn setBackgroundImage:[UIImage imageNamed:@"fabiao_xuanzhong"] forState:UIControlStateNormal];
     } else
     {
-        _textView.hidePlaceHolder = NO;
-        _sendBtn.userInteractionEnabled = YES;
+        _textView.hidePlaceHolder = NO; // 显示占位符
+        _sendBtn.userInteractionEnabled = NO;   // 发表按钮可用
+        [_sendBtn setBackgroundImage:[UIImage imageNamed:@"fabiao_moren"] forState:UIControlStateNormal];
     }
 }
 
@@ -50,10 +54,32 @@
     _textView = textView;
     // 发表按钮
     UIButton * sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    sendBtn setImage:[UIImage imageNamed:@"riqikuang"] forState:uicontrolstateno
+    [sendBtn setBackgroundImage:[UIImage imageNamed:@"fabiao_moren"] forState:UIControlStateNormal];
+    sendBtn.userInteractionEnabled = NO;
+    [sendBtn addTarget:self action:@selector(sendMessage) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:sendBtn];
     _sendBtn = sendBtn;
 }
+
+#pragma mark --- 发表按钮的点击事件
+- (void)sendMessage
+{
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * userName = [defaults objectForKey:UserName];
+    if (!userName) {
+        NSLog(@"请登录后再发表...");
+        if ([self.delegate respondsToSelector:@selector(commnetView:sendMessage:)]) {
+            [self.delegate commnetView:self sendMessage:nil];
+        } else
+        {
+            NSLog(@"CommentView的代理没有响应...");
+        }
+    } else
+    {
+        NSLog(@"可以进行发表");
+    }
+}
+
 #pragma mark --- 对子控件进行布局
 - (void)layoutSubviews
 {

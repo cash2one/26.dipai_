@@ -1,38 +1,35 @@
 //
-//  CommentsViewController.m
+//  LoginViewController.m
 //  dipai
 //
-//  Created by 梁森 on 16/5/19.
+//  Created by 梁森 on 16/5/20.
 //  Copyright © 2016年 梁森. All rights reserved.
 //
 
-#import "CommentsViewController.h"
+#import "LoginViewController.h"
 
-#import "UIBarButtonItem+Item.h"
-@interface CommentsViewController ()
+@interface LoginViewController ()
 
 @end
 
-@implementation CommentsViewController
+@implementation LoginViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     self.view.backgroundColor = [UIColor whiteColor];
-    self.title = @"评论详情";
-    // 设置导航栏内容
+    self.title = @"登录底牌";
     [self setUpNavigationBar];
 }
-#pragma mark --- 设置导航栏内容
+
 - (void)setUpNavigationBar
 {
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStyleDone target:self action:@selector(returnBack)];;
 }
-#pragma mark --- 返回上一个视图控制器
-- (void)pop
+
+- (void)returnBack
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didReceiveMemoryWarning {

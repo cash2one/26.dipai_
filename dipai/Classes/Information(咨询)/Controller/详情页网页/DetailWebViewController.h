@@ -8,7 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+@class NewsListModel;
 @interface DetailWebViewController : UIViewController
+/**
+ *  传递过来的一个模型
+ */
+@property (nonatomic, strong) NewsListModel * newsModel;
+
 /**
  *  传递过来的跳转链接
  */

@@ -87,20 +87,13 @@
 \
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) { // block是一个参数
         
-        NSString * str = responseObject[@"type"];
-        
         NSDictionary * dic = responseObject[@"content"];
         // 字典转模型
         WebDetailModel * webDetailModel = [WebDetailModel objectWithKeyValues:dic];
         
-        NSMutableArray * array = [NSMutableArray array];
-        // 添加type
-        [array addObject:str];
-        // 添加模型
-        [array addObject:webDetailModel];
         if (success) {
             // block传递参数
-            success(array);
+            success(webDetailModel);
         }
         
         // 刷新表格

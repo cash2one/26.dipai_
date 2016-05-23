@@ -25,10 +25,18 @@
 #import "CommentsViewController.h"
 // 灰色的背景图
 #import "BackgroundView.h"
+// 自定义的AlertView
+#import "LSAlertView.h"
+// 登录控制器
+#import "LoginViewController.h"
+// 数据库
+#import "DataBase.h"
+
+#import "NewsListModel.h"
 
 #import "UIBarButtonItem+Item.h"
 #import "AppDelegate.h"
-@interface DetailWebViewController ()<BottomViewDelegate>
+@interface DetailWebViewController ()<BottomViewDelegate, CommentViewDelegate, LSAlertViewDeleagte>
 /**
  *  网页链接
  */
@@ -50,7 +58,18 @@
  *  网页视图
  */
 @property (nonatomic, strong) UIWebView * webView;
-
+/**
+ *  灰色的背景图
+ */
+@property (nonatomic, strong) UIView * backView;
+/**
+ *  出现alertView时的灰色背景图
+ */
+@property (nonatomic, strong) UIView * alertBackView;
+/**
+ *  提示框
+ */
+@property (nonatomic, strong) LSAlertView * alertView;
 @property (nonatomic, strong) UIButton * leftBtn;
 
 @end
@@ -68,7 +87,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"%@", self.url);
+    NSLog(@"跳转到网页详情页的接口：%@", self.url);
     self.view.backgroundColor = [UIColor whiteColor];
     
     // 请求数据
@@ -79,6 +98,7 @@
     [self setUpNavigationBar];
     // 添加评论视图
 //    [self addCommentView];
+    
     // 对键盘添加监听
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardChanged:) name:UIKeyboardWillChangeFrameNotification object:nil];
 }
@@ -134,16 +154,18 @@
     bottomView.frame = CGRectMake(x, y, w, h);
     [self.view addSubview:bottomView];
     _bottomView = bottomView;
+    
+    // 判断收藏按钮的状态
+    NSArray * arr = [DataBase findTheTracks:_newsModel.iD];
+    if (arr.count) {
+        bottomView.collectionBtn.selected = YES;
+    }
 }
 
 - (void)getData
 {
     [SVProgressHUD show];
-    [DataTool getDataInWebViewWithStr:self.url parameters:nil success:^(NSArray * array) {
-        
-        NSString * type = array[0];
-        NSLog(@"---type---%@", type);
-        WebDetailModel * model = array[1];
+    [DataTool getDataInWebViewWithStr:self.url parameters:nil success:^(WebDetailModel * model) {
         
         _model = model;
         
@@ -177,41 +199,138 @@
 {
     return UIStatusBarStyleLightContent;
 }
+
+#pragma mark --- CommentViewDelegate
+- (void)commnetView:(CommentView *)commentView sendMessage:(NSString *)message
+{
+    NSLog(@"显示提示框...");
+    LSAlertView * alertView = [[LSAlertView alloc] init];
+    alertView.delegate = self;
+    alertView.layer.masksToBounds = YES;
+    alertView.layer.cornerRadius = 10;
+    alertView.backgroundColor = [UIColor whiteColor];
+    CGFloat x = Margin105 * IPHONE6_W_SCALE;
+    CGFloat y = Margin574 * IPHONE6_H_SCALE;
+    CGFloat w = Margin540 * IPHONE6_W_SCALE;
+    CGFloat h = Margin208 * IPHONE6_H_SCALE;
+    alertView.frame = CGRectMake(x, y, w, h);
+    UIView * alertBackView = [[BackgroundView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    alertBackView.backgroundColor = ColorBlack30;
+    // 当前顶层窗口
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    // 添加到灰色的背景图
+    [window addSubview:alertBackView];
+    [window addSubview:alertView];
+    _alertBackView = alertBackView;
+    _alertView = alertView;
+}
+#pragma mark --- LSAlertViewDeleagte
+// 取消按钮
+- (void)lsAlertView:(LSAlertView *)alertView cancel:(NSString *)cancel
+{
+    [self removeAlerView];
+}
+
+- (void)removeAlerView
+{
+    // 移除提示框的背景图
+    [_alertBackView removeFromSuperview];
+    // 移除提示框
+    [_alertView removeFromSuperview];
+}
+// 登录按钮
+- (void)lsAlertView:(LSAlertView *)alertView sure:(NSString *)sure
+{
+    // 移除提示框
+    [self removeAlerView];
+    // 移除评论框
+    [self removeFromSuperviewAction];
+    LoginViewController * loginVC = [[LoginViewController alloc] init];
+    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    [self presentViewController:loginNav animated:YES completion:nil];
+}
+
+
 #pragma mark ---- BottomViewDelegate
 /**
  *  写评论
  */
 - (void)commentAction
 {
-    BackgroundView * backView = [[BackgroundView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    UIView * backView = [[BackgroundView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
     backView.backgroundColor = ColorBlack60;
     // 当前顶层窗口
     UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
     // 添加到灰色的背景图
     [window addSubview:backView];
+    _backView = backView;
     // 添加评论视图
     CommentView * commentView = [[CommentView alloc] initWithFrame:CGRectMake(0, HEIGHT, WIDTH, Margin242 * IPHONE6_H_SCALE)];
+    commentView.delegate = self;
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
+    commentView.userInteractionEnabled = YES;
+    [commentView addGestureRecognizer:tap];
     commentView.backgroundColor = Color239;
-    [backView addSubview:commentView];
+    [window addSubview:commentView];
     _commentView = commentView;
+    
+    UITapGestureRecognizer * backTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeFromSuperviewAction)];
+    backView.userInteractionEnabled = YES;
+    [backView addGestureRecognizer:backTap];
     
     [_commentView.textView becomeFirstResponder];
 }
+#pragma mark --- 灰色背景移出
+- (void)removeFromSuperviewAction
+{
+    // 灰色背景移除
+    [_backView removeFromSuperview];
+    [_commentView.textView resignFirstResponder];
+}
+
+- (void)tapAction
+{
+    NSLog(@"tap...");
+}
+
 /**
  *  查看评论
  */
 - (void)lookCommentsAction
 {
-//    CommentsViewController * commentsVC = [[CommentsViewController alloc] init];
-//    [self.navigationController pushViewController:commentsVC animated:YES];
+    CommentsViewController * commentsVC = [[CommentsViewController alloc] init];
+    [self.navigationController pushViewController:commentsVC animated:YES];
 }
 /**
  *  收藏
  */
 - (void)collectionAction
 {
+    if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
+        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"收藏成功" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }];
+        [alertController addAction:OK];
+        [self presentViewController:alertController animated:YES completion:nil];
+        // 将此模型存入到数据库中
+        [DataBase saveLocation:_newsModel];
+    } else{     // 如果收藏按钮被选中
+        
+        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"已取消收藏" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }];
+        [alertController addAction:OK];
+        [self presentViewController:alertController animated:YES completion:nil];
+        
+        [DataBase deleteTreacks:_newsModel.iD];
+    }
+    
     _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
-//    UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"收藏" message:<#(nullable NSString *)#> preferredStyle:<#(UIAlertControllerStyle)#>];
+    
+    
+    
 }
 /**
  *  分享
