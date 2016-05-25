@@ -15,19 +15,36 @@
 
 @implementation CommentsViewController
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:YES];
+    NSLog(@"评论列表页...");
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    self.title = @"评论详情";
     // 设置导航栏内容
     [self setUpNavigationBar];
 }
 #pragma mark --- 设置导航栏内容
 - (void)setUpNavigationBar
 {
+    
+    
     self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
+   
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
+//    titleLabel.backgroundColor = [UIColor redColor];
+    titleLabel.font = [UIFont systemFontOfSize:17];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.text = @"评论列表";
+    self.navigationItem.titleView = titleLabel;
+    
+    
+    
 }
 #pragma mark --- 返回上一个视图控制器
 - (void)pop

@@ -31,12 +31,13 @@
 #import "LoginViewController.h"
 // 数据库
 #import "DataBase.h"
-
+//
+#import "UMSocial.h"
 #import "NewsListModel.h"
 
 #import "UIBarButtonItem+Item.h"
 #import "AppDelegate.h"
-@interface DetailWebViewController ()<BottomViewDelegate, CommentViewDelegate, LSAlertViewDeleagte>
+@interface DetailWebViewController ()<BottomViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, UMSocialUIDelegate>
 /**
  *  网页链接
  */
@@ -99,9 +100,37 @@
     // 添加评论视图
 //    [self addCommentView];
     
+    // 在分享中添加自定义按钮
+//    [self addCustomShareBtn];
+    
     // 对键盘添加监听
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardChanged:) name:UIKeyboardWillChangeFrameNotification object:nil];
 }
+
+#pragma mark --- 添加复制链接按钮
+- (void)addCustomShareBtn
+{
+    UMSocialSnsPlatform *snsPlatform = [[UMSocialSnsPlatform alloc] initWithPlatformName:@"CustomPlatform"];
+    // 设置自定义分享按钮的名称
+    snsPlatform.displayName = @"复制链接";
+    // 设置自定义分享按钮的图标
+    snsPlatform.bigImageName = @"fuzhilianjie";
+    //    __weak typeof(self) weakSelf = self;
+    // 监听自定义按钮的点击事件
+    snsPlatform.snsClickHandler = ^(UIViewController *presentingController, UMSocialControllerService * socialControllerService, BOOL isPresentInController){
+        UIPasteboard *pastboad = [UIPasteboard generalPasteboard];
+        pastboad.string = _wapurl;
+        NSLog(@"复制的链接：%@", _wapurl);
+        [SVProgressHUD showSuccessWithStatus:@"复制链接成功"];
+        
+    };
+    
+    // 添加自定义平台
+    [UMSocialConfig addSocialSnsPlatform:@[snsPlatform]];
+    // 设置你要在分享面板中出现的平台
+    [UMSocialConfig setSnsPlatformNames:@[UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]];
+}
+
 // 键盘发生变化后通知
 - (void)keyBoardChanged:(NSNotification *)note
 {
@@ -337,7 +366,24 @@
  */
 - (void)shareAction
 {
+    NSString *st = [_newsModel.covers objectForKey:@"cover1"];
+    NSURL *url = [NSURL URLWithString:st];
+    NSData *data = [NSData dataWithContentsOfURL:url];
+    UIImage *img = [UIImage imageWithData:data];
     
+    // 友盟分享代码，复制、粘贴
+    [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"
+                                      shareText:[NSString stringWithFormat:@"%@ %@",_newsModel.shorttitle,_newsModel.descriptioN]
+                                     shareImage:img
+                                shareToSnsNames:@[UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone]
+                                       delegate:self]; // 分享到朋友圈、微信好友、QQ空间、QQ好友
+    
+    // 下面的三段代码是什么意思？ 解释：加上下面的几句话才能将网页内容分享成功
+    // 分享到各个平台的内容  如果没有下面的代码就会跳到友盟首页（自己设置的URL）
+    [UMSocialData defaultData].extConfig.wechatSessionData.url = _wapurl;
+    [UMSocialData defaultData].extConfig.wechatTimelineData.url = _wapurl;
+    [UMSocialData defaultData].extConfig.qqData.url = _wapurl;
+    [UMSocialData defaultData].extConfig.qzoneData.url = _wapurl;
 }
 
 

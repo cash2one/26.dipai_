@@ -36,6 +36,9 @@
 // 刷新
 #import "MJChiBaoZiFooter2.h"
 #import "MJChiBaoZiHeader.h"
+
+// 活动控制器
+#import "SVProgressHUD.h"
 @interface InfomationViewController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate>
 /**
  *  表格
@@ -124,10 +127,15 @@
     [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
     // 设置footer
     self.tableView.footer = footer;
+    
+//    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
 }
 #pragma mark ------ 下拉刷新，加载新的数据
 - (void)loadNewData
 {
+    // 如果网络有问题结束刷新状态
+    [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
+    
     [DataTool getNewDataWithStr:InformationURL parameters:nil success:^(NSArray * arr) {
         [self.tableView.header endRefreshing];
         NSArray * bannerModelArr = [arr objectAtIndex:0];
@@ -136,6 +144,7 @@
         // 轮播页的数组
         [self.bannerArr removeAllObjects];
         [self.bannerArr addObjectsFromArray:bannerModelArr];
+        
         // 赛事页的数组
         [self.tournamentArr removeAllObjects];
         [self.tournamentArr addObjectsFromArray:tournamentModelArr];
@@ -215,6 +224,15 @@
         NSLog(@"加载时的错误数据%@", error);
     }];
     
+}
+
+#pragma mark --- 刷新失败
+- (void)errorWithRefresh{
+    if (!self.bannerArr.count) {
+        // 结束刷新
+        [self.tableView.header endRefreshing];
+        [SVProgressHUD showErrorWithStatus:@"网络有问题"];
+    }
 }
 
 

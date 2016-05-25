@@ -9,7 +9,7 @@
 #ifndef Header_h
 #define Header_h
 // 接口
-#define InformationURL @"http://192.168.1.102:8080/app/index/0/0/0"
+#define InformationURL @"http://10.0.0.14:8080/app/index/0/0/0"
 
 #define UserName @"username"
 #define PassWord @"password"
