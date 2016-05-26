@@ -81,6 +81,11 @@
     [self addSubview:verticalLine];
     _verticalLine = verticalLine;
     
+    
+    self.layer.masksToBounds = YES;
+    self.layer.cornerRadius = 10;
+    self.backgroundColor = [UIColor whiteColor];
+    
 }
 
 #pragma mark --- 取消事件

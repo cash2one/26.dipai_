@@ -101,7 +101,7 @@
 //    [self addCommentView];
     
     // 在分享中添加自定义按钮
-//    [self addCustomShareBtn];
+    [self addCustomShareBtn];
     
     // 对键盘添加监听
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardChanged:) name:UIKeyboardWillChangeFrameNotification object:nil];
@@ -177,7 +177,7 @@
     BottomView * bottomView = [[BottomView alloc] init];
     bottomView.delegate = self;
     CGFloat x = 0;
-    CGFloat y = HEIGHT - Margin92 * IPHONE6_H_SCALE;
+    CGFloat y = HEIGHT - Margin92 * IPHONE6_H_SCALE - 64;
     CGFloat w = WIDTH;
     CGFloat h = Margin92 * IPHONE6_H_SCALE;
     bottomView.frame = CGRectMake(x, y, w, h);
@@ -214,7 +214,7 @@
 #pragma mark --- 请求网页
 - (void)setUpView:(NSString *)url
 {
-    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
+    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
     [self.view addSubview:webView];
     _webView = webView;
     
@@ -233,25 +233,7 @@
 - (void)commnetView:(CommentView *)commentView sendMessage:(NSString *)message
 {
     NSLog(@"显示提示框...");
-    LSAlertView * alertView = [[LSAlertView alloc] init];
-    alertView.delegate = self;
-    alertView.layer.masksToBounds = YES;
-    alertView.layer.cornerRadius = 10;
-    alertView.backgroundColor = [UIColor whiteColor];
-    CGFloat x = Margin105 * IPHONE6_W_SCALE;
-    CGFloat y = Margin574 * IPHONE6_H_SCALE;
-    CGFloat w = Margin540 * IPHONE6_W_SCALE;
-    CGFloat h = Margin208 * IPHONE6_H_SCALE;
-    alertView.frame = CGRectMake(x, y, w, h);
-    UIView * alertBackView = [[BackgroundView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
-    alertBackView.backgroundColor = ColorBlack30;
-    // 当前顶层窗口
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
-    // 添加到灰色的背景图
-    [window addSubview:alertBackView];
-    [window addSubview:alertView];
-    _alertBackView = alertBackView;
-    _alertView = alertView;
+    [self addAlertView];
 }
 #pragma mark --- LSAlertViewDeleagte
 // 取消按钮
@@ -335,31 +317,56 @@
  */
 - (void)collectionAction
 {
-    if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
-        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"收藏成功" message:nil preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * userName = [defaults objectForKey:UserName];
+    if (userName) { // 如果已经登录
+        if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
+            UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"收藏成功" message:nil preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                
+            }];
+            [alertController addAction:OK];
+            [self presentViewController:alertController animated:YES completion:nil];
+            // 将此模型存入到数据库中
+            [DataBase saveLocation:_newsModel];
+        } else{     // 如果收藏按钮被选中
             
-        }];
-        [alertController addAction:OK];
-        [self presentViewController:alertController animated:YES completion:nil];
-        // 将此模型存入到数据库中
-        [DataBase saveLocation:_newsModel];
-    } else{     // 如果收藏按钮被选中
-        
-        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"已取消收藏" message:nil preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"已取消收藏" message:nil preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                
+            }];
+            [alertController addAction:OK];
+            [self presentViewController:alertController animated:YES completion:nil];
             
-        }];
-        [alertController addAction:OK];
-        [self presentViewController:alertController animated:YES completion:nil];
-        
-        [DataBase deleteTreacks:_newsModel.iD];
+            [DataBase deleteTreacks:_newsModel.iD];
+        }
+        _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
+    } else  // 如果没有登录
+    {
+        [self addAlertView];
     }
+  
     
-    _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
-    
-    
-    
+}
+
+#pragma mark --- 添加登录的alertView
+- (void)addAlertView{
+    LSAlertView * alertView = [[LSAlertView alloc] init];
+    alertView.delegate = self;
+    CGFloat x = Margin105 * IPHONE6_W_SCALE;
+    CGFloat y = Margin574 * IPHONE6_H_SCALE;
+    CGFloat w = Margin540 * IPHONE6_W_SCALE;
+    CGFloat h = Margin208 * IPHONE6_H_SCALE;
+    alertView.frame = CGRectMake(x, y, w, h);
+    UIView * alertBackView = [[BackgroundView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    alertBackView.backgroundColor = ColorBlack30;
+    // 当前顶层窗口
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    // 添加到灰色的背景图
+    [window addSubview:alertBackView];
+    [window addSubview:alertView];
+    _alertBackView = alertBackView;
+    _alertView = alertView;
 }
 /**
  *  分享
@@ -375,7 +382,7 @@
     [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"
                                       shareText:[NSString stringWithFormat:@"%@ %@",_newsModel.shorttitle,_newsModel.descriptioN]
                                      shareImage:img
-                                shareToSnsNames:@[UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone]
+                                shareToSnsNames:@[UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]
                                        delegate:self]; // 分享到朋友圈、微信好友、QQ空间、QQ好友
     
     // 下面的三段代码是什么意思？ 解释：加上下面的几句话才能将网页内容分享成功

@@ -45,6 +45,7 @@
 {
     // 评论框
     LSTextView * textView = [[LSTextView alloc] init];
+    // 外框的颜色
     textView.layer.borderColor = [[UIColor colorWithRed:187 / 255.0 green:187 / 255.0 blue:187 / 255.0 alpha:1] CGColor];
     textView.layer.borderWidth = 0.5;
     textView.placeholder = @"写评论...";

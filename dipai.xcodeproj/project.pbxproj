@@ -110,6 +110,8 @@
 		C16AEE2E1CEDBE6300173A1C /* LSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = C16AEE2D1CEDBE6300173A1C /* LSTextView.m */; };
 		C16AEE311CEDBE9200173A1C /* UIView+Frame.m in Sources */ = {isa = PBXBuildFile; fileRef = C16AEE301CEDBE9200173A1C /* UIView+Frame.m */; };
 		C16AEE351CEDC1A800173A1C /* BackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = C16AEE341CEDC1A800173A1C /* BackgroundView.m */; };
+		C1954AC21CF68A1E00B1DE71 /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1954AC11CF68A1E00B1DE71 /* RegisterViewController.m */; };
+		C1954AC91CF695EA00B1DE71 /* LSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = C1954AC81CF695EA00B1DE71 /* LSTextField.m */; };
 		C1E5F7D11CEBFFC2008A8A97 /* InfomationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D01CEBFFC2008A8A97 /* InfomationModel.m */; };
 		C1E5F7D51CEC0834008A8A97 /* tournamentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D41CEC0834008A8A97 /* tournamentCell.m */; };
 		C1E5F7DB1CEC5503008A8A97 /* MJChiBaoZiFooter2.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D81CEC5503008A8A97 /* MJChiBaoZiFooter2.m */; };
@@ -138,6 +140,7 @@
 		C1EE42BF1CCF460600623E3C /* RootTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EE42BE1CCF460600623E3C /* RootTabBarController.m */; };
 		C1EE42C31CCF463600623E3C /* RootNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EE42C21CCF463600623E3C /* RootNavigationController.m */; };
 		C1EE42CA1CCF488900623E3C /* InfomationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EE42C91CCF488900623E3C /* InfomationViewController.m */; };
+		C1EF663F1CF6ED0A00F61A77 /* PhoneLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EF663E1CF6ED0A00F61A77 /* PhoneLoginViewController.m */; };
 		C1EFB9FD1CEEE6C20066C4FF /* LSAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EFB9FC1CEEE6C20066C4FF /* LSAlertView.m */; };
 		C1EFBA011CEEFACD0066C4FF /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EFBA001CEEFACD0066C4FF /* LoginViewController.m */; };
 		C1EFBA041CEF0F2F0066C4FF /* NewsListModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C1EFBA021CEF0F2F0066C4FF /* NewsListModel.xcdatamodeld */; };
@@ -413,6 +416,10 @@
 		C16AEE301CEDBE9200173A1C /* UIView+Frame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Frame.m"; sourceTree = "<group>"; };
 		C16AEE331CEDC1A800173A1C /* BackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundView.h; sourceTree = "<group>"; };
 		C16AEE341CEDC1A800173A1C /* BackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundView.m; sourceTree = "<group>"; };
+		C1954AC01CF68A1E00B1DE71 /* RegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterViewController.h; sourceTree = "<group>"; };
+		C1954AC11CF68A1E00B1DE71 /* RegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterViewController.m; sourceTree = "<group>"; };
+		C1954AC71CF695EA00B1DE71 /* LSTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSTextField.h; sourceTree = "<group>"; };
+		C1954AC81CF695EA00B1DE71 /* LSTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSTextField.m; sourceTree = "<group>"; };
 		C1E5F7CF1CEBFFC2008A8A97 /* InfomationModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfomationModel.h; sourceTree = "<group>"; };
 		C1E5F7D01CEBFFC2008A8A97 /* InfomationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfomationModel.m; sourceTree = "<group>"; };
 		C1E5F7D31CEC0834008A8A97 /* tournamentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tournamentCell.h; sourceTree = "<group>"; };
@@ -470,6 +477,8 @@
 		C1EE42C21CCF463600623E3C /* RootNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootNavigationController.m; sourceTree = "<group>"; };
 		C1EE42C81CCF488900623E3C /* InfomationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfomationViewController.h; sourceTree = "<group>"; };
 		C1EE42C91CCF488900623E3C /* InfomationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfomationViewController.m; sourceTree = "<group>"; };
+		C1EF663D1CF6ED0A00F61A77 /* PhoneLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneLoginViewController.h; sourceTree = "<group>"; };
+		C1EF663E1CF6ED0A00F61A77 /* PhoneLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneLoginViewController.m; sourceTree = "<group>"; };
 		C1EFB9FB1CEEE6C20066C4FF /* LSAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSAlertView.h; sourceTree = "<group>"; };
 		C1EFB9FC1CEEE6C20066C4FF /* LSAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSAlertView.m; sourceTree = "<group>"; };
 		C1EFB9FF1CEEFACD0066C4FF /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
@@ -1318,6 +1327,25 @@
 			path = "灰色的背景图";
 			sourceTree = "<group>";
 		};
+		C1954ABF1CF68A1300B1DE71 /* 注册页面 */ = {
+			isa = PBXGroup;
+			children = (
+				C1954AC01CF68A1E00B1DE71 /* RegisterViewController.h */,
+				C1954AC11CF68A1E00B1DE71 /* RegisterViewController.m */,
+				C1954AC31CF6945F00B1DE71 /* 自定义TextField */,
+			);
+			path = "注册页面";
+			sourceTree = "<group>";
+		};
+		C1954AC31CF6945F00B1DE71 /* 自定义TextField */ = {
+			isa = PBXGroup;
+			children = (
+				C1954AC71CF695EA00B1DE71 /* LSTextField.h */,
+				C1954AC81CF695EA00B1DE71 /* LSTextField.m */,
+			);
+			path = "自定义TextField";
+			sourceTree = "<group>";
+		};
 		C1E5F7CE1CEBFFB7008A8A97 /* Information(资讯模型) */ = {
 			isa = PBXGroup;
 			children = (
@@ -1467,6 +1495,15 @@
 			path = "咨询页面";
 			sourceTree = "<group>";
 		};
+		C1EF663C1CF6ECFA00F61A77 /* 手机号登录 */ = {
+			isa = PBXGroup;
+			children = (
+				C1EF663D1CF6ED0A00F61A77 /* PhoneLoginViewController.h */,
+				C1EF663E1CF6ED0A00F61A77 /* PhoneLoginViewController.m */,
+			);
+			path = "手机号登录";
+			sourceTree = "<group>";
+		};
 		C1EFB9FA1CEEE6AB0066C4FF /* 提示框 */ = {
 			isa = PBXGroup;
 			children = (
@@ -1481,6 +1518,8 @@
 			children = (
 				C1EFB9FF1CEEFACD0066C4FF /* LoginViewController.h */,
 				C1EFBA001CEEFACD0066C4FF /* LoginViewController.m */,
+				C1EF663C1CF6ECFA00F61A77 /* 手机号登录 */,
+				C1954ABF1CF68A1300B1DE71 /* 注册页面 */,
 			);
 			path = "登录页面";
 			sourceTree = "<group>";
@@ -1880,6 +1919,7 @@
 				C1E5F8191CEC5667008A8A97 /* MJRefreshConst.m in Sources */,
 				C1EFBA701CEF14790066C4FF /* NSRelationshipDescription+MagicalDataImport.m in Sources */,
 				C12F9E431CDA031D003CC7FC /* SDWebImageDecoder.m in Sources */,
+				C1954AC91CF695EA00B1DE71 /* LSTextField.m in Sources */,
 				C12F9D9B1CD9D8B7003CC7FC /* MJFoundation.m in Sources */,
 				C16AEE2E1CEDBE6300173A1C /* LSTextView.m in Sources */,
 				C12F9DCA1CD9DA0D003CC7FC /* AFHTTPRequestOperationManager.m in Sources */,
@@ -1912,6 +1952,7 @@
 				C1EFBA7E1CEF14790066C4FF /* NSPersistentStoreCoordinator+MagicalRecord.m in Sources */,
 				C12F9DE51CD9DE4D003CC7FC /* TournamentModel.m in Sources */,
 				C12F9DD71CD9DA0D003CC7FC /* UIProgressView+AFNetworking.m in Sources */,
+				C1EF663F1CF6ED0A00F61A77 /* PhoneLoginViewController.m in Sources */,
 				C1EE42B51CCF404500623E3C /* UIBarButtonItem+Item.m in Sources */,
 				C1FDFCFC1CD36B240078F3DE /* VideoCell.m in Sources */,
 				C12F9DD11CD9DA0D003CC7FC /* AFURLSessionManager.m in Sources */,
@@ -1919,6 +1960,7 @@
 				C12F9D9C1CD9D8B7003CC7FC /* MJIvar.m in Sources */,
 				C16AED741CED614100173A1C /* BottomView.m in Sources */,
 				C1EFBA771CEF14790066C4FF /* NSManagedObjectContext+MagicalChainSave.m in Sources */,
+				C1954AC21CF68A1E00B1DE71 /* RegisterViewController.m in Sources */,
 				C1EFBA821CEF14790066C4FF /* MagicalRecord+Options.m in Sources */,
 				C12F9DC91CD9DA0D003CC7FC /* AFHTTPRequestOperation.m in Sources */,
 				C12F9E471CDA031D003CC7FC /* SDWebImageManager.m in Sources */,

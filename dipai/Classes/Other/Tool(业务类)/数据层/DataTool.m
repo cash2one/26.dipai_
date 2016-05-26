@@ -84,7 +84,6 @@
 + (void)getDataInWebViewWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure
 {
     
-\
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) { // block是一个参数
         
         NSDictionary * dic = responseObject[@"content"];
@@ -104,4 +103,18 @@
         
     }];
 }
+
++ (void)postWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool POST:URLString parameters:parameters success:^(id responseObject) {
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 @end

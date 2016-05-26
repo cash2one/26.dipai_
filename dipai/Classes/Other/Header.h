@@ -10,6 +10,8 @@
 #define Header_h
 // 接口
 #define InformationURL @"http://10.0.0.14:8080/app/index/0/0/0"
+// 注册接口
+#define RegisterURL @"http://192.168.1.102:8080/app/register"
 
 #define UserName @"username"
 #define PassWord @"password"
@@ -60,6 +62,7 @@
 #define Color238 [UIColor colorWithRed:238 / 255.f green:238 / 255.f blue:238 / 255.f alpha:1]
 #define Color239 [UIColor colorWithRed:239 / 255.f green:239 / 255.f blue:239 / 255.f alpha:1]
 #define Color178 [UIColor colorWithRed:178 / 255.f green:178 / 255.f blue:178 / 255.f alpha:1]
+#define Color183 [UIColor colorWithRed:183 / 255.f green:183 / 255.f blue:183 / 255.f alpha:1]
 #define Color255 [UIColor colorWithRed:255 / 255.f green:255 / 255.f blue:255 / 255.f alpha:1]
 
 // 单元格上图片距离边距
@@ -70,6 +73,7 @@
 // 距离
 #define Margin10 10 / 2
 #define Margin14 14 / 2
+#define Margin15 15 / 2
 #define Margin16 16 / 2
 #define Margin19 19 / 2
 #define Margin20 20 / 2
@@ -84,7 +88,9 @@
 #define Margin32 32 / 2
 #define Margin33 33 / 2
 #define Margin34 34 / 2
+#define Margin35 35 / 2
 #define Margin36 36 / 2
+#define Margin39 39 / 2
 #define Margin40 40 / 2
 #define Margin42 42 / 2
 #define Margin45 45 / 2
@@ -97,20 +103,28 @@
 #define Margin70 70 / 2
 #define Margin88 88 / 2
 #define Margin92 92 / 2
+#define Margin90 90 / 2
 #define Margin109 109 / 2
+#define Margin100 100 / 2
 #define Margin101 101 / 2
 #define Margin105 105 / 2
 #define Margin118 118 / 2
 #define Margin119 119 / 2
+#define Margin156 156 / 2
 #define Margin196 196 / 2
 #define Margin168 168 / 2
+#define Margin169 169 / 2
 #define Margin188 188 / 2
 #define Margin208 208 / 2
 #define Margin224 224 / 2
 #define Margin242 242 / 2
 #define Margin270 270 / 2
+#define Margin302 302 / 2
+#define Margin306 306 / 2
 #define Margin321 321 / 2
 #define Margin376 376 / 2
+#define Margin430 430 / 2
+#define Margin460 460 / 2
 #define Margin540 540 / 2
 #define Margin574 574 / 2
 

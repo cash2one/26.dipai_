@@ -17,4 +17,7 @@
 
 // 网页获取数据
 + (void)getDataInWebViewWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure;
+
+// 用户注册
++ (void)postWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure;
 @end
