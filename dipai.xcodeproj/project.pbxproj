@@ -71,6 +71,9 @@
 		C12F9E4E1CDA031D003CC7FC /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = C12F9E3C1CDA031D003CC7FC /* UIImageView+WebCache.m */; };
 		C12F9E4F1CDA031D003CC7FC /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = C12F9E3E1CDA031D003CC7FC /* UIView+WebCacheOperation.m */; };
 		C12F9E551CDA111C003CC7FC /* PhotoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C12F9E541CDA111C003CC7FC /* PhotoModel.m */; };
+		C13364FC1CFD21E100E2719C /* CustomTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C13364FB1CFD21E100E2719C /* CustomTableViewCell.m */; };
+		C13365001CFD281F00E2719C /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C13364FF1CFD281F00E2719C /* AccountViewController.m */; };
+		C13365041CFD3D0100E2719C /* SettingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C13365031CFD3D0100E2719C /* SettingCell.m */; };
 		C14DB57A1CF29677007F69CA /* MyCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C14DB5791CF29677007F69CA /* MyCollectionViewController.m */; };
 		C14DB5921CF2A7BD007F69CA /* NewsList+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = C14DB58F1CF2A7BD007F69CA /* NewsList+CoreDataProperties.m */; };
 		C14DB5931CF2A7BD007F69CA /* NewsList.m in Sources */ = {isa = PBXBuildFile; fileRef = C14DB5911CF2A7BD007F69CA /* NewsList.m */; };
@@ -112,6 +115,9 @@
 		C16AEE351CEDC1A800173A1C /* BackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = C16AEE341CEDC1A800173A1C /* BackgroundView.m */; };
 		C1954AC21CF68A1E00B1DE71 /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1954AC11CF68A1E00B1DE71 /* RegisterViewController.m */; };
 		C1954AC91CF695EA00B1DE71 /* LSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = C1954AC81CF695EA00B1DE71 /* LSTextField.m */; };
+		C1C049351CFBCED400389E7D /* MyPostsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C049341CFBCED400389E7D /* MyPostsViewController.m */; };
+		C1C049381CFBCEF400389E7D /* MyReceiveCommentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C049371CFBCEF400389E7D /* MyReceiveCommentsViewController.m */; };
+		C1C0497B1CFC3D6400389E7D /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C0497A1CFC3D6400389E7D /* SettingViewController.m */; };
 		C1E5F7D11CEBFFC2008A8A97 /* InfomationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D01CEBFFC2008A8A97 /* InfomationModel.m */; };
 		C1E5F7D51CEC0834008A8A97 /* tournamentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D41CEC0834008A8A97 /* tournamentCell.m */; };
 		C1E5F7DB1CEC5503008A8A97 /* MJChiBaoZiFooter2.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D81CEC5503008A8A97 /* MJChiBaoZiFooter2.m */; };
@@ -135,12 +141,16 @@
 		C1E5F81A1CEC5667008A8A97 /* UIScrollView+MJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F8051CEC5667008A8A97 /* UIScrollView+MJExtension.m */; };
 		C1E5F81B1CEC5667008A8A97 /* UIScrollView+MJRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F8071CEC5667008A8A97 /* UIScrollView+MJRefresh.m */; };
 		C1E5F81C1CEC5667008A8A97 /* UIView+MJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F8091CEC5667008A8A97 /* UIView+MJExtension.m */; };
+		C1ECB17A1CF7DCD40002CBF6 /* GetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1ECB1791CF7DCD40002CBF6 /* GetPasswordViewController.m */; };
+		C1ECB1F81CF83F730002CBF6 /* ResetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1ECB1F71CF83F730002CBF6 /* ResetPasswordViewController.m */; };
+		C1ECB1FC1CF852640002CBF6 /* ClickView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1ECB1FB1CF852640002CBF6 /* ClickView.m */; };
 		C1EE42B51CCF404500623E3C /* UIBarButtonItem+Item.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EE42B41CCF404500623E3C /* UIBarButtonItem+Item.m */; };
 		C1EE42BB1CCF419F00623E3C /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EE42BA1CCF419F00623E3C /* TestViewController.m */; };
 		C1EE42BF1CCF460600623E3C /* RootTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EE42BE1CCF460600623E3C /* RootTabBarController.m */; };
 		C1EE42C31CCF463600623E3C /* RootNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EE42C21CCF463600623E3C /* RootNavigationController.m */; };
 		C1EE42CA1CCF488900623E3C /* InfomationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EE42C91CCF488900623E3C /* InfomationViewController.m */; };
 		C1EF663F1CF6ED0A00F61A77 /* PhoneLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EF663E1CF6ED0A00F61A77 /* PhoneLoginViewController.m */; };
+		C1EF66861CF70D6100F61A77 /* UIButton+CountDown.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EF66851CF70D6100F61A77 /* UIButton+CountDown.m */; };
 		C1EFB9FD1CEEE6C20066C4FF /* LSAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EFB9FC1CEEE6C20066C4FF /* LSAlertView.m */; };
 		C1EFBA011CEEFACD0066C4FF /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EFBA001CEEFACD0066C4FF /* LoginViewController.m */; };
 		C1EFBA041CEF0F2F0066C4FF /* NewsListModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C1EFBA021CEF0F2F0066C4FF /* NewsListModel.xcdatamodeld */; };
@@ -340,6 +350,12 @@
 		C12F9E3E1CDA031D003CC7FC /* UIView+WebCacheOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+WebCacheOperation.m"; sourceTree = "<group>"; };
 		C12F9E531CDA111C003CC7FC /* PhotoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoModel.h; sourceTree = "<group>"; };
 		C12F9E541CDA111C003CC7FC /* PhotoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoModel.m; sourceTree = "<group>"; };
+		C13364FA1CFD21E100E2719C /* CustomTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTableViewCell.h; sourceTree = "<group>"; };
+		C13364FB1CFD21E100E2719C /* CustomTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTableViewCell.m; sourceTree = "<group>"; };
+		C13364FE1CFD281F00E2719C /* AccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountViewController.h; sourceTree = "<group>"; };
+		C13364FF1CFD281F00E2719C /* AccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountViewController.m; sourceTree = "<group>"; };
+		C13365021CFD3D0100E2719C /* SettingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingCell.h; sourceTree = "<group>"; };
+		C13365031CFD3D0100E2719C /* SettingCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingCell.m; sourceTree = "<group>"; };
 		C14DB5781CF29677007F69CA /* MyCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyCollectionViewController.h; sourceTree = "<group>"; };
 		C14DB5791CF29677007F69CA /* MyCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyCollectionViewController.m; sourceTree = "<group>"; };
 		C14DB58E1CF2A7BD007F69CA /* NewsList+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NewsList+CoreDataProperties.h"; sourceTree = "<group>"; };
@@ -420,6 +436,12 @@
 		C1954AC11CF68A1E00B1DE71 /* RegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterViewController.m; sourceTree = "<group>"; };
 		C1954AC71CF695EA00B1DE71 /* LSTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSTextField.h; sourceTree = "<group>"; };
 		C1954AC81CF695EA00B1DE71 /* LSTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSTextField.m; sourceTree = "<group>"; };
+		C1C049331CFBCED400389E7D /* MyPostsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyPostsViewController.h; sourceTree = "<group>"; };
+		C1C049341CFBCED400389E7D /* MyPostsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyPostsViewController.m; sourceTree = "<group>"; };
+		C1C049361CFBCEF400389E7D /* MyReceiveCommentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyReceiveCommentsViewController.h; sourceTree = "<group>"; };
+		C1C049371CFBCEF400389E7D /* MyReceiveCommentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyReceiveCommentsViewController.m; sourceTree = "<group>"; };
+		C1C049791CFC3D6400389E7D /* SettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
+		C1C0497A1CFC3D6400389E7D /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		C1E5F7CF1CEBFFC2008A8A97 /* InfomationModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfomationModel.h; sourceTree = "<group>"; };
 		C1E5F7D01CEBFFC2008A8A97 /* InfomationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfomationModel.m; sourceTree = "<group>"; };
 		C1E5F7D31CEC0834008A8A97 /* tournamentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tournamentCell.h; sourceTree = "<group>"; };
@@ -466,6 +488,12 @@
 		C1E5F8071CEC5667008A8A97 /* UIScrollView+MJRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+MJRefresh.m"; sourceTree = "<group>"; };
 		C1E5F8081CEC5667008A8A97 /* UIView+MJExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+MJExtension.h"; sourceTree = "<group>"; };
 		C1E5F8091CEC5667008A8A97 /* UIView+MJExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+MJExtension.m"; sourceTree = "<group>"; };
+		C1ECB1781CF7DCD40002CBF6 /* GetPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetPasswordViewController.h; sourceTree = "<group>"; };
+		C1ECB1791CF7DCD40002CBF6 /* GetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPasswordViewController.m; sourceTree = "<group>"; };
+		C1ECB1F61CF83F730002CBF6 /* ResetPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResetPasswordViewController.h; sourceTree = "<group>"; };
+		C1ECB1F71CF83F730002CBF6 /* ResetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResetPasswordViewController.m; sourceTree = "<group>"; };
+		C1ECB1FA1CF852640002CBF6 /* ClickView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClickView.h; sourceTree = "<group>"; };
+		C1ECB1FB1CF852640002CBF6 /* ClickView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClickView.m; sourceTree = "<group>"; };
 		C1EE42AB1CCEF89000623E3C /* Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
 		C1EE42B31CCF404500623E3C /* UIBarButtonItem+Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBarButtonItem+Item.h"; sourceTree = "<group>"; };
 		C1EE42B41CCF404500623E3C /* UIBarButtonItem+Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+Item.m"; sourceTree = "<group>"; };
@@ -479,6 +507,8 @@
 		C1EE42C91CCF488900623E3C /* InfomationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfomationViewController.m; sourceTree = "<group>"; };
 		C1EF663D1CF6ED0A00F61A77 /* PhoneLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneLoginViewController.h; sourceTree = "<group>"; };
 		C1EF663E1CF6ED0A00F61A77 /* PhoneLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneLoginViewController.m; sourceTree = "<group>"; };
+		C1EF66841CF70D6100F61A77 /* UIButton+CountDown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+CountDown.h"; sourceTree = "<group>"; };
+		C1EF66851CF70D6100F61A77 /* UIButton+CountDown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+CountDown.m"; sourceTree = "<group>"; };
 		C1EFB9FB1CEEE6C20066C4FF /* LSAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSAlertView.h; sourceTree = "<group>"; };
 		C1EFB9FC1CEEE6C20066C4FF /* LSAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSAlertView.m; sourceTree = "<group>"; };
 		C1EFB9FF1CEEFACD0066C4FF /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
@@ -871,7 +901,11 @@
 			children = (
 				C1212E4A1CCDABFB00F76D4E /* MineController.h */,
 				C1212E4B1CCDABFB00F76D4E /* MineController.m */,
+				C13364FD1CFD280700E2719C /* 账户 */,
+				C1C049781CFC3D5B00389E7D /* 设置 */,
 				C14DB5771CF29663007F69CA /* 我的收藏 */,
+				C1C049311CFBCEBF00389E7D /* 我的帖子 */,
+				C1C049321CFBCEBF00389E7D /* 我收到的评论 */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -886,6 +920,9 @@
 		C1212E331CCDAA6200F76D4E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				C13365011CFD3CF100E2719C /* 设置页面 */,
+				C13364F91CFD21CD00E2719C /* 帐号管理中的单元格 */,
+				C1ECB1F91CF8525A0002CBF6 /* 点击的单元格 */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -922,6 +959,7 @@
 		C1212E381CCDAA6200F76D4E /* Lib */ = {
 			isa = PBXGroup;
 			children = (
+				C1EF66831CF70D6100F61A77 /* 发送按钮 */,
 				C14DB5F51CF2EC04007F69CA /* UMSocial_Sdk_5.0 */,
 				C14DB6101CF2EC04007F69CA /* UMSocial_Sdk_Extra_Frameworks */,
 				C1EFBA291CEF14780066C4FF /* mMagicalRecord */,
@@ -1149,6 +1187,33 @@
 			path = SDWebImage;
 			sourceTree = "<group>";
 		};
+		C13364F91CFD21CD00E2719C /* 帐号管理中的单元格 */ = {
+			isa = PBXGroup;
+			children = (
+				C13364FA1CFD21E100E2719C /* CustomTableViewCell.h */,
+				C13364FB1CFD21E100E2719C /* CustomTableViewCell.m */,
+			);
+			path = "帐号管理中的单元格";
+			sourceTree = "<group>";
+		};
+		C13364FD1CFD280700E2719C /* 账户 */ = {
+			isa = PBXGroup;
+			children = (
+				C13364FE1CFD281F00E2719C /* AccountViewController.h */,
+				C13364FF1CFD281F00E2719C /* AccountViewController.m */,
+			);
+			path = "账户";
+			sourceTree = "<group>";
+		};
+		C13365011CFD3CF100E2719C /* 设置页面 */ = {
+			isa = PBXGroup;
+			children = (
+				C13365021CFD3D0100E2719C /* SettingCell.h */,
+				C13365031CFD3D0100E2719C /* SettingCell.m */,
+			);
+			path = "设置页面";
+			sourceTree = "<group>";
+		};
 		C14DB5771CF29663007F69CA /* 我的收藏 */ = {
 			isa = PBXGroup;
 			children = (
@@ -1346,6 +1411,33 @@
 			path = "自定义TextField";
 			sourceTree = "<group>";
 		};
+		C1C049311CFBCEBF00389E7D /* 我的帖子 */ = {
+			isa = PBXGroup;
+			children = (
+				C1C049331CFBCED400389E7D /* MyPostsViewController.h */,
+				C1C049341CFBCED400389E7D /* MyPostsViewController.m */,
+			);
+			path = "我的帖子";
+			sourceTree = "<group>";
+		};
+		C1C049321CFBCEBF00389E7D /* 我收到的评论 */ = {
+			isa = PBXGroup;
+			children = (
+				C1C049361CFBCEF400389E7D /* MyReceiveCommentsViewController.h */,
+				C1C049371CFBCEF400389E7D /* MyReceiveCommentsViewController.m */,
+			);
+			path = "我收到的评论";
+			sourceTree = "<group>";
+		};
+		C1C049781CFC3D5B00389E7D /* 设置 */ = {
+			isa = PBXGroup;
+			children = (
+				C1C049791CFC3D6400389E7D /* SettingViewController.h */,
+				C1C0497A1CFC3D6400389E7D /* SettingViewController.m */,
+			);
+			path = "设置";
+			sourceTree = "<group>";
+		};
 		C1E5F7CE1CEBFFB7008A8A97 /* Information(资讯模型) */ = {
 			isa = PBXGroup;
 			children = (
@@ -1468,6 +1560,34 @@
 			path = Header;
 			sourceTree = "<group>";
 		};
+		C1ECB1771CF7DCBA0002CBF6 /* 找回密码 */ = {
+			isa = PBXGroup;
+			children = (
+				C1ECB1781CF7DCD40002CBF6 /* GetPasswordViewController.h */,
+				C1ECB1791CF7DCD40002CBF6 /* GetPasswordViewController.m */,
+				C1ECB1F51CF83F680002CBF6 /* 修改密码 */,
+			);
+			path = "找回密码";
+			sourceTree = "<group>";
+		};
+		C1ECB1F51CF83F680002CBF6 /* 修改密码 */ = {
+			isa = PBXGroup;
+			children = (
+				C1ECB1F61CF83F730002CBF6 /* ResetPasswordViewController.h */,
+				C1ECB1F71CF83F730002CBF6 /* ResetPasswordViewController.m */,
+			);
+			path = "修改密码";
+			sourceTree = "<group>";
+		};
+		C1ECB1F91CF8525A0002CBF6 /* 点击的单元格 */ = {
+			isa = PBXGroup;
+			children = (
+				C1ECB1FA1CF852640002CBF6 /* ClickView.h */,
+				C1ECB1FB1CF852640002CBF6 /* ClickView.m */,
+			);
+			path = "点击的单元格";
+			sourceTree = "<group>";
+		};
 		C1EE42BC1CCF460600623E3C /* 根视图控制器 */ = {
 			isa = PBXGroup;
 			children = (
@@ -1500,8 +1620,18 @@
 			children = (
 				C1EF663D1CF6ED0A00F61A77 /* PhoneLoginViewController.h */,
 				C1EF663E1CF6ED0A00F61A77 /* PhoneLoginViewController.m */,
+				C1ECB1771CF7DCBA0002CBF6 /* 找回密码 */,
 			);
 			path = "手机号登录";
+			sourceTree = "<group>";
+		};
+		C1EF66831CF70D6100F61A77 /* 发送按钮 */ = {
+			isa = PBXGroup;
+			children = (
+				C1EF66841CF70D6100F61A77 /* UIButton+CountDown.h */,
+				C1EF66851CF70D6100F61A77 /* UIButton+CountDown.m */,
+			);
+			path = "发送按钮";
 			sourceTree = "<group>";
 		};
 		C1EFB9FA1CEEE6AB0066C4FF /* 提示框 */ = {
@@ -1871,6 +2001,7 @@
 				C1157F6C1CDB43EF009D5801 /* SVProgressHUD.m in Sources */,
 				C1E5F7DB1CEC5503008A8A97 /* MJChiBaoZiFooter2.m in Sources */,
 				C1EFBA6B1CEF14790066C4FF /* MagicalImportFunctions.m in Sources */,
+				C13364FC1CFD21E100E2719C /* CustomTableViewCell.m in Sources */,
 				C1212E4C1CCDABFB00F76D4E /* MineController.m in Sources */,
 				C12F9E461CDA031D003CC7FC /* SDWebImageManager+MJ.m in Sources */,
 				C1E5F8161CEC5667008A8A97 /* MJRefreshNormalHeader.m in Sources */,
@@ -1879,9 +2010,12 @@
 				C12F9DD41CD9DA0D003CC7FC /* UIAlertView+AFNetworking.m in Sources */,
 				C1EFBA851CEF14790066C4FF /* MagicalRecord.m in Sources */,
 				C12F9DCC1CD9DA0D003CC7FC /* AFNetworkReachabilityManager.m in Sources */,
+				C1ECB1F81CF83F730002CBF6 /* ResetPasswordViewController.m in Sources */,
 				C1EFBA751CEF14790066C4FF /* NSManagedObject+MagicalRecord.m in Sources */,
 				C1E5F7DC1CEC5503008A8A97 /* MJChiBaoZiHeader.m in Sources */,
+				C1EF66861CF70D6100F61A77 /* UIButton+CountDown.m in Sources */,
 				C1E5F80E1CEC5667008A8A97 /* MJRefreshHeader.m in Sources */,
+				C13365041CFD3D0100E2719C /* SettingCell.m in Sources */,
 				C1E5F7D11CEBFFC2008A8A97 /* InfomationModel.m in Sources */,
 				C12F9E411CDA031D003CC7FC /* SDImageCache.m in Sources */,
 				C1FDFCEE1CD35F0A0078F3DE /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
@@ -1895,6 +2029,7 @@
 				C1EE42BF1CCF460600623E3C /* RootTabBarController.m in Sources */,
 				C16AEE351CEDC1A800173A1C /* BackgroundView.m in Sources */,
 				C1E5F81A1CEC5667008A8A97 /* UIScrollView+MJExtension.m in Sources */,
+				C1C049381CFBCEF400389E7D /* MyReceiveCommentsViewController.m in Sources */,
 				C12F9E491CDA031D003CC7FC /* UIButton+WebCache.m in Sources */,
 				C12F9D9F1CD9D8B7003CC7FC /* NSObject+MJIvar.m in Sources */,
 				C1EFBA011CEEFACD0066C4FF /* LoginViewController.m in Sources */,
@@ -1925,6 +2060,7 @@
 				C12F9DCA1CD9DA0D003CC7FC /* AFHTTPRequestOperationManager.m in Sources */,
 				C1FDFCF91CD36B180078F3DE /* PicturesCell.m in Sources */,
 				C12F9DA01CD9D8B7003CC7FC /* NSObject+MJKeyValue.m in Sources */,
+				C1C049351CFBCED400389E7D /* MyPostsViewController.m in Sources */,
 				C12F9DD31CD9DA0D003CC7FC /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				C12F9E4C1CDA031D003CC7FC /* UIImage+WebP.m in Sources */,
 				C12F9D891CD9D7BB003CC7FC /* InfoPara.m in Sources */,
@@ -1950,6 +2086,7 @@
 				C12F9E441CDA031D003CC7FC /* SDWebImageDownloader.m in Sources */,
 				C1E5F8131CEC5667008A8A97 /* MJRefreshBackNormalFooter.m in Sources */,
 				C1EFBA7E1CEF14790066C4FF /* NSPersistentStoreCoordinator+MagicalRecord.m in Sources */,
+				C13365001CFD281F00E2719C /* AccountViewController.m in Sources */,
 				C12F9DE51CD9DE4D003CC7FC /* TournamentModel.m in Sources */,
 				C12F9DD71CD9DA0D003CC7FC /* UIProgressView+AFNetworking.m in Sources */,
 				C1EF663F1CF6ED0A00F61A77 /* PhoneLoginViewController.m in Sources */,
@@ -1966,6 +2103,7 @@
 				C12F9E471CDA031D003CC7FC /* SDWebImageManager.m in Sources */,
 				C1EFBA8D1CEF14FE0066C4FF /* DataBase.m in Sources */,
 				C1E5F8111CEC5667008A8A97 /* MJRefreshAutoStateFooter.m in Sources */,
+				C1ECB17A1CF7DCD40002CBF6 /* GetPasswordViewController.m in Sources */,
 				C1EFBA781CEF14790066C4FF /* NSManagedObjectContext+MagicalObserving.m in Sources */,
 				C12F9E4B1CDA031D003CC7FC /* UIImage+MultiFormat.m in Sources */,
 				C1E5F8101CEC5667008A8A97 /* MJRefreshAutoNormalFooter.m in Sources */,
@@ -1985,6 +2123,7 @@
 				C16AED781CED9D3D00173A1C /* CommentsViewController.m in Sources */,
 				C1EFBA7F1CEF14790066C4FF /* MagicalRecord+Actions.m in Sources */,
 				C12F9D9D1CD9D8B7003CC7FC /* MJType.m in Sources */,
+				C1ECB1FC1CF852640002CBF6 /* ClickView.m in Sources */,
 				C1EFBA721CEF14790066C4FF /* NSManagedObject+MagicalAggregation.m in Sources */,
 				C1EFBA731CEF14790066C4FF /* NSManagedObject+MagicalDataImport.m in Sources */,
 				C1EFB9FD1CEEE6C20066C4FF /* LSAlertView.m in Sources */,
@@ -2004,6 +2143,7 @@
 				C14DB5921CF2A7BD007F69CA /* NewsList+CoreDataProperties.m in Sources */,
 				C1E5F80F1CEC5667008A8A97 /* MJRefreshAutoGifFooter.m in Sources */,
 				C12F9E551CDA111C003CC7FC /* PhotoModel.m in Sources */,
+				C1C0497B1CFC3D6400389E7D /* SettingViewController.m in Sources */,
 				C1EFBA741CEF14790066C4FF /* NSManagedObject+MagicalFinders.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

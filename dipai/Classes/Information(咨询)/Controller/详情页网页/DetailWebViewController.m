@@ -256,13 +256,13 @@
     [self removeAlerView];
     // 移除评论框
     [self removeFromSuperviewAction];
-    LoginViewController * loginVC = [[LoginViewController alloc] init];
-    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
-    [self presentViewController:loginNav animated:YES completion:nil];
+//    LoginViewController * loginVC = [[LoginViewController alloc] init];
+//    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+//    [self presentViewController:loginNav animated:YES completion:nil];
 }
 
 
-#pragma mark ---- BottomViewDelegate
+#pragma mark ---- BottomViewDelegate底部评论框定义的协议中的方法
 /**
  *  写评论
  */
@@ -296,7 +296,9 @@
 {
     // 灰色背景移除
     [_backView removeFromSuperview];
-    [_commentView.textView resignFirstResponder];
+    // 移除评论视图
+    [_commentView removeFromSuperview];
+//    [_commentView.textView resignFirstResponder];
 }
 
 - (void)tapAction

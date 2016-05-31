@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol PhoneLoginViewControllerDelegate <NSObject>
+
+- (void)dismiss;
+
+@end
+
 @interface PhoneLoginViewController : UIViewController
+
+@property (nonatomic, assign) id <PhoneLoginViewControllerDelegate> delegate;
 
 @end

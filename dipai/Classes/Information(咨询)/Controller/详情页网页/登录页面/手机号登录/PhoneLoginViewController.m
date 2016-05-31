@@ -9,10 +9,17 @@
 #import "PhoneLoginViewController.h"
 
 #import "LSTextField.h"
-@interface PhoneLoginViewController ()
+// 找回密码页面
+#import "GetPasswordViewController.h"
+
+#import "RootNavigationController.h"
+
+#import "DataTool.h"
+#import "SVProgressHUD.h"
+@interface PhoneLoginViewController ()<UITextFieldDelegate>
 {
-    NSTimer * _timer;
-    int allTime;
+    NSString * _previousTextFieldContent;
+    UITextRange * _previousSelection;
 }
 /**
  *  手机号
@@ -69,6 +76,7 @@
     CGFloat numW = WIDTH - 2 * numX;
     CGFloat numH = Margin100 * IPHONE6_H_SCALE;
     LSTextField * phoneNum = [[LSTextField alloc] initWithFrame:CGRectMake(numX, numY, numW, numH)];
+    phoneNum.delegate = self;
     //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"手机号";
     phoneNum.font = [UIFont systemFontOfSize:17];
@@ -90,6 +98,7 @@
     CGFloat codeW = line1W;
     CGFloat codeH = numH;
     LSTextField * code = [[LSTextField alloc] initWithFrame:CGRectMake(codeX, codeY, codeW, codeH)];
+    code.secureTextEntry = YES;
     code.font = [UIFont systemFontOfSize:17];
     code.myPlaceholder = @"密码";
     [self.view addSubview:code];
@@ -129,6 +138,7 @@
     CGSize getSize = [getPassword.titleLabel.text sizeWithAttributes:getDic];
     getPassword.frame = (CGRect){{getX, getY}, getSize};
 //    getPassword.backgroundColor = [UIColor redColor];
+    [getPassword addTarget:self action:@selector(getPasswordAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:getPassword];
     
 }
@@ -142,6 +152,11 @@
     // 手机号
     if (_phoneNum.text.length) {
         _phoneNum.hidePlaceHolder = YES;
+        if (_phoneNum.text.length > 11) {   // 手机号码最长为11位
+            [_phoneNum setText:_previousTextFieldContent];
+            _phoneNum.selectedTextRange = _previousSelection;
+        }
+
     }else
     {
         _phoneNum.hidePlaceHolder = NO;
@@ -168,7 +183,42 @@
 
 #pragma mark --- 登录事件
 - (void)loginAction{
-    NSLog(@"登录....");
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    /*
+     phone，password
+     */
+    dic[@"phone"] = _phoneNum.text;
+    dic[@"password"] = _code.text;
+    [DataTool postWithStr:LoginURL parameters:dic success:^(id responseObject) {
+        NSString * content = [responseObject objectForKey:@"content"];
+        if ([content isEqualToString:@"密码错误"]) {
+            [SVProgressHUD showErrorWithStatus:@"密码错误"];
+        }
+        if ([content isEqualToString:@"登录成功"]) {
+            [SVProgressHUD showSuccessWithStatus:@"登录成功"];
+            
+            NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+            for (NSHTTPCookie * cookie in cookies) {
+                NSString * name = [cookie name];
+                NSLog(@"---name---%@", name);
+                NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+                [defaults setObject:name forKey:Cookie];
+                [defaults synchronize];
+            }
+            //存储归档后的cookie
+            
+            if ([self.delegate respondsToSelector:@selector(dismiss)]) {
+                [self.delegate dismiss];
+            } else{
+                NSLog(@"PhoneLoginViewController的代理没有响应");
+            }
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
+        NSLog(@"%@", content);
+    } failure:^(NSError * error) {
+        
+        NSLog(@"登录错误信息：%@", error);
+    }];
 }
 
 #pragma mark --- 隐藏键盘
@@ -176,21 +226,36 @@
     [_phoneNum resignFirstResponder];
     [_code resignFirstResponder];
 
-    
 }
+
+#pragma mark --- 找回密码
+- (void)getPasswordAction{
+    GetPasswordViewController * getPasswordVC = [[GetPasswordViewController alloc] init];
+    
+    [self.navigationController pushViewController:getPasswordVC animated:YES];
+}
+
+#pragma mark --- UITextFieldDelegate
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    
+    _previousSelection = textField.selectedTextRange;
+    _previousTextFieldContent = textField.text;
+    
+    // 第一个数字不能输入大于1的数字
+    //    if (range.location == 0) {
+    //        if (string.integerValue > 1) {
+    //            return NO;
+    //        }
+    //    }
+    
+    return YES;
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

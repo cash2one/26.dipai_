@@ -31,9 +31,11 @@
 
 + (void)POST:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     // 创建请求管理者
+    
     AFHTTPRequestOperationManager *mgr = [AFHTTPRequestOperationManager manager];
-//    mgr.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
+    mgr.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
     [mgr POST:URLString parameters:parameters success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        
         if (success) {
             success(responseObject);
         }

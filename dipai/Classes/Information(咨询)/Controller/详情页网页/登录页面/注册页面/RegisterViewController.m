@@ -11,12 +11,16 @@
 #import "LSTextField.h"
 
 #import "DataTool.h"
+// 获取验证码的按钮
+#import "UIButton+CountDown.h"
 
-#import "AFNetworking.h"
-@interface RegisterViewController ()
+#import "SVProgressHUD.h"
+@interface RegisterViewController ()<UITextFieldDelegate>
 {
      NSTimer * _timer;
     int allTime;
+    NSString * _previousTextFieldContent;
+    UITextRange * _previousSelection;
 }
 /**
  *  手机号
@@ -99,6 +103,7 @@
     CGFloat numW = WIDTH - 2 * numX;
     CGFloat numH = Margin100 * IPHONE6_H_SCALE;
     LSTextField * phoneNum = [[LSTextField alloc] initWithFrame:CGRectMake(numX, numY, numW, numH)];
+    phoneNum.delegate = self;
 //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"手机号";
     phoneNum.font = [UIFont systemFontOfSize:17];
@@ -120,6 +125,7 @@
     CGFloat codeW = line1W;
     CGFloat codeH = numH;
     LSTextField * code = [[LSTextField alloc] initWithFrame:CGRectMake(codeX, codeY, codeW, codeH)];
+    code.delegate = self;
     code.font = [UIFont systemFontOfSize:17];
     code.myPlaceholder = @"验证码";
     [self.view addSubview:code];
@@ -139,38 +145,24 @@
     // 获取验证码按钮
     UIButton * getCodeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     getCodeBtn.titleLabel.font = [UIFont systemFontOfSize:15];
-    getCodeBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    getCodeBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
 //    getCodeBtn.backgroundColor = [UIColor blackColor];
     [getCodeBtn setTitle:@"获取验证码" forState:UIControlStateNormal];
     [getCodeBtn setTitleColor:[UIColor colorWithRed:228 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1] forState:UIControlStateNormal];
-    CGFloat getCodeX = CGRectGetMaxX(line.frame) + Margin20 * IPHONE6_W_SCALE;
-    CGFloat getCodeY = 35 / 2 * IPHONE6_H_SCALE;
-    NSMutableDictionary * getDic = [NSMutableDictionary dictionary];
-    getDic[NSFontAttributeName] = [UIFont systemFontOfSize:15];
-    CGSize getCodeSize = [getCodeBtn.titleLabel.text sizeWithAttributes:getDic];
-    getCodeBtn.frame = (CGRect){{getCodeX, getCodeY}, getCodeSize};
+    CGFloat getCodeX = CGRectGetMaxX(line.frame);
+    CGFloat getCodeY = 0;
+    CGFloat getCodeW = codeW - CGRectGetMaxX(line.frame);
+    CGFloat getCodeH = codeH;
+    getCodeBtn.frame = CGRectMake(getCodeX, getCodeY, getCodeW, getCodeH);
 //    getCodeBtn.backgroundColor = [UIColor blackColor];
     [getCodeBtn addTarget:self action:@selector(getCodeAction) forControlEvents:UIControlEventTouchUpInside];
     [code addSubview:getCodeBtn];
     _getCodeBtn = getCodeBtn;
     
-    UIButton * secondBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [secondBtn setTitle:@"60s" forState:UIControlStateNormal];
-    secondBtn.titleLabel.font = [UIFont systemFontOfSize:15];
-    [secondBtn setTitleColor:Color153 forState:UIControlStateNormal];
-    CGFloat secondX = CGRectGetMaxX(line.frame) + 68/2*IPHONE6_W_SCALE;
-    CGFloat secondY = 36 / 2 * IPHONE6_H_SCALE;
-    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-    dic[NSFontAttributeName] = [UIFont systemFontOfSize:15];
-    CGSize secondSize = [secondBtn.titleLabel.text sizeWithAttributes:dic];
-//    secondBtn.backgroundColor = [UIColor redColor];
-    secondBtn.frame = (CGRect){{secondX, secondY}, secondSize};
-    [_code addSubview:secondBtn];
-    _secondBtn = secondBtn;
-    _secondBtn.hidden = YES;
-    
     // 密码
     LSTextField * password = [[LSTextField alloc] init];
+    password.delegate = self;
+    password.secureTextEntry = YES;
     CGFloat passwordX = codeX;
     CGFloat passwordY = CGRectGetMaxY(code.frame) + Margin30 * IPHONE6_H_SCALE;
     CGFloat passwordW = codeW;
@@ -186,15 +178,17 @@
     lengthLbl.text = @"密码长度为6-15位";
     lengthLbl.textColor = Color183;
     CGFloat lengthX = Margin169 * IPHONE6_W_SCALE;
-    CGFloat lengthY = Margin39 * IPHONE6_H_SCALE;
+    CGFloat lengthY = 0;
     CGFloat lengthW = 150;
-    CGFloat lengthH = 11;
+    CGFloat lengthH = passwordH;
     lengthLbl.frame = CGRectMake(lengthX, lengthY, lengthW, lengthH);
+//    lengthLbl.backgroundColor = [UIColor redColor];
     [password addSubview:lengthLbl];
     _lengthLbl = lengthLbl;
     
     // 昵称
     LSTextField * name = [[LSTextField alloc] init];
+    name.delegate = self;
     CGFloat nameX = passwordX;
     CGFloat nameY = CGRectGetMaxY(password.frame);
     CGFloat nameW = passwordW;
@@ -225,31 +219,17 @@
 
 #pragma mark --- 获取验证码的事件
 - (void)getCodeAction{
-    NSLog(@"获取验证码");
-    _getCodeBtn.hidden = YES;
-    _secondBtn.hidden = NO;
-    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(wait) userInfo:nil repeats:YES];
-    // 立即启动
-    [timer fire];
-    _timer = timer;
-//    [NSTimer scheduledTimerWithTimeInterval:61 target:self selector:@selector(changeColor) userInfo:nil repeats:nil];
-}
+    /*
+     *    倒计时按钮
+     *    @param timeLine  倒计时总时间
+     *    @param title     还没倒计时的title
+     *    @param subTitle  倒计时的子名字 如：时、分
+     *    @param mColor    还没倒计时的颜色
+     *    @param color     倒计时的颜色
+     */
+    [_getCodeBtn setTitleColor:Color153 forState:UIControlStateNormal];
+    [_getCodeBtn startWithTime:10 title:@"重新发送" countDownTitle:@"s" mainColor:[UIColor whiteColor] countColor:[UIColor whiteColor]];
 
-- (void)wait
-{
-    [_secondBtn setTitle:[NSString stringWithFormat:@"%ds", allTime --] forState:0];
-    CGFloat secondX = CGRectGetMaxX(_line.frame) + 68/2*IPHONE6_W_SCALE;
-    CGFloat secondY = 36 / 2 * IPHONE6_H_SCALE;
-    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-    dic[NSFontAttributeName] = [UIFont systemFontOfSize:15];
-    CGSize secondSize = [_secondBtn.titleLabel.text sizeWithAttributes:dic];
-    _secondBtn.frame = (CGRect){{secondX, secondY}, secondSize};
-    if (allTime < 0) {
-        [_timer invalidate];
-        _getCodeBtn.hidden = NO;
-        _secondBtn.hidden = YES;
-        [_secondBtn setTitle:@"60s" forState:UIControlStateNormal];
-    }
 }
 
 
@@ -259,6 +239,10 @@
     // 手机号
     if (_phoneNum.text.length) {
         _phoneNum.hidePlaceHolder = YES;
+        if (_phoneNum.text.length > 11) {   // 手机号码最长为11位
+            [_phoneNum setText:_previousTextFieldContent];
+            _phoneNum.selectedTextRange = _previousSelection;
+        }
     }else
     {
         _phoneNum.hidePlaceHolder = NO;
@@ -274,6 +258,10 @@
     if (_password.text.length) {
         _password.hidePlaceHolder = YES;
         _lengthLbl.hidden = YES;
+        if (_password.text.length > 15) {
+            [_password setText:_previousTextFieldContent];
+            _password.selectedTextRange = _previousSelection;
+        }
     } else
     {
         _password.hidePlaceHolder = NO;
@@ -282,12 +270,16 @@
     // 昵称
     if (_name.text.length) {
         _name.hidePlaceHolder = YES;
+        if (_name.text.length > 14) {
+            [_name setText:_previousTextFieldContent];
+            _name.selectedTextRange = _previousSelection;
+        }
     } else
     {
         _name.hidePlaceHolder = NO;
     }
     
-    if (_phoneNum.text.length && _code.text.length && _password.text.length && _name.text.length) {
+    if (_phoneNum.text.length == 11 && _code.text.length && _password.text.length > 6 && _name.text.length) {
         [_registerBtn setImage:[UIImage imageNamed:@"wanchengzhuce_xuanzhong"] forState:UIControlStateNormal];
         _registerBtn.userInteractionEnabled = YES;
         [_registerBtn addTarget:self action:@selector(registerAction) forControlEvents:UIControlEventTouchUpInside];
@@ -300,20 +292,56 @@
 
 #pragma mark --- 注册事件
 - (void)registerAction{
-    NSLog(@"进行注册");
-    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-    dic[@"phone"] = @"18730602439";
-    dic[@"username"] = @"liangsen";
-    dic[@"password"] = @"hahh";
-//    http://192.168.1.102:8080/app/register?&phone=18730602439&username=liangsen&password=hahh
-    [DataTool postWithStr:RegisterURL parameters:dic success:^(id responsObject) {
-        
-        NSLog(@"注册成功返回的数据%@", responsObject);
-        
-    } failure:^(NSError * error) {
-        
-        NSLog(@"注册的错误信息%@", error);
-    }];
+    
+    BOOL boo = [self verifyMobile:_phoneNum.text];
+    if (boo) {
+        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+        dic[@"phone"] = _phoneNum.text;
+        dic[@"username"] = _name.text;
+        dic[@"password"] = _password.text;
+        //    http://10.0.0.14:8080/app/register?&phone=18730602439&username=liangsen&password=hahh
+        [DataTool postWithStr:RegisterURL parameters:dic success:^(id responsObject) {
+            
+            NSLog(@"注册成功返回的数据%@", responsObject);
+            NSString * content = [responsObject objectForKey:@"content"];
+            if ([content isEqualToString:@"手机号已存在"]) {
+                [SVProgressHUD showErrorWithStatus:@"此帐号已注册"];
+            } else{
+                [SVProgressHUD showSuccessWithStatus:@"注册成功"];
+                [NSThread sleepForTimeInterval:1.3];
+                [self.navigationController popViewControllerAnimated:YES];
+            }
+            
+            //        NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+            //        int i = 0;
+            //        for (NSHTTPCookie *cookie in [cookieJar cookies]) {
+            //
+            //            NSString * name = [cookie name];
+            //            NSString * value = [cookie value];
+            //            NSLog(@"name:%@===value:%@", name, value);
+            //            i ++;
+            //        }
+            
+        } failure:^(NSError * error) {
+            
+            NSLog(@"注册的错误信息%@", error);
+        }];
+    } else{
+        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"手机号不合法" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }];
+        [alertController addAction:OK];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+    
+}
+#pragma mark --- 验证手机号是否合法
+- (BOOL)verifyMobile:(NSString *)mobilePhone{
+    NSString *express = @"^0{0,1}(13[0-9]|15[0-9]|18[0-9]|14[0-9])[0-9]{8}$";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF matches %@", express];
+    BOOL boo = [pred evaluateWithObject:mobilePhone];
+    return boo;
 }
 
 #pragma mark --- 隐藏键盘
@@ -323,6 +351,22 @@
     [_password resignFirstResponder];
     [_name resignFirstResponder];
     
+}
+
+#pragma mark --- UITextFieldDelegate
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+
+    _previousSelection = textField.selectedTextRange;
+    _previousTextFieldContent = textField.text;
+    
+    // 第一个数字不能输入大于1的数字
+//    if (range.location == 0) {
+//        if (string.integerValue > 1) {
+//            return NO;
+//        }
+//    }
+    
+    return YES;
 }
 
 - (void)didReceiveMemoryWarning {

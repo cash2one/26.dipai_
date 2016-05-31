@@ -11,7 +11,7 @@
 #import "RegisterViewController.h"
 // 手机号登录页面
 #import "PhoneLoginViewController.h"
-@interface LoginViewController ()
+@interface LoginViewController ()<PhoneLoginViewControllerDelegate>
 
 @end
 
@@ -74,12 +74,34 @@
     [registerBtn setImage:[UIImage imageNamed:@"lijizhuce"] forState:UIControlStateNormal];
     [registerBtn addTarget:self action:@selector(registerAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:registerBtn];
+    
+    // 使用微信登录分隔线
+    UIImageView * separateLine = [[UIImageView alloc] init];
+    CGFloat lineX = 68 / 2 * IPHONE6_W_SCALE;
+    CGFloat lineY = CGRectGetMaxY(registerBtn.frame) + 226 / 2 * IPHONE6_W_SCALE;
+    CGFloat lineW = WIDTH - 2 * lineX;
+    CGFloat lineH = 13 * IPHONE6_H_SCALE;
+    separateLine.frame = CGRectMake(lineX, lineY, lineW, lineH);
+    separateLine.image = [UIImage imageNamed:@"shiyongweixindenglu"];
+    [self.view addSubview:separateLine];
+    
+    // 微信登录按钮
+    UIButton * weixinBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    CGFloat weixinX = 312 / 2 * IPHONE6_W_SCALE;
+    CGFloat weixinY = CGRectGetMaxY(separateLine.frame) + Margin40 * IPHONE6_H_SCALE;
+    CGFloat weixinW = 126 / 2 * IPHONE6_W_SCALE;
+    CGFloat weixinH = weixinW;
+    weixinBtn.frame = CGRectMake(weixinX, weixinY, weixinW, weixinH);
+    [weixinBtn setImage:[UIImage imageNamed:@"icon_weixin"] forState:UIControlStateNormal];
+    [weixinBtn addTarget:self action:@selector(weixinLogin) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:weixinBtn];
 }
 
 #pragma mark --- 手机号登录
 - (void)phoneLoginAction{
     NSLog(@"手机号登录");
     PhoneLoginViewController * phoneLoginVC = [[PhoneLoginViewController alloc] init];
+    phoneLoginVC.delegate = self;
     [self.navigationController pushViewController:phoneLoginVC animated:YES];
 }
 
@@ -90,8 +112,17 @@
     [self.navigationController pushViewController:registerVC animated:YES];
 }
 
+#pragma mark --- 微信登录
+- (void)weixinLogin{
+    NSLog(@"微信登录...");
+}
+
 - (void)returnBack
 {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+#pragma mark ---- PhoneLoginViewControllerDelegate
+- (void)dismiss{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -105,14 +136,5 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

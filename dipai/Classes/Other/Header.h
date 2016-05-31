@@ -11,10 +11,13 @@
 // 接口
 #define InformationURL @"http://10.0.0.14:8080/app/index/0/0/0"
 // 注册接口
-#define RegisterURL @"http://192.168.1.102:8080/app/register"
+#define RegisterURL @"http://10.0.0.14:8080/app/register"
+// 登录接口
+#define LoginURL @"http://10.0.0.14:8080/app/login"
 
 #define UserName @"username"
 #define PassWord @"password"
+#define Cookie @"cookie"
 
 #define IPHONE6_W_SCALE [UIScreen mainScreen].bounds.size.width / 375
 #define IPHONE6_H_SCALE [UIScreen mainScreen].bounds.size.height / 667
@@ -44,12 +47,15 @@
 #define ImageViewTag 200
 
 // 字体大小 运用了字体的适配
+#define Font8 [UIFont systemFontOfSize:8*IPHONE6_W_SCALE]
 #define Font9 [UIFont systemFontOfSize:9*IPHONE6_W_SCALE]
 #define Font10 [UIFont systemFontOfSize:10*IPHONE6_W_SCALE]
 #define Font11 [UIFont systemFontOfSize:11*IPHONE6_W_SCALE]
 #define Font13 [UIFont systemFontOfSize:13*IPHONE6_W_SCALE]
 #define Font14 [UIFont systemFontOfSize:14*IPHONE6_W_SCALE]
+#define Font15 [UIFont systemFontOfSize:15*IPHONE6_W_SCALE]
 #define Font16 [UIFont systemFontOfSize:16*IPHONE6_W_SCALE]
+#define Font17 [UIFont systemFontOfSize:17*IPHONE6_W_SCALE]
 
 // 颜色
 #define ColorBlue [UIColor colorWithRed:0 / 255.f green:122 / 255.f blue:255 / 255.f alpha:0.6]

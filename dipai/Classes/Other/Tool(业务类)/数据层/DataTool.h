@@ -20,4 +20,7 @@
 
 // 用户注册
 + (void)postWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure;
+
+// 登录界面获取数据
++ (void)getDataInLoginPageWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 @end
