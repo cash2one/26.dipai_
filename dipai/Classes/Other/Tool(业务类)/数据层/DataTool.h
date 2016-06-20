@@ -58,5 +58,10 @@
 
 // 获取俱乐部新闻页的数据
 + (void)getClubNewsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+/***赛事***/
+// 获取赛事列表
++ (void)getMatchDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取结束的赛事列表
++ (void)getEndMatchDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
 @end

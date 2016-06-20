@@ -33,6 +33,10 @@
 #import "WSOPModel.h"
 // 俱乐部新闻页模型
 #import "NewsModel.h"
+// 赛事模型
+#import "MatchModel.h"
+// 结束的赛事模型
+#import "EndMatchModel.h"
 
 // 网页数据模型
 #import "WebDetailModel.h"
@@ -423,6 +427,42 @@
         NSArray * newsModelArr = [NewsModel objectArrayWithKeyValuesArray:responseObject];
         if (success) {
             success(newsModelArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取赛事列表
++ (void)getMatchDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 字典数组转模型数组
+        NSArray * matchModelArr = [MatchModel objectArrayWithKeyValuesArray:responseObject];
+        
+        
+        if (success) {
+            success(matchModelArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取结束赛事列表
++ (void)getEndMatchDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 字典数组转模型数组
+        NSArray * matchModelArr = [EndMatchModel objectArrayWithKeyValuesArray:responseObject];
+        if (success) {
+            success(matchModelArr);
         }
     } failure:^(NSError *error) {
         

@@ -45,6 +45,9 @@
 // 获取城市的所有俱乐部的接口
 #define ClubsInCity @"http://dipaiapp.replays.net/app/club/list/8"
 //#define ClubsInCity @"http://10.0.0.14:8080/app/club/list/8"
+/***赛事***/
+// 赛事列表
+#define MatchURL @"http://dipaiapp.replays.net/app/club/list/5"
 
 
 //#define UserName @"username"

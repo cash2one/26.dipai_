@@ -52,6 +52,8 @@
 #import "MoreVideosVC.h"
 // 专辑页面
 #import "AlbumVC.h"
+// 赛事页面
+#import "MatchVC.h"
 @interface DiscoverController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate, HotVideoCellDelegate,TwoBtnCellDelegate, WSOPTableViewCellDelegate>
 /**
  *  用来装热门视频中的视频模型
@@ -333,14 +335,16 @@
 #pragma mark ---  点击模块上的按钮跳到某一页
 - (void)turnPageToSomePage:(UIButton *)btn{
     ClubViewController * clubVC = [[ClubViewController alloc] init];
+     MatchVC * matchVC = [[MatchVC alloc] init];
     switch (btn.tag) {
         case 1:
             clubVC.clubURL = _navigationModel.club;
             clubVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:clubVC animated:YES];
             break;
-        case 2:
-            NSLog(@"2");
+        case 2:            // 跳转到赛事页面
+            matchVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:matchVC animated:YES];
             break;
         case 3:
             NSLog(@"3");

@@ -30,6 +30,12 @@
 		C1212E4C1CCDABFB00F76D4E /* MineController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E4B1CCDABFB00F76D4E /* MineController.m */; };
 		C1212E4F1CCDADC100F76D4E /* UIImage+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E4E1CCDADC100F76D4E /* UIImage+Image.m */; };
 		C125A3EC1D17C91D0092AEA9 /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A3EB1D17C91D0092AEA9 /* UserModel.m */; };
+		C125A3F21D17D80D0092AEA9 /* MatchVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A3F11D17D80D0092AEA9 /* MatchVC.m */; };
+		C125A4001D17EE220092AEA9 /* MatchModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A3FF1D17EE220092AEA9 /* MatchModel.m */; };
+		C125A4041D17EEA40092AEA9 /* EndMatchModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A4031D17EEA40092AEA9 /* EndMatchModel.m */; };
+		C125A4091D17F6ED0092AEA9 /* EndMatchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A4081D17F6ED0092AEA9 /* EndMatchCell.m */; };
+		C125A40C1D17F6F90092AEA9 /* MatchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A40B1D17F6F90092AEA9 /* MatchCell.m */; };
+		C125A4101D180C560092AEA9 /* MatchDetailVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A40F1D180C560092AEA9 /* MatchDetailVC.m */; };
 		C126E4EC1CD83F9A00E49715 /* DetailWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C126E4EB1CD83F9A00E49715 /* DetailWebViewController.m */; };
 		C12F9D681CD9CDF8003CC7FC /* HttpTool.m in Sources */ = {isa = PBXBuildFile; fileRef = C12F9D671CD9CDF8003CC7FC /* HttpTool.m */; };
 		C12F9D6B1CD9CE5C003CC7FC /* DataTool.m in Sources */ = {isa = PBXBuildFile; fileRef = C12F9D6A1CD9CE5C003CC7FC /* DataTool.m */; };
@@ -335,6 +341,18 @@
 		C1212E501CCDAE4200F76D4E /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		C125A3EA1D17C91D0092AEA9 /* UserModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserModel.h; sourceTree = "<group>"; };
 		C125A3EB1D17C91D0092AEA9 /* UserModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserModel.m; sourceTree = "<group>"; };
+		C125A3F01D17D80D0092AEA9 /* MatchVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchVC.h; sourceTree = "<group>"; };
+		C125A3F11D17D80D0092AEA9 /* MatchVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MatchVC.m; sourceTree = "<group>"; };
+		C125A3FE1D17EE220092AEA9 /* MatchModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchModel.h; sourceTree = "<group>"; };
+		C125A3FF1D17EE220092AEA9 /* MatchModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MatchModel.m; sourceTree = "<group>"; };
+		C125A4021D17EEA40092AEA9 /* EndMatchModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EndMatchModel.h; sourceTree = "<group>"; };
+		C125A4031D17EEA40092AEA9 /* EndMatchModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EndMatchModel.m; sourceTree = "<group>"; };
+		C125A4071D17F6ED0092AEA9 /* EndMatchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EndMatchCell.h; sourceTree = "<group>"; };
+		C125A4081D17F6ED0092AEA9 /* EndMatchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EndMatchCell.m; sourceTree = "<group>"; };
+		C125A40A1D17F6F90092AEA9 /* MatchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchCell.h; sourceTree = "<group>"; };
+		C125A40B1D17F6F90092AEA9 /* MatchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MatchCell.m; sourceTree = "<group>"; };
+		C125A40E1D180C560092AEA9 /* MatchDetailVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchDetailVC.h; sourceTree = "<group>"; };
+		C125A40F1D180C560092AEA9 /* MatchDetailVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MatchDetailVC.m; sourceTree = "<group>"; };
 		C126E4EA1CD83F9A00E49715 /* DetailWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailWebViewController.h; sourceTree = "<group>"; };
 		C126E4EB1CD83F9A00E49715 /* DetailWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailWebViewController.m; sourceTree = "<group>"; };
 		C12F9D661CD9CDF8003CC7FC /* HttpTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpTool.h; sourceTree = "<group>"; };
@@ -1060,6 +1078,7 @@
 			children = (
 				C1212E441CCDABDE00F76D4E /* DiscoverController.h */,
 				C1212E451CCDABDE00F76D4E /* DiscoverController.m */,
+				C125A3EF1D17D7FF0092AEA9 /* MatchVC(赛事页面) */,
 				C1DC61411D0E5CB600217A38 /* AlbumVC(专辑页面) */,
 				C1DC61391D0E5AF500217A38 /* MoreVideosVC(更多内容) */,
 				C1F76CE41D0BB6C600100E0A /* ClubController(俱乐部页面) */,
@@ -1288,6 +1307,81 @@
 				C125A3EB1D17C91D0092AEA9 /* UserModel.m */,
 			);
 			path = "UserModel(用户模型)";
+			sourceTree = "<group>";
+		};
+		C125A3EF1D17D7FF0092AEA9 /* MatchVC(赛事页面) */ = {
+			isa = PBXGroup;
+			children = (
+				C125A3F01D17D80D0092AEA9 /* MatchVC.h */,
+				C125A3F11D17D80D0092AEA9 /* MatchVC.m */,
+				C125A40D1D180C420092AEA9 /* MatchDetailVC(赛事详情页面) */,
+				C125A3FC1D17EE120092AEA9 /* Mode */,
+				C125A3F41D17ED590092AEA9 /* View */,
+			);
+			path = "MatchVC(赛事页面)";
+			sourceTree = "<group>";
+		};
+		C125A3F41D17ED590092AEA9 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				C125A4051D17F6DF0092AEA9 /* EndMatchCell(结束赛事单元格) */,
+				C125A4061D17F6DF0092AEA9 /* MatchCell(赛事单元格) */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		C125A3FC1D17EE120092AEA9 /* Mode */ = {
+			isa = PBXGroup;
+			children = (
+				C125A4011D17EE980092AEA9 /* EndMatchModel(已结束赛事模型) */,
+				C125A3FD1D17EE120092AEA9 /* MatchModel(进行中和要开始赛事的模型) */,
+			);
+			path = Mode;
+			sourceTree = "<group>";
+		};
+		C125A3FD1D17EE120092AEA9 /* MatchModel(进行中和要开始赛事的模型) */ = {
+			isa = PBXGroup;
+			children = (
+				C125A3FE1D17EE220092AEA9 /* MatchModel.h */,
+				C125A3FF1D17EE220092AEA9 /* MatchModel.m */,
+			);
+			path = "MatchModel(进行中和要开始赛事的模型)";
+			sourceTree = "<group>";
+		};
+		C125A4011D17EE980092AEA9 /* EndMatchModel(已结束赛事模型) */ = {
+			isa = PBXGroup;
+			children = (
+				C125A4021D17EEA40092AEA9 /* EndMatchModel.h */,
+				C125A4031D17EEA40092AEA9 /* EndMatchModel.m */,
+			);
+			path = "EndMatchModel(已结束赛事模型)";
+			sourceTree = "<group>";
+		};
+		C125A4051D17F6DF0092AEA9 /* EndMatchCell(结束赛事单元格) */ = {
+			isa = PBXGroup;
+			children = (
+				C125A4071D17F6ED0092AEA9 /* EndMatchCell.h */,
+				C125A4081D17F6ED0092AEA9 /* EndMatchCell.m */,
+			);
+			path = "EndMatchCell(结束赛事单元格)";
+			sourceTree = "<group>";
+		};
+		C125A4061D17F6DF0092AEA9 /* MatchCell(赛事单元格) */ = {
+			isa = PBXGroup;
+			children = (
+				C125A40A1D17F6F90092AEA9 /* MatchCell.h */,
+				C125A40B1D17F6F90092AEA9 /* MatchCell.m */,
+			);
+			path = "MatchCell(赛事单元格)";
+			sourceTree = "<group>";
+		};
+		C125A40D1D180C420092AEA9 /* MatchDetailVC(赛事详情页面) */ = {
+			isa = PBXGroup;
+			children = (
+				C125A40E1D180C560092AEA9 /* MatchDetailVC.h */,
+				C125A40F1D180C560092AEA9 /* MatchDetailVC.m */,
+			);
+			path = "MatchDetailVC(赛事详情页面)";
 			sourceTree = "<group>";
 		};
 		C126E4E91CD83F7700E49715 /* 详情页网页 */ = {
@@ -2806,6 +2900,7 @@
 				C12F9DCC1CD9DA0D003CC7FC /* AFNetworkReachabilityManager.m in Sources */,
 				C1ECB1F81CF83F730002CBF6 /* ResetPasswordViewController.m in Sources */,
 				C1EFBA751CEF14790066C4FF /* NSManagedObject+MagicalRecord.m in Sources */,
+				C125A4001D17EE220092AEA9 /* MatchModel.m in Sources */,
 				C1E5F7DC1CEC5503008A8A97 /* MJChiBaoZiHeader.m in Sources */,
 				C1EF66861CF70D6100F61A77 /* UIButton+CountDown.m in Sources */,
 				C1E5F80E1CEC5667008A8A97 /* MJRefreshHeader.m in Sources */,
@@ -2814,6 +2909,7 @@
 				C1E5F7D11CEBFFC2008A8A97 /* InfomationModel.m in Sources */,
 				C1C6AE5A1D13996900DEA59E /* WSOPModel.m in Sources */,
 				C12F9E411CDA031D003CC7FC /* SDImageCache.m in Sources */,
+				C125A40C1D17F6F90092AEA9 /* MatchCell.m in Sources */,
 				C1FDFCEE1CD35F0A0078F3DE /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
 				C12F9DDF1CD9DE27003CC7FC /* bannerModel.m in Sources */,
 				C1212E3C1CCDAA6200F76D4E /* AppDelegate.m in Sources */,
@@ -2868,6 +2964,7 @@
 				C19C7E7A1CFEB771008F3ECF /* TCPlayerBaseControlView.m in Sources */,
 				C16AEE2E1CEDBE6300173A1C /* LSTextView.m in Sources */,
 				C12F9DCA1CD9DA0D003CC7FC /* AFHTTPRequestOperationManager.m in Sources */,
+				C125A4041D17EEA40092AEA9 /* EndMatchModel.m in Sources */,
 				C1C87AF91D003F75004166CC /* AlbumViewController.m in Sources */,
 				C1FDFCF91CD36B180078F3DE /* PicturesCell.m in Sources */,
 				C12F9DA01CD9D8B7003CC7FC /* NSObject+MJKeyValue.m in Sources */,
@@ -2878,6 +2975,7 @@
 				C15759861D12A492002B7670 /* ClubModel.m in Sources */,
 				C1D601761D06952D00E986BD /* ReplyView.m in Sources */,
 				C12F9E4C1CDA031D003CC7FC /* UIImage+WebP.m in Sources */,
+				C125A3F21D17D80D0092AEA9 /* MatchVC.m in Sources */,
 				C15759821D12A307002B7670 /* ClubsInCityModel.m in Sources */,
 				C12F9D891CD9D7BB003CC7FC /* InfoPara.m in Sources */,
 				C15759791D127FFF002B7670 /* CellInClubInfo.m in Sources */,
@@ -2935,6 +3033,7 @@
 				C1039E831D080E720084A1A6 /* FindBannerModel.m in Sources */,
 				C1EFBA781CEF14790066C4FF /* NSManagedObjectContext+MagicalObserving.m in Sources */,
 				C12F9E4B1CDA031D003CC7FC /* UIImage+MultiFormat.m in Sources */,
+				C125A4101D180C560092AEA9 /* MatchDetailVC.m in Sources */,
 				C1E5F8101CEC5667008A8A97 /* MJRefreshAutoNormalFooter.m in Sources */,
 				C1EFBA7A1CEF14790066C4FF /* NSManagedObjectContext+MagicalSaves.m in Sources */,
 				C1DC61401D0E5B5A00217A38 /* BaseViewController.m in Sources */,
@@ -2978,6 +3077,7 @@
 				C1EE42C31CCF463600623E3C /* RootNavigationController.m in Sources */,
 				C1212E3D1CCDAA6200F76D4E /* ViewController.m in Sources */,
 				C1EFBA6C1CEF14790066C4FF /* NSAttributeDescription+MagicalDataImport.m in Sources */,
+				C125A4091D17F6ED0092AEA9 /* EndMatchCell.m in Sources */,
 				C1EFBA7D1CEF14790066C4FF /* NSPersistentStore+MagicalRecord.m in Sources */,
 				C126E4EC1CD83F9A00E49715 /* DetailWebViewController.m in Sources */,
 				C1DC613C1D0E5B1A00217A38 /* MoreVideosVC.m in Sources */,
