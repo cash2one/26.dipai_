@@ -51,6 +51,7 @@
 {
     // 提示信息
     UILabel * messageLbl = [[UILabel alloc] init];
+    messageLbl.font = Font17;
     messageLbl.text = @"请先登录后再发表";
     messageLbl.textAlignment = NSTextAlignmentCenter;
     [messageLbl sizeToFit];
@@ -58,6 +59,7 @@
     _messageLbl = messageLbl;
     // 取消按钮
     UIButton * cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    cancelBtn.titleLabel.font = Font17;
     [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
     [cancelBtn addTarget:self action:@selector(cancelAction) forControlEvents:UIControlEventTouchUpInside];
     [cancelBtn setTitleColor:ColorBlue forState:UIControlStateNormal];
@@ -65,6 +67,7 @@
     _cancelBtn = cancelBtn;
     // 确定按钮
     UIButton * sureBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    sureBtn.titleLabel.font = Font17;
     [sureBtn addTarget:self action:@selector(sureAction) forControlEvents:UIControlEventTouchUpInside];
     [sureBtn setTitleColor:ColorBlue forState:UIControlStateNormal];
     [sureBtn setTitle:@"去登录" forState:UIControlStateNormal];

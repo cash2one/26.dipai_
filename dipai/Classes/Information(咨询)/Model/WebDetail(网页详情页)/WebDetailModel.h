@@ -11,12 +11,13 @@
 #import "MJExtension.h"
 @interface WebDetailModel : NSObject<MJKeyValue>
 /*
- "id":5060,
- "title":"测试添加图集标题",
- "description":"测试图集描述",
- "comment":12,
- "picname":"/uploads/picname/2016/01/1453700760Iwh.png",
- "wapurl":"192.168.1.111:8080/app/art/view/html/4/5060"
+ "id":"5099",
+ "title":"资讯资讯资讯资讯资讯资讯",
+ "description":"分享描述分享描述分享描述分享描述分享描述分享描述",
+ "commentNumber":"0",
+ "picname":"http://10.0.0.14:8081",
+ "wapurl":"http://10.0.0.14:8080/app/art/view/html/2/5099",
+ "is_collection":"0"
  */
 /**
 *  ID 文章的唯一标识
@@ -46,6 +47,9 @@
  *  文章类型
  */
 @property (nonatomic, copy) NSString * type;
-
+/**
+ *  判读是否收藏
+ */
+@property (nonatomic, copy) NSString * is_collection;
 
 @end

@@ -29,6 +29,8 @@
 #import "BackgroundView.h"
 
 #import "Masonry.h"
+// 用户模型
+#import "UserModel.h"
 
 @interface MineController ()<LSAlertViewDeleagte>
 {
@@ -112,10 +114,14 @@
     
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * name = [defaults objectForKey:Cookie];
+    NSDictionary * dataDic = [defaults objectForKey:User];
+    // 字典转模型
+    UserModel * userModel = [UserModel objectWithKeyValues:dataDic];
     _name = name;
     if (name) {
         NSLog(@"已登录");
-        _loginLbl.text = @"李四笑";
+        _loginLbl.text = userModel.username;
+        [_loginLbl sizeToFit];
         _loginLbl.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
         _line.hidden = NO;
         _fansNum.hidden = NO;
@@ -123,6 +129,8 @@
         _attentionNum.hidden = NO;
         _attention.hidden = NO;
         _picBtn.hidden = NO;
+        _fansNum.text = userModel.count_follow; // 关注数
+        _attentionNum.text = userModel.count_followed;  // 粉丝数
     } else{
         NSLog(@"没有登录");
         _line.hidden = YES;
@@ -184,64 +192,91 @@
     _picBtn = picBtn;
     
     
+    
+    [self.view addSubview:headerView];
     // 登录状态的label
     UILabel * loginLbl = [[UILabel alloc] init];
+//    loginLbl.backgroundColor = [UIColor redColor];
+    [headerView addSubview:loginLbl];
     loginLbl.textColor = Color178;
     loginLbl.font = [UIFont systemFontOfSize:17];
     loginLbl.textAlignment = NSTextAlignmentCenter;
+    //    CGFloat lblX = Margin306 * IPHONE6_W_SCALE;
+    //    CGFloat lblY = CGRectGetMaxY(iconBtn.frame) + 5*IPHONE6_H_SCALE;
+    //    CGFloat lblW = WIDTH - 2 * lblX;
+    //    CGFloat lblH = 17;
+    [loginLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(iconBtn.mas_bottom).offset(5*IPHONE6_H_SCALE);
+        make.width.equalTo(@(100));
+        make.height.equalTo(@(18));
+    }];
     loginLbl.text = @"点击登录";
-    CGFloat lblX = Margin306 * IPHONE6_W_SCALE;
-    CGFloat lblY = CGRectGetMaxY(iconBtn.frame) + 5*IPHONE6_H_SCALE;
-    CGFloat lblW = WIDTH - 2 * lblX;
-    CGFloat lblH = 17;
-    loginLbl.frame = CGRectMake(lblX, lblY, lblW, lblH);
-    [loginLbl sizeToFit];
-    [headerView addSubview:loginLbl];
-    [self.view addSubview:headerView];
+    //    [loginLbl sizeToFit];
+    
     _loginLbl = loginLbl;
     
     // 竖线
     UIView * line = [[UIView alloc] init];
-    line.backgroundColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
-    CGFloat lineX = WIDTH / 2 - 0.25;
-    CGFloat lineY = CGRectGetMaxY(loginLbl.frame) + 25 / 2 * IPHONE6_H_SCALE;
-    CGFloat lineW = 0.5;
-    CGFloat lineH = 14 * IPHONE6_H_SCALE;
-    line.frame = CGRectMake(lineX, lineY, lineW, lineH);
     [headerView addSubview:line];
+    line.backgroundColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
+    //    CGFloat lineX = WIDTH / 2 - 0.25;
+    //    CGFloat lineY = CGRectGetMaxY(loginLbl.frame) + 25 / 2 * IPHONE6_H_SCALE;
+    //    CGFloat lineW = 0.5;
+    //    CGFloat lineH = 14 * IPHONE6_H_SCALE;
+    //    line.frame = CGRectMake(lineX, lineY, lineW, lineH);
+    [line mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(loginLbl.mas_bottom).offset(25 * 0.5 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(0.5));
+        make.height.equalTo(@(14*IPHONE6_H_SCALE));
+    }];
     _line = line;
     
     
     // 被关注
     UILabel * fansLbl = [[UILabel alloc] init];
+    [headerView addSubview:fansLbl];
     fansLbl.text = @"被关注";
     fansLbl.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
     fansLbl.font = Font13;
-    CGFloat fansX = CGRectGetMaxX(line.frame) + 28 / 2 * IPHONE6_W_SCALE;
-    CGFloat fansY = CGRectGetMaxY(loginLbl.frame) + 23 / 2 * IPHONE6_H_SCALE;
-    NSMutableDictionary * fansDic = [NSMutableDictionary dictionary];
-    fansDic[NSFontAttributeName] = Font13;
-    CGSize fansSize = [fansLbl.text sizeWithAttributes:fansDic];
-    fansLbl.frame = (CGRect){{fansX, fansY}, fansSize};
-    [headerView addSubview:fansLbl];
+    //    CGFloat fansX = CGRectGetMaxX(line.frame) + 28 / 2 * IPHONE6_W_SCALE;
+    //    CGFloat fansY = CGRectGetMaxY(loginLbl.frame) + 23 / 2 * IPHONE6_H_SCALE;
+    //    NSMutableDictionary * fansDic = [NSMutableDictionary dictionary];
+    //    fansDic[NSFontAttributeName] = Font13;
+    //    CGSize fansSize = [fansLbl.text sizeWithAttributes:fansDic];
+    //    fansLbl.frame = (CGRect){{fansX, fansY}, fansSize};
+    [fansLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(line.mas_right).offset(14 * IPHONE6_W_SCALE);
+        make.top.equalTo(loginLbl.mas_bottom).offset(23*0.5*IPHONE6_H_SCALE);
+        make.width.equalTo(@40);
+        make.height.equalTo(@13);
+    }];
+    [fansLbl sizeToFit];
     _fansLbl = fansLbl;
     // 被关注数
     UILabel * fansNum = [[UILabel alloc] init];
+    [headerView addSubview:fansNum];
     fansNum.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
     fansNum.text = @"11";
     fansNum.font = Font13;
-    CGFloat fansNumX = CGRectGetMaxX(fansLbl.frame) + 18 / 2 * IPHONE6_W_SCALE;
-    CGFloat fansNumY = fansY;
-    NSMutableDictionary * fansNumDic = [NSMutableDictionary dictionary];
-    fansNumDic[NSFontAttributeName] = Font13;
-    CGSize fansNumSize = [fansNum.text sizeWithAttributes:fansNumDic];
-    fansNum.frame = (CGRect){{fansNumX, fansNumY}, fansNumSize};
-    [headerView addSubview:fansNum];
+    //    CGFloat fansNumX = CGRectGetMaxX(fansLbl.frame) + 18 / 2 * IPHONE6_W_SCALE;
+    //    CGFloat fansNumY = fansY;
+    //    NSMutableDictionary * fansNumDic = [NSMutableDictionary dictionary];
+    //    fansNumDic[NSFontAttributeName] = Font13;
+    //    CGSize fansNumSize = [fansNum.text sizeWithAttributes:fansNumDic];
+    //    fansNum.frame = (CGRect){{fansNumX, fansNumY}, fansNumSize};
+    [fansNum mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(fansLbl.mas_right).offset(9 * IPHONE6_W_SCALE);
+        make.top.equalTo(fansLbl.mas_top);
+        make.width.equalTo(@40);
+        make.height.equalTo(@13);
+    }];
     _fansNum = fansNum;
     
     UILabel * attention = [[UILabel alloc] init];
     attention.font = Font13;
-//    attention.backgroundColor = [UIColor redColor];
+    //    attention.backgroundColor = [UIColor redColor];
     attention.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
     attention.text = @"关注";
     [headerView addSubview:attention];
@@ -249,7 +284,7 @@
     
     // 关注数
     UILabel * attentionNum = [[UILabel alloc] init];
-//    attentionNum.backgroundColor = [UIColor redColor];
+    //    attentionNum.backgroundColor = [UIColor redColor];
     attentionNum.font = Font13;
     attentionNum.text = @"10";
     attentionNum.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];

@@ -40,6 +40,12 @@
     }
 }
 
+#pragma mark --- 重写展位符的set方法
+- (void)setPlaceholder:(NSString *)placeholder{
+    _placeholder = placeholder;
+    _textView.placeholder = placeholder;
+}
+
 #pragma mark --- 设置子控件
 - (void)setUpChildControl
 {
@@ -65,19 +71,11 @@
 #pragma mark --- 发表按钮的点击事件
 - (void)sendMessage
 {
-    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    NSString * userName = [defaults objectForKey:UserName];
-    if (!userName) {
-        NSLog(@"请登录后再发表...");
-        if ([self.delegate respondsToSelector:@selector(commnetView:sendMessage:)]) {
-            [self.delegate commnetView:self sendMessage:nil];
-        } else
-        {
-            NSLog(@"CommentView的代理没有响应...");
-        }
+    if ([self.delegate respondsToSelector:@selector(commnetView:sendMessage:)]) {
+        [self.delegate commnetView:self sendMessage:nil];
     } else
     {
-        NSLog(@"可以进行发表");
+        NSLog(@"CommentView的代理没有响应...");
     }
 }
 
@@ -95,7 +93,7 @@
     CGFloat sendBtnX = WIDTH - (Margin30 + Margin118) * IPHONE6_W_SCALE;
     CGFloat sendBtnY = CGRectGetMaxY(_textView.frame) + Margin20 * IPHONE6_H_SCALE;
     CGFloat sendBtnW = Margin118 * IPHONE6_W_SCALE;
-    CGFloat sendBtnH = Margin58 * IPHONE6_H_SCALE;
+    CGFloat sendBtnH = Margin58 * IPHONE6_W_SCALE;
     _sendBtn.frame = CGRectMake(sendBtnX, sendBtnY, sendBtnW, sendBtnH);
 }
 

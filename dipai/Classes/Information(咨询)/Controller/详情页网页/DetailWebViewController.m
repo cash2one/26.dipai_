@@ -38,6 +38,16 @@
 #import "UIBarButtonItem+Item.h"
 #import "AppDelegate.h"
 @interface DetailWebViewController ()<BottomViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, UMSocialUIDelegate>
+
+{
+    // 发表的内容
+    NSString * _sendContent;
+}
+
+/**
+ *  文章类型
+ */
+@property (nonatomic, copy) NSString * type;
 /**
  *  网页链接
  */
@@ -77,6 +87,33 @@
 
 @implementation DetailWebViewController
 
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:YES];
+        
+    // 每次进来的时候都要检测是否登录
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * cookieName = [defaults objectForKey:Cookie];
+    if (cookieName && _sendContent) {  // 如果已经登录，并且有发表内容，则进行发表
+        NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
+        //        CommentDic[@"id"] = self.newsModel.iD;
+        CommentDic[@"id"] = _model.iD;
+        CommentDic[@"types"] = @"0";    // 0:评论  1:回复
+        CommentDic[@"type"] = _model.type;
+        CommentDic[@"content"] = _sendContent;
+        [DataTool postWithStr:SendComment parameters:CommentDic success:^(id responseObject) {
+            
+            NSLog(@"发表评论返回的数据---%@", responseObject);
+            NSString * content = [responseObject objectForKey:@"content"];
+            NSLog(@"－－content--%@", content);
+            
+            [SVProgressHUD showSuccessWithStatus:@"发表成功"];
+        } failure:^(NSError * error) {
+            
+            NSLog(@"发表评论的错误信息%@", error);
+            
+        }];
+    }
+}
 
 - (void)viewWillDisappear:(BOOL)animated
 {
@@ -128,7 +165,7 @@
     // 添加自定义平台
     [UMSocialConfig addSocialSnsPlatform:@[snsPlatform]];
     // 设置你要在分享面板中出现的平台
-    [UMSocialConfig setSnsPlatformNames:@[UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]];
+    [UMSocialConfig setSnsPlatformNames:@[UMShareToSina ,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]];
 }
 
 // 键盘发生变化后通知
@@ -183,26 +220,22 @@
     bottomView.frame = CGRectMake(x, y, w, h);
     [self.view addSubview:bottomView];
     _bottomView = bottomView;
-    
-    // 判断收藏按钮的状态
-    NSArray * arr = [DataBase findTheTracks:_newsModel.iD];
-    if (arr.count) {
-        bottomView.collectionBtn.selected = YES;
-    }
 }
 
 - (void)getData
 {
     [SVProgressHUD show];
-    [DataTool getDataInWebViewWithStr:self.url parameters:nil success:^(WebDetailModel * model) {
+    [DataTool getDataInWebViewWithStr:self.url parameters:nil success:^(NSArray * array) {
         
+        WebDetailModel * model = array[0];
+        NSString * type = array[1];
         _model = model;
         
+        _type = type;
         _wapurl = model.wapurl;
-        if ([_model.commentNumber integerValue] >= 100) {
-            _bottomView.commentsLbl.text = @"99+";
-        }
-        _bottomView.commentsLbl.text = _model.commentNumber;
+        // 设置数据
+        [self setData];
+        
         [SVProgressHUD dismiss];
         // 设置网页内容
         [self setUpView:_wapurl];
@@ -211,6 +244,27 @@
         NSLog(@"错误信息：%@", error);
     }];
 }
+
+#pragma mark --- 设置数据
+- (void)setData{
+    
+    // 设置评论数
+    NSLog(@"---发表评论数---%@", _model.commentNumber);
+    if ([_model.commentNumber integerValue] >= 100) {
+        _bottomView.commentsLbl.text = @"99+";
+    } else{
+        _bottomView.commentsLbl.text = _model.commentNumber;
+    }
+    // 判断收藏按钮的状态
+    
+    NSLog(@"---收藏的状态---%@", _model.is_collection);
+    if ([_model.is_collection isEqualToString:@"1"]) {
+        _bottomView.collectionBtn.selected = YES;
+    } else{
+        _bottomView.collectionBtn.selected = NO;
+    }
+}
+
 #pragma mark --- 请求网页
 - (void)setUpView:(NSString *)url
 {
@@ -232,8 +286,40 @@
 #pragma mark --- CommentViewDelegate
 - (void)commnetView:(CommentView *)commentView sendMessage:(NSString *)message
 {
-    NSLog(@"显示提示框...");
-    [self addAlertView];
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * cookieName = [defaults objectForKey:Cookie];
+    NSLog(@"---用户迷宫%@,", cookieName);
+    if (cookieName) {
+        NSLog(@"已经登录。。。进行发表");
+        /*
+         http://10.0.0.14:8080/app/add_comment
+         发送：id（被评论的id）,types(0:评论 1：回复),type(模块),content
+         */
+        NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
+//        CommentDic[@"id"] = self.newsModel.iD;
+        CommentDic[@"id"] = _model.iD;
+        CommentDic[@"types"] = @"0";
+        CommentDic[@"type"] = _type;
+        CommentDic[@"content"] = _commentView.textView.text;
+        [DataTool postWithStr:SendComment parameters:CommentDic success:^(id responseObject) {
+            
+            NSLog(@"发表评论返回的数据---%@", responseObject);
+            NSString * content = [responseObject objectForKey:@"content"];
+            NSLog(@"－－content--%@", content);
+        } failure:^(NSError * error) {
+            
+            NSLog(@"发表评论的错误信息%@", error);
+            
+        }];
+        // 移除评论视图
+        [self removeFromSuperviewAction];
+        
+        // 显示发表成功
+        [SVProgressHUD showSuccessWithStatus:@"发表成功"];
+    }else{
+        [self addAlertView];
+    }
+    
 }
 #pragma mark --- LSAlertViewDeleagte
 // 取消按钮
@@ -256,9 +342,12 @@
     [self removeAlerView];
     // 移除评论框
     [self removeFromSuperviewAction];
-//    LoginViewController * loginVC = [[LoginViewController alloc] init];
-//    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
-//    [self presentViewController:loginNav animated:YES completion:nil];
+    // 将发表的内容进行保存
+    _sendContent = _commentView.textView.text;
+    
+    LoginViewController * loginVC = [[LoginViewController alloc] init];
+    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    [self presentViewController:loginNav animated:YES completion:nil];
 }
 
 
@@ -291,7 +380,7 @@
     
     [_commentView.textView becomeFirstResponder];
 }
-#pragma mark --- 灰色背景移出
+#pragma mark --- 灰色背景移出,评论视图移除
 - (void)removeFromSuperviewAction
 {
     // 灰色背景移除
@@ -312,6 +401,8 @@
 - (void)lookCommentsAction
 {
     CommentsViewController * commentsVC = [[CommentsViewController alloc] init];
+    commentsVC.type = _type;
+    commentsVC.iD = _model.iD;
     [self.navigationController pushViewController:commentsVC animated:YES];
 }
 /**
@@ -320,7 +411,8 @@
 - (void)collectionAction
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    NSString * userName = [defaults objectForKey:UserName];
+    NSString * userName = [defaults objectForKey:Cookie];
+    
     if (userName) { // 如果已经登录
         if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
             UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"收藏成功" message:nil preferredStyle:UIAlertControllerStyleAlert];
@@ -329,8 +421,9 @@
             }];
             [alertController addAction:OK];
             [self presentViewController:alertController animated:YES completion:nil];
-            // 将此模型存入到数据库中
-            [DataBase saveLocation:_newsModel];
+            
+            // 进行收藏
+            [self collectOrCancelCollect];
         } else{     // 如果收藏按钮被选中
             
             UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"已取消收藏" message:nil preferredStyle:UIAlertControllerStyleAlert];
@@ -340,7 +433,17 @@
             [alertController addAction:OK];
             [self presentViewController:alertController animated:YES completion:nil];
             
-            [DataBase deleteTreacks:_newsModel.iD];
+            //  取消收藏
+            NSString * url = [CollectionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _model.iD]];
+            //            NSLog(@"进行收藏的接口----%@", url);
+            [DataTool getCollectWithStr:url parameters:nil success:^(id responseObject) {
+                
+                NSLog(@"收藏返回的数据%@", responseObject);
+            } failure:^(NSError * error) {
+                
+                NSLog(@"收藏的错误信息--%@", error);
+            }];
+            
         }
         _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
     } else  // 如果没有登录
@@ -349,6 +452,19 @@
     }
   
     
+}
+
+#pragma mark --- 收藏或取消收藏
+- (void)collectOrCancelCollect{
+    NSString * url = [CollectionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _model.iD]];
+    //            NSLog(@"进行收藏的接口----%@", url);
+    [DataTool getCollectWithStr:url parameters:nil success:^(id responseObject) {
+        
+        NSLog(@"收藏返回的数据%@", responseObject);
+    } failure:^(NSError * error) {
+        
+        NSLog(@"收藏的错误信息--%@", error);
+    }];
 }
 
 #pragma mark --- 添加登录的alertView
@@ -375,16 +491,16 @@
  */
 - (void)shareAction
 {
-    NSString *st = [_newsModel.covers objectForKey:@"cover1"];
+    NSString *st = _model.picname;
     NSURL *url = [NSURL URLWithString:st];
     NSData *data = [NSData dataWithContentsOfURL:url];
     UIImage *img = [UIImage imageWithData:data];
     
     // 友盟分享代码，复制、粘贴
     [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"
-                                      shareText:[NSString stringWithFormat:@"%@ %@",_newsModel.shorttitle,_newsModel.descriptioN]
+                                      shareText:[NSString stringWithFormat:@"%@ %@",_model.title,_model.descriptioN]
                                      shareImage:img
-                                shareToSnsNames:@[UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]
+                                shareToSnsNames:@[UMShareToSina ,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]
                                        delegate:self]; // 分享到朋友圈、微信好友、QQ空间、QQ好友
     
     // 下面的三段代码是什么意思？ 解释：加上下面的几句话才能将网页内容分享成功
@@ -393,6 +509,7 @@
     [UMSocialData defaultData].extConfig.wechatTimelineData.url = _wapurl;
     [UMSocialData defaultData].extConfig.qqData.url = _wapurl;
     [UMSocialData defaultData].extConfig.qzoneData.url = _wapurl;
+    [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeWeb url:_wapurl];
 }
 
 

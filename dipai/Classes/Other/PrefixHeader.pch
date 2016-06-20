@@ -17,7 +17,9 @@
 #import "UIImage+Image.h"
 #import "UIView+Frame.h"
 #import "UIBarButtonItem+Item.h"
-
+// 第三方用来播放视频的
+#import <TCPlayerSDK/TCPlayerSDK.h>
+#import "TCPlayItem.h"
 // ...表示宏定义的可变参数
 // __VA_ARGS__:表示函数里面的可变参数
 #ifdef DEBUG // 调试

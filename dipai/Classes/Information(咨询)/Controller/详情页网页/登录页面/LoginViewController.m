@@ -11,7 +11,7 @@
 #import "RegisterViewController.h"
 // 手机号登录页面
 #import "PhoneLoginViewController.h"
-@interface LoginViewController ()<PhoneLoginViewControllerDelegate>
+@interface LoginViewController ()<PhoneLoginViewControllerDelegate, RegisterViewControllerDelegate>
 
 @end
 
@@ -109,6 +109,7 @@
 - (void)registerAction{
     NSLog(@"立即注册");
     RegisterViewController * registerVC = [[RegisterViewController alloc] init];
+    registerVC.delegate = self;
     [self.navigationController pushViewController:registerVC animated:YES];
 }
 
@@ -123,6 +124,11 @@
 }
 #pragma mark ---- PhoneLoginViewControllerDelegate
 - (void)dismiss{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark ---- RegisterViewControllerDelegate
+- (void)dismissAfterRegister{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

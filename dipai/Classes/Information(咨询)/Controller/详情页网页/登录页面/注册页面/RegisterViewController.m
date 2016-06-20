@@ -174,10 +174,10 @@
     _password = password;
     // 密码长度
     UILabel * lengthLbl = [[UILabel alloc] init];
-    lengthLbl.font = Font11;
-    lengthLbl.text = @"密码长度为6-15位";
+    lengthLbl.font = Font16;
+    lengthLbl.text = @"(密码长度为6-15位)";
     lengthLbl.textColor = Color183;
-    CGFloat lengthX = Margin169 * IPHONE6_W_SCALE;
+    CGFloat lengthX = 45*IPHONE6_W_SCALE;
     CGFloat lengthY = 0;
     CGFloat lengthW = 150;
     CGFloat lengthH = passwordH;
@@ -308,7 +308,24 @@
                 [SVProgressHUD showErrorWithStatus:@"此帐号已注册"];
             } else{
                 [SVProgressHUD showSuccessWithStatus:@"注册成功"];
+                
+                NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+                for (NSHTTPCookie * cookie in cookies) {
+                    NSString * name = [cookie name];
+                    NSLog(@"---name---%@", name);
+                    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+                    [defaults setObject:name forKey:Cookie];
+                    [defaults synchronize];
+                }
+                
+                if ([self.delegate respondsToSelector:@selector(dismissAfterRegister)]) {
+                    [self.delegate dismissAfterRegister];
+                } else{
+                    NSLog(@"RegisterViewController的代理没有响应...");
+                }
+                
                 [NSThread sleepForTimeInterval:1.3];
+                
                 [self.navigationController popViewControllerAnimated:YES];
             }
             

@@ -141,7 +141,7 @@
     CGFloat markX = titleX;
     CGFloat markY = CGRectGetMaxY(_picsView.frame) + Margin14 * IPHONE6_H_SCALE;
     CGFloat markW = Margin58 * IPHONE6_W_SCALE;
-    CGFloat markH = Margin28 * IPHONE6_H_SCALE;
+    CGFloat markH = Margin28 * IPHONE6_W_SCALE;
     _markView.frame = CGRectMake(markX, markY, markW, markH);
     // 评论
     [_commentLbl mas_makeConstraints:^(MASConstraintMaker *make) {

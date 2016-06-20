@@ -191,8 +191,16 @@
     dic[@"password"] = _code.text;
     [DataTool postWithStr:LoginURL parameters:dic success:^(id responseObject) {
         NSString * content = [responseObject objectForKey:@"content"];
+        
+//        NSLog(@"登录获取的数据%@", responseObject);
+        
+        NSLog(@"－－－%@", content);
+        
         if ([content isEqualToString:@"密码错误"]) {
             [SVProgressHUD showErrorWithStatus:@"密码错误"];
+        }
+        if ([content isEqualToString:@"没有此用户"]) {
+            [SVProgressHUD showErrorWithStatus:@"没有此用户"];
         }
         if ([content isEqualToString:@"登录成功"]) {
             [SVProgressHUD showSuccessWithStatus:@"登录成功"];
@@ -204,6 +212,10 @@
                 NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
                 [defaults setObject:name forKey:Cookie];
                 [defaults synchronize];
+                
+                NSDictionary * dataDic = [responseObject objectForKey:@"data"];
+                [defaults setObject:dataDic forKey:User];
+                [defaults synchronize];
             }
             //存储归档后的cookie
             
@@ -214,7 +226,7 @@
             }
             [self.navigationController popToRootViewControllerAnimated:YES];
         }
-        NSLog(@"%@", content);
+        
     } failure:^(NSError * error) {
         
         NSLog(@"登录错误信息：%@", error);

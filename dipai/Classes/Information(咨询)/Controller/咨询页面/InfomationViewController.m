@@ -10,11 +10,13 @@
 // 导航栏上左右侧按钮的分类
 #import "UIBarButtonItem+Item.h"
 // 测试的控制器
-#import "TestViewController.h"
+//#import "TestViewController.h"
 // 轮播页（广告页）
 #import "AdvertisementView.h"
 // 详情页网页
 #import "DetailWebViewController.h"
+// 视频详情页
+#import "VideoViewController.h"
 // 单元格
 #import "tournamentCell.h"
 #import "InformationCell.h"
@@ -103,7 +105,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     
     // 搭建UI
     [self createUI];
@@ -195,9 +196,9 @@
 - (void)Click
 {
 //    NSLog(@"跳转。。。");
-    TestViewController * testVC = [[TestViewController alloc] init];
-    testVC.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:testVC animated:YES];
+//    TestViewController * testVC = [[TestViewController alloc] init];
+//    testVC.hidesBottomBarWhenPushed = YES;
+//    [self.navigationController pushViewController:testVC animated:YES];
 }
 
 #pragma mark --------- 上拉加载数据
@@ -311,17 +312,27 @@
 {
     NSLog(@"点击行数%lu", indexPath.row);
     if (self.tournamentArr.count > 0) {
-        if (indexPath.row == 0) {
+        if (indexPath.row == 0) {   // 如果有赛事
             TournamentModel * model = self.tournamentArr[0];
             NSLog(@"跳转到赛事。。。");
 //            [self turnPageToDetailView:@"http://192.168.1.102:8080/app/art/view/11/5096"];
         } else
         {
             NewsListModel * model = self.newslistArr[indexPath.row -1];
-            [self turnPageToDetailView:model.url withNewsListModel:model];
+            if ([model.type isEqualToString:@"11"]) {
+                // 跳转到视频详情页
+                VideoViewController * videoVC = [[VideoViewController alloc] init];
+                videoVC.url = model.url;
+                videoVC.des = model.descriptioN;
+                videoVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:videoVC animated:YES];
+            } else{
+                [self turnPageToDetailView:model.url withNewsListModel:model];
+            }
+            
         }
         
-    } else
+    } else  // 如果没有赛事
     {
         NewsListModel * model = self.newslistArr[indexPath.row];
         [self turnPageToDetailView:model.url withNewsListModel:model];

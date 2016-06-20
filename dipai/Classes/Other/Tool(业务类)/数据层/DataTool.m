@@ -15,9 +15,33 @@
 #import "TournamentModel.h"
 #import "NewsListModel.h"
 
+// 发现页模型
+#import "FindModel.h"
+// 发现页轮播页模型
+#import "FindBannerModel.h"
+// (模块)Navigation模型
+#import "NavigationModel.h"
+// 评论列表中的模型
+#import "CommentsModel.h"
+// 城市模型
+#import "CityModel.h"
+// 城市中的俱乐部模型
+#import "ClubsInCityModel.h"
+// 俱乐部信息页模型
+#import "InfoModel.h"
+// 类似WSOP视频专辑的模型
+#import "WSOPModel.h"
+// 俱乐部新闻页模型
+#import "NewsModel.h"
+
 // 网页数据模型
 #import "WebDetailModel.h"
-
+// 视频页数据模型
+#import "VideoModel.h"
+// 热门专辑视频模型
+#import "HotVideoModel.h"
+// 视频专辑页面模型
+#import "AlbumVideoModel.h"
 @implementation DataTool
 #pragma mark --- 首页下拉刷新
 + (void)getNewDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure
@@ -81,18 +105,22 @@
     }];
 }
 
-+ (void)getDataInWebViewWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure
++ (void)getDataInWebViewWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id ))success failure:(void (^)(NSError *))failure
 {
-    
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) { // block是一个参数
         
         NSDictionary * dic = responseObject[@"content"];
+        NSString * type = responseObject[@"type"];
         // 字典转模型
         WebDetailModel * webDetailModel = [WebDetailModel objectWithKeyValues:dic];
         
+        NSMutableArray * arr = [NSMutableArray array];
+        [arr addObject:webDetailModel];
+        [arr addObject:type];
+        
         if (success) {
             // block传递参数
-            success(webDetailModel);
+            success(arr);
         }
         
         // 刷新表格
@@ -132,4 +160,286 @@
     }];
 }
 
+// 获取评论列表的数据
++ (void)getCommentsListWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSArray * dataArr = [responseObject objectForKey:@"data"];
+        // 字典数组转模型数据
+        NSArray * commentsArr = [CommentsModel objectArrayWithKeyValuesArray:dataArr];
+        if (success) {
+            success(commentsArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取视频的数据
++ (void)getVideoDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 要字典转模型
+        NSDictionary * contentDic = [responseObject objectForKey:@"content"];
+        // 将字典转成模型
+        VideoModel * videoModel = [VideoModel objectWithKeyValues:contentDic];
+        if (success) {
+            success(videoModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 进行收藏
++ (void)getCollectWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/***********************发现页接口**********************/
++ (void)getFindPageDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 轮播页的数组
+        NSArray * bannerArr = [responseObject objectForKey:@"banner"];
+        // 将字典数组转换成模型数组
+        NSArray * bannerModelArr = [bannerModel objectArrayWithKeyValuesArray:bannerArr];
+        
+        // navigation(模块)
+        NSDictionary * navigation = [responseObject objectForKey:@"Navigation"];
+        // 字典转模型
+//        NavigationModel * navigationModel = [NavigationModel objectWithKeyValues:navigation];
+        
+        // album
+        NSMutableDictionary * albumDic = [NSMutableDictionary dictionary];
+        albumDic = [responseObject objectForKey:@"Album"];
+        
+        // video   是一个数组，数组中装了各个视频专辑
+        NSMutableArray * videoArr = [NSMutableArray array];
+        videoArr = [responseObject objectForKey:@"video"];
+        // 字典数组转模型数组
+        NSArray * wsopModelArr = [WSOPModel objectArrayWithKeyValuesArray:videoArr];
+        
+        FindModel * findModel = [[FindModel alloc] init];
+        // 轮播页
+        findModel.banner = bannerModelArr;
+        // 模块
+        findModel.navigation = navigation;
+        // 热门视频
+        findModel.Album = albumDic;
+        // WSOP视频(传递的应该是模型数组)
+        findModel.videoArr = wsopModelArr;
+        if (success) {
+            success(findModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取更多内容页面的数据
++ (void)getMoreVideosWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSLog(@"获取更多内容页面:%@", responseObject);
+        
+        NSArray * array = responseObject;
+        
+        // 字典数组转模型数组
+        NSArray * albumArr = [HotVideoModel objectArrayWithKeyValuesArray:array];
+        
+        if (success) {
+            success(albumArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取更多内容页面的更多专辑数据
+//+ (void)getMoreAlbumsInMorePageWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+//    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+//        
+//        NSLog(@"获取更多内容页面:%@", responseObject);
+//        
+//        NSArray * array = responseObject;
+//        
+//        // 字典数组转模型数组
+//        NSArray * albumArr = [HotVideoModel objectArrayWithKeyValuesArray:array];
+//        
+//        if (success) {
+//            success(albumArr);
+//        }
+//    } failure:^(NSError *error) {
+//        
+//        if (failure) {
+//            failure(error);
+//        }
+//    }];
+//}
+
+// 获取视频专辑页面的数据
++ (void)getAlbumDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSDictionary * albumDic = responseObject[@"album"];
+        
+        NSArray * videoArr = responseObject[@"video"];
+        
+        AlbumVideoModel * model = [[AlbumVideoModel alloc] init];
+        model.albumDic = albumDic;
+        model.videoArr = videoArr;
+        
+        if (success) {
+            success(model);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取WSOP视频专辑中的视频
+//+ (void)getWSOPDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+//    
+//    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+//        
+//        
+//        if (success) {
+//            success(responseObject);
+//        }
+//    } failure:^(NSError *error) {
+//        
+//        if (failure) {
+//            failure(error);
+//        }
+//    }];
+//}
+
+// 获取视频专辑页面的数据
++ (void)getVideosInAlbumPageWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取城市数据
++ (void)getCitysDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 获取到的是一个城市数组
+        
+        NSArray * cityArr = responseObject;
+        // 字典数组转模型数组
+        NSArray * cityModelArr = [CityModel objectArrayWithKeyValuesArray:cityArr];
+        
+        if (success) {
+            success(cityModelArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取某市的所有俱乐部
++ (void)getClubsInCityWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 字典数组转模型数组
+        NSArray * clubsModelArr = [ClubsInCityModel objectArrayWithKeyValuesArray:responseObject];
+        
+        if (success) {
+            success(clubsModelArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取某个俱乐部信息
++ (void)getClubInfoWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+
+        // 字典转模型
+        InfoModel * infoModel = [InfoModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(infoModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取俱乐部新闻页数据
++ (void)getClubNewsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 字典数组转模型数据
+        NSArray * newsModelArr = [NewsModel objectArrayWithKeyValuesArray:responseObject];
+        if (success) {
+            success(newsModelArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
 @end
+
+
+
+
+
+
+
+
+
+
+

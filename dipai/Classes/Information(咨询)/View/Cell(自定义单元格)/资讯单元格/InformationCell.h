@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 @class NewsListModel;
+@class AssociatedModel;
 @interface InformationCell : UITableViewCell
 /**
  *  列表模型
  */
-@property (nonatomic, strong)NewsListModel * newslistModel;
+@property (nonatomic, strong) NewsListModel * newslistModel;
+@property (nonatomic, strong) AssociatedModel * associateModel;
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
 //- (void)setTitlelLblTextColor;

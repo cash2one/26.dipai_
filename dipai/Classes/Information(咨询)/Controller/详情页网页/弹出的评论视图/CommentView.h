@@ -24,6 +24,11 @@
  *  发表按钮
  */
 @property (nonatomic, strong) UIButton * sendBtn;
+
+/**
+ *  占位符
+ */
+@property (nonatomic, strong) NSString * placeholder;
 /**
  *  
  */

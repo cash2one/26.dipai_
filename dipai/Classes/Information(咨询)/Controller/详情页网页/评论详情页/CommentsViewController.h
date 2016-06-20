@@ -9,5 +9,13 @@
 #import <UIKit/UIKit.h>
 
 @interface CommentsViewController : UIViewController
+/**
+ *  文章类型
+ */
+@property (nonatomic, copy) NSString * type;
+/**
+ *  文章ID
+ */
+@property (nonatomic, copy) NSString * iD;
 
 @end

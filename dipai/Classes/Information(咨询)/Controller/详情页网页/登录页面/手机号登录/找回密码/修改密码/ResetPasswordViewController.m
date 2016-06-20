@@ -85,9 +85,9 @@
     
     UILabel * newLength = [[UILabel alloc] init];
     newLength.text = @"密码长度为6-15位";
-    newLength.font = Font11;
+    newLength.font = Font16;
     newLength.textColor = Color183;
-    CGFloat newX = (217 / 2) * IPHONE6_W_SCALE;
+    CGFloat newX = 45 * IPHONE6_W_SCALE;
     CGFloat newY = 0;
     CGFloat newW = 200;
     CGFloat newH = numH;
@@ -117,9 +117,9 @@
     
     UILabel * sureLength = [[UILabel alloc] init];
     sureLength.text = @"密码长度为6-15位";
-    sureLength.font = Font11;
+    sureLength.font = Font16;
     sureLength.textColor = Color183;
-    CGFloat sureLX = (217 / 2) * IPHONE6_W_SCALE;
+    CGFloat sureLX = 45 * IPHONE6_W_SCALE;
     CGFloat sureLY = 0;
     CGFloat sureLW = 200;
     CGFloat sureLH = numH;
