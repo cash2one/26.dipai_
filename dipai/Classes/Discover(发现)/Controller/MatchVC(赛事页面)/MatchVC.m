@@ -246,9 +246,28 @@
 }
 // 加载
 - (void)loadMoreData{
-    [_tableView1.footer endRefreshing];
-    [_tableView2.footer endRefreshing];
-    [_tableView3.footer endRefreshing];
+    // 加载更多数据
+    _tableView1.footer.state = MJRefreshStateNoMoreData;
+    _tableView2.footer.state = MJRefreshStateNoMoreData;
+    
+    EndMatchModel * matchModel = [self.dataArray3 lastObject];
+    
+    NSString * iD = matchModel.iD;
+     NSString * url3 = [MatchURL stringByAppendingString:[NSString stringWithFormat:@"/2/%@", iD]];
+    
+    [DataTool getEndMatchDataWithStr:url3 parameters:nil success:^(id responseObject) {
+        [_tableView3.footer endRefreshing];
+                
+        if (responseObject == nil) {
+            _tableView3.footer.state = MJRefreshStateNoMoreData;
+        }
+        [self.dataArray3 addObjectsFromArray:responseObject];
+        [_tableView3 reloadData];
+    } failure:^(NSError * error) {
+        
+        NSLog(@"获取更多数据出错%@", error);
+    }];
+    
     
 }
 
@@ -304,6 +323,7 @@
     }else{
         MatchCell * cell = [MatchCell cellWithTableView:tableView];
         EndMatchModel * endModel = [self.dataArray3 objectAtIndex:indexPath.row];
+        
         cell.matchModel = endModel;
         return cell;
     }
@@ -313,16 +333,22 @@
 #pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-    if (tableView == _tableView1) {
+    
+    // 只有即将开始详情页是确定的
+    if (tableView == _tableView1) { // 进行中
         MatchModel * matchModel = [self.dataArray1 objectAtIndex:indexPath.section];
         EndMatchModel * endModel = [matchModel.rows objectAtIndex:indexPath.row];
+        detailVC.matchModel = endModel; // 依赖于上一个界面的数据
         detailVC.wapurl = endModel.wapurl;
-    } else if (tableView == _tableView2){
+    } else if (tableView == _tableView2){   // 即将开始
         MatchModel * matchModel = [self.dataArray2 objectAtIndex:indexPath.section];
         EndMatchModel * endModel = [matchModel.rows objectAtIndex:indexPath.row];
+        detailVC.flag = 1;
+        detailVC.matchModel = endModel;
         detailVC.wapurl = endModel.wapurl;
-    } else{
+    } else{ // 已结束
         EndMatchModel * endModel = [self.dataArray3 objectAtIndex:indexPath.row];
+        detailVC.matchModel = endModel; // 依赖于上一个界面的数据
         detailVC.wapurl = endModel.wapurl;
     }
     

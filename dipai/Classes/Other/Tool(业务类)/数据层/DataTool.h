@@ -63,5 +63,7 @@
 + (void)getMatchDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 // 获取结束的赛事列表
 + (void)getEndMatchDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取赛事详情页
++ (void)getMatchDataInDetailWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
 @end

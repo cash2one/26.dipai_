@@ -146,7 +146,7 @@
 #define Margin27 27 * 0.5
 #define Margin28 28 * 0.5
 #define Margin30 30 * 0.5
-#define Margin32 32 / 2
+#define Margin32 32 * 2
 #define Margin33 33 * 0.5
 #define Margin34 34 * 0.5
 #define Margin35 35 * 0.5

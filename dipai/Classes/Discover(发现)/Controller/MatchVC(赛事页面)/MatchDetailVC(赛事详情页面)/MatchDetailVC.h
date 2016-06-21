@@ -8,10 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+@class EndMatchModel;
 @interface MatchDetailVC : UIViewController
+
+@property (nonatomic, strong) EndMatchModel * matchModel;
 
 /**
  *  跳转链接
  */
 @property (nonatomic, copy) NSString * wapurl;
+/**
+ *  比赛的标识：1:即将开始
+ */
+@property (nonatomic, assign) int flag;
 @end

@@ -178,8 +178,8 @@
     lengthLbl.text = @"(密码长度为6-15位)";
     lengthLbl.textColor = Color183;
     CGFloat lengthX = 45*IPHONE6_W_SCALE;
-    CGFloat lengthY = 0;
-    CGFloat lengthW = 150;
+    CGFloat lengthY = 2;
+    CGFloat lengthW = WIDTH-lengthX;
     CGFloat lengthH = passwordH;
     lengthLbl.frame = CGRectMake(lengthX, lengthY, lengthW, lengthH);
 //    lengthLbl.backgroundColor = [UIColor redColor];

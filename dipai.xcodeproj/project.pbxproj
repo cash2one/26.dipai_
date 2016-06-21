@@ -195,6 +195,10 @@
 		C1DC61441D0E5CCB00217A38 /* AlbumVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DC61431D0E5CCB00217A38 /* AlbumVC.m */; };
 		C1DC61481D0E839D00217A38 /* MoreVideosCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DC61471D0E839D00217A38 /* MoreVideosCell.m */; };
 		C1DC614C1D0EA41E00217A38 /* AlbumVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DC614B1D0EA41E00217A38 /* AlbumVideoModel.m */; };
+		C1DFC1281D18DB8C00DDBC94 /* HeaderViewInMatch.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DFC1271D18DB8C00DDBC94 /* HeaderViewInMatch.m */; };
+		C1DFC12C1D19121300DDBC94 /* MatchingHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DFC12B1D19121300DDBC94 /* MatchingHeader.m */; };
+		C1DFC1301D19255700DDBC94 /* MatchingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DFC12F1D19255700DDBC94 /* MatchingModel.m */; };
+		C1DFC1341D19267300DDBC94 /* LiveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DFC1331D19267300DDBC94 /* LiveModel.m */; };
 		C1E5F7D11CEBFFC2008A8A97 /* InfomationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D01CEBFFC2008A8A97 /* InfomationModel.m */; };
 		C1E5F7D51CEC0834008A8A97 /* tournamentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D41CEC0834008A8A97 /* tournamentCell.m */; };
 		C1E5F7DB1CEC5503008A8A97 /* MJChiBaoZiFooter2.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D81CEC5503008A8A97 /* MJChiBaoZiFooter2.m */; };
@@ -661,6 +665,14 @@
 		C1DC61471D0E839D00217A38 /* MoreVideosCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreVideosCell.m; sourceTree = "<group>"; };
 		C1DC614A1D0EA41E00217A38 /* AlbumVideoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumVideoModel.h; sourceTree = "<group>"; };
 		C1DC614B1D0EA41E00217A38 /* AlbumVideoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumVideoModel.m; sourceTree = "<group>"; };
+		C1DFC1261D18DB8C00DDBC94 /* HeaderViewInMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeaderViewInMatch.h; sourceTree = "<group>"; };
+		C1DFC1271D18DB8C00DDBC94 /* HeaderViewInMatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeaderViewInMatch.m; sourceTree = "<group>"; };
+		C1DFC12A1D19121300DDBC94 /* MatchingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchingHeader.h; sourceTree = "<group>"; };
+		C1DFC12B1D19121300DDBC94 /* MatchingHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MatchingHeader.m; sourceTree = "<group>"; };
+		C1DFC12E1D19255700DDBC94 /* MatchingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchingModel.h; sourceTree = "<group>"; };
+		C1DFC12F1D19255700DDBC94 /* MatchingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MatchingModel.m; sourceTree = "<group>"; };
+		C1DFC1321D19267300DDBC94 /* LiveModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveModel.h; sourceTree = "<group>"; };
+		C1DFC1331D19267300DDBC94 /* LiveModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LiveModel.m; sourceTree = "<group>"; };
 		C1E5F7CF1CEBFFC2008A8A97 /* InfomationModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfomationModel.h; sourceTree = "<group>"; };
 		C1E5F7D01CEBFFC2008A8A97 /* InfomationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfomationModel.m; sourceTree = "<group>"; };
 		C1E5F7D31CEC0834008A8A97 /* tournamentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tournamentCell.h; sourceTree = "<group>"; };
@@ -1324,6 +1336,8 @@
 		C125A3F41D17ED590092AEA9 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				C1DFC1291D19120800DDBC94 /* MatchingHeader(进行中赛事的头视图) */,
+				C1DFC1221D18D8BC00DDBC94 /* HeaderView(赛事详情的头视图) */,
 				C125A4051D17F6DF0092AEA9 /* EndMatchCell(结束赛事单元格) */,
 				C125A4061D17F6DF0092AEA9 /* MatchCell(赛事单元格) */,
 			);
@@ -1333,6 +1347,7 @@
 		C125A3FC1D17EE120092AEA9 /* Mode */ = {
 			isa = PBXGroup;
 			children = (
+				C1DFC12D1D19254900DDBC94 /* MatchingModel(进行中比赛详情页模型) */,
 				C125A4011D17EE980092AEA9 /* EndMatchModel(已结束赛事模型) */,
 				C125A3FD1D17EE120092AEA9 /* MatchModel(进行中和要开始赛事的模型) */,
 			);
@@ -2293,6 +2308,43 @@
 			path = "AlbumVideoModel(视频专辑页模型)";
 			sourceTree = "<group>";
 		};
+		C1DFC1221D18D8BC00DDBC94 /* HeaderView(赛事详情的头视图) */ = {
+			isa = PBXGroup;
+			children = (
+				C1DFC1261D18DB8C00DDBC94 /* HeaderViewInMatch.h */,
+				C1DFC1271D18DB8C00DDBC94 /* HeaderViewInMatch.m */,
+			);
+			path = "HeaderView(赛事详情的头视图)";
+			sourceTree = "<group>";
+		};
+		C1DFC1291D19120800DDBC94 /* MatchingHeader(进行中赛事的头视图) */ = {
+			isa = PBXGroup;
+			children = (
+				C1DFC12A1D19121300DDBC94 /* MatchingHeader.h */,
+				C1DFC12B1D19121300DDBC94 /* MatchingHeader.m */,
+			);
+			path = "MatchingHeader(进行中赛事的头视图)";
+			sourceTree = "<group>";
+		};
+		C1DFC12D1D19254900DDBC94 /* MatchingModel(进行中比赛详情页模型) */ = {
+			isa = PBXGroup;
+			children = (
+				C1DFC12E1D19255700DDBC94 /* MatchingModel.h */,
+				C1DFC12F1D19255700DDBC94 /* MatchingModel.m */,
+				C1DFC1311D19266A00DDBC94 /* LiveModel(直播信息模型) */,
+			);
+			path = "MatchingModel(进行中比赛详情页模型)";
+			sourceTree = "<group>";
+		};
+		C1DFC1311D19266A00DDBC94 /* LiveModel(直播信息模型) */ = {
+			isa = PBXGroup;
+			children = (
+				C1DFC1321D19267300DDBC94 /* LiveModel.h */,
+				C1DFC1331D19267300DDBC94 /* LiveModel.m */,
+			);
+			path = "LiveModel(直播信息模型)";
+			sourceTree = "<group>";
+		};
 		C1E5F7CE1CEBFFB7008A8A97 /* Information(资讯模型) */ = {
 			isa = PBXGroup;
 			children = (
@@ -2933,6 +2985,7 @@
 				C19C7E821CFED2E1008F3ECF /* VideoModel.m in Sources */,
 				C12F9D9F1CD9D8B7003CC7FC /* NSObject+MJIvar.m in Sources */,
 				C10416F91D05996C009EDE66 /* CommentsFrame.m in Sources */,
+				C1DFC1341D19267300DDBC94 /* LiveModel.m in Sources */,
 				C1EFBA011CEEFACD0066C4FF /* LoginViewController.m in Sources */,
 				C1FDFCEF1CD35F0A0078F3DE /* View+MASAdditions.m in Sources */,
 				C1EFBA7B1CEF14790066C4FF /* NSManagedObjectContext+MagicalThreading.m in Sources */,
@@ -2967,6 +3020,7 @@
 				C125A4041D17EEA40092AEA9 /* EndMatchModel.m in Sources */,
 				C1C87AF91D003F75004166CC /* AlbumViewController.m in Sources */,
 				C1FDFCF91CD36B180078F3DE /* PicturesCell.m in Sources */,
+				C1DFC12C1D19121300DDBC94 /* MatchingHeader.m in Sources */,
 				C12F9DA01CD9D8B7003CC7FC /* NSObject+MJKeyValue.m in Sources */,
 				C1DC614C1D0EA41E00217A38 /* AlbumVideoModel.m in Sources */,
 				C1C049351CFBCED400389E7D /* MyPostsViewController.m in Sources */,
@@ -3015,6 +3069,7 @@
 				C12F9E421CDA031D003CC7FC /* SDWebImageCompat.m in Sources */,
 				C12F9D9C1CD9D8B7003CC7FC /* MJIvar.m in Sources */,
 				C16AED741CED614100173A1C /* BottomView.m in Sources */,
+				C1DFC1301D19255700DDBC94 /* MatchingModel.m in Sources */,
 				C1D97E0E1D116B2D00A8DA64 /* CAPSPageMenu.m in Sources */,
 				C1EFBA771CEF14790066C4FF /* NSManagedObjectContext+MagicalChainSave.m in Sources */,
 				C1954AC21CF68A1E00B1DE71 /* RegisterViewController.m in Sources */,
@@ -3078,6 +3133,7 @@
 				C1212E3D1CCDAA6200F76D4E /* ViewController.m in Sources */,
 				C1EFBA6C1CEF14790066C4FF /* NSAttributeDescription+MagicalDataImport.m in Sources */,
 				C125A4091D17F6ED0092AEA9 /* EndMatchCell.m in Sources */,
+				C1DFC1281D18DB8C00DDBC94 /* HeaderViewInMatch.m in Sources */,
 				C1EFBA7D1CEF14790066C4FF /* NSPersistentStore+MagicalRecord.m in Sources */,
 				C126E4EC1CD83F9A00E49715 /* DetailWebViewController.m in Sources */,
 				C1DC613C1D0E5B1A00217A38 /* MoreVideosVC.m in Sources */,

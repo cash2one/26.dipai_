@@ -37,6 +37,10 @@
 #import "MatchModel.h"
 // 结束的赛事模型
 #import "EndMatchModel.h"
+// 进行中比赛模型（详情页）
+#import "MatchingModel.h"
+
+
 
 // 网页数据模型
 #import "WebDetailModel.h"
@@ -461,8 +465,27 @@
         
         // 字典数组转模型数组
         NSArray * matchModelArr = [EndMatchModel objectArrayWithKeyValuesArray:responseObject];
+        
         if (success) {
             success(matchModelArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取赛事详情页数据
++ (void)getMatchDataInDetailWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 字典转模型
+        MatchingModel * model = [MatchingModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(model);
         }
     } failure:^(NSError *error) {
         
