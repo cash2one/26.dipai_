@@ -130,6 +130,9 @@
     // 设置footer
     self.tableView.footer = footer;
     
+    
+    
+    
 //    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
 }
 #pragma mark ------ 下拉刷新，加载新的数据
@@ -177,6 +180,9 @@
     [advertiseView setScrollWithCount:counts andArray:self.bannerArr];
     // 设置轮播页上的数据
     self.tableView.tableHeaderView = advertiseView;
+    
+    // 添加一个表格的脚视图
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
 }
 
 #pragma mark --- 添加表格
@@ -215,6 +221,7 @@
         id str = array[0];
         if ([str isEqualToString:@"0"]) {
             self.tableView.footer.state = MJRefreshStateNoMoreData;
+            
             
         } else
         {

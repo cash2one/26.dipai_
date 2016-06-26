@@ -221,6 +221,9 @@
     [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
     
     NSString * url = [NSString stringWithFormat:@"%@/%@/%@", CommentsURL, self.iD, self.type];
+    // http://dipaiapp.replays.net/app/list_comment/5099/2
+    NSLog(@"%@", url);
+    
     [DataTool getCommentsListWithStr:url parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
         
@@ -261,6 +264,8 @@
     CommentsModel * commentsModel = commentsFrameModel.comments;
     
     NSString * url = [NSString stringWithFormat:@"%@/%@/%@/%@", CommentsURL, self.iD, self.type, commentsModel.comment_id];
+    
+    
     NSLog(@"---url---%@", url);
     [DataTool getCommentsListWithStr:url parameters:nil success:^(id responseObject) {
         [self.tableView.footer endRefreshing];

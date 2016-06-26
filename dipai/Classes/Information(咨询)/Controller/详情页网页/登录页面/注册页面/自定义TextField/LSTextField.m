@@ -36,6 +36,9 @@
         self.layer.borderColor = [[UIColor colorWithRed:227 / 255.0 green:227 / 255.0 blue:227 / 255.0 alpha:1] CGColor];
         self.layer.borderWidth = 0.5;
         self.backgroundColor = [UIColor whiteColor];
+        self.leftView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 9, 0)];
+        //设置显示模式为永远显示(默认不显示)
+        self.leftViewMode = UITextFieldViewModeAlways;
     }
     
     return self;
@@ -54,12 +57,31 @@
     [self.placeHolderLabel sizeToFit];
 }
 
+- (void)setPlaceHolderX:(float)placeHolderX{
+    _placeHolderX = placeHolderX;
+}
+- (void)setPlaceHolderY:(float)placeHolderY{
+    _placeHolderY = placeHolderY;
+}
+
+- (void)setLeftViewX:(float)leftViewX{
+    _leftViewX = leftViewX;
+}
+
 // 布局子控件
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    self.placeHolderLabel.x = Margin22 * IPHONE6_W_SCALE;
-    self.placeHolderLabel.y = Margin34 * IPHONE6_H_SCALE;
+    if (_placeHolderX) {
+        self.placeHolderLabel.x = _placeHolderX;
+        self.placeHolderLabel.y = _placeHolderY;
+        
+    } else{
+        self.placeHolderLabel.x = Margin22 * IPHONE6_W_SCALE;
+        self.placeHolderLabel.y = Margin30 * IPHONE6_H_SCALE;
+
+    }
+    
     
 }
 

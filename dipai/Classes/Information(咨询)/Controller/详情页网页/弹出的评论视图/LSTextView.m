@@ -57,12 +57,27 @@
     self.placeHolderLabel.text = placeholder;
     [self.placeHolderLabel sizeToFit];
 }
+
+
+- (void)setPlaceHolderX:(float)placeHolderX{
+    _placeHolderX = placeHolderX;
+}
+- (void)setPlaceHolderY:(float)placeHolderY{
+    _placeHolderY = placeHolderY;
+}
+
 // 布局子控件
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    self.placeHolderLabel.x = 5;
-    self.placeHolderLabel.y = 5;
+    if (_placeHolderX) {
+        self.placeHolderLabel.x = _placeHolderX;
+        self.placeHolderLabel.y = _placeHolderY;
+    } else{
+        self.placeHolderLabel.x = 5;
+        self.placeHolderLabel.y = 5;
+    }
+    
 }
 
 @end

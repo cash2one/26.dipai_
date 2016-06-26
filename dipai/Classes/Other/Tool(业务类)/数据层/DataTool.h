@@ -66,4 +66,14 @@
 // 获取赛事详情页
 + (void)getMatchDataInDetailWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
+
+// 获取直播信息
++ (void)getLiveDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+
+/*********************社区页******************/
+// 获取论坛首页
++ (void)getCommunityDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取评论列表
++ (void)getPostsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 @end

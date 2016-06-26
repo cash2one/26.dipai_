@@ -49,6 +49,12 @@
 // 赛事列表
 #define MatchURL @"http://dipaiapp.replays.net/app/club/list/5"
 
+/********************社区页*********************/
+// 论坛首页
+#define CommunityURL @"http://dipaiapp.replays.net/app/forum"
+// 发布帖子
+#define SendPostsURL @"http://dipaiapp.replays.net/app/add/forum/"
+
 
 //#define UserName @"username"
 //#define PassWord @"password"
@@ -107,6 +113,7 @@
 #define Font15 [UIFont systemFontOfSize:15*IPHONE6_W_SCALE]
 #define Font16 [UIFont systemFontOfSize:16*IPHONE6_W_SCALE]
 #define Font17 [UIFont systemFontOfSize:17*IPHONE6_W_SCALE]
+#define Font18 [UIFont systemFontOfSize:18*IPHONE6_W_SCALE]
 #define Font20 [UIFont systemFontOfSize:20*IPHONE6_W_SCALE]
 
 // 颜色
@@ -146,7 +153,7 @@
 #define Margin27 27 * 0.5
 #define Margin28 28 * 0.5
 #define Margin30 30 * 0.5
-#define Margin32 32 * 2
+#define Margin32 32 * 0.5
 #define Margin33 33 * 0.5
 #define Margin34 34 * 0.5
 #define Margin35 35 * 0.5

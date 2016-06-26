@@ -157,6 +157,8 @@
     // 添加轮播页
     [self addBannerView];
     
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
+    
     // 添加CollectionView
 //    [self addCollectionView];
     

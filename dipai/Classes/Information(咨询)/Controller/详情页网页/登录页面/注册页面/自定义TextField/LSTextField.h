@@ -23,4 +23,18 @@
  */
 @property (nonatomic, strong) UILabel * placeHolderLabel;
 
+/**
+ *  占位符距离左边距离
+ */
+@property (nonatomic, assign) float placeHolderX;
+/**
+ *  占位符距离上边距离
+ 
+ */
+@property (nonatomic, assign) float placeHolderY;
+/**
+ *  光标距离左边的距离
+ */
+@property (nonatomic, assign) float leftViewX;
+
 @end

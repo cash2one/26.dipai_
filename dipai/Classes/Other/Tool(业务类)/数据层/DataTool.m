@@ -40,6 +40,11 @@
 // 进行中比赛模型（详情页）
 #import "MatchingModel.h"
 
+/******************社区*****************/
+// 论坛模型
+#import "ForumModel.h"
+// 帖子模型
+#import "PostsModel.h"
 
 
 // 网页数据模型
@@ -486,6 +491,74 @@
         
         if (success) {
             success(model);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取直播信息
++ (void)getLiveDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+
+
+/*******************论坛页***********************/
+// 论坛首页
++ (void)getCommunityDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 字典转模型
+        ForumModel * forumModel = [ForumModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(forumModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+//  获取评论列表
++ (void)getPostsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 类型
+        NSString * type = responseObject[@"type"];
+        // 失败成功的标识
+        NSString * state = responseObject[@"state"];
+        
+        // 帖子内容
+        NSArray * dataArr = responseObject [@"data"];
+        // 字典数组转模型数组
+        NSArray * postsModelArr = [PostsModel objectArrayWithKeyValuesArray:dataArr];
+        
+        NSMutableArray * postsArr = [NSMutableArray array];
+        [postsArr addObject:type];
+        [postsArr addObject:state];
+        [postsArr addObject:postsModelArr];
+        
+        
+        
+        if (success) {
+            success(postsArr);
         }
     } failure:^(NSError *error) {
         

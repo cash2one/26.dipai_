@@ -327,7 +327,7 @@
     CGFloat collectH = 98 / 2 * IPHONE6_H_SCALE;
     collectionView.frame = CGRectMake(collectX, collectY, collectW, collectH);
     [self.view addSubview:collectionView];
-    // 帖子
+//    // 帖子
     ClickView * postView = [[ClickView alloc] init];
     postView.commentNum.hidden = YES;
     postView.picName = @"wodetiezi";

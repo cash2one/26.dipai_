@@ -20,6 +20,7 @@
     if (self = [super initWithFrame:frame]) {
         // 设置子控件
         [self setUpChildControl];
+//        self.backgroundColor = [UIColor yellowColor];
     }
     
     return self;
@@ -28,6 +29,7 @@
 - (void)setUpChildControl{
     // 图片
     UIImageView * pic = [[UIImageView alloc] init];
+//    pic.backgroundColor = [UIColor redColor];
     [self addSubview:pic];
     _pic = pic;
     // 标题
@@ -79,7 +81,9 @@
     CGFloat picY = Margin32 * IPHONE6_H_SCALE;
     CGFloat picW = Margin34 * IPHONE6_W_SCALE;
     CGFloat picH = picW;
-    _pic.frame = CGRectMake(picX, picY, picW, picH);
+#warning 发现Xcode的一个问题
+//    _pic.frame = CGRectMake(picX, picY, picW, picH);
+    _pic.frame = CGRectMake(picX, 16*IPHONE6_H_SCALE, picW, picH);
     // 标题
     CGFloat textX = CGRectGetMaxY(_pic.frame) + Margin22 * IPHONE6_W_SCALE;
     CGFloat textY = Margin33 * IPHONE6_H_SCALE;

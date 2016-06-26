@@ -45,7 +45,7 @@
 /**
  *  回复（包括用户名和回复内容）
  */
-@property (nonatomic, copy) NSMutableDictionary * reply;
+@property (nonatomic, strong) NSDictionary * reply;
 /**
  *  用户地址
  */

@@ -19,7 +19,14 @@
     [self setUpCommentsFrame];
     
 //    if (comments.reply[@"username"]) {  // 如果有回复内容
-    if (comments.reply) {  // 如果有回复内容
+    
+    
+//    NSLog(@"reply字典%@", comments.reply);
+    NSDictionary * replyDic = comments.reply;
+    NSString * username = replyDic[@"username"];
+//    NSLog(@"username---%@", username);
+    
+    if (username) {  // 如果有回复内容
         
         // 计算回复高度
         [self setUpReplyFrame];
@@ -78,7 +85,12 @@
     
     NSMutableDictionary * nameDic = [NSMutableDictionary dictionary];
     nameDic[NSFontAttributeName] = Font13;
-    CGSize nameSize = [_comments.reply[@"username"] sizeWithAttributes:nameDic];
+    
+    
+    
+    NSString * username = _comments.reply[@"username"];
+    
+    CGSize nameSize = [username sizeWithAttributes:nameDic];
     
     _replyName = (CGRect){{nameX, nameY}, nameSize};
     
