@@ -13,6 +13,8 @@
 #import "LSTextField.h"
 
 #import "LSTextView.h"
+
+#import "LSAlertView.h"
 // 自定义的相册视图
 #import "LSPicturesView.h"
 
@@ -21,9 +23,11 @@
 #import "SVProgressHUD.h"
 
 #import "SectionModel.h"
+// 登录页面
+#import "LoginViewController.h"
 
 #import "DataTool.h"
-@interface SendVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate>
+@interface SendVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate, LSAlertViewDeleagte>
 
 {
     NSString * _previousTextFieldContent;
@@ -62,6 +66,11 @@
  *  选择图片的按钮
  */
 @property (nonatomic, strong) UIButton * picBtn;
+
+/***************AlertView**********************/
+@property (nonatomic, strong) UIView * alertBackView;
+
+@property (nonatomic, strong) LSAlertView * alertView;
 
 @end
 
@@ -151,16 +160,77 @@
 
 #pragma mark --- 发送事件
 - (void)sendAction{
-    NSLog(@"...");
     
-    // 有图片发送图片
-    if (self.imagesArr.count) {
-        [self sendPictures];
-    } else
-    {
-        [self sendText];
+    // 得判断是否登录
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * cookieName = [defaults objectForKey:Cookie];
+    if (cookieName) {
+        NSLog(@"已经登录。。。进行发表");
+        // 有图片发送图片
+        if (self.imagesArr.count) {
+            [self sendPictures];
+        } else
+        {
+            [self sendText];
+        }
+        // 显示发表成功
+        [SVProgressHUD showSuccessWithStatus:@"发表成功"];
+    }else{
+        [self addAlertView];
     }
+    
 }
+
+#pragma mark --- 添加登录的alertView
+- (void)addAlertView{
+    LSAlertView * alertView = [[LSAlertView alloc] init];
+    alertView.delegate = self;
+    CGFloat x = Margin105 * IPHONE6_W_SCALE;
+    CGFloat y = Margin574 * IPHONE6_H_SCALE;
+    CGFloat w = Margin540 * IPHONE6_W_SCALE;
+    CGFloat h = Margin208 * IPHONE6_H_SCALE;
+    alertView.frame = CGRectMake(x, y, w, h);
+    UIView * alertBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    alertBackView.backgroundColor = ColorBlack30;
+    // 当前顶层窗口
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    // 添加到灰色的背景图
+    [window addSubview:alertBackView];
+    [window addSubview:alertView];
+    _alertBackView = alertBackView;
+    _alertView = alertView;
+}
+
+#pragma mark --- LSAlertViewDeleagte
+/**
+ *  取消按钮的点击事件
+
+ */
+- (void)lsAlertView:(LSAlertView *)alertView cancel:(NSString * )cancel {
+    [self removeAlerView];
+}
+- (void)removeAlerView
+{
+    // 移除提示框的背景图
+    [_alertBackView removeFromSuperview];
+    // 移除提示框
+    [_alertView removeFromSuperview];
+}
+/**
+ *  确定按钮的点击事件
+
+ */
+// 登录按钮
+- (void)lsAlertView:(LSAlertView *)alertView sure:(NSString *)sure
+{
+    // 移除提示框
+    [self removeAlerView];
+    
+    LoginViewController * loginVC = [[LoginViewController alloc] init];
+    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    [self presentViewController:loginNav animated:YES completion:nil];
+}
+
 #pragma mark --- 截掉字符串前面的空格的方法
 - (NSString *)trim:(NSString *)val trimCharacterSet:(NSCharacterSet *)characterSet {
     NSString *returnVal = @"";

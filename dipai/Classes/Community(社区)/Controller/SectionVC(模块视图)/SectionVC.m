@@ -19,6 +19,8 @@
 #import "SectionModel.h"
 // 帖子模型 
 #import "PostsModel.h"
+// 加了type的帖子模型
+#import "TypePostModel.h"
 
 // 帖子frame模型
 #import "PostFrameModel.h"
@@ -129,11 +131,11 @@
         NSLog(@"获取帖子列表的网址：%@", self.sectionModel.wapurl);
         
         [self.tableView.header endRefreshing];        
-        NSArray * postsArr = responseObject;   // 帖子模型数组
+        TypePostModel * typePostModel = responseObject;   // 帖子模型数组
         
         NSMutableArray * frameArr = [NSMutableArray array]; // 用来装frame模型
         
-        NSArray * postsModelArr = postsArr[2];
+        NSArray * postsModelArr = typePostModel.data;
         
         for (PostsModel * postsModel in postsModelArr) {
             PostFrameModel * frameModel = [[PostFrameModel alloc] init];
@@ -162,13 +164,16 @@
     [DataTool getPostsDataWithStr:url parameters:nil success:^(id responseObject) {
         [self.tableView.footer endRefreshing];
         
-        NSArray * postsModelArr = responseObject;   // 帖子模型数组
+        TypePostModel * typePostModel = responseObject;   // 帖子模型数组
         
-        if (!postsModelArr[2]) {
+        if (!typePostModel.data) {
+            NSLog(@"空");
             self.tableView.footer.state = MJRefreshStateNoMoreData;
         } else{
+            
+            NSLog(@"不为空");
             NSMutableArray * frameArr = [NSMutableArray array]; // 用来装frame模型
-            for (PostsModel * postsModel in postsModelArr[2]) {
+            for (PostsModel * postsModel in typePostModel.data) {
                 PostFrameModel * frameModel = [[PostFrameModel alloc] init];
                 frameModel.postsModel = postsModel;
                 [frameArr addObject:frameModel];

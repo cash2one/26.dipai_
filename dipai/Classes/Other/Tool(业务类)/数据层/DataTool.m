@@ -45,6 +45,8 @@
 #import "ForumModel.h"
 // 帖子模型
 #import "PostsModel.h"
+// 加了type的帖子模型
+#import "TypePostModel.h"
 
 
 // 网页数据模型
@@ -550,15 +552,14 @@
         // 字典数组转模型数组
         NSArray * postsModelArr = [PostsModel objectArrayWithKeyValuesArray:dataArr];
         
-        NSMutableArray * postsArr = [NSMutableArray array];
-        [postsArr addObject:type];
-        [postsArr addObject:state];
-        [postsArr addObject:postsModelArr];
-        
-        
+        // 字典转模型
+        TypePostModel * typePostModel = [[TypePostModel alloc] init];
+        typePostModel.type = type;
+        typePostModel.state = state;
+        typePostModel.data = postsModelArr;
         
         if (success) {
-            success(postsArr);
+            success(typePostModel);
         }
     } failure:^(NSError *error) {
         

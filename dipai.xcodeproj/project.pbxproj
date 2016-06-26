@@ -29,6 +29,7 @@
 		C1212E461CCDABDE00F76D4E /* DiscoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E451CCDABDE00F76D4E /* DiscoverController.m */; };
 		C1212E491CCDABED00F76D4E /* CommunityController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E481CCDABED00F76D4E /* CommunityController.m */; };
 		C1212E4F1CCDADC100F76D4E /* UIImage+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E4E1CCDADC100F76D4E /* UIImage+Image.m */; };
+		C1248F0E1D1F880C0016B2F9 /* TypePostModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1248F0D1D1F880C0016B2F9 /* TypePostModel.m */; };
 		C125A3EC1D17C91D0092AEA9 /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A3EB1D17C91D0092AEA9 /* UserModel.m */; };
 		C125A3F21D17D80D0092AEA9 /* MatchVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A3F11D17D80D0092AEA9 /* MatchVC.m */; };
 		C125A4001D17EE220092AEA9 /* MatchModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C125A3FF1D17EE220092AEA9 /* MatchModel.m */; };
@@ -355,6 +356,8 @@
 		C1212E4D1CCDADC100F76D4E /* UIImage+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Image.h"; sourceTree = "<group>"; };
 		C1212E4E1CCDADC100F76D4E /* UIImage+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Image.m"; sourceTree = "<group>"; };
 		C1212E501CCDAE4200F76D4E /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		C1248F0C1D1F880C0016B2F9 /* TypePostModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypePostModel.h; sourceTree = "<group>"; };
+		C1248F0D1D1F880C0016B2F9 /* TypePostModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TypePostModel.m; sourceTree = "<group>"; };
 		C125A3EA1D17C91D0092AEA9 /* UserModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserModel.h; sourceTree = "<group>"; };
 		C125A3EB1D17C91D0092AEA9 /* UserModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserModel.m; sourceTree = "<group>"; };
 		C125A3F01D17D80D0092AEA9 /* MatchVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchVC.h; sourceTree = "<group>"; };
@@ -2182,6 +2185,8 @@
 			children = (
 				C1D467E41D1D024000570475 /* VM */,
 				C1D467DF1D1CE47100570475 /* PostsModel(帖子模型) */,
+				C1248F0C1D1F880C0016B2F9 /* TypePostModel.h */,
+				C1248F0D1D1F880C0016B2F9 /* TypePostModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -3272,6 +3277,7 @@
 				C125A4101D180C560092AEA9 /* MatchDetailVC.m in Sources */,
 				C1E5F8101CEC5667008A8A97 /* MJRefreshAutoNormalFooter.m in Sources */,
 				C1EFBA7A1CEF14790066C4FF /* NSManagedObjectContext+MagicalSaves.m in Sources */,
+				C1248F0E1D1F880C0016B2F9 /* TypePostModel.m in Sources */,
 				C1DC61401D0E5B5A00217A38 /* BaseViewController.m in Sources */,
 				C1FDFCED1CD35F0A0078F3DE /* NSArray+MASAdditions.m in Sources */,
 				C1039E8F1D0824AB0084A1A6 /* NavigationCell.m in Sources */,
