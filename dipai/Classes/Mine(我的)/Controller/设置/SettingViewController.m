@@ -10,6 +10,8 @@
 
 //
 #import "SettingCell.h"
+// 关于底牌页面
+#import "AbountDiPai.h"
 @interface SettingViewController ()
 
 @end
@@ -89,12 +91,16 @@
 }
 #pragma mark --- 按钮点击事件
 - (void)clickAction:(UIButton *)btn{
+    AbountDiPai * abountDP = [[AbountDiPai alloc] init];
     switch (btn.tag) {
+            
         case 1:
             NSLog(@"关于底牌....");
+            [self.navigationController pushViewController:abountDP animated:YES];
             break;
         case 2:
             NSLog(@"去评分....");
+            [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=1000553183&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8"]];
             break;
         case 3:
             NSLog(@"当前版本....");

@@ -63,7 +63,9 @@
     CGFloat postH = CGRectGetMaxY(_contentsFrame) + 14 * IPHONE6_H_SCALE;   // 帖子的高度
     
     if (_postsModel.picname) {    // 如果有图片
-                
+        
+        
+        
         NSLog(@"----图片的个数:%lu", _postsModel.picname.count);
         CGFloat photosX = titleX;
         CGFloat photosY = CGRectGetMaxY(_contentsFrame) + 7 * IPHONE6_H_SCALE;

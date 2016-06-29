@@ -17,21 +17,36 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    // 设置导航栏
+    [self setNavigationBar];
 }
 
+#pragma mark --- 设置导航条
+- (void)setNavigationBar {
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+    
+    // 左侧按钮
+    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
+    // 标题
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
+    //    titleLabel.backgroundColor = [UIColor redColor];
+    titleLabel.font = [UIFont systemFontOfSize:38/2];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.text = @"我收到的评论";
+    self.navigationItem.titleView = titleLabel;
+    
+    
+}
+#pragma mark --- 返回
+- (void)returnBack{
+    [self.navigationController popViewControllerAnimated:YES];
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

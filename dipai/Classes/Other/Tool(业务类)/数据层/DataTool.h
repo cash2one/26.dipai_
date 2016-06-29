@@ -70,10 +70,26 @@
 // 获取直播信息
 + (void)getLiveDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
+// 获取扑克名人堂数据
++ (void)getPokerListDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取所有扑克名人堂数据
++ (void)getMorePokerDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 关注或取消关注某人
++ (void)PayAttentionOrCancleWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
 /*********************社区页******************/
 // 获取论坛首页
 + (void)getCommunityDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
-// 获取评论列表
+// 获取帖子列表
 + (void)getPostsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+// 获取帖子详情页数据
++(void) getPostDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+
+/************************我的********************/
+// 获取个人中心的数据
++ (void)getPersonDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取收藏的数据
++ (void)getCollectionDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 @end

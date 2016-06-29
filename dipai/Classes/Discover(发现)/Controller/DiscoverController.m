@@ -54,6 +54,8 @@
 #import "AlbumVC.h"
 // 赛事页面
 #import "MatchVC.h"
+// 扑克名人堂页面
+#import "PokerVC.h"
 @interface DiscoverController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate, HotVideoCellDelegate,TwoBtnCellDelegate, WSOPTableViewCellDelegate>
 /**
  *  用来装热门视频中的视频模型
@@ -337,8 +339,9 @@
 
 #pragma mark ---  点击模块上的按钮跳到某一页
 - (void)turnPageToSomePage:(UIButton *)btn{
-    ClubViewController * clubVC = [[ClubViewController alloc] init];
-     MatchVC * matchVC = [[MatchVC alloc] init];
+    ClubViewController * clubVC = [[ClubViewController alloc] init];    // 俱乐部页面
+     MatchVC * matchVC = [[MatchVC alloc] init];    // 赛事页面
+    PokerVC * pokerVC = [[PokerVC alloc] init]; // 扑克名人堂页面
     switch (btn.tag) {
         case 1:
             clubVC.clubURL = _navigationModel.club;
@@ -349,8 +352,9 @@
             matchVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:matchVC animated:YES];
             break;
-        case 3:
-            NSLog(@"3");
+        case 3: // 跳转到扑克名人堂页面
+            pokerVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:pokerVC animated:YES];
             break;
         case 4:
             NSLog(@"4");

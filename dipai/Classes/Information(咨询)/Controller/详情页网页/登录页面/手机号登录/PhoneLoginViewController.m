@@ -212,8 +212,11 @@
                 NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
                 [defaults setObject:name forKey:Cookie];
                 [defaults synchronize];
-                
+                                
                 NSDictionary * dataDic = [responseObject objectForKey:@"data"];
+                
+                NSLog(@"登录成功后获取的数据:%@", dataDic);
+                
                 [defaults setObject:dataDic forKey:User];
                 [defaults synchronize];
             }

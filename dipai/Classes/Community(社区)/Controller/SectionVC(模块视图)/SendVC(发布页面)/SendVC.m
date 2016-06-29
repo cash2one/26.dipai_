@@ -8,31 +8,39 @@
 
 #import "SendVC.h"
 #import "Masonry.h"
+#import "LNPhotoLibaryController.h"
+#import "X_SelectPicView.h"
+#import "LNPhotoAsset.h"
 
 // 自定义的textField
 #import "LSTextField.h"
 
 #import "LSTextView.h"
-
-#import "LSAlertView.h"
 // 自定义的相册视图
 #import "LSPicturesView.h"
+// 登录页面
+#import "LoginViewController.h"
+#import "LSAlertView.h"
 
 #import "AFNetworking.h"
 
 #import "SVProgressHUD.h"
 
 #import "SectionModel.h"
-// 登录页面
-#import "LoginViewController.h"
 
 #import "DataTool.h"
-@interface SendVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate, LSAlertViewDeleagte>
+@interface SendVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte>
 
 {
     NSString * _previousTextFieldContent;
     UITextRange * _previousSelection;
+    NSMutableArray *_selectPictures;                    //保存选中的图片
+    LNPhotoLibaryController *_photoLibaryController;    //保持相册控制器的指针，方便传值
 }
+/**
+ *  picture编辑view
+ */
+@property (nonatomic, strong) X_SelectPicView *pictureView;
 /**
  *  发送按钮上的文字
  */
@@ -66,7 +74,6 @@
  *  选择图片的按钮
  */
 @property (nonatomic, strong) UIButton * picBtn;
-
 /***************AlertView**********************/
 @property (nonatomic, strong) UIView * alertBackView;
 
@@ -85,7 +92,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+
+//    _selectPictures = [@[] mutableCopy];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imagePickFinished:) name:IMAGE_PICKER object:nil];;
+    
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
@@ -111,6 +122,35 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewChanged) name:UITextViewTextDidChangeNotification object:nil];
     // 对键盘添加监听
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardChanged:) name:UIKeyboardWillChangeFrameNotification object:nil];
+}
+
+- (void)_initPicSelectView:(NSMutableArray *)info{
+    if (!_pictureView) {
+        _pictureView = [X_SelectPicView shareSelectPicView];
+        _pictureView.delegate = self;
+        __block typeof(self) weakSelf = self;
+        _pictureView.Commplete = ^{ //跳转到相册
+            UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:_photoLibaryController];
+            [weakSelf presentViewController:navigation animated:YES completion:^{
+                
+            }];
+        };
+    
+        [self.view addSubview:_pictureView];
+    }
+    
+    for (LNPhotoAsset *photoAsset in info) {
+        if (![_selectPictures containsObject:photoAsset]) {
+            [_selectPictures addObject:photoAsset];
+        }
+    }
+    
+    _pictureView.dataSource = _selectPictures;
+    for (LNPhotoAsset * asset in _selectPictures) {
+        UIImage * image = asset.thumbImage;
+        [self.imagesArr addObject:image];
+    }
+    
 }
 
 
@@ -154,12 +194,31 @@
     
 }
 
+- (void)imagePickFinished:(NSNotification *)notification{
+    [_field resignFirstResponder];
+    [_textView resignFirstResponder];
+    
+    NSMutableArray *info = notification.object;
+    [self _initPicSelectView:info];
+    
+
+}
+
 - (void)dismiss{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark --- 发送事件
 - (void)sendAction{
+    
+//    NSLog(@"%@", _selectPictures);
+//    LNPhotoAsset * asset = _selectPictures[0];
+//    /*
+//     *thumbImage;
+//     *screenWidthImage
+//     */
+//    NSLog(@"%@", asset.thumbImage);
+//    NSLog(@"%@", asset.screenWidthImage);
     
     // 得判断是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
@@ -178,9 +237,7 @@
     }else{
         [self addAlertView];
     }
-    
 }
-
 #pragma mark --- 添加登录的alertView
 - (void)addAlertView{
     LSAlertView * alertView = [[LSAlertView alloc] init];
@@ -204,7 +261,7 @@
 #pragma mark --- LSAlertViewDeleagte
 /**
  *  取消按钮的点击事件
-
+ 
  */
 - (void)lsAlertView:(LSAlertView *)alertView cancel:(NSString * )cancel {
     [self removeAlerView];
@@ -218,7 +275,7 @@
 }
 /**
  *  确定按钮的点击事件
-
+ 
  */
 // 登录按钮
 - (void)lsAlertView:(LSAlertView *)alertView sure:(NSString *)sure
@@ -230,7 +287,6 @@
     UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
     [self presentViewController:loginNav animated:YES completion:nil];
 }
-
 #pragma mark --- 截掉字符串前面的空格的方法
 - (NSString *)trim:(NSString *)val trimCharacterSet:(NSCharacterSet *)characterSet {
     NSString *returnVal = @"";
@@ -275,7 +331,8 @@
         
         for (int i = 0; i < self.imagesArr.count; i ++) {
             UIImage * image = self.imagesArr[i];
-            NSData * data = UIImageJPEGRepresentation(image, 0.3);
+            NSData * data = UIImagePNGRepresentation(image);
+//            NSData * data = UIImageJPEGRepresentation(image, 0.3);
             
 //            NSData * data = UIImagePNGRepresentation(image);
             NSString * name = [NSString stringWithFormat:@"myfile%d", i];
@@ -451,46 +508,28 @@
 }
 #pragma mark ---- 选择图片的事件
 - (void)selectPic{
-    NSLog(@"选择图片....");
-    UIImagePickerController * imagePicker = [[UIImagePickerController alloc] init];
-    imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-    imagePicker.delegate = self;
-    imagePicker.allowsEditing = YES;
-    [self presentViewController:imagePicker animated:YES completion:nil];
+    
+    _photoLibaryController = [[LNPhotoLibaryController alloc] init];
+    _selectPictures = _photoLibaryController.selectedPhotos;
+    _photoLibaryController.maxSelectedCount = 9;
+    UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:_photoLibaryController];
+    [self presentViewController:navigation animated:YES completion:^{
+        
+    }];
 }
 
-#pragma mark -------- UIImagePickerControllerDelegate  选择图片完成的时候调用
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info
-{
-    // 获取到选择的图片
-    UIImage * image = info[UIImagePickerControllerOriginalImage];
-    [self.imagesArr addObject:image];
-    
-    NSLog(@"%lu", self.imagesArr.count);
-    
-    _pictures.image = image;
-    CGFloat picsY = CGRectGetMaxY(_selectPicView.frame);
-    // pictures的高度是和选择的相片个数有关的
-    NSInteger picCount = self.imagesArr.count;  // 相片的个数
-    NSInteger rows = picCount / 5 + 1; // 相片的行数
-    CGFloat picsH = 70 + (rows ) * (70 + 15) + 64*0.5;
-    
-    
-    _pictures.frame = CGRectMake(0, HEIGHT - picsH - 64, WIDTH, picsH);
-    
-    NSLog(@"%f", picsH);
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
-    self.navigationItem.rightBarButtonItem.enabled = YES;
-    
-    if (self.imagesArr.count == 9) {
-        // 最多上传九张图片
-        _picBtn.userInteractionEnabled = NO;
-    } else{
-        _picBtn.userInteractionEnabled = YES;
-    }
-    
+#pragma mark - X_SelectPicViewDelegate
+- (void)didSelectPicView:(X_SelectPicView *)view atIndex:(NSInteger)index{
+    NSLog(@"您选中了第%ld长图片",(long)index);
 }
+
+- (void)deletePicView:(X_SelectPicView *)view atIndex:(NSInteger)index{
+    NSLog(@"%ld\n",(long)index);
+    [_selectPictures removeObjectAtIndex:index];
+    view.dataSource = _selectPictures;
+}
+
+
 
 - (void)deletePicWithIndex:(NSInteger)index{
     // 移除添加的图片r

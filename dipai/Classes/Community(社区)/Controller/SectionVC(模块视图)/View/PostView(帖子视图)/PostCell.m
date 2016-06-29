@@ -10,6 +10,8 @@
 #import "PostsModel.h"
 
 #import "PostFrameModel.h"
+//  用户模型
+#import "UserModel.h"
 
 
 #import "Masonry.h"
@@ -53,6 +55,7 @@
  */
 @property (nonatomic, strong) UIView * line;
 
+
 @end
 
 @implementation PostCell
@@ -63,7 +66,6 @@
     id cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     if (!cell) {
         cell = [[self alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
-                NSLog(@"创建新的单元格....");
     }
     
     return cell;
@@ -86,6 +88,8 @@
     
     // 头像
     UIImageView *iconView = [[UIImageView alloc] init];
+    iconView.layer.cornerRadius = 19 * IPHONE6_W_SCALE;
+    iconView.layer.masksToBounds = YES;
     [self addSubview:iconView];
     _iconView = iconView;
     
@@ -126,7 +130,7 @@
     
     // 图片
     LSPhotoView * picView = [[LSPhotoView alloc] init];
-    picView.backgroundColor = [UIColor redColor];
+//    picView.backgroundColor = [UIColor redColor];
     [self addSubview:picView];
     _picView = picView;
     
@@ -137,6 +141,7 @@
     _line = line;
     
     
+
 }
 - (void)setFrameModel:(PostFrameModel *)frameModel{
     _frameModel = frameModel;
@@ -162,9 +167,7 @@
     timeDic[NSFontAttributeName] = Font11;
     CGSize timeSize = [_frameModel.postsModel.addtime sizeWithAttributes:timeDic];
     _timeView.frame = (CGRect){{timeX,timeY},timeSize};
-    
-    NSLog(@"addtime:---------%@", _frameModel.postsModel.addtime);
-    
+        
     _timeView.text = _frameModel.postsModel.addtime;
     
     // 评论数
@@ -187,30 +190,10 @@
     // 图片
     _picView.frame = _frameModel.picsFrame;
     
+    NSLog(@"%lu", _frameModel.postsModel.picname.count);
+    
     _picView.picArr = (NSArray *)_frameModel.postsModel.picname;
-//    if (_picView.picArr.count == 1) {
-//        UIImageView * image = [[UIImageView alloc] init];
-//        image.frame = CGRectMake(0, 0, 120 * IPHONE6_W_SCALE, 80 * IPHONE6_W_SCALE);
-//        [_picView addSubview:image];
-//        [image sd_setImageWithURL:[NSURL URLWithString:_frameModel.postsModel.picname[0]] placeholderImage:[UIImage imageNamed:@"123"]];
-//    }
-//    if (_picView.picArr.count == 2) {
-//        for (int i = 0; i < 2; i ++) {
-//            UIImageView * image = [[UIImageView alloc] init];
-//            image.frame = CGRectMake(0+ i * (80 + 5), 0 , 80 * IPHONE6_W_SCALE , 80 * IPHONE6_W_SCALE);
-//            [_picView addSubview:image];
-//            [image sd_setImageWithURL:[NSURL URLWithString:_frameModel.postsModel.picname[i]] placeholderImage:[UIImage imageNamed:@"123"]];
-//        }
-//    }
-//    if (_picView.picArr.count >= 3) {
-//        for (int i = 0; i < 3; i ++) {
-//            UIImageView * image = [[UIImageView alloc] init];
-//            image.frame = CGRectMake(0+ i * (80 + 5), 0 , 80 * IPHONE6_W_SCALE , 80 * IPHONE6_W_SCALE);
-//            [_picView addSubview:image];
-//            [image sd_setImageWithURL:[NSURL URLWithString:_frameModel.postsModel.picname[i]] placeholderImage:[UIImage imageNamed:@"123"]];
-//        }
-//    }
-//    
+   
     
     // 底部横线
     [_line mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -219,6 +202,9 @@
         make.width.equalTo(@(WIDTH));
         make.height.equalTo(@0.5);
     }];
+    
+ 
+    
 }
 
 

@@ -94,7 +94,7 @@
 #pragma mark --- 设置导航栏
 - (void)setUpNavigationBar
 {
-    [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
+//    [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
     self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui_baise"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
     
     [self addSegmentControl];
@@ -396,7 +396,10 @@
 }
 
 /******************************请求数据*************************/
-
+//
+//- (UIStatusBarStyle)preferredStatusBarStyle{
+//    return UIStatusBarStyleLightContent;
+//}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

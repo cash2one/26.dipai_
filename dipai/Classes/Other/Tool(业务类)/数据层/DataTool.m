@@ -15,6 +15,7 @@
 #import "TournamentModel.h"
 #import "NewsListModel.h"
 
+/********************发现页***************/
 // 发现页模型
 #import "FindModel.h"
 // 发现页轮播页模型
@@ -39,6 +40,10 @@
 #import "EndMatchModel.h"
 // 进行中比赛模型（详情页）
 #import "MatchingModel.h"
+// 扑克名人列表模型
+#import "PokerListModel.h"
+// 更多名人列表模型
+#import "MorePokersModel.h"
 
 /******************社区*****************/
 // 论坛模型
@@ -47,6 +52,12 @@
 #import "PostsModel.h"
 // 加了type的帖子模型
 #import "TypePostModel.h"
+// 帖子详情页模型
+#import "PostDetailModel.h"
+
+/*****************我的页*****************/
+// 用户模型
+#import "UserModel.h"
 
 
 // 网页数据模型
@@ -518,6 +529,63 @@
     }];
 }
 
+// 获取扑克名人堂列表数据
++ (void)getPokerListDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSArray * listArr = responseObject[@"data"][@"list"];
+        
+        NSArray * pokerListModelArr = [PokerListModel objectArrayWithKeyValuesArray:listArr];
+        // 字典数组转模型数组
+        if (success) {
+            success(pokerListModelArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取更多扑克名人数据
++ (void)getMorePokerDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        
+        NSArray * dataArr = responseObject[@"data"];
+        
+        
+        // 字典数组转模型数组
+        NSArray * morePokersModelArr = [MorePokersModel objectArrayWithKeyValuesArray:dataArr];
+        
+        
+        if (success) {
+            success(morePokersModelArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 关注某人或取消对某人的关注
++ (void)PayAttentionOrCancleWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 字典数组转模型数组
+        
+        
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
 
 
 /*******************论坛页***********************/
@@ -557,9 +625,64 @@
         typePostModel.type = type;
         typePostModel.state = state;
         typePostModel.data = postsModelArr;
+        typePostModel.forum_section = responseObject[@"forum_section"];
         
         if (success) {
             success(typePostModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取帖子详情页
++ (void)getPostDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 字典转模型
+        PostDetailModel * detailModel = [PostDetailModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(detailModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/***************************我的页*******************/
+// 获取个人中心的数据
++ (void)getPersonDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        
+        NSLog(@"获取个人中心获取到的数据：%@", responseObject);
+        // 字典转模型
+        UserModel * userModel = [UserModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(userModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取收藏的数据
++ (void)getCollectionDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSLog(@"获取到收藏的数据：%@", responseObject);
+        
+        // 字典转模型
+        if (success) {
+            success(responseObject);
         }
     } failure:^(NSError *error) {
         

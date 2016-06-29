@@ -48,12 +48,31 @@
 /***赛事***/
 // 赛事列表
 #define MatchURL @"http://dipaiapp.replays.net/app/club/list/5"
+//#define MatchURL @"http://10.0.0.14:8080/app/club/list/5"
+// 名人堂首页接口
+#define PokerListURL @"http://dipaiapp.replays.net/app/user/poker"
+// 名人堂列表接口
+#define MorePokersURL @"http://dipaiapp.replays.net/app/poker/list"
+// 关注／取消关注接口
+#define PayAttentionURL @"http://dipaiapp.replays.net/app/operation/follow"
 
 /********************社区页*********************/
 // 论坛首页
 #define CommunityURL @"http://dipaiapp.replays.net/app/forum"
+//#define CommunityURL @"http://10.0.0.14:8080/app/forum"
+
 // 发布帖子
 #define SendPostsURL @"http://dipaiapp.replays.net/app/add/forum/"
+//#define SendPostsURL @"http://10.0.0.14:8080/app/add/forum/"
+// 回帖即评论帖子
+#define ReplyPostsURL @"http://dipaiapp.replays.net/app/forum/add/comment"
+
+/*******************我的页****************/
+#define PersonURL @"http://dipaiapp.replays.net/app/my"
+//#define PersonURL @"http://10.0.0.14:8080/app/my"
+// 获取收藏的接口
+#define MyCollectionURL @"http://dipaiapp.replays.net/app/my/collection"
+//#define MyCollectionURL @"http://10.0.0.14:8080/app/my/collection"
 
 
 //#define UserName @"username"
@@ -117,6 +136,7 @@
 #define Font20 [UIFont systemFontOfSize:20*IPHONE6_W_SCALE]
 
 // 颜色
+#define SeparateColor [UIColor colorWithRed:240 / 255.0 green:239 / 255.0 blue:245 / 255.0 alpha:1]
 #define ColorBlue [UIColor colorWithRed:0 / 255.f green:122 / 255.f blue:255 / 255.f alpha:0.6]
 #define ColorBlack60 [UIColor colorWithRed:0 / 255.f green:0 / 255.f blue:0 / 255.f alpha:0.6]
 #define ColorBlack30 [UIColor colorWithRed:0 / 255.f green:0 / 255.f blue:0 / 255.f alpha:0.3]

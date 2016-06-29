@@ -11,6 +11,8 @@
 #import "SVProgressHUD.h"
 // 发布页面
 #import "SendVC.h"
+// 帖子详情页
+#import "PostDetailVC.h"
 
 #import "MJChiBaoZiFooter2.h"
 #import "MJChiBaoZiHeader.h"
@@ -52,6 +54,14 @@
     
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:YES];
+    //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
+    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+}
+
 - (NSMutableArray *)dataSource{
     if (_dataSource == nil) {
         _dataSource = [NSMutableArray array];
@@ -64,7 +74,7 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    self.navigationItem.title = self.titleStr;
+//    self.navigationItem.title = self.titleStr;
     [self setUpNavigationBar];
     
     NSLog(@"%@", self.wapurl);
@@ -85,7 +95,6 @@
 }
 #pragma mark ---编辑事件
 - (void)writeAction{
-    NSLog(@"'''''");
     SendVC * sendVC = [[SendVC alloc] init];
     sendVC.sectionModel = self.sectionModel;
     UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:sendVC];
@@ -136,13 +145,19 @@
         NSMutableArray * frameArr = [NSMutableArray array]; // 用来装frame模型
         
         NSArray * postsModelArr = typePostModel.data;
+        self.navigationItem.title = typePostModel.forum_section;
         
         for (PostsModel * postsModel in postsModelArr) {
             PostFrameModel * frameModel = [[PostFrameModel alloc] init];
             
+            
             frameModel.postsModel = postsModel;
+            
+            
             [frameArr addObject:frameModel];
         }
+        
+        self.navigationItem.title = typePostModel.forum_section;
         
         self.dataSource = frameArr;
         [self.tableView reloadData];
@@ -217,6 +232,10 @@
 #pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     NSLog(@"%lu", indexPath.row);
+    PostDetailVC * postDetailVC = [[PostDetailVC alloc] init];
+    PostFrameModel * model = self.dataSource[indexPath.row];
+    postDetailVC.wapurl = model.postsModel.wapurl;
+    [self.navigationController pushViewController:postDetailVC animated:YES];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -329,15 +329,6 @@
                 [self.navigationController popViewControllerAnimated:YES];
             }
             
-            //        NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-            //        int i = 0;
-            //        for (NSHTTPCookie *cookie in [cookieJar cookies]) {
-            //
-            //            NSString * name = [cookie name];
-            //            NSString * value = [cookie value];
-            //            NSLog(@"name:%@===value:%@", name, value);
-            //            i ++;
-            //        }
             
         } failure:^(NSError * error) {
             

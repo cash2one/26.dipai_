@@ -32,6 +32,8 @@
 // 用户模型
 #import "UserModel.h"
 
+#import "UIImageView+WebCache.h"
+
 @interface MineController ()<LSAlertViewDeleagte>
 {
     NSArray *_cookies;
@@ -43,6 +45,10 @@
  *  表格
  */
 @property (nonatomic, strong) UITableView * tableView;
+/**
+ *  登录头像
+ */
+@property (nonatomic, strong) UIButton * iconBtn;
 
 @property (nonatomic, strong) UILabel * loginLbl;
 /**
@@ -77,9 +83,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
-    //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
-//    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
     
     // 每次出现的时候都要重新获取数据
     [self getData];
@@ -90,9 +93,6 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
-    //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
     
     self.navigationController.navigationBarHidden = NO;
 }
@@ -115,12 +115,15 @@
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * name = [defaults objectForKey:Cookie];
     NSDictionary * dataDic = [defaults objectForKey:User];
+    
+    NSLog(@"持久性存储:%@", dataDic);
+    
     // 字典转模型
     UserModel * userModel = [UserModel objectWithKeyValues:dataDic];
     _name = name;
     if (name) {
         NSLog(@"已登录");
-        _loginLbl.text = userModel.username;
+//        _loginLbl.text = userModel.username;
         [_loginLbl sizeToFit];
         _loginLbl.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
         _line.hidden = NO;
@@ -131,6 +134,22 @@
         _picBtn.hidden = NO;
         _fansNum.text = userModel.count_follow; // 关注数
         _attentionNum.text = userModel.count_followed;  // 粉丝数
+        
+        // 登录成功以后才能进行网络数据的请求
+        // 获取网络上的数据
+        [DataTool getPersonDataWithStr:PersonURL parameters:nil success:^(id responseObject) {
+            
+            UserModel * model = responseObject;
+            // 设置数据
+            _fansNum.text = model.follow;
+            _attentionNum.text = model.row;
+            _loginLbl.text = model.username;
+            [_iconBtn.imageView sd_setImageWithURL:[NSURL URLWithString:model.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+        } failure:^(NSError * error) {
+            
+            NSLog(@"获取个人中心出错:%@", error);
+        }];
+        
     } else{
         NSLog(@"没有登录");
         _line.hidden = YES;
@@ -179,6 +198,7 @@
     iconBtn.bounds = CGRectMake(0, 0, Margin156 * IPHONE6_W_SCALE, Margin156 * IPHONE6_W_SCALE);
     [iconBtn addTarget:self action:@selector(loginAction) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:iconBtn];
+    _iconBtn = iconBtn;
     // 登录后的头像
     UIButton * picBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     picBtn.frame = iconBtn.frame;
@@ -422,6 +442,7 @@
 }
 - (void)lsAlertView:(LSAlertView *)alertView sure:(NSString *)sure{
     [self removeAlerView];
+    [self loginAction];
 }
 
 - (void)removeAlerView

@@ -10,6 +10,7 @@
 
 #import "DataBase.h"
 #import "NewsListModel.h"
+#import "DataTool.h"
 
 // 自定义单元格
 #import "InformationCell.h"
@@ -41,14 +42,60 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
     
+    // 设置导航栏
+    [self setNavigationBar];
+    
     // 获取数据
     [self getData];
+}
+#pragma mark --- 设置导航条
+- (void)setNavigationBar {
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+    
+    // 左侧按钮
+    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
+    // 标题
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
+    //    titleLabel.backgroundColor = [UIColor redColor];
+    titleLabel.font = [UIFont systemFontOfSize:38/2];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.text = @"我的收藏";
+    self.navigationItem.titleView = titleLabel;
+    
+    UIButton * editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    editBtn.frame = CGRectMake(0, 0, 50, 50);
+//    editBtn.backgroundColor = [UIColor redColor];
+    editBtn.titleLabel.textAlignment = NSTextAlignmentRight;
+    UILabel * editLbl = [[UILabel alloc] initWithFrame:editBtn.bounds];
+    editLbl.text = @"编辑";
+    editLbl.textAlignment = NSTextAlignmentRight;
+    editLbl.textColor = [UIColor blackColor];
+    [editBtn addSubview:editLbl];
+    
+    [editBtn addTarget:self action:@selector(editAction) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:editBtn];
+}
+#pragma mark --- 返回
+- (void)returnBack{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark --- 获取数据
 - (void)getData{
-    self.newslistArr = (NSMutableArray *)[DataBase findAllTracks];
-    NSLog(@"---收藏中的数据源%@", self.newslistArr);
+    
+    [DataTool getCollectionDataWithStr:MyCollectionURL parameters:nil success:^(id responseObject) {
+        
+        
+        
+    } failure:^(NSError * error) {
+        
+    }];
+}
+
+#pragma mark --- 编辑按钮的点击事件
+- (void)editAction{
+    NSLog(@"进行编辑...");
 }
 
 - (void)didReceiveMemoryWarning {
