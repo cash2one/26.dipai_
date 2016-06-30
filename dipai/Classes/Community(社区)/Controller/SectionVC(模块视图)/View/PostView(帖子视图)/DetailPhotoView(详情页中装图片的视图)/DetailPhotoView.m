@@ -92,20 +92,11 @@
     
     CGFloat height = 0;
     
-//    NSLog(@"%lu", _picArr.count);
     
     if (self.imagesArr.count > 0) {
         for (int i = 0; i < _picArr.count; i ++) {
-            
-            
-//            NSLog(@"%@", self.imagesArr);
-//            NSLog(@"%lu", self.imagesArr.count);
-//            
+          
             UIImageView * imageV = self.imagesArr[i];
-            
-//            NSLog(@"%@", self.imagesArr[i]);
-//            
-//            NSLog(@"%@", _picArr[i]);
             
             CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_picArr[i]]];
             CGFloat h = size.height;    // 图片的高度

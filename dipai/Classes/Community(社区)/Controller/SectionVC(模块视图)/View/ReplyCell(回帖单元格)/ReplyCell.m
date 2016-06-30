@@ -66,6 +66,14 @@
 
 @property (nonatomic, strong) NSArray * pics;
 
+/****************对回帖的回复****************/
+/**
+ *  对回帖的回复的视图
+ */
+@property (nonatomic, strong)UIView * reReplyView;
+@property (nonatomic, strong) UILabel * reNameView;
+@property (nonatomic, strong) UILabel * reContentView;
+
 @end
 
 @implementation ReplyCell
@@ -93,15 +101,11 @@
 {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         
-        //        self.backgroundColor = [UIColor redColor];
-        
-//        NSLog(@"%@", array);
-        
         self.pics = array;
         // 添加子控件
         [self setUpChildView];
         
-        
+//        self.backgroundColor = [UIColor yellowColor];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
@@ -110,7 +114,6 @@
 
 - (void)setFrameModel:(ReplyFrameModel *)frameModel{
     
-//    NSLog(@"%@", frameModel.replyModel.picname);
     
     // 获取到回复的frame模型
     _frameModel = frameModel;
@@ -164,9 +167,33 @@
     [self addSubview:picView];
     _picView = picView;
     
+    
+    // 对回帖的回复
+    
+    UIView * reReplyView = [[UIView alloc] init];
+    reReplyView.backgroundColor = [UIColor colorWithRed:255 / 255.f green:248 / 255.f blue:248 / 255.f alpha:1];
+//     reReplyView.backgroundColor = [UIColor colorWithRed:288 / 255.f green:0 / 255.f blue:0 / 255.f alpha:0.7];
+    
+    [self addSubview:reReplyView];
+    _reReplyView = reReplyView;
+    
+    UILabel * reNameView = [[UILabel alloc] init];
+    reNameView.font = Font13;
+    reNameView.textColor = Color102;
+    [reReplyView addSubview:reNameView];
+    _reNameView = reNameView;
+    
+    UILabel * reContentView = [[UILabel alloc] init];
+    reContentView.font = Font14;
+    reContentView.textColor = [UIColor blackColor];
+    [reReplyView addSubview:reContentView];
+    _reContentView = reContentView;
+    
+    
     // 底部横线
     UIView * line = [[UIView alloc] init];
     line.backgroundColor = Color238;
+//    line.backgroundColor = [UIColor greenColor];
     [self addSubview:line];
     _line = line;
 }
@@ -224,9 +251,27 @@
     _picView.picArr = picArr;
     
     
+    // 对回帖的回复
+    _reReplyView.frame = _frameModel.ReReplyFrame;
+    _reNameView.text = _frameModel.replyModel.reply[@"username"];
+    _reContentView.text = _frameModel.replyModel.reply[@"content"];
+    _reNameView.frame = _frameModel.ReNameFrame;
+    _reContentView.frame = _frameModel.ReContentFrame;
+    
+    
+    NSLog(@"rereplyframe.height:---%f", _frameModel.ReReplyFrame.size.height);
+    
+    CGFloat lineY = 0.0;
     // 底部横线
-    CGFloat lineY = CGRectGetMaxY(_frameModel.ReplyFrame);
+    if (_frameModel.ReReplyFrame.size.height) {
+        lineY = CGRectGetMaxY(_frameModel.ReReplyFrame) + 14*IPHONE6_H_SCALE;
+    }else{
+        lineY = CGRectGetMaxY(_frameModel.ReplyFrame);
+    }
+    
     _line.frame = CGRectMake(0, lineY, WIDTH, 0.5);
+    
+//    self.frame = CGRectMake(0, 0, WIDTH, lineY);
     
 }
 

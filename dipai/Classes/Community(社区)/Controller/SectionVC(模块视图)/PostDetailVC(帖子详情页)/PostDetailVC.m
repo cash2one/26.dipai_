@@ -59,7 +59,7 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     
-    [self getData];
+//    [self getData];
 }
 
 - (void)viewDidLoad {
@@ -184,6 +184,7 @@
 //    NSLog(@"%@", frameModel.replyModel.picname);
     cell.delegate = self;
     cell.frameModel = frameModel;
+    
     return cell;
     
 }
@@ -191,22 +192,24 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     ReplyFrameModel * frameModel = self.dataSource[indexPath.row];
     
-    NSLog(@"单元格的高度：%f", frameModel.cellHeight);
+    NSLog(@"单元格的高度：%f    %lu", frameModel.cellHeight, indexPath.row);
     
     return frameModel.cellHeight;
 }
 
 #pragma mark --- 获取数据
 - (void)getData{
-    
-    NSLog(@"%@", self.wapurl);
-    
+        
     [DataTool getPostDetailDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         
         PostDetailModel * detailModel = responseObject;
         _detailModel = detailModel;
         // 字典转模型
         PostDaraModel * dataModel = [PostDaraModel objectWithKeyValues:_detailModel.data];
+        
+        if (self.dataSource.count > 0) {
+            [self.dataSource removeAllObjects];
+        }
         
         NSArray * commentArr = dataModel.comment;
         for (ReplyModel * model in commentArr) {
@@ -217,6 +220,9 @@
             
             [self.dataSource addObject:frameModel];
         }
+        
+        NSLog(@"%lu", self.dataSource.count);
+        
         // 设置数据
         [self setData];
         [self.tableView reloadData];

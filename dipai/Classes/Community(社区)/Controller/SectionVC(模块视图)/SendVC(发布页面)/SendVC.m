@@ -210,15 +210,7 @@
 
 #pragma mark --- 发送事件
 - (void)sendAction{
-    
-//    NSLog(@"%@", _selectPictures);
-//    LNPhotoAsset * asset = _selectPictures[0];
-//    /*
-//     *thumbImage;
-//     *screenWidthImage
-//     */
-//    NSLog(@"%@", asset.thumbImage);
-//    NSLog(@"%@", asset.screenWidthImage);
+
     
     // 得判断是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
@@ -411,14 +403,13 @@
             _field.selectedTextRange = _previousSelection;
         }
         
-        
     }else
     {
         _field.hidePlaceHolder = NO;
         
     }
     
-    if (_field.text.length && _textView.text.length) {
+    if (_field.text.length && _textView.text.length>3) {
         _sendBtn.userInteractionEnabled = YES;
         _sendLbl.textColor = [UIColor blackColor];
     } else{

@@ -59,12 +59,16 @@
     CGRect contentsRect = [_postsModel.introduction boundingRectWithSize:CGSizeMake(contentsW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentsDic context:nil];
     _contentsFrame = (CGRect){{contentsX, contentsY}, contentsRect.size};
     
+    // 如果有对回帖的回复
+//    if () {
+//        <#statements#>
+//    }
+    
+    
     // 帖子图片
     CGFloat postH = CGRectGetMaxY(_contentsFrame) + 14 * IPHONE6_H_SCALE;   // 帖子的高度
     
     if (_postsModel.picname) {    // 如果有图片
-        
-        
         
         NSLog(@"----图片的个数:%lu", _postsModel.picname.count);
         CGFloat photosX = titleX;

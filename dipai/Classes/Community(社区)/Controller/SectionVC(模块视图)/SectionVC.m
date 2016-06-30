@@ -30,8 +30,12 @@
 // 帖子单元格
 #import "PostCell.h"
 
+#import "LSAlertView.h"
+// 登录页面
+#import "LoginViewController.h"
+
 #import "DataTool.h"
-@interface SectionVC ()<UITableViewDataSource, UITableViewDelegate>
+@interface SectionVC ()<UITableViewDataSource, UITableViewDelegate, LSAlertViewDeleagte>
 /**
  *  表格
  */
@@ -40,6 +44,10 @@
  * 数据源
  */
 @property (nonatomic, strong) NSMutableArray * dataSource;
+
+@property (nonatomic, strong) UIView * alertBackView;
+
+@property (nonatomic, strong) LSAlertView * alertView;
 
 @end
 
@@ -95,10 +103,66 @@
 }
 #pragma mark ---编辑事件
 - (void)writeAction{
-    SendVC * sendVC = [[SendVC alloc] init];
-    sendVC.sectionModel = self.sectionModel;
-    UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:sendVC];
-    [self presentViewController:nav animated:YES completion:nil];
+    
+    // 先判断是否登录
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * cookieName = [defaults objectForKey:Cookie];
+    if (cookieName) {
+        SendVC * sendVC = [[SendVC alloc] init];
+        sendVC.sectionModel = self.sectionModel;
+        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:sendVC];
+        [self presentViewController:nav animated:YES completion:nil];
+    }else{
+        [self addAlertView];
+    }
+}
+
+#pragma mark --- 添加登录的alertView
+- (void)addAlertView{
+    LSAlertView * alertView = [[LSAlertView alloc] init];
+    alertView.delegate = self;
+    CGFloat x = Margin105 * IPHONE6_W_SCALE;
+    CGFloat y = Margin574 * IPHONE6_H_SCALE;
+    CGFloat w = Margin540 * IPHONE6_W_SCALE;
+    CGFloat h = Margin208 * IPHONE6_H_SCALE;
+    alertView.frame = CGRectMake(x, y, w, h);
+    UIView * alertBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    alertBackView.backgroundColor = ColorBlack30;
+    // 当前顶层窗口
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    // 添加到灰色的背景图
+    [window addSubview:alertBackView];
+    [window addSubview:alertView];
+    _alertBackView = alertBackView;
+    _alertView = alertView;
+}
+#pragma mark -- LSAlertViewDeleagte
+/**
+ *  取消按钮的点击事件
+ 
+ */
+- (void)lsAlertView:(LSAlertView *)alertView cancel:(NSString * )cancel{
+    [self removeAlerView];
+}
+
+- (void)removeAlerView
+{
+    // 移除提示框的背景图
+    [_alertBackView removeFromSuperview];
+    // 移除提示框
+    [_alertView removeFromSuperview];
+}
+/**
+ *  确定按钮的点击事件
+
+ */
+- (void)lsAlertView:(LSAlertView *)alertView sure:(NSString *)sure{
+    // 移除提示框
+    [self removeAlerView];
+    
+    LoginViewController * loginVC = [[LoginViewController alloc] init];
+    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    [self presentViewController:loginNav animated:YES completion:nil];
 }
 #pragma mark --- 添加表格
 - (void)addTableView{
