@@ -51,10 +51,7 @@
  */
 @property (nonatomic, strong) UIView * line;
 
-/**
- *  楼层
- */
-@property (nonatomic, strong) UILabel * indexLbl;
+
 /**
  *  回复按钮
  */
@@ -128,7 +125,7 @@
     // 昵称
     UILabel *nameView = [[UILabel alloc] init];
     nameView.font = Font15;
-    //    nameView.backgroundColor = [UIColor redColor];
+    nameView.textColor = [UIColor redColor];
     [self addSubview:nameView];
     _nameView = nameView;
     
@@ -141,6 +138,8 @@
     
     // 楼层
     UILabel * indexLbl = [[UILabel alloc] init];
+    indexLbl.font = Font11;
+    indexLbl.textColor = Color153;
     [self addSubview:indexLbl];
     _indexLbl = indexLbl;
     
@@ -218,6 +217,12 @@
     _nameView.frame = _frameModel.nameFrame;
       _nameView.text = _frameModel.replyModel.username;
     
+    CGFloat indexX = CGRectGetMaxX(_nameView.frame) + 14 * IPHONE6_W_SCALE;
+    CGFloat indexY = 22 * IPHONE6_H_SCALE;
+    CGFloat indexW = WIDTH-indexX;
+    CGFloat indexH = 11 * IPHONE6_W_SCALE;
+    _indexLbl.frame = CGRectMake(indexX, indexY, indexW, indexH);
+    
     // 时间
     CGFloat timeX = _nameView.frame.origin.x;
     CGFloat timeY = CGRectGetMaxY(_nameView.frame) + Margin14 * IPHONE6_H_SCALE;
@@ -228,7 +233,7 @@
     _timeView.text = _frameModel.replyModel.addtime;
     
     // 楼层
-    _indexLbl.frame = _frameModel.replyIndexFrame;
+//    _indexLbl.frame = _frameModel.replyIndexFrame;
     
     // 回复按钮
     [_replyBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -271,7 +276,6 @@
     
     _line.frame = CGRectMake(0, lineY, WIDTH, 0.5);
     
-//    self.frame = CGRectMake(0, 0, WIDTH, lineY);
     
 }
 

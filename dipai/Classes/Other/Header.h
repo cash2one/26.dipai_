@@ -55,6 +55,10 @@
 #define MorePokersURL @"http://dipaiapp.replays.net/app/poker/list"
 // 关注／取消关注接口
 #define PayAttentionURL @"http://dipaiapp.replays.net/app/operation/follow"
+// 获取更多帖子的接口
+#define MorePostsURL  @"http://dipaiapp.replays.net/app/my/forum"
+// 获取更多回复的接口
+#define MoreReplysURL @"http://dipaiapp.replays.net/app/my/reply"
 
 /********************社区页*********************/
 // 论坛首页

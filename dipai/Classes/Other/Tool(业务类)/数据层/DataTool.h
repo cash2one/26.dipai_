@@ -76,6 +76,12 @@
 + (void)getMorePokerDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 // 关注或取消关注某人
 + (void)PayAttentionOrCancleWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取用户的主页、发帖、回复等信息数据
++ (void)getSBDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取更多帖子数据
++ (void)GetMorePostsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取更多回复的数据
++ (void)getMoreReplysDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
 /*********************社区页******************/
 // 获取论坛首页

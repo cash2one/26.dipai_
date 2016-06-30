@@ -18,6 +18,10 @@
 @end
 
 @interface ReplyCell : UITableViewCell
+/**
+ *  楼层
+ */
+@property (nonatomic, strong) UILabel * indexLbl;
 
 /**
  *  回复frame模型

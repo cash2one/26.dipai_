@@ -25,6 +25,24 @@
  "wapurl":"http://dipaiapp.replays.net/app/forum/view/10",
  "userurl":
  */
+
+/*
+ "username":"Nick",
+ "face":"",
+ "id":"62",
+ "title":"雨夜空虚荣光芒种类比起点评",
+ "uid":"25",
+ "introduction":"还GG",
+ "picname":[
+ "/public/upload/user_forum_cm/25/20160629/1467183056725mim.jpg",
+ "/public/upload/user_forum_cm/25/20160629/1467183056125mim.jpg",
+ "/public/upload/user_forum_cm/25/20160629/1467183056825mim.jpg"
+ ],
+ "addtime":"1467183057",
+ "comment":"8",
+ "wapurl":"http://dipaiapp.replays.net/app/forum/view/62",
+ "userurl":
+ */
 /**
 *  用户ID
 */
@@ -69,4 +87,9 @@
  *  用户页接口
  */
 @property (nonatomic, copy) NSString * userurl;
+
+/**
+ *  用户ID
+ */
+@property (nonatomic, copy) NSString * uid;
 @end

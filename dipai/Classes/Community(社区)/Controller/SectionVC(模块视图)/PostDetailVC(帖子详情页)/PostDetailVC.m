@@ -185,6 +185,8 @@
     cell.delegate = self;
     cell.frameModel = frameModel;
     
+    cell.indexLbl.text = [NSString stringWithFormat:@"%lu楼", indexPath.row + 2];
+    
     return cell;
     
 }

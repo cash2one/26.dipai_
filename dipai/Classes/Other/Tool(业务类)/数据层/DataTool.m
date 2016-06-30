@@ -44,6 +44,10 @@
 #import "PokerListModel.h"
 // 更多名人列表模型
 #import "MorePokersModel.h"
+// 名人主页模型
+#import "SBModel.h"
+// 回帖用户模型
+#import "ReplyModel.h"
 
 /******************社区*****************/
 // 论坛模型
@@ -578,6 +582,76 @@
         
         if (success) {
             success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取某人主页数据
++ (void)getSBDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 发帖数组
+        NSArray * app_myArr = responseObject[@"data"][@"app_my"];
+        NSArray * comment = responseObject[@"data"][@"comment"];
+        // 字典数组转模型数组
+        NSArray * postsModelArr = [PostsModel objectArrayWithKeyValuesArray:app_myArr];
+        NSArray * replyModelArr = [ReplyModel objectArrayWithKeyValuesArray:comment];
+        
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel.app_my = postsModelArr;
+        sbModel.comment = replyModelArr;
+        
+        if (success) {
+            success(sbModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取更多帖子数据
++ (void)GetMorePostsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 发帖数组
+        NSArray * app_myArr = responseObject[@"data"];
+        // 字典数组转模型数组
+        NSArray * postsModelArr = [PostsModel objectArrayWithKeyValuesArray:app_myArr];
+                
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel.app_my = postsModelArr;
+        
+        if (success) {
+            success(sbModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取更多回复的数据
++ (void)getMoreReplysDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 发帖数组
+        NSArray * app_myArr = responseObject[@"data"];
+        // 字典数组转模型数组
+        NSArray * postsModelArr = [PostsModel objectArrayWithKeyValuesArray:app_myArr];
+        
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel.app_my = postsModelArr;
+        
+        if (success) {
+            success(sbModel);
         }
     } failure:^(NSError *error) {
         

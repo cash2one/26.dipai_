@@ -214,6 +214,7 @@
 		C1D467E31D1CE48100570475 /* PostsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D467E21D1CE48100570475 /* PostsModel.m */; };
 		C1D467E71D1D029800570475 /* PostFrameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D467E61D1D029800570475 /* PostFrameModel.m */; };
 		C1D467EE1D1D22EC00570475 /* PostCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D467ED1D1D22EC00570475 /* PostCell.m */; };
+		C1D5913F1D252CAF00F492D5 /* SBModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D5913E1D252CAF00F492D5 /* SBModel.m */; };
 		C1D601731D06951600E986BD /* CommentsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D601721D06951600E986BD /* CommentsView.m */; };
 		C1D601761D06952D00E986BD /* ReplyView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D601751D06952D00E986BD /* ReplyView.m */; };
 		C1D6017A1D069D3700E986BD /* NSDate+MJ.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D601791D069D3700E986BD /* NSDate+MJ.m */; };
@@ -759,6 +760,8 @@
 		C1D467E61D1D029800570475 /* PostFrameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostFrameModel.m; sourceTree = "<group>"; };
 		C1D467EC1D1D22EC00570475 /* PostCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostCell.h; sourceTree = "<group>"; };
 		C1D467ED1D1D22EC00570475 /* PostCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostCell.m; sourceTree = "<group>"; };
+		C1D5913D1D252CAF00F492D5 /* SBModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBModel.h; sourceTree = "<group>"; };
+		C1D5913E1D252CAF00F492D5 /* SBModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBModel.m; sourceTree = "<group>"; };
 		C1D601711D06951600E986BD /* CommentsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentsView.h; sourceTree = "<group>"; };
 		C1D601721D06951600E986BD /* CommentsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentsView.m; sourceTree = "<group>"; };
 		C1D601741D06952D00E986BD /* ReplyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplyView.h; sourceTree = "<group>"; };
@@ -2584,6 +2587,15 @@
 			path = "PostView(帖子视图)";
 			sourceTree = "<group>";
 		};
+		C1D5913C1D252CA200F492D5 /* SBModel(某人主页模型) */ = {
+			isa = PBXGroup;
+			children = (
+				C1D5913D1D252CAF00F492D5 /* SBModel.h */,
+				C1D5913E1D252CAF00F492D5 /* SBModel.m */,
+			);
+			path = "SBModel(某人主页模型)";
+			sourceTree = "<group>";
+		};
 		C1D6016F1D06950400E986BD /* CommentsView(原评论视图) */ = {
 			isa = PBXGroup;
 			children = (
@@ -3037,6 +3049,7 @@
 		C1EDBE3A1D237265006B15A7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				C1D5913C1D252CA200F492D5 /* SBModel(某人主页模型) */,
 				C1EDBE4F1D23B197006B15A7 /* MorePokersModel(更多名人模型) */,
 				C1EDBE431D237406006B15A7 /* PokerListModel(首页名人模型) */,
 			);
@@ -3737,6 +3750,7 @@
 				C1248F6C1D1FD4050016B2F9 /* PostDaraModel.m in Sources */,
 				C12F9DD51CD9DA0D003CC7FC /* UIButton+AFNetworking.m in Sources */,
 				C12F9DD91CD9DA0D003CC7FC /* UIWebView+AFNetworking.m in Sources */,
+				C1D5913F1D252CAF00F492D5 /* SBModel.m in Sources */,
 				C1FDFCE91CD35F0A0078F3DE /* MASConstraintMaker.m in Sources */,
 				C1EFBA861CEF14790066C4FF /* Model.xcdatamodeld in Sources */,
 				C1FDFCCC1CD34CED0078F3DE /* AdvertisementView.m in Sources */,

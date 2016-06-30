@@ -10,6 +10,21 @@
 
 @interface ReplyModel : NSObject
 /*
+ "userid":"25",
+	                "username":"Nick",
+	                "face":"",
+	                "comment_id":"133",
+	                "lid":"17",
+	                "content":"v盖茨v干",
+	                "addtime":"2016-06-29 19:21:59",
+	                "picname":null,
+	                "reply":{
+	                    "username":"Nick",
+	                    "content":"该嘉年华健健康康看看看看"
+	                },
+                 "userurl":
+ */
+/*
  {
  "userid":"22",
  "username":"Liangsen226",
@@ -22,6 +37,12 @@
  "userurl":"http://dipaiapp.replays.net/app/user_space/22"
  },
  */
+
+/**
+*  不知什么ID
+*/
+@property (nonatomic, copy) NSString * lid;
+
 /**
 *  回帖用户ID
 */

@@ -167,10 +167,12 @@
 #pragma mark --- 发送事件
 - (void)sendAction{
     
-    
     // 得判断是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
+    
+    NSLog(@"cookiename:%@", cookieName);
+    
     if (cookieName) {
         NSLog(@"已经登录。。。进行发表");
         // 有图片发送图片
