@@ -242,11 +242,36 @@
         for ( int i = 0; i < _dataModel.imgs.count; i ++) {
             CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_dataModel.imgs[i]]];
             
+            NSLog(@"%@", _dataModel.imgs[i]);
             
+            NSLog(@"%f-------%f", size.height, size.width);
             CGFloat h = size.height;
+            CGFloat w = size.width;
             
-//            NSLog(@"%f", h);
+            if (w == 0) {
+                w = WIDTH - 30 * IPHONE6_W_SCALE;
+            }
             
+            NSLog(@"width--%f", size.width);
+            CGFloat scale = 1.0;
+            if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
+                
+                NSLog(@"scale1---%f", scale);
+                
+                scale = (WIDTH - 30 * IPHONE6_W_SCALE)/w;
+                
+                NSLog(@"%f", WIDTH - 30 * IPHONE6_W_SCALE);
+                NSLog(@"%f", w);
+                NSLog(@"%f", scale);
+                
+                 h = h * scale;
+            } else{
+                scale = 1.0;
+                h = h;
+            }
+            NSLog(@"scale==%f", scale);
+            
+           
             height = height + h + 8 * IPHONE6_H_SCALE;
             
 //            NSLog(@"%f", height);

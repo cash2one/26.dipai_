@@ -26,4 +26,8 @@
  *  我的回复
  */
 @property (nonatomic, strong) NSArray * comment;
+/**
+ *  名人数据
+ */
+@property (nonatomic, strong) NSDictionary * data;
 @end

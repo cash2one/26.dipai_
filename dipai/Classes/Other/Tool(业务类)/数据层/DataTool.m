@@ -48,6 +48,8 @@
 #import "SBModel.h"
 // 回帖用户模型
 #import "ReplyModel.h"
+// 我的回复模型
+#import "MyReplyModel.h"
 
 /******************社区*****************/
 // 论坛模型
@@ -597,6 +599,7 @@
         // 发帖数组
         NSArray * app_myArr = responseObject[@"data"][@"app_my"];
         NSArray * comment = responseObject[@"data"][@"comment"];
+        NSDictionary * data = responseObject[@"data"];
         // 字典数组转模型数组
         NSArray * postsModelArr = [PostsModel objectArrayWithKeyValuesArray:app_myArr];
         NSArray * replyModelArr = [ReplyModel objectArrayWithKeyValuesArray:comment];
@@ -604,6 +607,7 @@
         SBModel * sbModel = [[SBModel alloc] init];
         sbModel.app_my = postsModelArr;
         sbModel.comment = replyModelArr;
+        sbModel.data = data;
         
         if (success) {
             success(sbModel);
@@ -643,15 +647,13 @@
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
         // 发帖数组
-        NSArray * app_myArr = responseObject[@"data"];
+        NSArray * replyArr = responseObject[@"data"];
         // 字典数组转模型数组
-        NSArray * postsModelArr = [PostsModel objectArrayWithKeyValuesArray:app_myArr];
+        NSArray * myReplyModelArr = [MyReplyModel objectArrayWithKeyValuesArray:replyArr];
         
-        SBModel * sbModel = [[SBModel alloc] init];
-        sbModel.app_my = postsModelArr;
         
         if (success) {
-            success(sbModel);
+            success(myReplyModelArr);
         }
     } failure:^(NSError *error) {
         

@@ -215,7 +215,7 @@
     
     // 昵称
     _nameView.frame = _frameModel.nameFrame;
-      _nameView.text = _frameModel.replyModel.username;
+    _nameView.text = _frameModel.replyModel.username;
     
     CGFloat indexX = CGRectGetMaxX(_nameView.frame) + 14 * IPHONE6_W_SCALE;
     CGFloat indexY = 22 * IPHONE6_H_SCALE;

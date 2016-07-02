@@ -1,55 +1,49 @@
 //
-//  LSPhotoView.m
+//  PicView.m
 //  dipai
 //
-//  Created by 梁森 on 16/6/24.
+//  Created by 梁森 on 16/7/1.
 //  Copyright © 2016年 梁森. All rights reserved.
 //
 
-#import "LSPhotoView.h"
+#import "PicView.h"
 
 #import "UIImageView+WebCache.h"
-#import "Masonry.h"
 
-#import "MJPhoto.h"
-#import "MJPhotoBrowser.h"
-@interface LSPhotoView()
-// 用来装imageView
-@property (nonatomic, strong) NSMutableArray * imagesArr;
-/**
- *  显示图片张数的标签
- */
+#import "Masonry.h"
+@interface PicView()
+
+
 @property (nonatomic, strong) UILabel * numLbl;
 
+@property (nonatomic, strong) NSMutableArray * imagesArr;
 @end
 
-@implementation LSPhotoView
+@implementation PicView
+
 - (NSMutableArray *)imagesArr{
     if (_imagesArr == nil) {
         _imagesArr = [NSMutableArray array];
     }
     return _imagesArr;
 }
-
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
-//        self.backgroundColor = [UIColor yellowColor];
         
         // 设置子控件
         [self setUpChildControl];
     }
-    
     return self;
 }
-#pragma mark --- 设置子控件
+
 - (void)setUpChildControl{
-    // 最多显示三张图片
-    for (int i = 0; i < 3; i ++) {
-        UIImageView * picView = [[UIImageView alloc] init];
-        [self addSubview:picView];
-        [self.imagesArr addObject:picView];
+    // 最多显示9张图片
+    for (int i = 0 ; i < 3 ; i ++) {
+        UIImageView * imageView = [[UIImageView alloc] init];
+        imageView.tag = i;
+        [self addSubview:imageView];
+        [self.imagesArr addObject:imageView];
     }
-    // 添加图片的个数
     UIImageView * imageV = [self.imagesArr lastObject];
     UILabel * numLbl = [[UILabel alloc] init];
     numLbl.textColor = [UIColor whiteColor];
@@ -62,8 +56,6 @@
 
 - (void)setPicArr:(NSArray *)picArr{
     _picArr = picArr;
-    
-    NSLog(@"传递过来图片的个数:%lu", _picArr.count);
     NSUInteger counts = self.subviews.count;
     for (int i = 0; i < counts; i ++) {
         UIImageView * imageView = self.subviews[i];
@@ -71,7 +63,10 @@
         if (i < _picArr.count) {
             // 显示
             imageView.hidden = NO;
-            [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
+            
+            NSLog(@"%@", _picArr[i]);
+            
+            [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]]];
             
         }else
         {
@@ -81,20 +76,20 @@
     }
 }
 
-
-
-- (void)layoutSubviews{
+// 计算尺寸
+- (void)layoutSubviews
+{
     [super layoutSubviews];
     
     // 计算显示出来的imageView
-    for (int i = 0; i < self.imagesArr.count; i++) {
-
+    for (int i = 0; i < _picArr.count; i++) {
         if (_picArr.count == 1) {
-            UIImageView * image = self.imagesArr[0];
-            image.frame = CGRectMake(0, 0, 120 * IPHONE6_W_SCALE, 80 * IPHONE6_W_SCALE);
+            UIImageView *imageV = self.subviews[i];
+            imageV.frame = CGRectMake(0, 0, 120*IPHONE6_W_SCALE, 80 * IPHONE6_W_SCALE);
+            imageV.backgroundColor = [UIColor yellowColor];
         } else if (_picArr.count > 1 ){
-                UIImageView *imageV = self.subviews[i];
-                imageV.frame = CGRectMake(0+ i * (80 + 5)*IPHONE6_W_SCALE, 0 , 80 * IPHONE6_W_SCALE , 80 * IPHONE6_W_SCALE);
+            UIImageView *imageV = self.subviews[i];
+            imageV.frame = CGRectMake(0+ i * (80 + 5)*IPHONE6_W_SCALE, 0 , 80 * IPHONE6_W_SCALE , 80 * IPHONE6_W_SCALE);
             if (_picArr.count > 3) {
                 
                 CGFloat x = (160-70)*0.5*IPHONE6_W_SCALE;
@@ -109,6 +104,12 @@
         }
         
     }
+    
+    
 }
+
+
+
+
 
 @end

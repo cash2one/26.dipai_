@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "MJExtension.h"
 @interface CommentsModel : NSObject<MJKeyValue>
+
 /*
  "userid":"20",
  "username":"Liangsen",

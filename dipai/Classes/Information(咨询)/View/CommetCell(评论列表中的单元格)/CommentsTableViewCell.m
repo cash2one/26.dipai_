@@ -58,7 +58,8 @@
         
         // 添加子控件
         [self setUpChildView];
-//        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        // 去除点击效果
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     return self;
@@ -93,14 +94,8 @@
     _replyView.frame = commentsFrame.replyFrame;
     _replyView.commentsFrame = commentsFrame;
     
-    CGFloat y;
-    if (_replyView.frame.size.width) {
-        y = CGRectGetMaxY(_replyView.frame) + 14*IPHONE6_H_SCALE;
-    } else{
-        y = CGRectGetMaxY(_commentsView.frame);
-    }
     
-    
+    CGFloat y = _commentsFrame.cellHeight;
     _line.frame = CGRectMake(0, y, WIDTH, 0.5);
 }
 

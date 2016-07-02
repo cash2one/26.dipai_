@@ -1,27 +1,25 @@
 //
-//  CommentsFrame.m
+//  MyReplyFrameModel.m
 //  dipai
 //
-//  Created by 梁森 on 16/6/6.
+//  Created by 梁森 on 16/7/1.
 //  Copyright © 2016年 梁森. All rights reserved.
 //
 
-#import "CommentsFrame.h"
-// 评论列表模型
-#import "CommentsModel.h"
-@implementation CommentsFrame
+#import "MyReplyFrameModel.h"
 
-// 将下载下来的数据模型传递过来
-- (void)setComments:(CommentsModel *)comments{
-    _comments = comments;
+#import "MyReplyModel.h"
+@implementation MyReplyFrameModel
+
+
+- (void)setMyreplyModel:(MyReplyModel *)myreplyModel{
+    _myreplyModel = myreplyModel;
     
     // 计算评论
     [self setUpCommentsFrame];
     
-    NSDictionary * replyDic = comments.reply;
-    NSString * username = replyDic[@"username"];
-//    NSLog(@"username---%@", username);
-    
+    NSDictionary * replyDic = myreplyModel.reply;
+    NSString * username = replyDic[@"username"];    
     if (username) {  // 如果有回复内容
         
         // 计算回复高度
@@ -31,9 +29,8 @@
     } else{
         _cellHeight = CGRectGetMaxY(_CommentsFrame) + 3*IPHONE6_H_SCALE;
     }
-    
-    
 }
+
 #pragma mark ---计算评论高度
 - (void)setUpCommentsFrame{
     
@@ -50,7 +47,7 @@
     
     NSMutableDictionary * nameDic = [NSMutableDictionary dictionary];
     nameDic[NSFontAttributeName] = Font15;
-    CGSize nameSize = [_comments.username sizeWithAttributes:nameDic];
+    CGSize nameSize = [_myreplyModel.username sizeWithAttributes:nameDic];
     _nameFrame = (CGRect){{nameX, nameY}, nameSize};
     
     // 时间 (时间会变)
@@ -62,16 +59,29 @@
     
     NSMutableDictionary * contentsDic = [NSMutableDictionary dictionary];
     contentsDic[NSFontAttributeName] = Font16;
-    CGRect contentsRect = [_comments.content boundingRectWithSize:CGSizeMake(contentsW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentsDic context:nil];
+    CGRect contentsRect = [_myreplyModel.content boundingRectWithSize:CGSizeMake(contentsW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentsDic context:nil];
     _contentsFrame = (CGRect){{contentsX, contentsY}, contentsRect.size};
+    
+    
+    // 如果有图片上面视图的frame
+    CGFloat commentsH = CGRectGetMaxY(_contentsFrame) + Margin22 * IPHONE6_H_SCALE;
+    if (_myreplyModel.picname) {    // 如果有图
+        CGFloat picX = 64 * IPHONE6_W_SCALE;
+        CGFloat picY = CGRectGetMaxY(_contentsFrame) + 7 * IPHONE6_H_SCALE;
+        CGFloat picW = WIDTH - picX;
+        CGFloat picH = 80 * IPHONE6_H_SCALE;
+        _picsFrame = CGRectMake(picX, picY, picW, picH);
+        commentsH = CGRectGetMaxY(_picsFrame) + Margin22 * IPHONE6_H_SCALE;
+    }
     
     // 评论的frame
     CGFloat commentsX = 0;
     CGFloat commentsY = 0;
     CGFloat commentsW = WIDTH;
-    CGFloat commentsH = CGRectGetMaxY(_contentsFrame) + Margin22 * IPHONE6_H_SCALE;
+    
     _CommentsFrame = CGRectMake(commentsX, commentsY, commentsW, commentsH);
 }
+
 #pragma mark --- 计算回复高度
 - (void)setUpReplyFrame{
     
@@ -84,7 +94,7 @@
     
     
     
-    NSString * username = _comments.reply[@"username"];
+    NSString * username = _myreplyModel.reply[@"username"];
     
     CGSize nameSize = [username sizeWithAttributes:nameDic];
     
@@ -97,7 +107,7 @@
     
     NSMutableDictionary * contentDic = [NSMutableDictionary dictionary];
     contentDic[NSFontAttributeName] = Font14;
-    CGRect contentRect = [_comments.reply[@"content"] boundingRectWithSize:CGSizeMake(contentW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil];
+    CGRect contentRect = [_myreplyModel.reply[@"content"] boundingRectWithSize:CGSizeMake(contentW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil];
     _replyContent = (CGRect){{contentX, contentY}, contentRect.size};
     
     // 回复的frame

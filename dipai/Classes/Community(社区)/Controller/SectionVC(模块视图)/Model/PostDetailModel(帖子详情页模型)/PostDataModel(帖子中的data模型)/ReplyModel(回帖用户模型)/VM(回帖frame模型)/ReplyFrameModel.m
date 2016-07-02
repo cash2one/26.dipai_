@@ -135,7 +135,26 @@
     
     for (int i = 0; i < count; i ++) {
         CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_replyModel.picname[i]]];
+        
         CGFloat height = size.height;
+        CGFloat width = size.width;
+        
+        if (width == 0) {
+            width = WIDTH - 30 * IPHONE6_W_SCALE;
+        }
+        
+        CGFloat scale = 1.0;
+        if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
+            
+            NSLog(@"scale1---%f", scale);
+            
+            scale = (WIDTH - 30 * IPHONE6_W_SCALE)/width;
+            height = height * scale;
+        } else{
+            scale = 1.0;
+            height = height;
+        }
+        
         h = h + (height+8) * IPHONE6_H_SCALE;
     }
     

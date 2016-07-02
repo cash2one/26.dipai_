@@ -16,6 +16,20 @@
 #import "PostCell.h"
 #import "PostFrameModel.h"
 #import "PostsModel.h"
+
+// 我的回复单元格
+#import "MyReplyCell.h"
+// 我的回复模型
+#import "MyReplyModel.h"
+// 我的回复frame模型
+#import "MyReplyFrameModel.h"
+// 成绩模型
+#import "ScoreModel.h"
+// 名人成绩单元格
+#import "ScoreCell.h"
+// 名人图片展示
+#import "ShowPicView.h"
+
 // 回帖用户模型
 #import "ReplyModel.h"
 // 某人主页模型
@@ -23,7 +37,9 @@
 // 帖子详情页
 #import "PostDetailVC.h"
 
+
 #import "SVProgressHUD.h"
+#import "UIImageView+WebCache.h"
 
 #import "DataTool.h"
 @interface StarVC ()<UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate>
@@ -65,6 +81,8 @@
  */
 @property (nonatomic, strong) UILabel * certificateLbl;
 
+@property (nonatomic, strong) SBModel * sbModel;
+
 // 三个页面的下划线
 @property (nonatomic, strong) UIView * redView;
 // 三个标题的底部视图
@@ -72,6 +90,7 @@
 // 分割线
 @property (nonatomic, strong) UIView * sepatateView;
 
+@property (nonatomic, strong) UIView * separate;
 // 三个表格
 @property (nonatomic, strong) UITableView * tableView1;
 @property (nonatomic, strong) UITableView * tableView2;
@@ -79,6 +98,14 @@
 // 三个数据源
 @property (nonatomic, strong) NSMutableArray * dataSource2;
 @property (nonatomic, strong) NSMutableArray * dataSource3;
+
+// 展开按钮、文字、图形
+@property (nonatomic, strong) UIButton * showBtn;
+@property (nonatomic, strong) UILabel * showLbl;
+@property (nonatomic, strong) UIImageView * showView;
+
+// 个人简介
+@property (nonatomic, strong) UILabel * introduceLbl;
 @end
 
 @implementation StarVC
@@ -166,7 +193,7 @@
     // 关注按钮
     UIButton * attentionBtn = [UIButton buttonWithType:UIButtonTypeCustom];
 #warning 修改
-    [attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
+//    [attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
     [topView addSubview:attentionBtn];
     [attentionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(topView.mas_top).offset(64 * IPHONE6_H_SCALE);
@@ -181,7 +208,7 @@
     nameLbl.font = Font17;
     nameLbl.textColor = [UIColor whiteColor];
 #warning 可变内容
-    nameLbl.text = @"阿福空间啊啦放假啦";
+//    nameLbl.text = @"阿福空间啊啦放假啦";
     [topView addSubview:nameLbl];
     [nameLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(topView.mas_centerX);
@@ -206,7 +233,7 @@
     UILabel * attentionLbl = [[UILabel alloc] init];
     attentionLbl.textAlignment = NSTextAlignmentRight;
 #warning 可变
-    attentionLbl.text = @"关注 10";
+//    attentionLbl.text = @"关注 10";
     attentionLbl.textColor = [UIColor whiteColor];
     attentionLbl.font = Font13;
     [topView addSubview:attentionLbl];
@@ -221,7 +248,7 @@
     UILabel * fansLbl = [[UILabel alloc] init];
     fansLbl.textAlignment = NSTextAlignmentLeft;
     [topView addSubview:fansLbl];
-    fansLbl.text = @"被关注 10";
+//    fansLbl.text = @"被关注 10";
     fansLbl.textColor = [UIColor whiteColor];
     fansLbl.font = Font13;
     [fansLbl mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -351,7 +378,7 @@
     _sc.delegate=self;
     _sc.bounces=NO;
     _sc.pagingEnabled=YES;
-    _sc.backgroundColor = [UIColor redColor];
+    _sc.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:_sc];
 }
 #pragma mark --- UIScrollViewDelegate
@@ -379,13 +406,63 @@
 - (void)addTableView{
     
     CGFloat scY = CGRectGetMaxY(_topView.frame) + 60 * IPHONE6_H_SCALE;
-    _tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT -scY) style:UITableViewStylePlain];
-    _tableView1.delegate = self;
-    _tableView1.dataSource = self;
-    _tableView1.showsVerticalScrollIndicator = NO;
-    _tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    [_sc addSubview:_tableView1];
+    // 显示“个人简介”四个字的视图
+    UIView * titleView = [[UIView alloc] init];
+    [_sc addSubview:titleView];
+    titleView.frame = CGRectMake(0, 0, WIDTH, 44 * IPHONE6_H_SCALE);
+    titleView.backgroundColor = [UIColor whiteColor];
+    UILabel * titleLbl = [[UILabel alloc] init];
+    [titleView addSubview:titleLbl];
+    titleLbl.frame = CGRectMake(15*IPHONE6_W_SCALE, 0, WIDTH - 15*IPHONE6_W_SCALE, 44 * IPHONE6_H_SCALE);
+    titleLbl.text = @"个人简介";
+    titleLbl.font = Font16;
+    // 展开收起的按钮和文字
+    UILabel * showLbl = [[UILabel alloc] init];
+    showLbl.text = @"展开";
+    showLbl.textColor = [UIColor redColor];
+    showLbl.font = Font14;
+    [titleView addSubview:showLbl];
+    _showLbl = showLbl;
+    [showLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(titleView.mas_centerY);
+        make.right.equalTo(titleView.mas_right).offset(-20*IPHONE6_W_SCALE);
+        make.height.equalTo(@(14*IPHONE6_W_SCALE));
+        make.width.equalTo(@(30*IPHONE6_W_SCALE));
+    }];
+    UIImageView * showView = [[UIImageView alloc] init];
+    [titleView addSubview:showView];
+    _showView = showView;
+    [showView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(titleView.mas_centerY);
+        make.right.equalTo(showLbl.mas_left).offset(-8*IPHONE6_W_SCALE);
+        make.width.equalTo(@(8 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(4 * IPHONE6_W_SCALE));
+    }];
+    [showView setImage:[UIImage imageNamed:@"zhankai_p"]];
+    UIButton * showBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [titleView addSubview:showBtn];
+    _showBtn = showBtn;
+    [showBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(showView.mas_left).offset(-5);
+        make.top.equalTo(showView.mas_top).offset(-5);
+        make.right.equalTo(showLbl.mas_right).offset(5);
+        make.bottom.equalTo(showView.mas_bottom).offset(5);
+    }];
+    showBtn.backgroundColor = [UIColor colorWithRed:288 / 255.f green:0/255.f blue:0/255.f alpha:0.5];
+    // 展示按钮的点击事件
+    [showBtn addTarget:self action:@selector(showAction) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIView * lineView = [[UIView alloc] init];
+    [titleView addSubview:lineView];
+    lineView.backgroundColor = Color238;
+    [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(titleView.mas_left).offset(15*IPHONE6_W_SCALE);
+        make.right.equalTo(titleView.mas_right).offset(-15*IPHONE6_W_SCALE);
+        make.bottom.equalTo(titleView.mas_bottom);
+        make.height.equalTo(@(0.5));
+    }];
+    
     
     _tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT -scY) style:UITableViewStylePlain];
     _tableView2.delegate=self;
@@ -409,6 +486,55 @@
     [self addRefreshByTable3];
     
 }
+#pragma mark ---showAction 展示按钮的点击效果
+- (void)showAction{
+    _showBtn.selected = !_showBtn.selected;
+    if (_showBtn.selected) {
+        _showLbl.text = @"收起";
+        _showView.image = [UIImage imageNamed:@"shouqi_p"];
+        
+        
+        // 改变简介的高度
+        NSString * str = _sbModel.data[@"certified"][@"brief"];
+        _introduceLbl.text = str;
+        CGFloat x = 15*IPHONE6_W_SCALE;
+        CGFloat y = 59*IPHONE6_H_SCALE;
+        CGFloat w = WIDTH - 2 * x;
+        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+        dic[NSFontAttributeName] = Font13;
+        CGRect rect = [str boundingRectWithSize:CGSizeMake(w, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+        _introduceLbl.frame =(CGRect){{x, y},rect.size};
+        
+        CGFloat separateY = CGRectGetMaxY(_introduceLbl.frame) + 19*IPHONE6_H_SCALE;
+        _separate.frame = CGRectMake(0, separateY, WIDTH, 20*IPHONE6_H_SCALE);
+        
+        CGFloat tableY = CGRectGetMaxY(_separate.frame);
+        _tableView1.frame = CGRectMake(0, tableY, WIDTH, HEIGHT-tableY);
+        
+    }else{
+        _showLbl.text = @"展开";
+        _showView.image = [UIImage imageNamed:@"zhankai_p"];
+        
+        // 改变高度
+        NSString * str = _sbModel.data[@"certified"][@"brief"];
+        str = [str substringToIndex:100];
+        _introduceLbl.text = str;
+        CGFloat x = 15*IPHONE6_W_SCALE;
+        CGFloat y = 59*IPHONE6_H_SCALE;
+        CGFloat w = WIDTH - 2 * x;
+        
+        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+        dic[NSFontAttributeName] = Font13;
+        CGRect rect = [str boundingRectWithSize:CGSizeMake(w, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+        _introduceLbl.frame =(CGRect){{x, y},rect.size};
+        
+        CGFloat separateY = CGRectGetMaxY(_introduceLbl.frame) + 19*IPHONE6_H_SCALE;
+        _separate.frame = CGRectMake(0, separateY, WIDTH, 20*IPHONE6_H_SCALE);
+        CGFloat tableY = CGRectGetMaxY(_separate.frame);
+        _tableView1.frame = CGRectMake(0, tableY, WIDTH, HEIGHT-tableY);
+    }
+}
+
 - (void)addRefreshWith:(UITableView *)tableView{
     //    // 添加刷新和加载
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData:)];
@@ -449,10 +575,34 @@
 }
 #pragma mark 表格3的加载和刷新
 - (void)loadNewData3{
+    
     [_tableView3.header endRefreshing];
 }
 - (void)loadMoreData3{
     
+    // 上拉加载获取更多回复
+    MyReplyFrameModel * myReFrameModel = [self.dataSource3 lastObject];
+    MyReplyModel * myReModel = myReFrameModel.myreplyModel;
+    NSString * userid = myReModel.userid;
+    NSString * comment_id = myReModel.comment_id;
+    NSString * url = [MoreReplysURL stringByAppendingString:[NSString stringWithFormat:@"/%@/%@", userid, comment_id]];
+    [DataTool getMoreReplysDataWithStr:url parameters:nil success:^(id responseObject) {
+        
+        NSLog(@"-----%@", responseObject);
+        [self.tableView3.footer endRefreshing];
+        if (!responseObject) {
+            self.tableView3.footer.state = MJRefreshStateNoMoreData;
+        }
+        for (MyReplyModel * model in responseObject) {
+            MyReplyFrameModel * myReFrameModel = [[MyReplyFrameModel alloc] init];
+            myReFrameModel.myreplyModel = model;
+            [self.dataSource3 addObject:myReModel];
+        }
+        [self.tableView3 reloadData];
+    } failure:^(NSError * error) {
+        NSLog(@"获取更多回复出错：%@", error);
+        
+    }];
     
 }
 
@@ -462,24 +612,140 @@
         [self.tableView2.header endRefreshing];
         
         SBModel * sbModel = [[SBModel alloc] init];
+       
         sbModel = responseObject;
+        _sbModel = sbModel;
         NSMutableArray * arr = [NSMutableArray array];
         for (PostsModel * model in sbModel.app_my) {
             PostFrameModel * frameModel = [[PostFrameModel alloc] init];
             frameModel.postsModel = model;
             [arr addObject:frameModel];
         }
-//        NSMutableArray * replyArr = [NSMutableArray array];
-//        for (ReplyModel * model in sbModel.comment) {
-//            
-//        }
+        NSMutableArray * replyArr = [NSMutableArray array];
+        for (MyReplyModel * model in sbModel.comment) {
+            MyReplyFrameModel * myReFrameModel = [[MyReplyFrameModel alloc] init];
+            myReFrameModel.myreplyModel = model;
+            [replyArr addObject:myReFrameModel];
+        }
+        self.dataSource3 = replyArr;
         self.dataSource2 = arr;
+        
         [self.tableView2 reloadData];
+        [self.tableView3 reloadData];
+        
+        // 设置数据
+        [self setDataWithModel:sbModel];
         
     } failure:^(NSError * error) {
         NSLog(@"获取个人主页出错：%@", error);
         [self.tableView2.header endRefreshing];
     }];
+    
+}
+#pragma mark --- 设置数据
+- (void)setDataWithModel:(SBModel *)sbModel{
+    
+    // 关注按钮
+    if ([sbModel.data[@"is_follow"] isEqualToString:@"0"]) {    // 未关注
+        [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
+    } else{
+        [_attentionBtn setImage:[UIImage imageNamed:@"yiguanzhu"] forState:UIControlStateNormal];
+    }
+    // 头像
+   [_faceView sd_setImageWithURL:[NSURL URLWithString:sbModel.data[@"info"][@"face"]] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+    
+    // 姓名
+    _nameLbl.text = sbModel.data[@"info"][@"username"];
+  
+    // 关注数
+    _attentionLbl.text = [NSString stringWithFormat:@"关注  %@", sbModel.data[@"info"][@"row"]];
+    
+    // 粉丝数
+    _fansLbl.text = [NSString stringWithFormat:@"被关注  %@", sbModel.data[@"info"][@"follow"]];;
+    
+    _certificateLbl.text = sbModel.data[@"certified"][@"title"];
+    
+    
+    NSString * str = sbModel.data[@"certified"][@"brief"];
+    str = [str substringToIndex:100];
+    UILabel * introduceLbl = [[UILabel alloc] init];
+    introduceLbl.backgroundColor = [UIColor greenColor];
+    introduceLbl.text = str;
+    introduceLbl.numberOfLines = 0;
+    introduceLbl.font = Font13;
+    introduceLbl.textColor = Color123;
+    [_sc addSubview:introduceLbl];
+    _introduceLbl = introduceLbl;
+    CGFloat x = 15*IPHONE6_W_SCALE;
+    CGFloat y = 59*IPHONE6_H_SCALE;
+    CGFloat w = WIDTH - 2 * x;
+    
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[NSFontAttributeName] = Font13;
+    CGRect rect = [str boundingRectWithSize:CGSizeMake(w, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+    introduceLbl.frame =(CGRect){{x, y},rect.size};
+    
+    UIView * separate = [[UIView alloc] init];
+    [_sc addSubview:separate];
+    _separate = separate;
+    CGFloat separateY = CGRectGetMaxY(_introduceLbl.frame) + 19*IPHONE6_H_SCALE;
+    separate.frame = CGRectMake(0, separateY, WIDTH, 20*IPHONE6_H_SCALE);
+    separate.backgroundColor = SeparateColor;
+    
+    CGFloat tableY = CGRectGetMaxY(separate.frame);
+    CGFloat scY = CGRectGetMaxY(_topView.frame) + 60 * IPHONE6_H_SCALE;
+    _tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , tableY , WIDTH , HEIGHT -tableY-scY) style:UITableViewStylePlain];
+    _tableView1.delegate = self;
+    _tableView1.dataSource = self;
+    _tableView1.showsVerticalScrollIndicator = NO;
+    _tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    [_sc addSubview:_tableView1];
+    
+    [self addTableHeaderView];
+    [self addTableFooterView];
+}
+
+- (void)addTableHeaderView{
+    UIView * headerView = [[UIView alloc] init];
+    headerView.frame = CGRectMake(0, 0, WIDTH, 87 * 0.5 * IPHONE6_H_SCALE);
+    _tableView1.tableHeaderView = headerView;
+    headerView.backgroundColor = [UIColor whiteColor];
+    UILabel * scoreLbl = [[UILabel alloc] init];
+    scoreLbl.text = @"取得成绩";
+    scoreLbl.font = Font16;
+    [headerView addSubview:scoreLbl];
+    scoreLbl.frame = CGRectMake(15 * IPHONE6_W_SCALE, 0, WIDTH, 87 * 0.5 * IPHONE6_H_SCALE);
+    UIView * line = [[UIView alloc] init];
+    line.backgroundColor = Color238;
+    [headerView addSubview:line];
+    [line mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(headerView.mas_left).offset(15 * IPHONE6_W_SCALE);
+        make.right.equalTo(headerView.mas_right).offset(-15*IPHONE6_W_SCALE);
+        make.bottom.equalTo(headerView.mas_bottom);
+        make.height.equalTo(@(0.5));
+    }];
+}
+- (void)addTableFooterView{
+    UIView * footerView = [[UIView alloc] init];
+    _tableView1.tableFooterView = footerView;
+    footerView.frame = CGRectMake(0, 0, WIDTH, 165 * IPHONE6_H_SCALE);
+    footerView.backgroundColor = [UIColor redColor];
+    UIView * separateView = [[UIView alloc] init];
+    [footerView addSubview:separateView];
+    separateView.frame = CGRectMake(0, 144*IPHONE6_H_SCALE, WIDTH, 20*IPHONE6_H_SCALE);
+    separateView.backgroundColor = SeparateColor;
+    
+    UILabel * titleLbl = [[UILabel alloc] init];
+    [footerView addSubview:titleLbl];
+    titleLbl.text = @"风采展示";
+    titleLbl.font = Font16;
+    titleLbl.frame = CGRectMake(15*IPHONE6_W_SCALE, 0, WIDTH, 44*IPHONE6_H_SCALE);
+    
+    // 图片展示
+    ShowPicView * showView = [[ShowPicView alloc] init];
+    [footerView addSubview:showView];
+    
     
 }
 
@@ -500,6 +766,7 @@
         [self.tableView2.footer endRefreshing];
         
         SBModel * sbModel = [[SBModel alloc] init];
+        _sbModel = sbModel;
         sbModel = responseObject;
         if (!sbModel.app_my) {
             self.tableView2.footer.state = MJRefreshStateNoMoreData;
@@ -523,8 +790,13 @@
     if (tableView == self.tableView2) {
         
         return self.dataSource2.count;
+    } else if(tableView == self.tableView3){
+        return self.dataSource3.count;
     } else{
-        return 20;
+        NSArray * chroArr = _sbModel.data[@"certified"][@"chronology"];
+        // 字典数组转模型数组
+        NSArray * scoreModelArr = [ScoreModel objectArrayWithKeyValuesArray:chroArr];
+        return scoreModelArr.count;
     }
     
 }
@@ -536,13 +808,21 @@
         PostFrameModel * frameModel = self.dataSource2[indexPath.row];
         cell.frameModel = frameModel;
         return cell;
-    }else{
-        static NSString * cellID = @"cellID";
-        UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-        if (!cell) {
-            cell = [[UITableViewCell alloc] init];
-        }
-        cell.textLabel.text = [NSString stringWithFormat:@"%lu", indexPath.row];
+    }else if(tableView == self.tableView3){
+        
+        MyReplyCell * cell = [MyReplyCell cellWithTableView:tableView];
+        cell.myReplyFrameModel = self.dataSource3[indexPath.row];
+        return cell;
+
+    } else{
+
+        ScoreCell * cell = [ScoreCell cellWithTableView:tableView];
+        NSArray * chroArr = _sbModel.data[@"certified"][@"chronology"];
+        // 字典数组转模型数组
+        NSArray * scoreModelArr = [ScoreModel objectArrayWithKeyValuesArray:chroArr];
+        NSInteger row = indexPath.row;
+        ScoreModel * scoreModel = [scoreModelArr objectAtIndex:row];
+        cell.scoreModel = scoreModel;
         return cell;
     }
     
@@ -554,8 +834,31 @@
         PostFrameModel * frameModel = self.dataSource2[indexPath.row];
         CGFloat cellHeight = frameModel.cellHeight;
         return cellHeight;
+    } else if(tableView == _tableView3){
+        MyReplyFrameModel * myReFrameModel = self.dataSource3[indexPath.row];
+        
+        return myReFrameModel.cellHeight;
     } else{
+        //  如果是最后一个单元格
+        CGFloat scoreX = 37*IPHONE6_W_SCALE;
+        CGFloat scoreY = 0;
+        CGFloat scoreW = WIDTH - 2 * scoreX;
+        NSMutableDictionary * scoreDic = [NSMutableDictionary dictionary];
+        scoreDic[NSFontAttributeName] = Font13;
+        NSArray * chroArr = _sbModel.data[@"certified"][@"chronology"];
+        // 字典数组转模型数组
+        NSArray * scoreModelArr = [ScoreModel objectArrayWithKeyValuesArray:chroArr];
+        NSInteger row = indexPath.row;
+        ScoreModel * scoreModel = [scoreModelArr objectAtIndex:row];
+        CGRect scoreRect = [scoreModel.Content boundingRectWithSize:CGSizeMake(scoreW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:scoreDic context:nil];
+        CGFloat height = scoreRect.size.height;
+        
+        NSLog(@"%f", height);
+        
+        return height +51*IPHONE6_H_SCALE;
+        // 84 +18
         return 100;
+        
     }
     
 }

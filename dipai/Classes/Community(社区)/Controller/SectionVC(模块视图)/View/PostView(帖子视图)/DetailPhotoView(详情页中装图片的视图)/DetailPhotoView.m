@@ -85,21 +85,34 @@
 - (void)setPicArr:(NSArray *)picArr{
     
     _picArr = picArr;
-//     NSLog(@"--传递过来的%@", _picArr);
 }
 - (void)layoutSubviews{
     [super layoutSubviews];
     
     CGFloat height = 0;
     
-    
     if (self.imagesArr.count > 0) {
         for (int i = 0; i < _picArr.count; i ++) {
           
-            UIImageView * imageV = self.imagesArr[i];
+            UIImageView * imageV = self.subviews[i];
             
             CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_picArr[i]]];
             CGFloat h = size.height;    // 图片的高度
+            CGFloat w = size.width; // 图片的宽度
+            if (w == 0) {
+                w = WIDTH - 30 * IPHONE6_W_SCALE;
+            }
+            CGFloat scale = 1.0;
+            if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
+                
+                NSLog(@"scale1---%f", scale);
+                
+                scale = (WIDTH - 30 * IPHONE6_W_SCALE)/w;
+                h = h * scale;
+            } else{
+                scale = 1.0;
+                h = h;
+            }
             
             imageV.frame = CGRectMake(0, 0 + height, WIDTH - 30 * IPHONE6_W_SCALE, h);
             height = height + h + 8;
