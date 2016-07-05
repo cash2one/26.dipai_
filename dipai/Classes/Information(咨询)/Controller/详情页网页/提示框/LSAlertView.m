@@ -9,10 +9,7 @@
 #import "LSAlertView.h"
 
 @interface LSAlertView()
-/**
- *  提示信息
- */
-@property (nonatomic, strong) UILabel * messageLbl;
+
 /**
  *  取消按钮
  */
@@ -89,6 +86,11 @@
     self.layer.cornerRadius = 10;
     self.backgroundColor = [UIColor whiteColor];
     
+}
+
+- (void)setMessageLbl:(UILabel *)messageLbl{
+    _messageLbl = messageLbl;
+    _messageLbl.text = messageLbl.text;
 }
 
 #pragma mark --- 取消事件

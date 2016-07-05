@@ -156,7 +156,6 @@
     // 正文
     _textView.text = myReModel.content;
     
-    
 }
 
 

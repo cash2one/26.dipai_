@@ -83,6 +83,13 @@
 // 获取更多回复的数据
 + (void)getMoreReplysDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
+/********专题********/
+// 获取专题
++ (void)getSpecialDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取专辑详情页数据
++ (void)getSpecialDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+
 /*********************社区页******************/
 // 获取论坛首页
 + (void)getCommunityDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
@@ -91,6 +98,9 @@
 
 // 获取帖子详情页数据
 +(void) getPostDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+// 获取圈子页数据
++ (void)getGroupDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
 
 /************************我的********************/

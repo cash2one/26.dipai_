@@ -29,6 +29,8 @@
 #import "ScoreCell.h"
 // 名人图片展示
 #import "ShowPicView.h"
+// 最后一个单元格
+#import "FooterCell.h"
 
 // 回帖用户模型
 #import "ReplyModel.h"
@@ -37,12 +39,21 @@
 // 帖子详情页
 #import "PostDetailVC.h"
 
+#import "LSAlertView.h"
+// 登录页面
+#import "LoginViewController.h"
+
+
+// 更多名人列表／粉丝列表／关注列表
+#import "MorePokersVC.h"
 
 #import "SVProgressHUD.h"
 #import "UIImageView+WebCache.h"
+#import "MJPhoto.h"
+#import "MJPhotoBrowser.h"
 
 #import "DataTool.h"
-@interface StarVC ()<UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface StarVC ()<UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate, LSAlertViewDeleagte>
 
 {
      UISegmentedControl *_segmented;
@@ -80,6 +91,10 @@
  *  底牌认证
  */
 @property (nonatomic, strong) UILabel * certificateLbl;
+/**
+ *  VIP标识
+ */
+@property (nonatomic, strong) UIImageView * vipView;
 
 @property (nonatomic, strong) SBModel * sbModel;
 
@@ -106,6 +121,12 @@
 
 // 个人简介
 @property (nonatomic, strong) UILabel * introduceLbl;
+
+/**
+ *  登录提示框
+ */
+@property (nonatomic, strong) LSAlertView * alertView;
+@property (nonatomic, strong) UIView * alertBackView;
 @end
 
 @implementation StarVC
@@ -177,6 +198,11 @@
     
     // 头像
     UIImageView * faceView = [[UIImageView alloc] init];
+    
+    faceView.userInteractionEnabled = YES;
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showBigFace:)];
+    [faceView addGestureRecognizer:tap];
+    
     faceView.layer.masksToBounds = YES;
     [topView addSubview:faceView];
     [faceView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -189,18 +215,35 @@
     faceView.layer.borderWidth = 2;
     faceView.layer.borderColor = [[UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:0.5] CGColor];
     _faceView = faceView;
+    UIImageView * vipView = [[UIImageView alloc] init];
+    vipView.image = [UIImage imageNamed:@"vip"];
+    [topView addSubview:vipView];
+    [vipView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(faceView.mas_right).offset(-5);
+        make.bottom.equalTo(faceView.mas_bottom);
+        make.width.equalTo(@(17 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(17 * IPHONE6_W_SCALE));
+    }];
+    vipView.hidden = YES;
+    _vipView = vipView;
     
     // 关注按钮
     UIButton * attentionBtn = [UIButton buttonWithType:UIButtonTypeCustom];
 #warning 修改
 //    [attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
     [topView addSubview:attentionBtn];
+    _attentionBtn = attentionBtn;
     [attentionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(topView.mas_top).offset(64 * IPHONE6_H_SCALE);
         make.right.equalTo(topView.mas_right).offset(-15 * IPHONE6_W_SCALE);
         make.width.equalTo(@(61*IPHONE6_W_SCALE));
         make.height.equalTo(@(22 * IPHONE6_W_SCALE));
     }];
+    attentionBtn.userInteractionEnabled = YES;
+    // 要将按钮的父视图（UIImageView设置为可与用户交互）
+    topView.userInteractionEnabled = YES;
+    // 关注事件
+    [attentionBtn addTarget:self action:@selector(attentionAction) forControlEvents:UIControlEventTouchUpInside];
     
     // 姓名
     UILabel * nameLbl = [[UILabel alloc] init];
@@ -244,6 +287,18 @@
         make.height.equalTo(@(13*IPHONE6_W_SCALE));
     }];
     _attentionLbl = attentionLbl;
+    
+    // 关注数按钮
+    UIButton * atttionNumBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [topView addSubview:atttionNumBtn];
+    [atttionNumBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(attentionLbl.mas_left).offset(-5);
+        make.right.equalTo(attentionLbl.mas_right).offset(5);
+        make.top.equalTo(attentionLbl.mas_top).offset(-5);
+        make.bottom.equalTo(attentionLbl.mas_bottom).offset(5);
+    }];
+    [atttionNumBtn addTarget:self action:@selector(showAtttionNum) forControlEvents:UIControlEventTouchUpInside];
+    
     // 粉丝数
     UILabel * fansLbl = [[UILabel alloc] init];
     fansLbl.textAlignment = NSTextAlignmentLeft;
@@ -258,6 +313,16 @@
         make.height.equalTo(@(13 * IPHONE6_W_SCALE));
     }];
     _fansLbl = fansLbl;
+    // 粉丝数按钮
+    UIButton * fansNumBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [topView addSubview:fansNumBtn];
+    [fansNumBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(fansLbl.mas_left).offset(-5);
+        make.top.equalTo(fansLbl.mas_top).offset(-5);
+        make.right.equalTo(fansLbl.mas_right).offset(5);
+        make.bottom.equalTo(fansLbl.mas_bottom).offset(5);
+    }];
+    [fansNumBtn addTarget:self action:@selector(showFans) forControlEvents:UIControlEventTouchUpInside];
     
     // 底牌认证
     UILabel * certificateLbl = [[UILabel alloc] init];
@@ -280,6 +345,169 @@
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
+
+#pragma mark --- showBigFace
+- (void)showBigFace:(UIGestureRecognizer *)tap{
+    UIImageView *tapView = (UIImageView *)tap.view;
+    // CZPhoto -> MJPhoto
+    int i = 0;
+    NSMutableArray *arrM = [NSMutableArray array];
+    NSString * faceStr = _sbModel.data[@"info"][@"face"];
+    NSMutableArray * arr = [NSMutableArray array];
+    [arr addObject:faceStr];
+    for (NSString *photo in arr) {
+        
+        //        NSLog(@"%@", photo);
+        
+        MJPhoto *p = [[MJPhoto alloc] init];
+        p.url = [NSURL URLWithString:photo];
+        p.index = i;
+        p.srcImageView = tapView;
+        [arrM addObject:p];
+        i++;
+    }
+    
+    
+    // 弹出图片浏览器
+    // 创建浏览器对象
+    MJPhotoBrowser *brower = [[MJPhotoBrowser alloc] init];
+    // MJPhoto
+    brower.photos = arrM;
+    brower.currentPhotoIndex = tapView.tag;
+    [brower show];
+}
+#pragma mark --展示关注列表
+- (void)showAtttionNum{
+    NSLog(@"展示关注列表");
+//    MorePokersVC * fansVC = [[MorePokersVC alloc] init];
+//    fansVC.wapurl = 
+//    [self.navigationController pushViewController:fansVC animated:YES];
+}
+#pragma mark --- 展示粉丝列表
+- (void)showFans{
+    NSLog(@"展示粉丝列表");
+}
+#pragma mark --- 关注事件
+- (void)attentionAction{
+    
+    //  判断用户是否登录
+    
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * cookieName = [defaults objectForKey:Cookie];
+    NSLog(@"---用户迷宫%@,", cookieName);
+    if (cookieName) {
+        // 已登陆直接进行操作
+        // 如果要进行关注可以直接关注，而如果要取消关注则需要进行以下确认
+        NSLog(@"%@", _sbModel.data[@"is_follow"]);
+        
+        if ([_sbModel.data[@"is_follow"] isEqualToString:@"0"]) {    // 未关注
+            
+            [self addRefreshWith:_tableView2];
+            
+            NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _sbModel.userid]];
+            [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+                
+//                NSLog(@"%@---%@", responseObject, responseObject[@"content"]);
+                NSLog(@"%@", responseObject[@"data"]);
+#warning 返回的data有问题
+                // 要根据返回的data判断有没有进行关注
+                if ([responseObject[@"data"] isEqualToString:@"0"]) {   // 未关注
+                    // 取消关注成功
+                    [_attentionBtn setImage:[UIImage imageNamed:@"yiguanzhu"] forState:UIControlStateNormal];
+                } else{
+                    // 关注成功
+                    [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
+                }
+                [SVProgressHUD showSuccessWithStatus:@"关注成功"];
+            } failure:^(NSError * error) {
+                NSLog(@"关注或取消失败错误%@", error);
+            }];
+        }
+        if ([_sbModel.data[@"is_follow"] isEqualToString:@"1"]) {
+            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"确定不再关注此人" message:nil preferredStyle:UIAlertControllerStyleAlert];
+            
+            
+            UIAlertAction * cancle = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                NSLog(@"取消");
+            }];
+            
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                
+                [self addRefreshWith:_tableView2];
+                
+                // 进行取消关注的操作
+                [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
+                NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@",_sbModel.userid]];
+                [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+                    
+                    NSLog(@"进行取消关注获取到的数据%@", responseObject);
+                    NSLog(@"content:%@", responseObject[@"content"]);
+                } failure:^(NSError * error) {
+                    NSLog(@"进行取消关注操作时出错%@", error);
+                }];
+                // 对数据的刷新还有影响
+                [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
+            }];
+            
+            [alert addAction:cancle];
+            [alert addAction:OK];
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+        
+        
+    }else{
+        // 未登陆要进行登陆
+        [self addAlertView];
+    }
+    
+}
+
+#pragma mark --- 添加登录的alertView
+- (void)addAlertView{
+    LSAlertView * alertView = [[LSAlertView alloc] init];
+    alertView.messageLbl.text = @"先登录再关注";
+    alertView.delegate = self;
+    CGFloat x = Margin105 * IPHONE6_W_SCALE;
+    CGFloat y = Margin574 * IPHONE6_H_SCALE;
+    CGFloat w = Margin540 * IPHONE6_W_SCALE;
+    CGFloat h = Margin208 * IPHONE6_H_SCALE;
+    alertView.frame = CGRectMake(x, y, w, h);
+    UIView * alertBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    alertBackView.backgroundColor = ColorBlack30;
+    // 当前顶层窗口
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    // 添加到灰色的背景图
+    [window addSubview:alertBackView];
+    [window addSubview:alertView];
+    _alertBackView = alertBackView;
+    _alertView = alertView;
+}
+/**
+ *  取消按钮的点击事件
+ */
+- (void)lsAlertView:(LSAlertView *)alertView cancel:(NSString * )cancel{
+    [self removeAlerView];
+}
+
+- (void)removeAlerView
+{
+    // 移除提示框的背景图
+    [_alertBackView removeFromSuperview];
+    // 移除提示框
+    [_alertView removeFromSuperview];
+}
+/**
+ *  确定按钮的点击事件
+ */
+- (void)lsAlertView:(LSAlertView *)alertView sure:(NSString *)sure{
+    // 移除提示框
+    [self removeAlerView];
+    
+    LoginViewController * loginVC = [[LoginViewController alloc] init];
+    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    [self presentViewController:loginNav animated:YES completion:nil];
+}
+
 
 - (void)addThreePages{
     
@@ -449,7 +677,7 @@
         make.right.equalTo(showLbl.mas_right).offset(5);
         make.bottom.equalTo(showView.mas_bottom).offset(5);
     }];
-    showBtn.backgroundColor = [UIColor colorWithRed:288 / 255.f green:0/255.f blue:0/255.f alpha:0.5];
+//    showBtn.backgroundColor = [UIColor colorWithRed:288 / 255.f green:0/255.f blue:0/255.f alpha:0.5];
     // 展示按钮的点击事件
     [showBtn addTarget:self action:@selector(showAction) forControlEvents:UIControlEventTouchUpInside];
     
@@ -648,9 +876,15 @@
     // 关注按钮
     if ([sbModel.data[@"is_follow"] isEqualToString:@"0"]) {    // 未关注
         [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
-    } else{
+    } else if([sbModel.data[@"is_follow"] isEqualToString:@"1"])
+    {
         [_attentionBtn setImage:[UIImage imageNamed:@"yiguanzhu"] forState:UIControlStateNormal];
+    } else{ // 如果是自己
+        _attentionBtn.hidden = YES;
     }
+    _attentionBtn.userInteractionEnabled = YES;
+//    [_attentionBtn addTarget:self action:@selector(attentionAction) forControlEvents:UIControlEventTouchUpInside];
+    
     // 头像
    [_faceView sd_setImageWithURL:[NSURL URLWithString:sbModel.data[@"info"][@"face"]] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
     
@@ -663,11 +897,26 @@
     // 粉丝数
     _fansLbl.text = [NSString stringWithFormat:@"被关注  %@", sbModel.data[@"info"][@"follow"]];;
     
-    _certificateLbl.text = sbModel.data[@"certified"][@"title"];
+    if (![sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {
+        _vipView.hidden = NO;   // 如果是经过底牌认证的就显示出来
+    }
+    
+    NSString * str;
+    if ([sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {   // 如果不属于底牌认证
+        
+         _certificateLbl.text = @"";
+        str = @"";
+        _showBtn.userInteractionEnabled = NO;
+        
+    } else{
+       _certificateLbl.text = sbModel.data[@"certified"][@"title"];
+        str = sbModel.data[@"certified"][@"brief"];
+        str = [str substringToIndex:100];
+        _showBtn.userInteractionEnabled = YES;
+    }
+
     
     
-    NSString * str = sbModel.data[@"certified"][@"brief"];
-    str = [str substringToIndex:100];
     UILabel * introduceLbl = [[UILabel alloc] init];
     introduceLbl.backgroundColor = [UIColor greenColor];
     introduceLbl.text = str;
@@ -727,27 +976,11 @@
     }];
 }
 - (void)addTableFooterView{
-    UIView * footerView = [[UIView alloc] init];
-    _tableView1.tableFooterView = footerView;
-    footerView.frame = CGRectMake(0, 0, WIDTH, 165 * IPHONE6_H_SCALE);
-    footerView.backgroundColor = [UIColor redColor];
-    UIView * separateView = [[UIView alloc] init];
-    [footerView addSubview:separateView];
-    separateView.frame = CGRectMake(0, 144*IPHONE6_H_SCALE, WIDTH, 20*IPHONE6_H_SCALE);
-    separateView.backgroundColor = SeparateColor;
     
-    UILabel * titleLbl = [[UILabel alloc] init];
-    [footerView addSubview:titleLbl];
-    titleLbl.text = @"风采展示";
-    titleLbl.font = Font16;
-    titleLbl.frame = CGRectMake(15*IPHONE6_W_SCALE, 0, WIDTH, 44*IPHONE6_H_SCALE);
-    
-    // 图片展示
-    ShowPicView * showView = [[ShowPicView alloc] init];
-    [footerView addSubview:showView];
     
     
 }
+
 
 - (void)loadMoreData:(UITableView *)tableView{
     
@@ -793,10 +1026,15 @@
     } else if(tableView == self.tableView3){
         return self.dataSource3.count;
     } else{
-        NSArray * chroArr = _sbModel.data[@"certified"][@"chronology"];
-        // 字典数组转模型数组
-        NSArray * scoreModelArr = [ScoreModel objectArrayWithKeyValuesArray:chroArr];
-        return scoreModelArr.count;
+        if (![_sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {  // 如果不是空
+            NSArray * chroArr = _sbModel.data[@"certified"][@"chronology"];
+            // 字典数组转模型数组
+            NSArray * scoreModelArr = [ScoreModel objectArrayWithKeyValuesArray:chroArr];
+            return scoreModelArr.count + 1;
+        } else{ // 如果不是底牌认证
+            return 0;
+        }
+        
     }
     
 }
@@ -816,14 +1054,33 @@
 
     } else{
 
-        ScoreCell * cell = [ScoreCell cellWithTableView:tableView];
-        NSArray * chroArr = _sbModel.data[@"certified"][@"chronology"];
-        // 字典数组转模型数组
-        NSArray * scoreModelArr = [ScoreModel objectArrayWithKeyValuesArray:chroArr];
-        NSInteger row = indexPath.row;
-        ScoreModel * scoreModel = [scoreModelArr objectAtIndex:row];
-        cell.scoreModel = scoreModel;
-        return cell;
+        if (![_sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {  // 如果是底牌认证
+            NSArray * chroArr = _sbModel.data[@"certified"][@"chronology"];
+            NSArray * atlasArr = _sbModel.data[@"certified"][@"atlas"];
+            // 字典数组转模型数组
+            NSArray * scoreModelArr = [ScoreModel objectArrayWithKeyValuesArray:chroArr];
+            NSInteger row = indexPath.row;
+            
+            if (row!=scoreModelArr.count) {
+                ScoreModel * scoreModel = [scoreModelArr objectAtIndex:row];
+                ScoreCell * cell = [ScoreCell cellWithTableView:tableView];
+                cell.scoreModel = scoreModel;
+                return cell;
+            } else{ // 最后一个单元格
+                FooterCell * cell = [FooterCell cellWithTableView:tableView];
+                cell.atlasArr = atlasArr;
+                return cell;
+            }
+        }else{
+            static NSString * cellID = @"cellID";
+            UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+            if (!cell) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+            }
+            
+            return cell;
+        }
+        
     }
     
 }
@@ -841,7 +1098,6 @@
     } else{
         //  如果是最后一个单元格
         CGFloat scoreX = 37*IPHONE6_W_SCALE;
-        CGFloat scoreY = 0;
         CGFloat scoreW = WIDTH - 2 * scoreX;
         NSMutableDictionary * scoreDic = [NSMutableDictionary dictionary];
         scoreDic[NSFontAttributeName] = Font13;
@@ -849,15 +1105,18 @@
         // 字典数组转模型数组
         NSArray * scoreModelArr = [ScoreModel objectArrayWithKeyValuesArray:chroArr];
         NSInteger row = indexPath.row;
+        
+        if (row!=scoreModelArr.count) {
         ScoreModel * scoreModel = [scoreModelArr objectAtIndex:row];
         CGRect scoreRect = [scoreModel.Content boundingRectWithSize:CGSizeMake(scoreW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:scoreDic context:nil];
         CGFloat height = scoreRect.size.height;
-        
-        NSLog(@"%f", height);
-        
         return height +51*IPHONE6_H_SCALE;
+        } else{
+            return 165 * IPHONE6_H_SCALE;
+        }
+        
         // 84 +18
-        return 100;
+        
         
     }
     

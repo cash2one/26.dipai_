@@ -200,6 +200,7 @@
 #pragma mark --- checkMore查看更多的点击事件
 - (void)checkMore{
     MorePokersVC * pokersVC = [[MorePokersVC alloc] init];
+    pokersVC.wapurl = MorePokersURL;
     [self.navigationController pushViewController:pokersVC animated:YES];
 }
 

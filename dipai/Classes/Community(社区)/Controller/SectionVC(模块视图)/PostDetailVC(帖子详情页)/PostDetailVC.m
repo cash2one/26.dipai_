@@ -26,6 +26,9 @@
 // 回帖frame模型
 #import "ReplyFrameModel.h"
 
+// 个人主页
+#import "StarVC.h"
+
 
 #import "Masonry.h"
 @interface PostDetailVC ()<UITableViewDataSource, UITableViewDelegate, ReplyCellDelegate>
@@ -256,6 +259,11 @@
     replyVC.comm_id = model.comment_id;
     UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:replyVC];
     [self presentViewController:nav animated:YES completion:nil];
+}
+- (void)tableViewCell:(ReplyCell *)cell didClickFaceWithModel:(ReplyModel *)model{
+    StarVC * starVC = [[StarVC alloc] init];
+    starVC.userURL = model.userurl;
+    [self.navigationController pushViewController:starVC animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

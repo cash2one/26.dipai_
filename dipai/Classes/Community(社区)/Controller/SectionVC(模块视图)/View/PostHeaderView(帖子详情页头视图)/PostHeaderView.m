@@ -113,6 +113,10 @@
     [self addSubview:iconView];
     _iconView = iconView;
     
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showStarVC:)];
+    iconView.userInteractionEnabled = YES;
+    [iconView addGestureRecognizer:tap];
+    
     // 昵称
     UILabel *nameView = [[UILabel alloc] init];
     nameView.font = Font15;
@@ -179,6 +183,16 @@
     [self addSubview:bottomLine];
     _bottomLine = bottomLine;
 }
+
+#pragma mark -- 跳转到个人主页
+- (void)showStarVC:(UITapGestureRecognizer *)tap{
+    if ([self.delegate respondsToSelector:@selector(PostHeaderView:didClickFaceWith:)]) {
+        [self.delegate PostHeaderView:self didClickFaceWith:_dataModel];
+    } else{
+        NSLog(@"PostHeaderView的代理没有响应...");
+    }
+}
+
 - (void)layoutSubviews{
     [super layoutSubviews];
     

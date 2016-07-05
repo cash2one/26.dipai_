@@ -10,4 +10,6 @@
 
 @interface ShowPicView : UIView
 
+
+@property (nonatomic, strong) NSArray * atlasArr;
 @end

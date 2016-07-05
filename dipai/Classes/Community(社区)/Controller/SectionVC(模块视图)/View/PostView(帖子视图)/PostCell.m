@@ -93,6 +93,11 @@
     [self addSubview:iconView];
     _iconView = iconView;
     
+    iconView.userInteractionEnabled = YES;
+    // 显示个人主页
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showStarVC:)];
+    [iconView addGestureRecognizer:tap];
+    
     // 昵称
     UILabel *nameView = [[UILabel alloc] init];
     nameView.font = Font15;
@@ -148,6 +153,14 @@
     
     // 设置数据
 //    [self setData];
+}
+
+- (void)showStarVC:(UIGestureRecognizer *)tap{
+    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickFaceWith:)]) {
+        [self.delegate tableViewCell:self didClickFaceWith:_frameModel.postsModel];
+    }else{
+        NSLog(@"PostCell的代理没有响应...");
+    }
 }
 
 - (void)layoutSubviews{

@@ -50,6 +50,10 @@
 #import "ReplyModel.h"
 // 我的回复模型
 #import "MyReplyModel.h"
+/*****专题页模型*****/
+#import "SpecialModel.h"
+// 专题详情页模型
+#import "SpecialDetailModel.h"
 
 /******************社区*****************/
 // 论坛模型
@@ -60,6 +64,11 @@
 #import "TypePostModel.h"
 // 帖子详情页模型
 #import "PostDetailModel.h"
+
+// 圈子模型
+#import "GroupModel.h"
+// 圈子返回数据模型
+#import "CircleModel.h"
 
 /*****************我的页*****************/
 // 用户模型
@@ -581,7 +590,6 @@
         
         // 字典数组转模型数组
         
-        
         if (success) {
             success(responseObject);
         }
@@ -600,6 +608,7 @@
         NSArray * app_myArr = responseObject[@"data"][@"app_my"];
         NSArray * comment = responseObject[@"data"][@"comment"];
         NSDictionary * data = responseObject[@"data"];
+        NSString * userid = responseObject[@"userid"];
         // 字典数组转模型数组
         NSArray * postsModelArr = [PostsModel objectArrayWithKeyValuesArray:app_myArr];
         NSArray * replyModelArr = [ReplyModel objectArrayWithKeyValuesArray:comment];
@@ -608,6 +617,7 @@
         sbModel.app_my = postsModelArr;
         sbModel.comment = replyModelArr;
         sbModel.data = data;
+        sbModel.userid = userid;
         
         if (success) {
             success(sbModel);
@@ -663,6 +673,51 @@
     }];
 }
 
+/******获取专题页数据*****/
++ (void)getSpecialDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        
+        NSArray * dataArr = responseObject[@"date"];
+        
+//        NSLog(@"%@", dataArr);
+        
+        // 字典数组转模型数组
+        NSArray * specailModelArr = [SpecialModel objectArrayWithKeyValuesArray:dataArr];
+        
+//        NSLog(@"%@", specailModelArr);
+        
+        if (success) {
+            success(specailModelArr);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取专辑详情页数据
++ (void)getSpecialDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        
+        NSArray * dateArr = responseObject[@"date"];
+        // 字典数组转模型数组
+        NSArray * speDeModelArr = [SpecialDetailModel objectArrayWithKeyValuesArray:dateArr];
+        
+        if (success) {
+            success(speDeModelArr);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
 
 /*******************论坛页***********************/
 // 论坛首页
@@ -724,6 +779,37 @@
         }
     } failure:^(NSError *error) {
         
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取圈子页数据
++ (void)getGroupDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSLog(@"%@", responseObject);
+        
+        CircleModel * cirModel = [[CircleModel alloc] init];
+        
+        // 字典数组转模型数组
+        NSArray * dicArr = responseObject[@"data"];
+        
+        NSString * page = responseObject[@"page"];
+//        NSLog(@"%@", dicArr);
+        
+        NSArray * groupModelArr = [GroupModel objectArrayWithKeyValuesArray:dicArr];
+        
+        cirModel.modelArr = groupModelArr;
+        cirModel.page = page;
+        
+        if (success) {
+            success(cirModel);
+        }
+        
+    } failure:^(NSError *error) {
+       
         if (failure) {
             failure(error);
         }

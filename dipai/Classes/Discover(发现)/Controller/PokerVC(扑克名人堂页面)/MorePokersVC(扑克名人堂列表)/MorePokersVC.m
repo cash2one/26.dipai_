@@ -16,6 +16,9 @@
 // 单元格中的模型
 #import "MorePokersModel.h"
 
+// 名人主页
+#import "StarVC.h"
+
 #import "SVProgressHUD.h"
 #import "DataTool.h"
 @interface MorePokersVC ()<UITableViewDataSource, UITableViewDelegate, MorePokersCellDelegate>
@@ -131,6 +134,18 @@
             
             NSLog(@"进行关注获取到的数据%@", responseObject);
             NSLog(@"content:%@", responseObject[@"content"]);
+            if ([responseObject[@"data"] isEqualToString:@"1"]) {
+                // 设置为已关注
+                [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
+            }else if([responseObject[@"data"] isEqualToString:@"0"]){
+                // 设置为未关注  要取消关注了
+                
+                [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
+                
+            }else
+            {
+                [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
+            }
         } failure:^(NSError * error) {
             NSLog(@"进行关注操作时出错%@", error);
         }];
@@ -156,6 +171,17 @@
                 
                 NSLog(@"进行取消关注获取到的数据%@", responseObject);
                 NSLog(@"content:%@", responseObject[@"content"]);
+                if ([responseObject[@"data"] isEqualToString:@"1"]) {
+                    // 设置为已关注
+                    [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
+                }else if([responseObject[@"data"] isEqualToString:@"0"]){
+                    // 设置为未关注
+                    [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
+                    
+                }else
+                {
+                    [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
+                }
             } failure:^(NSError * error) {
                 NSLog(@"进行取消关注操作时出错%@", error);
             }];
@@ -204,6 +230,14 @@
     }
 }
 
+- (void)tableViewCell:(MorePokersCell *)cell didClickFaceWith:(MorePokersModel *)model{
+    NSLog(@"........");
+    StarVC * starVC = [[StarVC alloc] init];
+    starVC.userURL = model.userurl;
+    [self.navigationController pushViewController:starVC animated:YES];
+}
+
+
 #pragma mark --- 添加下拉刷新和上拉加载
 - (void)addRefreshing{
     // 添加下拉刷新控件
@@ -231,7 +265,7 @@
 
 - (void)loadNewData{
     
-    [DataTool getMorePokerDataWithStr:MorePokersURL parameters:nil success:^(id responseObject) {
+    [DataTool getMorePokerDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
         
         self.dataSource = responseObject;

@@ -10,4 +10,6 @@
 
 @interface MorePokersVC : UIViewController
 
+
+@property (nonatomic, copy) NSString * wapurl;
 @end

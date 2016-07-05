@@ -27,7 +27,10 @@
 @end
 
 @interface LSAlertView : UIView
-
+/**
+ *  提示信息
+ */
+@property (nonatomic, strong) UILabel * messageLbl;
 @property (nonatomic, strong) id <LSAlertViewDeleagte> delegate;
 
 @end

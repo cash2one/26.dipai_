@@ -1,0 +1,196 @@
+//
+//  GroupTopView.m
+//  dipai
+//
+//  Created by 梁森 on 16/7/4.
+//  Copyright © 2016年 梁森. All rights reserved.
+//
+
+#import "GroupTopView.h"
+#import "GroupFrameModel.h"
+
+#import "UIImageView+WebCache.h"
+
+#import "PicView.h"
+
+#import "Masonry.h"
+@interface GroupTopView()
+
+/**
+ *  头像
+ */
+@property (nonatomic, strong) UIImageView *iconView;
+/**
+ *  昵称
+ */
+@property (nonatomic, strong) UILabel *nameView;
+/**
+ *  时间
+ */
+@property (nonatomic, strong) UILabel *timeView;
+
+/**
+ *  标题
+ */
+@property (nonatomic, strong) UILabel * titleView;
+
+/**
+ *  正文
+ */
+@property (nonatomic, strong) UILabel *textView;
+
+/**
+ *  用来装图片的视图
+ */
+@property (nonatomic, strong) PicView * picView;
+
+/**
+ *  评论数
+ */
+@property (nonatomic, strong) UILabel * commentsView;
+
+@end
+
+@implementation GroupTopView
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
+        // 添加子控件
+        [self setUpChildView];
+        
+        //        self.backgroundColor = [UIColor lightGrayColor];
+    }
+    
+    return self;
+}
+
+- (void)setFrameModel:(GroupFrameModel *)frameModel{
+    _frameModel = frameModel;
+    
+    [self setUpFrame];
+    [self setUpData];
+}
+
+#pragma mark --- 添加子控件
+- (void)setUpChildView{
+    // 头像
+    UIImageView *iconView = [[UIImageView alloc] init];
+//    iconView.backgroundColor = [UIColor redColor];
+    iconView.layer.masksToBounds = YES;
+    iconView.layer.cornerRadius = 19*IPHONE6_W_SCALE;
+    [self addSubview:iconView];
+    _iconView = iconView;
+    
+    // 昵称
+    UILabel *nameView = [[UILabel alloc] init];
+    nameView.font = Font15;
+    [self addSubview:nameView];
+    _nameView = nameView;
+    
+    // 时间
+    UILabel *timeView = [[UILabel alloc] init];
+//    timeView.backgroundColor = [UIColor redColor];
+    timeView.font = Font11;
+    timeView.textColor = Color153;
+    [self addSubview:timeView];
+    _timeView = timeView;
+    
+    // 标题
+    UILabel * titleView = [[UILabel alloc] init];
+    [self addSubview:titleView];
+    _titleView = titleView;
+    
+    // 正文
+    UILabel *textView = [[UILabel alloc] init];
+    textView.font = Font16;
+    textView.numberOfLines = 0;
+    [self addSubview:textView];
+    _textView = textView;
+    
+    PicView * picView = [[PicView alloc] init];
+//    picView.backgroundColor = [UIColor redColor];
+    [self addSubview:picView];
+    _picView = picView;
+    
+    //    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(replyAction:)];
+    //    _textView.userInteractionEnabled = YES;
+    //    [_textView addGestureRecognizer:tap];
+    
+    // 评论数
+    UILabel * commentsView = [[UILabel alloc] init];
+    commentsView.textAlignment = NSTextAlignmentRight;
+    commentsView.font = Font15;
+    commentsView.textColor = Color178;
+    [self addSubview:commentsView];
+    _commentsView = commentsView;
+}
+
+#pragma mark --- 设置frame
+- (void)setUpFrame{
+    
+    // 头像
+    _iconView.frame = _frameModel.faceFrame;
+    
+    // 昵称
+    _nameView.frame = _frameModel.nameFrame;
+    
+    // 图片
+    _picView.frame = _frameModel.picsFrame;
+    _picView.picArr = _frameModel.groupModel.picname;
+    
+    // 时间
+    NSString * str =[_frameModel.groupModel.addtime stringByAppendingString:[NSString stringWithFormat:@"  回复帖子"]];
+    CGFloat timeX = _nameView.frame.origin.x;
+    CGFloat timeY = CGRectGetMaxY(_nameView.frame) + Margin14 * IPHONE6_H_SCALE;
+    NSMutableDictionary * timeDic = [NSMutableDictionary dictionary];
+    timeDic[NSFontAttributeName] = Font11;
+    CGSize timeSize = [str sizeWithAttributes:timeDic];
+    _timeView.frame = (CGRect){{timeX,timeY},timeSize};
+    
+    // 标题
+    _titleView.frame = _frameModel.titleFrame;
+    
+    // 正文
+    _textView.frame = _frameModel.contentsFrame;
+    
+    // 评论数
+    [_commentsView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.mas_top).offset(23 * IPHONE6_H_SCALE);
+        make.right.equalTo(self.mas_right).offset(-15*IPHONE6_W_SCALE);
+        make.width.equalTo(@100);
+        make.height.equalTo(@(15*IPHONE6_W_SCALE));
+    }];
+
+}
+#pragma mark --- 设置数据
+- (void)setUpData{
+    
+    // 头像
+    NSURL * url = [NSURL URLWithString:_frameModel.groupModel.face];
+    [_iconView sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+    
+    // 昵称
+    _nameView.text = _frameModel.groupModel.username;
+    _nameView.textColor = [UIColor colorWithRed:228 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1];
+    
+    // 时间
+   
+    NSString * str =[_frameModel.groupModel.addtime stringByAppendingString:[NSString stringWithFormat:@"  回复帖子"]];
+    _timeView.text = str;
+    
+    NSLog(@"%@", _frameModel.groupModel.addtime);
+    
+    // 正文
+    _textView.text = _frameModel.groupModel.content;
+    
+}
+
+@end
+
+
+
+
+
+
+

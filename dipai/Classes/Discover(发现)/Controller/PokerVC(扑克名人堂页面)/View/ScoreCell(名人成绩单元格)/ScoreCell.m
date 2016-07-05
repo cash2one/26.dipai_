@@ -37,7 +37,7 @@
         // 添加子控件
         [self setUpChildView];
         // 去除点击效果
-//        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     return self;

@@ -122,6 +122,10 @@
     [self addSubview:iconView];
     _iconView = iconView;
     
+    iconView.userInteractionEnabled = YES;
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showStarVC:)];
+    [iconView addGestureRecognizer:tap];
+    
     // 昵称
     UILabel *nameView = [[UILabel alloc] init];
     nameView.font = Font15;
@@ -202,6 +206,14 @@
         [self.delegate tableViewCell:self didClickedContentWithID:@"" andModel:_frameModel.replyModel];
     } else{
         NSLog(@"ReplyCell的代理没有响应...");
+    }
+}
+#pragma mark --- 跳到个人主页
+- (void)showStarVC:(UITapGestureRecognizer *)tap{
+    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickFaceWithModel:)]) {
+        [self.delegate tableViewCell:self didClickFaceWithModel:_frameModel.replyModel];
+    } else{
+        NSLog(@"点击头像时，ReplyCell的代理没有响应...");
     }
 }
 

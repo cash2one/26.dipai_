@@ -30,6 +30,7 @@
 
 /********************发现页接口********************/
 // 发现首页接口
+ // 论坛页接口
 #define FindURL @"http://dipaiapp.replays.net/app/find"
 //#define FindURL @"http://10.0.0.14:8080/app/find"
 // 热门专辑中获取更多专辑的接口
@@ -59,11 +60,18 @@
 #define MorePostsURL  @"http://dipaiapp.replays.net/app/my/forum"
 // 获取更多回复的接口
 #define MoreReplysURL @"http://dipaiapp.replays.net/app/my/reply"
+/*******专题页接口*****/
+// 专题首页接口
+#define SpecialURL @"http://dipaiapp.replays.net/app/special/9"
 
 /********************社区页*********************/
 // 论坛首页
-#define CommunityURL @"http://dipaiapp.replays.net/app/forum"
+// 论坛页接口
+#define ForumURL @"http://dipaiapp.replays.net/app/forum"
 //#define CommunityURL @"http://10.0.0.14:8080/app/forum"
+
+// 圈子页接口
+#define GroupURL @"http://dipaiapp.replays.net/app/circle/list"
 
 // 发布帖子
 #define SendPostsURL @"http://dipaiapp.replays.net/app/add/forum/"
@@ -137,6 +145,7 @@
 #define Font16 [UIFont systemFontOfSize:16*IPHONE6_W_SCALE]
 #define Font17 [UIFont systemFontOfSize:17*IPHONE6_W_SCALE]
 #define Font18 [UIFont systemFontOfSize:18*IPHONE6_W_SCALE]
+#define Font19 [UIFont systemFontOfSize:19*IPHONE6_W_SCALE]
 #define Font20 [UIFont systemFontOfSize:20*IPHONE6_W_SCALE]
 
 // 颜色

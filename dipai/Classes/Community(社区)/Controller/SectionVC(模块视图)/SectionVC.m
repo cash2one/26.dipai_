@@ -33,9 +33,11 @@
 #import "LSAlertView.h"
 // 登录页面
 #import "LoginViewController.h"
+// 名人主页
+#import "StarVC.h"
 
 #import "DataTool.h"
-@interface SectionVC ()<UITableViewDataSource, UITableViewDelegate, LSAlertViewDeleagte>
+@interface SectionVC ()<UITableViewDataSource, UITableViewDelegate, LSAlertViewDeleagte, PostCellDelegate>
 /**
  *  表格
  */
@@ -281,9 +283,22 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     PostCell * cell = [PostCell cellWithTableView:tableView];
+    cell.delegate = self;
     PostFrameModel * frameModel = self.dataSource[indexPath.row];
     cell.frameModel = frameModel;
     return cell;
+}
+
+#pragma mark --- PostCellDelegate
+// 点击头像的点击事件
+- (void)tableViewCell:(PostCell *)cell didClickFaceWith:(PostsModel *)model{
+    
+    StarVC * starVC = [[StarVC alloc] init];
+    
+    NSLog(@"%@", model.userurl);
+    
+    starVC.userURL = model.userurl;
+    [self.navigationController pushViewController:starVC animated:YES];
 }
 
 #pragma mark --- 单元格的高度

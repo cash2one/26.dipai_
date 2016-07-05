@@ -76,6 +76,10 @@
     faceView.layer.cornerRadius = 25 * IPHONE6_W_SCALE;
     [self addSubview:faceView];
     _faceView = faceView;
+    // 跳转个人主页
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showStarVC:)];
+    faceView.userInteractionEnabled = YES;
+    [faceView addGestureRecognizer:tap];
     
     //  姓名
     UILabel * nameLbl = [[UILabel alloc] init];
@@ -120,6 +124,14 @@
         [self.delegate tableViewCell:self didClickedWithModel:_morePokersModel];
     } else{
         NSLog(@"MorePokersCell的代理没有响应...");
+    }
+}
+#pragma mark --- 跳转到个人主页
+- (void)showStarVC:(UIGestureRecognizer *)tap{
+    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickFaceWith:)]) {
+        [self.delegate tableViewCell:self didClickFaceWith:_morePokersModel];
+    } else{
+        NSLog(@"点击头像时，MorePokersCell的代理没有响应...");
     }
 }
 

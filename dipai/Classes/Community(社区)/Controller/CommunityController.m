@@ -20,6 +20,17 @@
 #import "DataTool.h"
 // 模块视图
 #import "SectionVC.h"
+// 帖子的详细页面
+#import "PostDetailVC.h"
+
+// 圈子模型
+#import "GroupModel.h"
+// 圈子返回数据模型
+#import "CircleModel.h"
+// 圈子单元格
+#import "GroupCell.h"
+// VM
+#import "GroupFrameModel.h"
 @interface CommunityController ()<UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate, HeaderViewInTalkingDelegate>
 {
     UISegmentedControl *_segmented;
@@ -32,10 +43,23 @@
     
     // 论坛模型
     ForumModel * _forumModel;
+    
+    // 圈子获取更多数据时发送的一个标识
+    NSString * _page;
 }
+
+// 数据源
+@property (nonatomic, strong) NSMutableArray * dataSource2;
 @end
 
 @implementation CommunityController
+
+- (NSMutableArray *)dataSource2{
+    if (_dataSource2 == nil) {
+        _dataSource2 = [NSMutableArray array];
+    }
+    return _dataSource2;
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -64,6 +88,7 @@
     
     // 添加滚动视图
     [self addScrollView];
+    
 }
 
 - (void)addSegmentControl{
@@ -142,11 +167,27 @@
     
     [_sc addSubview:_tableView2];
 //    // 添加刷新和加载
-    [self addRefreshWith:_tableView1];
-    [self addRefreshWith:_tableView2];
     
+    
+    MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData2)];
+    [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
+    header.stateLabel.font = [UIFont systemFontOfSize:14];
+    header.stateLabel.textColor = [UIColor lightGrayColor];
+    header.automaticallyChangeAlpha = YES;
+    header.lastUpdatedTimeLabel.hidden = YES;
+    _tableView2.header = header;
+    [header beginRefreshing];
+//    //往上拉加载数据.
+    MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData2)];
+    [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
+    [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
+    [footer setTitle:@"没有更多赛事" forState:MJRefreshStateNoMoreData];
+    footer.stateLabel.font = [UIFont systemFontOfSize:13];
+    footer.stateLabel.textColor = [UIColor lightGrayColor];
+    _tableView2.footer = footer;
+    
+    [self addRefreshWith:_tableView1];
     _tableView1.scrollsToTop = NO;
-//    _tableView2.scrollsToTop = NO;
 }
 - (void)addRefreshWith:(UITableView *)tableView{
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
@@ -182,7 +223,7 @@
 #pragma mark--- 加载和刷新
 - (void)loadNewData{
     
-    [DataTool getCommunityDataWithStr:CommunityURL parameters:nil success:^(id responseObject) {
+    [DataTool getCommunityDataWithStr:ForumURL parameters:nil success:^(id responseObject) {
         [_tableView1.header endRefreshing];
         
         _forumModel = responseObject;
@@ -191,6 +232,7 @@
         
         [self addTableViewHeader];
         [_tableView1 reloadData];
+
     } failure:^(NSError * error) {
        
         NSLog(@"获取论坛首页数据出错:%@", error);
@@ -198,8 +240,70 @@
     }];
     
     
-    [_tableView2.header endRefreshing];
+    
 }
+#pragma mark --- 圈子获取数据
+- (void)loadNewData2{
+    
+    [DataTool getGroupDataWithStr:GroupURL parameters:nil success:^(id responseObject) {
+        [_tableView2.header endRefreshing];
+        
+//        NSLog(@"获取圈子页数据：%@", responseObject);
+        
+        NSMutableArray * frameArr = [NSMutableArray array];
+        
+        CircleModel * cirModel = responseObject;
+        
+        _page = cirModel.page;
+        
+        for (GroupModel* groupModel in cirModel.modelArr) {
+            
+            if ([groupModel.type isEqualToString:@"1"]) {
+                GroupFrameModel * frameModel = [[GroupFrameModel alloc] init];
+                frameModel.groupModel = groupModel;
+                [frameArr addObject:frameModel];
+            }
+        }
+        self.dataSource2 = frameArr;
+        NSLog(@"%lu", self.dataSource2.count);
+        [_tableView2 reloadData];
+    } failure:^(NSError * error) {
+        
+        NSLog(@"获取圈子页数据出错：%@", error);
+    }];
+}
+- (void)loadMoreData2{
+    
+    // http://dipaiapp.replays.net/app/circle/list
+    NSString * url = [GroupURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _page]];
+    
+//    NSLog(@"%@", url);
+    
+    [DataTool getGroupDataWithStr:url parameters:nil success:^(id responseObject) {
+        [_tableView2.footer endRefreshing];
+        
+        CircleModel * cirModel = responseObject;
+        _page = cirModel.page;
+        
+        if (!cirModel) {
+            _tableView2.footer.state = MJRefreshStateNoMoreData;
+        }
+        for (GroupModel * model in cirModel.modelArr) {
+            if ([model.type isEqualToString:@"1"]) {    // 如果是回复或回帖
+                GroupFrameModel * frameModel = [[GroupFrameModel alloc] init];
+                frameModel.groupModel = model;
+                [self.dataSource2 addObject:frameModel];
+            }
+            
+        }
+        [_tableView2 reloadData];
+        
+    } failure:^(NSError * error) {
+        
+        NSLog(@"获取圈子页数据出错：%@", error);
+    }];
+}
+
 - (void)loadMoreData{
     [_tableView1.footer endRefreshing];
     [_tableView2.footer endRefreshing];
@@ -217,19 +321,62 @@
 }
 #pragma mark --- UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 20;
+    if (tableView == _tableView2) {
+        return self.dataSource2.count;
+    } else{
+        return 20;
+    }
+    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString * cellID = @"tournamentCell";
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
-        //        NSLog(@"...");
+    
+    if (tableView == _tableView2) { // 如果是圈子页面
+        
+        // 分两种情况  1:帖子  2:回复
+        GroupFrameModel * frameModel = self.dataSource2[indexPath.row];
+        GroupCell * cell = [GroupCell cellWithTableView:tableView];
+        cell.frameModel = frameModel;
+        return cell;
+    }else{
+        static NSString * cellID = @"tournamentCell";
+        UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
+            //        NSLog(@"...");
+        }
+        cell.textLabel.text = [NSString stringWithFormat:@"%lu", indexPath.row];;
+        return cell;
     }
-    cell.textLabel.text = [NSString stringWithFormat:@"%lu", indexPath.row];;
-    return cell;
+    
 }
+
+#pragma mark --- 单元格的高度
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (tableView == _tableView2) {
+        GroupFrameModel * frameModel = [[GroupFrameModel alloc] init];
+        frameModel = self.dataSource2[indexPath.row];
+        return frameModel.cellHeight;
+        
+    }else{
+        return 100;
+    }
+}
+
+#pragma mark --- 单元格的点击事件
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (tableView == _tableView2) {
+        // 跳转到帖子详细页面
+        PostDetailVC * postDetailVC = [[PostDetailVC alloc] init];
+        GroupFrameModel * model = self.dataSource2[indexPath.row];
+        postDetailVC.wapurl = model.groupModel.wapurl;
+        postDetailVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:postDetailVC animated:YES];
+    }else{
+        NSLog(@"...");
+    }
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

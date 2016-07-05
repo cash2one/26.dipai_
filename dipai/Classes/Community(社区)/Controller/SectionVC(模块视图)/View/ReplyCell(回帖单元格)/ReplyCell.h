@@ -12,8 +12,11 @@
 @class ReplyModel;
 @class ReplyCell;
 @protocol ReplyCellDelegate <NSObject>
-
+// 点击回复的点击事件
 - (void)tableViewCell:(ReplyCell *)cell didClickedContentWithID:(NSString *)ID andModel:(ReplyModel *)model;
+
+// 点击头像的点击事件
+- (void)tableViewCell:(ReplyCell *)cell didClickFaceWithModel:(ReplyModel *)model;
 
 @end
 

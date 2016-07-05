@@ -56,6 +56,9 @@
 #import "MatchVC.h"
 // 扑克名人堂页面
 #import "PokerVC.h"
+// 专辑页面
+#import "SpecialViewController.h"
+
 @interface DiscoverController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate, HotVideoCellDelegate,TwoBtnCellDelegate, WSOPTableViewCellDelegate>
 /**
  *  用来装热门视频中的视频模型
@@ -342,6 +345,7 @@
     ClubViewController * clubVC = [[ClubViewController alloc] init];    // 俱乐部页面
      MatchVC * matchVC = [[MatchVC alloc] init];    // 赛事页面
     PokerVC * pokerVC = [[PokerVC alloc] init]; // 扑克名人堂页面
+    SpecialViewController * specialVC = [[SpecialViewController alloc] init];
     switch (btn.tag) {
         case 1:
             clubVC.clubURL = _navigationModel.club;
@@ -357,7 +361,8 @@
             [self.navigationController pushViewController:pokerVC animated:YES];
             break;
         case 4:
-            NSLog(@"4");
+            specialVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:specialVC animated:YES];
             break;
         default:
             break;

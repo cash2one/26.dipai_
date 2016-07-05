@@ -19,6 +19,10 @@
  */
 
 /**
+ *  用户ID
+ */
+@property (nonatomic, copy) NSString * userid;
+/**
 *  我的发帖
 */
 @property (nonatomic, strong) NSArray * app_my;
