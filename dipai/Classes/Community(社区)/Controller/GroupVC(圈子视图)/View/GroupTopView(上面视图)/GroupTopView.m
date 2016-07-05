@@ -8,6 +8,8 @@
 
 #import "GroupTopView.h"
 #import "GroupFrameModel.h"
+#import "GrpPostFrmModel.h"
+#import "GroupModel.h"
 
 #import "UIImageView+WebCache.h"
 
@@ -70,6 +72,67 @@
     
     [self setUpFrame];
     [self setUpData];
+}
+
+- (void)setGrpFrmModel:(GrpPostFrmModel *)grpFrmModel{
+    
+    NSLog(@"%@", grpFrmModel);
+    
+    _grpFrmModel = grpFrmModel;
+    
+    // 头像
+    _iconView.frame = _grpFrmModel.faceFrame;
+    
+    // 昵称
+    _nameView.frame = _grpFrmModel.nameFrame;
+    
+    // 图片
+    _picView.frame = _grpFrmModel.picsFrame;
+    _picView.picArr = _grpFrmModel.groupModel.picname;
+    
+    // 时间
+    NSString * str =[_grpFrmModel.groupModel.addtime stringByAppendingString:[NSString stringWithFormat:@"  发布帖子"]];
+    CGFloat timeX = _nameView.frame.origin.x;
+    CGFloat timeY = CGRectGetMaxY(_nameView.frame) + Margin14 * IPHONE6_H_SCALE;
+    NSMutableDictionary * timeDic = [NSMutableDictionary dictionary];
+    timeDic[NSFontAttributeName] = Font11;
+    CGSize timeSize = [str sizeWithAttributes:timeDic];
+    _timeView.frame = (CGRect){{timeX,timeY},timeSize};
+    
+    // 标题
+    _titleView.frame = _grpFrmModel.titleFrame;
+    
+    // 正文
+    _textView.frame = _grpFrmModel.contentsFrame;
+    
+    // 评论数
+    [_commentsView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.mas_top).offset(23 * IPHONE6_H_SCALE);
+        make.right.equalTo(self.mas_right).offset(-15*IPHONE6_W_SCALE);
+        make.width.equalTo(@100);
+        make.height.equalTo(@(15*IPHONE6_W_SCALE));
+    }];
+    
+    
+    // 头像
+    NSURL * url = [NSURL URLWithString:_grpFrmModel.groupModel.face];
+    [_iconView sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+    
+    // 昵称
+    _nameView.text = _grpFrmModel.groupModel.username;
+    _nameView.textColor = [UIColor colorWithRed:228 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1];
+    
+    // 时间
+    
+    NSString * str1 =[_grpFrmModel.groupModel.addtime stringByAppendingString:[NSString stringWithFormat:@"  发布帖子"]];
+    _timeView.text = str1;
+    // 标题
+    _titleView.frame = _grpFrmModel.titleFrame;
+    _titleView.text = _grpFrmModel.groupModel.title;
+    //    NSLog(@"%@", _frameModel.groupModel.addtime);
+    
+    // 正文
+    _textView.text = _grpFrmModel.groupModel.introduction;
 }
 
 #pragma mark --- 添加子控件
@@ -179,7 +242,7 @@
     NSString * str =[_frameModel.groupModel.addtime stringByAppendingString:[NSString stringWithFormat:@"  回复帖子"]];
     _timeView.text = str;
     
-    NSLog(@"%@", _frameModel.groupModel.addtime);
+//    NSLog(@"%@", _frameModel.groupModel.addtime);
     
     // 正文
     _textView.text = _frameModel.groupModel.content;

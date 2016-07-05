@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 @class GroupFrameModel;
+@class GrpPostFrmModel;
 @interface GroupCell : UITableViewCell
 
 @property (nonatomic, strong) GroupFrameModel * frameModel;
+
+@property (nonatomic, strong) GrpPostFrmModel * postFrmModel;
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 @end

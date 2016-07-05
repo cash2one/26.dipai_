@@ -276,7 +276,7 @@
     _reContentView.frame = _frameModel.ReContentFrame;
     
     
-    NSLog(@"rereplyframe.height:---%f", _frameModel.ReReplyFrame.size.height);
+//    NSLog(@"rereplyframe.height:---%f", _frameModel.ReReplyFrame.size.height);
     
     CGFloat lineY = 0.0;
     // 底部横线

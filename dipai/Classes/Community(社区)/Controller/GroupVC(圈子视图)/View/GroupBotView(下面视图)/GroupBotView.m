@@ -9,7 +9,7 @@
 #import "GroupBotView.h"
 
 #import "GroupFrameModel.h"
-
+#import "GroupModel.h"
 @interface GroupBotView()
 
 /**

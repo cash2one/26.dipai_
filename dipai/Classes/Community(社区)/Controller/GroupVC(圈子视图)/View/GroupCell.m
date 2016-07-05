@@ -9,6 +9,7 @@
 #import "GroupCell.h"
 
 #import "GroupFrameModel.h"
+#import "GrpPostFrmModel.h"
 
 #import "GroupTopView.h"
 #import "GroupBotView.h"
@@ -68,7 +69,19 @@
     
 }
 
+- (void)setPostFrmModel:(GrpPostFrmModel *)postFrmModel{
+    
+    NSLog(@"%@", postFrmModel);
+    _postFrmModel = postFrmModel;
+    // 上边视图
+    _topView.frame = postFrmModel.CommentsFrame;
+    _topView.grpFrmModel = postFrmModel;
+}
+
 - (void)setFrameModel:(GroupFrameModel *)frameModel{
+    
+//    NSLog(@"%@", frameModel);
+    
     _frameModel = frameModel;
     
         // 上边视图

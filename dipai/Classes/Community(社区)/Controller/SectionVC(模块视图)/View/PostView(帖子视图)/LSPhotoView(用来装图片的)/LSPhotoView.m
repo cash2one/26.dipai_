@@ -63,7 +63,7 @@
 - (void)setPicArr:(NSArray *)picArr{
     _picArr = picArr;
     
-    NSLog(@"传递过来图片的个数:%lu", _picArr.count);
+//    NSLog(@"传递过来图片的个数:%lu", _picArr.count);
     NSUInteger counts = self.subviews.count;
     for (int i = 0; i < counts; i ++) {
         UIImageView * imageView = self.subviews[i];
@@ -101,7 +101,7 @@
                 CGFloat y = (160-32)*0.5*IPHONE6_H_SCALE;
                 _numLbl.frame = CGRectMake(x, y, 35*IPHONE6_W_SCALE, 16*IPHONE6_H_SCALE);
                 
-                NSLog(@"图片个数%lu", _picArr.count);
+//                NSLog(@"图片个数%lu", _picArr.count);
                 
                 _numLbl.text = [NSString stringWithFormat:@"%lu图", _picArr.count];
             }

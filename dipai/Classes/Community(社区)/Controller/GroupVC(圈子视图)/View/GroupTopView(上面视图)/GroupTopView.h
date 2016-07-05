@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 @class GroupFrameModel;
+@class GrpPostFrmModel;
 @interface GroupTopView : UIView
+
+@property (nonatomic, strong) GrpPostFrmModel * grpFrmModel;
 
 @property (nonatomic, strong) GroupFrameModel * frameModel;
 

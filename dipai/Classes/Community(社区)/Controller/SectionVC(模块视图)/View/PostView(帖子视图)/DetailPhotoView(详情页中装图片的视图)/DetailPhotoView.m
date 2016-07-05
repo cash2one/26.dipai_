@@ -105,7 +105,7 @@
             CGFloat scale = 1.0;
             if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
                 
-                NSLog(@"scale1---%f", scale);
+//                NSLog(@"scale1---%f", scale);
                 
                 scale = (WIDTH - 30 * IPHONE6_W_SCALE)/w;
                 h = h * scale;

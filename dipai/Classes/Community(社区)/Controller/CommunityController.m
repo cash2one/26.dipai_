@@ -29,6 +29,12 @@
 #import "CircleModel.h"
 // 圈子单元格
 #import "GroupCell.h"
+
+#import "GrpPostCell.h"
+#import "GrpPostFrmModel.h"
+
+#import "SVProgressHUD.h"
+
 // VM
 #import "GroupFrameModel.h"
 @interface CommunityController ()<UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate, HeaderViewInTalkingDelegate>
@@ -124,7 +130,7 @@
 
 - (void)addScrollView {
     
-    NSLog(@"%f", HEIGHT);
+//    NSLog(@"%f", HEIGHT);
     
     _sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, WIDTH , HEIGHT-64)];
     _sc.contentSize=CGSizeMake(WIDTH * 2 , HEIGHT);
@@ -213,7 +219,7 @@
     
     NSInteger count = _forumModel.section.count;   // 版块的个数
     NSInteger rows =   count / 5 + 1;   // 版块的行数
-    NSLog(@"%lu", rows);
+//    NSLog(@"%lu", rows);
     CGFloat headerH = (74+18+24) * 0.5 * rows + (28+38+20+83) * 0.5 + (rows-1) * 10;
     HeaderViewInTalking * headerView = [[HeaderViewInTalking alloc] initWithFrame:CGRectMake(0, 0, WIDTH, headerH) WithModel:_forumModel];
     headerView.delegate = self;
@@ -228,7 +234,7 @@
         
         _forumModel = responseObject;
         
-        NSLog(@"%@", _forumModel.section[0]);
+//        NSLog(@"%@", _forumModel.section[0]);
         
         [self addTableViewHeader];
         [_tableView1 reloadData];
@@ -256,15 +262,7 @@
         
         _page = cirModel.page;
         
-        for (GroupModel* groupModel in cirModel.modelArr) {
-            
-            if ([groupModel.type isEqualToString:@"1"]) {
-                GroupFrameModel * frameModel = [[GroupFrameModel alloc] init];
-                frameModel.groupModel = groupModel;
-                [frameArr addObject:frameModel];
-            }
-        }
-        self.dataSource2 = frameArr;
+        self.dataSource2 = (NSMutableArray *)cirModel.modelArr;
         NSLog(@"%lu", self.dataSource2.count);
         [_tableView2 reloadData];
     } failure:^(NSError * error) {
@@ -283,19 +281,18 @@
         [_tableView2.footer endRefreshing];
         
         CircleModel * cirModel = responseObject;
-        _page = cirModel.page;
         
-        if (!cirModel) {
+        
+        
+        if ([cirModel.page isKindOfClass:[NSNull class]]) {
             _tableView2.footer.state = MJRefreshStateNoMoreData;
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         }
         for (GroupModel * model in cirModel.modelArr) {
-            if ([model.type isEqualToString:@"1"]) {    // 如果是回复或回帖
-                GroupFrameModel * frameModel = [[GroupFrameModel alloc] init];
-                frameModel.groupModel = model;
-                [self.dataSource2 addObject:frameModel];
-            }
+            [self.dataSource2 addObject:model];
             
         }
+        _page = cirModel.page;
         [_tableView2 reloadData];
         
     } failure:^(NSError * error) {
@@ -332,12 +329,29 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     if (tableView == _tableView2) { // 如果是圈子页面
-        
         // 分两种情况  1:帖子  2:回复
-        GroupFrameModel * frameModel = self.dataSource2[indexPath.row];
-        GroupCell * cell = [GroupCell cellWithTableView:tableView];
-        cell.frameModel = frameModel;
-        return cell;
+        GroupModel * groupModel = self.dataSource2[indexPath.row];
+        
+        GrpPostCell * gpcell =(GrpPostCell *) [GrpPostCell cellWithTableView:tableView];
+        
+//        NSLog(@"%@", gpcell);
+        if ([groupModel.type isEqualToString:@"0"]) {
+            
+            GrpPostFrmModel * frameModel = [[GrpPostFrmModel alloc] init];
+            frameModel.groupModel = groupModel;
+            GroupCell * cell = [GroupCell cellWithTableView:tableView];
+            cell.postFrmModel = frameModel;;
+            return cell;
+            
+        }else{
+            GroupFrameModel * frameModel = [[GroupFrameModel alloc] init];
+            frameModel.groupModel = groupModel;
+            GroupCell * cell = [GroupCell cellWithTableView:tableView];
+            cell.frameModel = frameModel;
+            return cell;
+        }
+        
+       
     }else{
         static NSString * cellID = @"tournamentCell";
         UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellID];
@@ -354,9 +368,17 @@
 #pragma mark --- 单元格的高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (tableView == _tableView2) {
-        GroupFrameModel * frameModel = [[GroupFrameModel alloc] init];
-        frameModel = self.dataSource2[indexPath.row];
-        return frameModel.cellHeight;
+        GroupModel * groupModel = self.dataSource2[indexPath.row];
+        if ([groupModel.type isEqualToString:@"1"]) {
+            GroupFrameModel * frameModel = [[GroupFrameModel alloc] init];
+            frameModel.groupModel = groupModel;
+            return frameModel.cellHeight;
+        }
+        else{
+            GrpPostFrmModel * frameModel = [[GrpPostFrmModel alloc] init];
+            frameModel.groupModel = groupModel;
+            return frameModel.cellHeight;
+        }
         
     }else{
         return 100;
@@ -366,10 +388,14 @@
 #pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (tableView == _tableView2) {
+        NSLog(@"...");
         // 跳转到帖子详细页面
         PostDetailVC * postDetailVC = [[PostDetailVC alloc] init];
-        GroupFrameModel * model = self.dataSource2[indexPath.row];
-        postDetailVC.wapurl = model.groupModel.wapurl;
+        GroupModel * model = self.dataSource2[indexPath.row];
+        postDetailVC.wapurl = model.wapurl;
+        
+        NSLog(@"type----%@", model.type);
+        
         postDetailVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:postDetailVC animated:YES];
     }else{

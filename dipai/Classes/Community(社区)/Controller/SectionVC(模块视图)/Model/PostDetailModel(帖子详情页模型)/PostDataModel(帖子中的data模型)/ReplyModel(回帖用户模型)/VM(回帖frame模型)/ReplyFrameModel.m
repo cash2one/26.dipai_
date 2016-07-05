@@ -27,7 +27,7 @@
         _cellHeight = CGRectGetMaxY(_ReplyFrame);
     }
     
-    NSLog(@"cellHeight:%f", _cellHeight);
+//    NSLog(@"cellHeight:%f", _cellHeight);
 }
 
 #pragma mark --- 计算帖子的frame
@@ -81,7 +81,7 @@
         CGFloat photosY = CGRectGetMaxY(_contentsFrame) + 14 * IPHONE6_H_SCALE;
         // 计算配图视图的大小（根据图片的数量）
         
-        NSLog(@"%@", _replyModel.picname);
+//        NSLog(@"%@", _replyModel.picname);
         
         CGSize photosSize = [self photosSizeWithCount:_replyModel.picname.count];
         _picsFrame = (CGRect){{photosX,photosY},photosSize};
@@ -146,7 +146,7 @@
         CGFloat scale = 1.0;
         if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
             
-            NSLog(@"scale1---%f", scale);
+//            NSLog(@"scale1---%f", scale);
             
             scale = (WIDTH - 30 * IPHONE6_W_SCALE)/width;
             height = height * scale;
@@ -158,7 +158,7 @@
         h = h + (height+8) * IPHONE6_H_SCALE;
     }
     
-    NSLog(@"所有图片的高度：－－－－%f", h);
+//    NSLog(@"所有图片的高度：－－－－%f", h);
     
     return CGSizeMake(w, h);
     

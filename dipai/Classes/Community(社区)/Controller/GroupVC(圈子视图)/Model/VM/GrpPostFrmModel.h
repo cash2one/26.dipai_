@@ -1,16 +1,15 @@
 //
-//  GroupFrameModel.h
+//  GrpPostFrmModel.h
 //  dipai
 //
-//  Created by 梁森 on 16/7/4.
+//  Created by 梁森 on 16/7/5.
 //  Copyright © 2016年 梁森. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-
 @class GroupModel;
-@interface GroupFrameModel : NSObject
+@interface GrpPostFrmModel : NSObject
 /**
  *  帖子数据
  */

@@ -7,7 +7,7 @@
 //
 
 #import "GroupFrameModel.h"
-
+#import "GroupModel.h"
 @implementation GroupFrameModel
 
 - (void)setGroupModel:(GroupModel *)groupModel{

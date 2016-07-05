@@ -94,7 +94,7 @@
 
 - (CGFloat)viewHeight{
     
-    NSLog(@"viewHeight:%f", _viewHeight);
+//    NSLog(@"viewHeight:%f", _viewHeight);
     return _viewHeight;
 }
 
@@ -212,7 +212,7 @@
     nameDic[NSFontAttributeName] = Font15;
     CGSize nameSize = [_dataModel.username sizeWithAttributes:nameDic];
     _nameView.frame = (CGRect){{nameX, nameY}, nameSize};
-    NSLog(@"username:%@", _dataModel.username);
+//    NSLog(@"username:%@", _dataModel.username);
     
     _nameView.text = _dataModel.username;
     
@@ -256,9 +256,9 @@
         for ( int i = 0; i < _dataModel.imgs.count; i ++) {
             CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_dataModel.imgs[i]]];
             
-            NSLog(@"%@", _dataModel.imgs[i]);
+//            NSLog(@"%@", _dataModel.imgs[i]);
             
-            NSLog(@"%f-------%f", size.height, size.width);
+//            NSLog(@"%f-------%f", size.height, size.width);
             CGFloat h = size.height;
             CGFloat w = size.width;
             
@@ -266,24 +266,24 @@
                 w = WIDTH - 30 * IPHONE6_W_SCALE;
             }
             
-            NSLog(@"width--%f", size.width);
+//            NSLog(@"width--%f", size.width);
             CGFloat scale = 1.0;
             if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
                 
-                NSLog(@"scale1---%f", scale);
+//                NSLog(@"scale1---%f", scale);
                 
                 scale = (WIDTH - 30 * IPHONE6_W_SCALE)/w;
                 
-                NSLog(@"%f", WIDTH - 30 * IPHONE6_W_SCALE);
-                NSLog(@"%f", w);
-                NSLog(@"%f", scale);
+//                NSLog(@"%f", WIDTH - 30 * IPHONE6_W_SCALE);
+//                NSLog(@"%f", w);
+//                NSLog(@"%f", scale);
                 
                  h = h * scale;
             } else{
                 scale = 1.0;
                 h = h;
             }
-            NSLog(@"scale==%f", scale);
+//            NSLog(@"scale==%f", scale);
             
            
             height = height + h + 8 * IPHONE6_H_SCALE;

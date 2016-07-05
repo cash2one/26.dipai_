@@ -175,7 +175,7 @@
 
 #pragma mark --- UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    NSLog(@"数据源的个数：%lu", self.dataSource.count);
+//    NSLog(@"数据源的个数：%lu", self.dataSource.count);
     return self.dataSource.count;
 //    return 40;
 }
@@ -197,7 +197,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     ReplyFrameModel * frameModel = self.dataSource[indexPath.row];
     
-    NSLog(@"单元格的高度：%f    %lu", frameModel.cellHeight, indexPath.row);
+//    NSLog(@"单元格的高度：%f    %lu", frameModel.cellHeight, indexPath.row);
     
     return frameModel.cellHeight;
 }
@@ -221,12 +221,12 @@
             ReplyFrameModel * frameModel = [[ReplyFrameModel alloc] init];
             frameModel.replyModel = model;
             
-            NSLog(@"%@", frameModel.replyModel.picname);
+//            NSLog(@"%@", frameModel.replyModel.picname);
             
             [self.dataSource addObject:frameModel];
         }
         
-        NSLog(@"%lu", self.dataSource.count);
+//        NSLog(@"%lu", self.dataSource.count);
         
         // 设置数据
         [self setData];

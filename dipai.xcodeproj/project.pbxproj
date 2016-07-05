@@ -284,6 +284,8 @@
 		C1E6BDD91D1A7D2A0065DF9C /* HeaderViewInTalking.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E6BDD81D1A7D2A0065DF9C /* HeaderViewInTalking.m */; };
 		C1E6BDDD1D1A8FE30065DF9C /* SectionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E6BDDC1D1A8FE30065DF9C /* SectionVC.m */; };
 		C1EA8C1E1D2B5EA10042169E /* CircleModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EA8C1D1D2B5EA10042169E /* CircleModel.m */; };
+		C1EA8C211D2B85580042169E /* GrpPostFrmModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EA8C201D2B85580042169E /* GrpPostFrmModel.m */; };
+		C1EA8C271D2B86F40042169E /* GrpPostCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EA8C261D2B86F40042169E /* GrpPostCell.m */; };
 		C1ECB17A1CF7DCD40002CBF6 /* GetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1ECB1791CF7DCD40002CBF6 /* GetPasswordViewController.m */; };
 		C1ECB1F81CF83F730002CBF6 /* ResetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1ECB1F71CF83F730002CBF6 /* ResetPasswordViewController.m */; };
 		C1EDBE391D236527006B15A7 /* PokerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EDBE381D236527006B15A7 /* PokerVC.m */; };
@@ -923,6 +925,10 @@
 		C1E6BDDC1D1A8FE30065DF9C /* SectionVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SectionVC.m; sourceTree = "<group>"; };
 		C1EA8C1C1D2B5EA10042169E /* CircleModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleModel.h; sourceTree = "<group>"; };
 		C1EA8C1D1D2B5EA10042169E /* CircleModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CircleModel.m; sourceTree = "<group>"; };
+		C1EA8C1F1D2B85580042169E /* GrpPostFrmModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrpPostFrmModel.h; sourceTree = "<group>"; };
+		C1EA8C201D2B85580042169E /* GrpPostFrmModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrpPostFrmModel.m; sourceTree = "<group>"; };
+		C1EA8C251D2B86F40042169E /* GrpPostCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrpPostCell.h; sourceTree = "<group>"; };
+		C1EA8C261D2B86F40042169E /* GrpPostCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrpPostCell.m; sourceTree = "<group>"; };
 		C1ECB1781CF7DCD40002CBF6 /* GetPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetPasswordViewController.h; sourceTree = "<group>"; };
 		C1ECB1791CF7DCD40002CBF6 /* GetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPasswordViewController.m; sourceTree = "<group>"; };
 		C1ECB1F61CF83F730002CBF6 /* ResetPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResetPasswordViewController.h; sourceTree = "<group>"; };
@@ -2624,6 +2630,8 @@
 			children = (
 				C1C9C1061D2A123F00D17C57 /* GroupCell.h */,
 				C1C9C1071D2A123F00D17C57 /* GroupCell.m */,
+				C1EA8C251D2B86F40042169E /* GrpPostCell.h */,
+				C1EA8C261D2B86F40042169E /* GrpPostCell.m */,
 				C1C9C10E1D2A163800D17C57 /* GroupTopView(上面视图) */,
 				C1C9C10D1D2A163800D17C57 /* GroupBotView(下面视图) */,
 			);
@@ -2635,6 +2643,8 @@
 			children = (
 				C1C9C10A1D2A138300D17C57 /* GroupFrameModel.h */,
 				C1C9C10B1D2A138300D17C57 /* GroupFrameModel.m */,
+				C1EA8C1F1D2B85580042169E /* GrpPostFrmModel.h */,
+				C1EA8C201D2B85580042169E /* GrpPostFrmModel.m */,
 			);
 			path = VM;
 			sourceTree = "<group>";
@@ -4134,8 +4144,10 @@
 				C1D97E0E1D116B2D00A8DA64 /* CAPSPageMenu.m in Sources */,
 				C1EFBA771CEF14790066C4FF /* NSManagedObjectContext+MagicalChainSave.m in Sources */,
 				C1954AC21CF68A1E00B1DE71 /* RegisterViewController.m in Sources */,
+				C1EA8C271D2B86F40042169E /* GrpPostCell.m in Sources */,
 				C1EFBA821CEF14790066C4FF /* MagicalRecord+Options.m in Sources */,
 				C1CBC00D1D0D4BE400518286 /* HotVideoModel.m in Sources */,
+				C1EA8C211D2B85580042169E /* GrpPostFrmModel.m in Sources */,
 				C12F9DC91CD9DA0D003CC7FC /* AFHTTPRequestOperation.m in Sources */,
 				C1248F121D1FAA9F0016B2F9 /* PostDetailVC.m in Sources */,
 				C12F9E471CDA031D003CC7FC /* SDWebImageManager.m in Sources */,
