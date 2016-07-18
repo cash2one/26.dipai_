@@ -101,6 +101,7 @@
     // 昵称
     UILabel *nameView = [[UILabel alloc] init];
     nameView.font = Font15;
+    nameView.textColor = [UIColor redColor];
 //    nameView.backgroundColor = [UIColor redColor];
     [self addSubview:nameView];
     _nameView = nameView;
@@ -201,11 +202,18 @@
     _textView.text = _frameModel.postsModel.introduction;
     
     // 图片
-    _picView.frame = _frameModel.picsFrame;
+    if (_frameModel.postsModel.picname && _frameModel.postsModel.picname.count > 0) {
+        _picView.hidden = NO;
+        _picView.frame = _frameModel.picsFrame;
+         _picView.picArr = (NSArray *)_frameModel.postsModel.picname;
+    }else{
+        _picView.hidden = YES;
+    }
+    
     
     NSLog(@"%lu", _frameModel.postsModel.picname.count);
     
-    _picView.picArr = (NSArray *)_frameModel.postsModel.picname;
+   
    
     
     // 底部横线
@@ -217,7 +225,6 @@
     }];
     
  
-    
 }
 
 

@@ -16,6 +16,8 @@
 // 回复视图
 #import "ReplyView.h"
 #import "CommentsModel.h"
+
+#import "Masonry.h"
 @interface CommentsTableViewCell()<CommentsViewDelegate>
 /**
  *  评论视图
@@ -35,6 +37,8 @@
  *  回复按钮
  */
 @property (nonatomic, strong) UIButton * btn;
+
+
 
 @end
 
@@ -77,6 +81,11 @@
     [self addSubview:replyView];
     _replyView = replyView;
     
+    UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [btn addTarget:self action:@selector(replyAction) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:btn];
+    _btn = btn;
+    
     UIView * line = [[UIView alloc] init];
     line.backgroundColor = Color238;
     [self addSubview:line];
@@ -97,17 +106,36 @@
     
     CGFloat y = _commentsFrame.cellHeight;
     _line.frame = CGRectMake(0, y, WIDTH, 0.5);
+    
+    [_btn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mas_left);
+        make.right.equalTo(self.mas_right);
+        make.top.equalTo(self.mas_top);
+        make.bottom.equalTo(self.mas_bottom);
+    }];
 }
 
 
 #pragma mark --- CommentsViewDelegate
-- (void)showReplyBtnAndCheckBtn{
-    
+- (void)replyAction{
     if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickedContentWithID:andModel:)]) {
         [self.delegate tableViewCell:self didClickedContentWithID:_commentsFrame.comments.comment_id andModel:_commentsFrame.comments];
         
     } else{
         NSLog(@"CommentsTableViewCell的代理没有响应");
+    }
+}
+- (void)showReplyBtnAndCheckBtn{
+    
+   
+}
+
+- (void)didClickFace{
+    if ([self.delegate respondsToSelector:@selector(tableViewCell:dicClickFaceWithModel:)]) {
+        
+        [self.delegate tableViewCell:self dicClickFaceWithModel:_commentsFrame.comments];
+    }else{
+        NSLog(@"CommentsTableViewCell的代理没有响应 ");
     }
 }
 

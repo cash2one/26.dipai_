@@ -53,11 +53,9 @@
     
     if (model) {
         
-        NSLog(@"%@", model.picname);
-        
         [_picView sd_setImageWithURL:[NSURL URLWithString:model.picname] placeholderImage:[UIImage imageNamed:@"123"]];
         _titleLbl.text = model.title;
-        _titleLbl.text = @"这只是测试信息，这是某一个视频专辑";
+//        _titleLbl.text = @"这只是测试信息，这是某一个视频专辑";
     } else{
         NSLog(@"...");
     }

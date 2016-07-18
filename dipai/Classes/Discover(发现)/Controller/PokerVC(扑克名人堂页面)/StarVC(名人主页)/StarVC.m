@@ -42,6 +42,12 @@
 #import "LSAlertView.h"
 // 登录页面
 #import "LoginViewController.h"
+// 视频详情页
+#import "VideoViewController.h"
+// 资讯详情页
+#import "DetailWebViewController.h"
+// 赛事详情页
+#import "MatchDetailVC.h"
 
 
 // 更多名人列表／粉丝列表／关注列表
@@ -379,13 +385,24 @@
 #pragma mark --展示关注列表
 - (void)showAtttionNum{
     NSLog(@"展示关注列表");
-//    MorePokersVC * fansVC = [[MorePokersVC alloc] init];
-//    fansVC.wapurl = 
-//    [self.navigationController pushViewController:fansVC animated:YES];
+    NSString * userid = _sbModel.userid;
+    MorePokersVC * attentionVC = [[MorePokersVC alloc] init];
+    attentionVC.wapurl = [AttentionsURL stringByAppendingString:userid];
+    
+    NSLog(@"%@", attentionVC.wapurl);
+    attentionVC.titleStr = @"关注";
+    [self.navigationController pushViewController:attentionVC animated:YES];
 }
 #pragma mark --- 展示粉丝列表
 - (void)showFans{
     NSLog(@"展示粉丝列表");
+    NSString * userid = _sbModel.userid;
+    MorePokersVC * fansVC = [[MorePokersVC alloc] init];
+    fansVC.wapurl = [FansURL stringByAppendingString:userid];
+    
+    NSLog(@"%@", fansVC.wapurl);
+    fansVC.titleStr = @"被关注";
+    [self.navigationController pushViewController:fansVC animated:YES];
 }
 #pragma mark --- 关注事件
 - (void)attentionAction{
@@ -394,8 +411,8 @@
     
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    NSLog(@"---用户迷宫%@,", cookieName);
-    if (cookieName) {
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName || wxData) {
         // 已登陆直接进行操作
         // 如果要进行关注可以直接关注，而如果要取消关注则需要进行以下确认
         NSLog(@"%@", _sbModel.data[@"is_follow"]);
@@ -777,7 +794,7 @@
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData:)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
     [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
-    [footer setTitle:@"没有更多赛事" forState:MJRefreshStateNoMoreData];
+    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
     footer.stateLabel.font = [UIFont systemFontOfSize:13];
     footer.stateLabel.textColor = [UIColor lightGrayColor];
     tableView.footer = footer;
@@ -796,7 +813,7 @@
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData3)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
     [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
-    [footer setTitle:@"没有更多赛事" forState:MJRefreshStateNoMoreData];
+    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
     footer.stateLabel.font = [UIFont systemFontOfSize:13];
     footer.stateLabel.textColor = [UIColor lightGrayColor];
     _tableView3.footer = footer;
@@ -819,7 +836,7 @@
         NSLog(@"-----%@", responseObject);
         [self.tableView3.footer endRefreshing];
         if (!responseObject) {
-            self.tableView3.footer.state = MJRefreshStateNoMoreData;
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         }
         for (MyReplyModel * model in responseObject) {
             MyReplyFrameModel * myReFrameModel = [[MyReplyFrameModel alloc] init];
@@ -835,6 +852,8 @@
 }
 
 - (void)loadNewData:(UITableView *)tableView{
+    
+    NSLog(@"%@", self.userURL);
     
     [DataTool getSBDataWithStr:self.userURL parameters:nil success:^(id responseObject) {
         [self.tableView2.header endRefreshing];
@@ -918,7 +937,7 @@
     
     
     UILabel * introduceLbl = [[UILabel alloc] init];
-    introduceLbl.backgroundColor = [UIColor greenColor];
+//    introduceLbl.backgroundColor = [UIColor greenColor];
     introduceLbl.text = str;
     introduceLbl.numberOfLines = 0;
     introduceLbl.font = Font13;
@@ -1002,7 +1021,7 @@
         _sbModel = sbModel;
         sbModel = responseObject;
         if (!sbModel.app_my) {
-            self.tableView2.footer.state = MJRefreshStateNoMoreData;
+//            self.tableView2.footer.state = MJRefreshStateNoMoreData;
             [SVProgressHUD showSuccessWithStatus:@"没有更多数据"];
         }
         for (PostsModel * model in sbModel.app_my) {
@@ -1013,7 +1032,7 @@
         [self.tableView2 reloadData];
     } failure:^(NSError * error) {
         NSLog(@"获取个人主页出错：%@", error);
-        [self.tableView2.header endRefreshing];
+        [self.tableView2.footer endRefreshing];
     }];
 
 }
@@ -1041,7 +1060,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    if (tableView == self.tableView2) {
+    if (tableView == self.tableView2) { // 发帖
         PostCell * cell = [PostCell cellWithTableView:tableView];
         PostFrameModel * frameModel = self.dataSource2[indexPath.row];
         cell.frameModel = frameModel;
@@ -1107,10 +1126,10 @@
         NSInteger row = indexPath.row;
         
         if (row!=scoreModelArr.count) {
-        ScoreModel * scoreModel = [scoreModelArr objectAtIndex:row];
-        CGRect scoreRect = [scoreModel.Content boundingRectWithSize:CGSizeMake(scoreW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:scoreDic context:nil];
-        CGFloat height = scoreRect.size.height;
-        return height +51*IPHONE6_H_SCALE;
+            ScoreModel * scoreModel = [scoreModelArr objectAtIndex:row];
+            CGRect scoreRect = [scoreModel.Content boundingRectWithSize:CGSizeMake(scoreW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:scoreDic context:nil];
+            CGFloat height = scoreRect.size.height;
+            return height +51*IPHONE6_H_SCALE;
         } else{
             return 165 * IPHONE6_H_SCALE;
         }
@@ -1123,15 +1142,52 @@
 }
 #pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (tableView == _tableView2) {
+    if (tableView == _tableView2) { // 发帖页面
         // 跳转到帖子详情页
         PostDetailVC * detailVC = [[PostDetailVC alloc] init];
         PostFrameModel * model = self.dataSource2[indexPath.row];
         
         detailVC.wapurl = model.postsModel.wapurl;
         [self.navigationController pushViewController:detailVC animated:YES];
-    }else{
-        NSLog(@"%lu", indexPath.row);
+    }else{  // 回复页面
+        // 可以跳转到评论页面、赛事的评论页面、帖子的回复页面
+        MyReplyFrameModel * frameModel =  self.dataSource3[indexPath.row];
+        MyReplyModel * replyModel = frameModel.myreplyModel;
+        //  http://dipaiapp.replays.net/app/forum/view/52
+        // 
+        if ([replyModel.userurl rangeOfString:@"art/view/11"].location != NSNotFound) {
+            
+            // 跳转到视频专辑页
+            VideoViewController * videoVC = [[VideoViewController alloc] init];
+            videoVC.url = replyModel.userurl;
+            [self.navigationController pushViewController:videoVC animated:YES];
+        }else if ([replyModel.userurl rangeOfString:@"art/view/2"].location != NSNotFound){
+            // 跳转到资讯页面
+            
+            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+            detailVC.url = replyModel.userurl;
+            [self.navigationController pushViewController:detailVC animated:YES];
+            
+        } else if ([replyModel.userurl rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
+            
+            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+            postDetail.wapurl = replyModel.userurl;
+            [self.navigationController pushViewController:postDetail animated:YES];
+            
+        }else if ([replyModel.userurl rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
+            
+            NSLog(@"%@", replyModel.userurl);
+            // 赛事详情页分为两种情况：1.有直播  2.没有直播
+            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+            detailVC.wapurl = replyModel.userurl;
+            [self.navigationController pushViewController:detailVC animated:YES];
+            
+        }
+        else
+        {
+            NSLog(@"%@", replyModel.userurl);
+            NSLog(@"%lu", indexPath.row);
+        }
     }
 }
 

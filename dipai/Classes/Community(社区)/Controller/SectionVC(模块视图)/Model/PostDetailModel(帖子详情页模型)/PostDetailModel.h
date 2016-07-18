@@ -25,6 +25,7 @@
  "/public/upload/user_forum/22/20160626/1466928223822.jpeg"
  ],
  "is_user":"-1"
+ is_collection
  }
  */
 /**

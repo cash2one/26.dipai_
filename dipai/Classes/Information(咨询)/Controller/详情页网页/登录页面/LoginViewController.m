@@ -11,7 +11,12 @@
 #import "RegisterViewController.h"
 // 手机号登录页面
 #import "PhoneLoginViewController.h"
-@interface LoginViewController ()<PhoneLoginViewControllerDelegate, RegisterViewControllerDelegate>
+
+#import "UMSocial.h"
+
+#import "WXApi.h"
+#import "AppDelegate.h"
+@interface LoginViewController ()<PhoneLoginViewControllerDelegate, RegisterViewControllerDelegate, AppDelegate>
 
 @end
 
@@ -115,8 +120,25 @@
 
 #pragma mark --- 微信登录
 - (void)weixinLogin{
+    
     NSLog(@"微信登录...");
+    //构造SendAuthReq结构体
+    SendAuthReq* req =[[SendAuthReq alloc ] init ];
+    req.scope = @"snsapi_userinfo" ;
+    req.state = @"123" ;
+    //第三方向微信终端发送一个SendAuthReq消息结构
+    [WXApi sendReq:req];
+    
+    // 成功利用了AppDelegate
+    AppDelegate * delegate = [[UIApplication sharedApplication] delegate];
+    delegate.delegate = self;
 }
+
+- (void)dismissWithStr:(NSString *)str{
+    [self dismiss];
+}
+
+
 
 - (void)returnBack
 {

@@ -10,6 +10,9 @@
 
 
 #import "LSTextField.h"
+#import "SVProgressHUD.h"
+
+#import "DataTool.h"
 @interface ResetPasswordViewController ()
 /**
  *  手机号
@@ -87,7 +90,7 @@
     newLength.text = @"密码长度为6-15位";
     newLength.font = Font16;
     newLength.textColor = Color183;
-    CGFloat newX = 45 * IPHONE6_W_SCALE;
+    CGFloat newX = 100 * IPHONE6_W_SCALE;
     CGFloat newY = 0;
     CGFloat newW = 200;
     CGFloat newH = numH;
@@ -119,7 +122,7 @@
     sureLength.text = @"密码长度为6-15位";
     sureLength.font = Font16;
     sureLength.textColor = Color183;
-    CGFloat sureLX = 45 * IPHONE6_W_SCALE;
+    CGFloat sureLX = 100 * IPHONE6_W_SCALE;
     CGFloat sureLY = 0;
     CGFloat sureLW = 200;
     CGFloat sureLH = numH;
@@ -134,7 +137,8 @@
     CGFloat sureW = codeW;
     CGFloat sureH = codeH;
     sureBtn.frame = CGRectMake(sureX, sureY, sureW, sureH);
-    [sureBtn setImage:[UIImage imageNamed:@"queren_moren"] forState:UIControlStateNormal];
+//    [sureBtn setImage:[UIImage imageNamed:@"queren_moren"] forState:UIControlStateNormal];
+    [sureBtn setBackgroundImage:[UIImage imageNamed:@"queren_moren"] forState:UIControlStateNormal];
     sureBtn.userInteractionEnabled = NO;
     [self.view addSubview:sureBtn];
     _sureBtn = sureBtn;
@@ -175,12 +179,14 @@
     }
     
     if (_phoneNum.text.length && _code.text.length) {
-        [_sureBtn setImage:[UIImage imageNamed:@"queren_xuanzhong"] forState:UIControlStateNormal];
+//        [_sureBtn setImage:[UIImage imageNamed:@"queren_xuanzhong"] forState:UIControlStateNormal];
+        [_sureBtn setBackgroundImage:[UIImage imageNamed:@"queren_xuanzhong"] forState:UIControlStateNormal];
         _sureBtn.userInteractionEnabled = YES;
         [_sureBtn addTarget:self action:@selector(sureAction) forControlEvents:UIControlEventTouchUpInside];
     } else
     {
-        [_sureBtn setImage:[UIImage imageNamed:@"queren_moren"] forState:UIControlStateNormal];
+//        [_sureBtn setImage:[UIImage imageNamed:@"queren_moren"] forState:UIControlStateNormal];
+        [_sureBtn setBackgroundImage:[UIImage imageNamed:@"queren_moren"] forState:UIControlStateNormal];
         _sureBtn.userInteractionEnabled = NO;
     }
 }
@@ -192,9 +198,23 @@
     NSString * newPassword = _phoneNum.text;
     NSString * surePassword = _code.text;
     if (newPassword == surePassword) {
-        NSLog(@"");
+        // 进行修改密码的网络操作
+        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+        dic[@"password"] = _code.text;
+        [DataTool postWithStr:ChangeAccountURL parameters:dic success:^(id responseObject) {
+            
+            NSLog(@"修改密码成功:%@", responseObject);
+            NSLog(@"msg:%@", responseObject[@"msg"]);
+            [SVProgressHUD show];
+            [SVProgressHUD showSuccessWithStatus:@"修改成功"];
+            [self.navigationController popViewControllerAnimated:YES];
+        } failure:^(NSError * error) {
+            [SVProgressHUD showErrorWithStatus:@"修改失败"];
+            NSLog(@"修改密码出错：%@", error);
+        }];
     } else{
         NSLog(@"两次输入密码不一致，请重试");
+        [SVProgressHUD showErrorWithStatus:@"两次密码不一致"];
     }
     
 }

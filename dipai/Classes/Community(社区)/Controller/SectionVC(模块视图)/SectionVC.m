@@ -35,6 +35,9 @@
 #import "LoginViewController.h"
 // 名人主页
 #import "StarVC.h"
+// 普通用户主页
+#import "AnyBodyVC.h"
+#import "SBModel.h"
 
 #import "DataTool.h"
 @interface SectionVC ()<UITableViewDataSource, UITableViewDelegate, LSAlertViewDeleagte, PostCellDelegate>
@@ -50,6 +53,8 @@
 @property (nonatomic, strong) UIView * alertBackView;
 
 @property (nonatomic, strong) LSAlertView * alertView;
+
+@property (nonatomic, strong) SBModel * sbModel;
 
 @end
 
@@ -109,7 +114,8 @@
     // 先判断是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    if (cookieName) {
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName || wxData) {
         SendVC * sendVC = [[SendVC alloc] init];
         sendVC.sectionModel = self.sectionModel;
         UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:sendVC];
@@ -192,7 +198,7 @@
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
     [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
-    [footer setTitle:@"没有更多赛事" forState:MJRefreshStateNoMoreData];
+    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
     footer.stateLabel.font = [UIFont systemFontOfSize:13];
     footer.stateLabel.textColor = [UIColor lightGrayColor];
     self.tableView.footer = footer;
@@ -249,7 +255,7 @@
         
         if (!typePostModel.data) {
             NSLog(@"空");
-            self.tableView.footer.state = MJRefreshStateNoMoreData;
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         } else{
             
             NSLog(@"不为空");
@@ -293,12 +299,26 @@
 // 点击头像的点击事件
 - (void)tableViewCell:(PostCell *)cell didClickFaceWith:(PostsModel *)model{
     
+    // 可能跳到名人主页，也可能跳到普通用户主页
     StarVC * starVC = [[StarVC alloc] init];
-    
-    NSLog(@"%@", model.userurl);
-    
     starVC.userURL = model.userurl;
-    [self.navigationController pushViewController:starVC animated:YES];
+    AnyBodyVC * anyVC = [[AnyBodyVC alloc] init];
+    anyVC.userURL = model.userurl;
+    
+    [DataTool getSBDataWithStr:model.userurl parameters:nil success:^(id responseObject) {
+        
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel = responseObject;
+        _sbModel = sbModel;
+        if ([_sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {   // 如果认证为空，就是普通人主页
+            [self.navigationController pushViewController:anyVC animated:YES];
+        }else{
+            [self.navigationController pushViewController:starVC animated:YES];
+        }
+    } failure:^(NSError * error) {
+        NSLog(@"获取个人数据出错：%@", error);
+    }];
+    
 }
 
 #pragma mark --- 单元格的高度

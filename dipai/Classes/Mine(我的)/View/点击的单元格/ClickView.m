@@ -61,6 +61,7 @@
     commentNum.backgroundColor = [UIColor redColor];
     commentNum.textAlignment = NSTextAlignmentCenter;
     [self addSubview:commentNum];
+    commentNum.hidden = YES;
     _commentNum = commentNum;
 }
 

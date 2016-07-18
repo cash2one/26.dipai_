@@ -173,7 +173,8 @@
     // 每次进来的时候都要检测是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    if (cookieName && _sendContent) {  // 如果已经登录，并且有发表内容，则进行发表
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if ((cookieName || wxData) && _sendContent) {  // 如果已经登录，并且有发表内容，则进行发表
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
         CommentDic[@"id"] = _iD;
         CommentDic[@"types"] = @"0";   // 0:评论 1:回复
@@ -343,7 +344,7 @@
     
     int i = 0;
     for (AlbumModel * model in albums) {
-        NSLog(@"循环中...%d", i ++);
+//        NSLog(@"循环中...%d", i ++);
         if ([videoUrl isEqualToString:model.videourl]) {
 //            NSLog(@"循环次数---%d", i);
             // 将视频下标存储，下标从1开始
@@ -360,7 +361,11 @@
     if ([_videoModel.commentNumber integerValue] >= 100) {
         _bottomView.commentsLbl.text = @"99+";
     } else{
-        _bottomView.commentsLbl.text = _bottomView.commentsLbl.text;
+        if ([_videoModel.commentNumber integerValue] == 0) {
+            _bottomView.commentsLbl.hidden = YES;
+        }else{
+            _bottomView.commentsLbl.text = _videoModel.commentNumber;
+        }
     }
     // 判断收藏按钮的状态
     
@@ -403,6 +408,7 @@
     returnView.frame = CGRectMake(x,  y, w, h);
     returnView.image = [UIImage imageNamed:@"houtui_baise"];
     [_playerView addSubview:returnView];
+//    [self.view addSubview:returnView];
     
     UIButton * returnBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGFloat btnX = 0;
@@ -414,6 +420,7 @@
 //    returnBtn.backgroundColor = [UIColor redColor];
     [returnBtn addTarget:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
     [_playerView addSubview:returnBtn];
+//    [self.view addSubview:returnBtn];
     
     // 播放器下方的标题
     UIView * blackView = [[UIView alloc] init];
@@ -706,26 +713,14 @@
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * userName = [defaults objectForKey:Cookie];
-    
-    if (userName) { // 如果已经登录
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (userName || wxData) { // 如果已经登录
         if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
-            UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"收藏成功" message:nil preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                
-            }];
-            [alertController addAction:OK];
-            [self presentViewController:alertController animated:YES completion:nil];
             
             // 进行收藏
             [self collectOrCancelCollect];
+            [SVProgressHUD showSuccessWithStatus:@"收藏成功"];
         } else{     // 如果收藏按钮被选中
-            
-            UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"已取消收藏" message:nil preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                
-            }];
-            [alertController addAction:OK];
-            [self presentViewController:alertController animated:YES completion:nil];
             
             //  取消收藏
             NSString * url = [CollectionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _iD]];
@@ -733,6 +728,7 @@
             [DataTool getCollectWithStr:url parameters:nil success:^(id responseObject) {
                 
                 NSLog(@"收藏返回的数据%@", responseObject);
+                [SVProgressHUD showSuccessWithStatus:@"已取消收藏"];
             } failure:^(NSError * error) {
                 
                 NSLog(@"收藏的错误信息--%@", error);
@@ -792,7 +788,8 @@
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    if (cookieName) {
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName || wxData) {
         NSLog(@"已经登录。。。进行发表");
         /*
          http://10.0.0.14:8080/app/add_comment

@@ -11,6 +11,8 @@
 #import "Masonry.h"
 
 #import "EndMatchModel.h"
+#import "NoLiveModel.h"
+#import "MatchingModel.h"
 @interface HeaderViewInMatch()
 /**
  *  背景图
@@ -40,6 +42,11 @@
  *  地点
  */
 @property (nonatomic, strong) UILabel * placeLbl;
+
+/**
+ *  没有赛事的模型
+ */
+@property (nonatomic, strong) NoLiveModel * noLive;
 
 
 @end
@@ -113,9 +120,22 @@
     
 }
 
-- (void)setMatchModel:(EndMatchModel *)matchModel{
+- (void)setMatchModel:(MatchingModel *)matchModel{
     _matchModel = matchModel;
+    
+    // 字典转模型
+    NSDictionary * match = _matchModel.match;
+//    NSLog(@"%@", match);
+//    NSLog(@"%@", matchModel);
+    NoLiveModel * noLive = [NoLiveModel objectWithKeyValues:match];
+    _noLive = noLive;
+    
+//    NSLog(@"%@", _noLive);
+//    NSLog(@"%@", _noLive.start_time);
+    [self layoutSubviews];
 }
+
+
 
 #pragma mark --- 布局子控件
 - (void)layoutSubviews{
@@ -148,7 +168,9 @@
         make.width.equalTo(@(WIDTH - 57 * IPHONE6_W_SCALE));
         make.height.equalTo(@(13 * IPHONE6_H_SCALE));
     }];
-    _timeLbl.text = [NSString stringWithFormat:@"时间:%@-%@", _matchModel.start_time, _matchModel.end_time];
+    
+    
+    _timeLbl.text = [NSString stringWithFormat:@"时间:%@-%@", _noLive.start_time, _noLive.end_time];
     
     // 报名费
     [_applyLbl mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -157,7 +179,7 @@
         make.width.equalTo(@(WIDTH - 57 * IPHONE6_W_SCALE));
         make.height.equalTo(@(12 * IPHONE6_H_SCALE));
     }];
-    _applyLbl.text = [NSString stringWithFormat:@"报名费:%@  主赛奖池:%@  地点:%@", _matchModel.entry_fee, _matchModel.prize_pool, _matchModel.place];
+    _applyLbl.text = [NSString stringWithFormat:@"报名费:%@   主赛奖池:%@   地点:%@", _noLive.entry_fee, _noLive.prize_pool, _noLive.place];
     
     // 主赛奖池：
     

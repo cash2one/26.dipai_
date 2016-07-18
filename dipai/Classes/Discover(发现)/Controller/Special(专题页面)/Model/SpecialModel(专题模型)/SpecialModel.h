@@ -25,6 +25,9 @@
  */
 @property (nonatomic, copy) NSString * title;
 
+@property (nonatomic, copy) NSString * descriptioN;
+
+
 /**
  *  专题内容
  */

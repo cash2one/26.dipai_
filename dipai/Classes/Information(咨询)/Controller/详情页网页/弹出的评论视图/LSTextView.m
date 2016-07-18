@@ -26,11 +26,11 @@
     return _placeHolderLabel;
 }
 // 重写Font的set方法，让占位符文字大小和label上文字大小相同
-- (void)setFont:(UIFont *)font
-{
-    self.placeHolderLabel.font = font;
+//- (void)setFont:(UIFont *)font
+//{
+//    self.placeHolderLabel.font = font;
 //    [self.placeHolderLabel sizeToFit];
-}
+//}
 
 
 
@@ -55,6 +55,7 @@
 {
     _placeholder = placeholder;
     self.placeHolderLabel.text = placeholder;
+    self.placeHolderLabel.font = Font14;
     [self.placeHolderLabel sizeToFit];
 }
 
@@ -70,12 +71,13 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+    
     if (_placeHolderX) {
         self.placeHolderLabel.x = _placeHolderX;
         self.placeHolderLabel.y = _placeHolderY;
     } else{
         self.placeHolderLabel.x = 5;
-        self.placeHolderLabel.y = 5;
+        self.placeHolderLabel.y = 9;
     }
     
 }

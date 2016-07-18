@@ -151,7 +151,8 @@
     CGFloat nextW = codeW;
     CGFloat nextH = codeH;
     nextBtn.frame = CGRectMake(nextX, nextY, nextW, nextH);
-    [nextBtn setImage:[UIImage imageNamed:@"xiayibu_moren"] forState:UIControlStateNormal];
+//    [nextBtn setImage:[UIImage imageNamed:@"xiayibu_moren"] forState:UIControlStateNormal];
+    [nextBtn setBackgroundImage:[UIImage imageNamed:@"xiayibu_moren"] forState:UIControlStateNormal];
     nextBtn.userInteractionEnabled = NO;
     [self.view addSubview:nextBtn];
     _nextBtn = nextBtn;
@@ -197,12 +198,14 @@
     }
     
     if (_phoneNum.text.length && _code.text.length) {
-        [_nextBtn setImage:[UIImage imageNamed:@"xiayibu_xuanzhong"] forState:UIControlStateNormal];
+//        [_nextBtn setImage:[UIImage imageNamed:@"xiayibu_xuanzhong"] forState:UIControlStateNormal];
+        [_nextBtn setBackgroundImage:[UIImage imageNamed:@"xiayibu_xuanzhong"] forState:UIControlStateNormal];
         _nextBtn.userInteractionEnabled = YES;
         [_nextBtn addTarget:self action:@selector(nextAction) forControlEvents:UIControlEventTouchUpInside];
     } else
     {
-        [_nextBtn setImage:[UIImage imageNamed:@"xiayibu_moren"] forState:UIControlStateNormal];
+//        [_nextBtn setImage:[UIImage imageNamed:@"xiayibu_moren"] forState:UIControlStateNormal];
+        [_nextBtn setBackgroundImage:[UIImage imageNamed:@"xiayibu_moren"] forState:UIControlStateNormal];
         _nextBtn.userInteractionEnabled = NO;
     }
 }

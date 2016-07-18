@@ -93,7 +93,7 @@
     _textView = textView;
     
     PicView * picView = [[PicView alloc] init];
-    picView.backgroundColor = [UIColor redColor];
+//    picView.backgroundColor = [UIColor redColor];
     [self addSubview:picView];
     _picView = picView;
     

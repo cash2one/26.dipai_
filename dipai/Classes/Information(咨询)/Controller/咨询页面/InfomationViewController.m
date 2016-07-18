@@ -17,6 +17,10 @@
 #import "DetailWebViewController.h"
 // 视频详情页
 #import "VideoViewController.h"
+//  赛事详情页
+#import "MatchDetailVC.h"
+//
+#import "PostDetailVC.h"
 // 单元格
 #import "tournamentCell.h"
 #import "InformationCell.h"
@@ -220,8 +224,7 @@
         [self.tableView.footer endRefreshing];
         id str = array[0];
         if ([str isEqualToString:@"0"]) {
-            self.tableView.footer.state = MJRefreshStateNoMoreData;
-            
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
             
         } else
         {
@@ -315,14 +318,19 @@
     }
     
 }
-
+#pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
     NSLog(@"点击行数%lu", indexPath.row);
     if (self.tournamentArr.count > 0) {
         if (indexPath.row == 0) {   // 如果有赛事
             TournamentModel * model = self.tournamentArr[0];
             NSLog(@"跳转到赛事。。。");
+//            MatchDetailVC * detaiVC = [[MatchDetailVC alloc] init];
+//            detaiVC.wapurl = model.lurl;
+//            detaiVC.hidesBottomBarWhenPushed = YES;
+//            [self.navigationController pushViewController:detaiVC animated:YES];
 //            [self turnPageToDetailView:@"http://192.168.1.102:8080/app/art/view/11/5096"];
         } else
         {
@@ -382,10 +390,43 @@
 #pragma mark ------- 跳转到详情页网页
 - (void)turnPageToDetailView:(NSString *)url
 {
-    DetailWebViewController * detaiVC = [[DetailWebViewController alloc] init];
-    detaiVC.url = url;
-    detaiVC.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:detaiVC animated:YES];
+    // 详情页：1:资讯页 2:图集页  3:视频页 4:赛事页  5:
+    if ([url rangeOfString:@"art/view/11"].location != NSNotFound) {
+        
+        // 跳转到视频专辑页
+        VideoViewController * videoVC = [[VideoViewController alloc] init];
+        videoVC.url = url;
+        videoVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:videoVC animated:YES];
+    }else if ([url rangeOfString:@"art/view/2"].location != NSNotFound || [url rangeOfString:@"art/view/4"].location != NSNotFound){
+        // 跳转到资讯页面
+        
+        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+        detailVC.url = url;
+        detailVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:detailVC animated:YES];
+        
+    } else if ([url rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
+        
+        PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+        postDetail.wapurl = url;
+        postDetail.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:postDetail animated:YES];
+        
+    }else if ([url rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
+        
+        // 赛事详情页分为两种情况：1.有直播  2.没有直播
+        MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+        detailVC.wapurl = url;
+        detailVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:detailVC animated:YES];
+        
+    }
+    else
+    {
+        NSLog(@"%@", url);
+    }
+
 }
 
 - (void)turnPageToDetailView:(NSString *)url withNewsListModel:(NewsListModel *)newsListModel

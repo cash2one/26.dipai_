@@ -40,27 +40,16 @@
 /**
  *  赛事类型
  */
-@property (nonatomic, copy) NSString * type;
+//@property (nonatomic, copy) NSString * type;
+
 /**
- *  赛事状态
- */
-@property (nonatomic, copy) NSString * match_state;
-/**
- *  当前盲注
- */
-@property (nonatomic, copy) NSString * blind;
-/**
- *  平均记分
- */
-@property (nonatomic, copy) NSString * score;
-/**
- *  剩余选手
- */
-@property (nonatomic, copy) NSString * player;
-/**
- *  直播信息
+ *  直播信息（无直播返回NULL）
  */
 @property (nonatomic, copy) NSArray * app_live;
+/**
+ *  无直播（有直播返回NULL）
+ */
+@property (nonatomic, copy) NSDictionary * match;
 /**
  *  评论列表
  */

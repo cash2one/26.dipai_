@@ -9,7 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface MorePokersVC : UIViewController
-
-
+/**
+ *  标题
+ */
+@property (nonatomic, copy) NSString * titleStr;
 @property (nonatomic, copy) NSString * wapurl;
 @end

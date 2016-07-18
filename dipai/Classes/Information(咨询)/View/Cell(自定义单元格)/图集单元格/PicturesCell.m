@@ -164,12 +164,6 @@
 {
     // 标题
     _title.text = _newslistModel.title;
-//    NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
-//    NSString * idStr = [NSString stringWithFormat:@"%d", _newslistModel.iD];
-//    NSNumber * num = [userDefaults objectForKey:idStr];
-//    if (num) {
-//        _title.textColor = Color178;
-//    }
     // 图集
     _picNum.text = [NSString stringWithFormat:@"%lu图", _newslistModel.covers.count];
     for (int i = 0; i < 3; i ++) {

@@ -19,6 +19,7 @@
 #import "DetailWebViewController.h"
 
 #import "DataTool.h"
+#import "SVProgressHUD.h"
 @interface SpecialDetailVC ()<UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) UITableView * tableView;
@@ -118,7 +119,22 @@
 
 - (void)loadMoreData{
     
-    [self.tableView.footer endRefreshing];
+    SpecialDetailModel * model = [self.dataSource lastObject];
+    NSString * url = [self.specialModel.url stringByAppendingString:[NSString stringWithFormat:@"/%@", model.iD]];
+    [DataTool getSpecialDetailDataWithStr:url parameters:nil success:^(id responseObject) {
+        
+        [self.tableView.footer endRefreshing];
+        if (!responseObject) {
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+        }
+        [self.dataSource addObjectsFromArray:responseObject];
+        [self.tableView reloadData];
+        NSLog(@"%@", responseObject);
+    } failure:^(NSError * error) {
+        
+        NSLog(@"获取详情页数据出错：%@", error);
+        [self.tableView.footer endRefreshing];
+    }];
 }
 
 #pragma mark --- UITableViewDataSource

@@ -19,8 +19,8 @@
     [self setUpCommentsFrame];
     
     NSDictionary * replyDic = myreplyModel.reply;
-    NSString * username = replyDic[@"username"];    
-    if (username) {  // 如果有回复内容
+//    NSString * username = replyDic[@"username"];
+    if (![replyDic isKindOfClass:[NSNull class]]) {  // 如果有回复内容
         
         // 计算回复高度
         [self setUpReplyFrame];
@@ -92,7 +92,10 @@
     NSMutableDictionary * nameDic = [NSMutableDictionary dictionary];
     nameDic[NSFontAttributeName] = Font13;
     
-    
+//    NSLog(@"%@", _myreplyModel);
+//    NSLog(@"%@", _myreplyModel.reply);
+//    NSLog(@"%@", _myreplyModel.reply[@"content"]);
+//    NSLog(@"%@", _myreplyModel.reply[@"username"]);
     
     NSString * username = _myreplyModel.reply[@"username"];
     

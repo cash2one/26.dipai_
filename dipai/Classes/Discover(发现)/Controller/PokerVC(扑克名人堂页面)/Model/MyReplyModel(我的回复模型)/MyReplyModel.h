@@ -63,6 +63,6 @@
 /**
  *  用户地址
  */
-@property (nonatomic, copy) NSString * wapurl;
+@property (nonatomic, copy) NSString * userurl;
 
 @end

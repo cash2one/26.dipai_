@@ -22,6 +22,7 @@
  "/public/upload/user_forum/22/20160626/1466928223822.jpeg"
  ],
  "is_user":"-1"
+ is_collection
  */
 /**
 *  用户ID
@@ -64,5 +65,15 @@
  *  是否是登录用户发的帖子的标识
  */
 @property (nonatomic, copy) NSString * is_user;
+
+/**
+ *  是否被收藏的标识
+ */
+@property (nonatomic, copy) NSString * is_collection;
+
+/**
+ *  分享链接
+ */
+@property (nonatomic, copy) NSString * wapurl;
 
 @end

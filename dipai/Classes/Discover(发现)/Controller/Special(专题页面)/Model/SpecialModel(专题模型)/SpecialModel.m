@@ -13,7 +13,7 @@
 
 {
     
-    return @{@"iD" : @"id"};
+    return @{@"iD" : @"id", @"descriptioN":@"description"};
     
 }
 @end

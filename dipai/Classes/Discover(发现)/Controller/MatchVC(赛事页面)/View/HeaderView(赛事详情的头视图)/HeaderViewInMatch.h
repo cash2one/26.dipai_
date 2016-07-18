@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 @class EndMatchModel;
+@class NoLiveModel;
+@class MatchingModel;
 @interface HeaderViewInMatch : UIView
 /**
  *  赛事标识：0:进行中  1:即将开始  2:已结束
@@ -16,6 +18,6 @@
 /**
  *  赛事模型
  */
-@property (nonatomic, strong) EndMatchModel * matchModel;
+@property (nonatomic, strong) MatchingModel * matchModel;
 
 @end

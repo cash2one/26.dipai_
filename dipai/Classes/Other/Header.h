@@ -56,6 +56,11 @@
 #define MorePokersURL @"http://dipaiapp.replays.net/app/poker/list"
 // 关注／取消关注接口
 #define PayAttentionURL @"http://dipaiapp.replays.net/app/operation/follow"
+
+#define AttentionsURL @"http://dipaiapp.replays.net/app/follow/list/1?userid="      // 关注
+#define FansURL @"http://dipaiapp.replays.net/app/follow/list?userid="	     // 分子
+
+
 // 获取更多帖子的接口
 #define MorePostsURL  @"http://dipaiapp.replays.net/app/my/forum"
 // 获取更多回复的接口
@@ -78,6 +83,8 @@
 //#define SendPostsURL @"http://10.0.0.14:8080/app/add/forum/"
 // 回帖即评论帖子
 #define ReplyPostsURL @"http://dipaiapp.replays.net/app/forum/add/comment"
+// 帖子的回帖列表
+#define ListOfReplyURL @"http://dipaiapp.replays.net/app/forum/comment"
 
 /*******************我的页****************/
 #define PersonURL @"http://dipaiapp.replays.net/app/my"
@@ -86,12 +93,35 @@
 #define MyCollectionURL @"http://dipaiapp.replays.net/app/my/collection"
 //#define MyCollectionURL @"http://10.0.0.14:8080/app/my/collection"
 
+// 我的帖子的接口
+#define MyPostsURL @"http://dipaiapp.replays.net/app/my/forum/"
+// 我的回复的接口
+#define MyReplyURL @"http://dipaiapp.replays.net/app/my/reply"
+
+// 我收到的评论接口
+#define MyReceiveURL @"http://dipaiapp.replays.net/app/my/comment"
+// 删除我的收藏
+#define DeleteCollectURL @"http://dipaiapp.replays.net/app/my/del/collection/"
+
+// 获取个人账户接口
+#define AccountURL @"http://dipaiapp.replays.net/sign/app_istration"
+// 修改用户信息接口
+#define ChangeAccountURL @"http://dipaiapp.replays.net/sign/update_userinfo"
+//  手机注册获取验证码接口
+#define SecurityCodeURL @"http://dipaiapp.replays.net/sign/verification"
+
 
 //#define UserName @"username"
 //#define PassWord @"password"
 #define Cookie @"cookie"
 #define VideoUrl @"videourl"
 #define User @"userModel"
+// 当用户用手机登录时进行持久性存储
+#define Phone @"phone"
+// 微信登录用户
+#define WXUser @"wxuser"
+
+#define UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 // 判断设备型号
 #define IS_IPhone6Plus ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1242,2208), [[UIScreen mainScreen] currentMode].size) : NO)

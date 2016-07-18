@@ -9,7 +9,17 @@
 #import <UIKit/UIKit.h>
 @class GroupFrameModel;
 @class GrpPostFrmModel;
+
+@protocol GroupTopViewDelegate <NSObject>
+
+// 点击头像的点击事件
+- (void)didClickFace;
+
+@end
+
 @interface GroupTopView : UIView
+
+@property (nonatomic, assign) id <GroupTopViewDelegate> delegate;
 
 @property (nonatomic, strong) GrpPostFrmModel * grpFrmModel;
 

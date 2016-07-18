@@ -23,7 +23,7 @@
 // 赛事详情页面
 #import "MatchDetailVC.h"
 
-
+#import "SVProgressHUD.h"
 #import "DataTool.h"
 @interface MatchVC ()<UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate>
 {
@@ -70,11 +70,26 @@
     return _dataArray3;
 }
 
-- (void)viewWillAppear:(BOOL)animated{
+//- (void)viewWillAppear:(BOOL)animated{
+//    [super viewWillAppear:YES];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+//    
+//}
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:YES];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
-    
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:YES];
+    //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
+    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewDidLoad {
@@ -199,7 +214,7 @@
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
     [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
-    [footer setTitle:@"没有更多赛事" forState:MJRefreshStateNoMoreData];
+    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
     footer.stateLabel.font = [UIFont systemFontOfSize:13];
     footer.stateLabel.textColor = [UIColor lightGrayColor];
     tableView.footer = footer;
@@ -247,8 +262,6 @@
 // 加载
 - (void)loadMoreData{
     // 加载更多数据
-    _tableView1.footer.state = MJRefreshStateNoMoreData;
-    _tableView2.footer.state = MJRefreshStateNoMoreData;
     
     EndMatchModel * matchModel = [self.dataArray3 lastObject];
     
@@ -259,7 +272,7 @@
         [_tableView3.footer endRefreshing];
                 
         if (responseObject == nil) {
-            _tableView3.footer.state = MJRefreshStateNoMoreData;
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         }
         [self.dataArray3 addObjectsFromArray:responseObject];
         [_tableView3 reloadData];
@@ -338,17 +351,16 @@
     if (tableView == _tableView1) { // 进行中
         MatchModel * matchModel = [self.dataArray1 objectAtIndex:indexPath.section];
         EndMatchModel * endModel = [matchModel.rows objectAtIndex:indexPath.row];
-        detailVC.matchModel = endModel; // 依赖于上一个界面的数据
         detailVC.wapurl = endModel.wapurl;
     } else if (tableView == _tableView2){   // 即将开始
         MatchModel * matchModel = [self.dataArray2 objectAtIndex:indexPath.section];
         EndMatchModel * endModel = [matchModel.rows objectAtIndex:indexPath.row];
-        detailVC.flag = 1;
-        detailVC.matchModel = endModel;
         detailVC.wapurl = endModel.wapurl;
     } else{ // 已结束
         EndMatchModel * endModel = [self.dataArray3 objectAtIndex:indexPath.row];
-        detailVC.matchModel = endModel; // 依赖于上一个界面的数据
+        
+        NSLog(@"%@", endModel.wapurl);
+        
         detailVC.wapurl = endModel.wapurl;
     }
     

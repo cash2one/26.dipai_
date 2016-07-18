@@ -16,6 +16,8 @@
  */
 //- (void)showReplyBtn;
 - (void)tableViewCell:(CommentsTableViewCell *)cell didClickedContentWithID:(NSString *)ID andModel:(CommentsModel *)model;
+// 点击头像
+- (void)tableViewCell:(CommentsTableViewCell *)cell dicClickFaceWithModel:(CommentsModel *)model;
 
 @end
 

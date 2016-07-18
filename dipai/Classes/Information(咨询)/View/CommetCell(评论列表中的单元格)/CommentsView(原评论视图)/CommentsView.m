@@ -11,6 +11,8 @@
 #import "CommentsModel.h"
 
 #import "UIImageView+WebCache.h"
+
+#import "Masonry.h"
 @interface CommentsView()
 /**
  *  头像
@@ -28,6 +30,10 @@
  *  正文
  */
 @property (nonatomic, strong) UILabel *textView;
+/**
+ *  点击视图
+ */
+@property (nonatomic, strong) UIView * clickView;
 
 @end
 
@@ -51,6 +57,10 @@
     [self addSubview:iconView];
     _iconView = iconView;
     
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickFace)];
+    iconView.userInteractionEnabled = YES;
+    [iconView addGestureRecognizer:tap];
+    
     // 昵称
     UILabel *nameView = [[UILabel alloc] init];
     nameView.font = Font15;
@@ -72,17 +82,30 @@
     [self addSubview:textView];
     _textView = textView;
     
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(replyAction:)];
-    _textView.userInteractionEnabled = YES;
-    [_textView addGestureRecognizer:tap];
+    // 点击视图
+    UIView * clickView = [[UIView alloc] init];
+    [self addSubview:clickView];
+    _clickView = clickView;
+    UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(replyAction:)];
+    clickView.userInteractionEnabled = YES;
+    [clickView addGestureRecognizer:tap2];
 }
 
-- (void)replyAction:(UITapGestureRecognizer *)tap{
+// 点击回复或评论视图
+- (void)replyAction:(UITapGestureRecognizer *)tap2{
 //    NSLog(@"回复。。。。");
     if ([self.delegate respondsToSelector:@selector(showReplyBtnAndCheckBtn)]) {
         [self.delegate showReplyBtnAndCheckBtn];
     } else{
         NSLog(@"CommentsView的代理没有响应");
+    }
+}
+// 点击头像
+- (void)clickFace{
+    if ([self.delegate respondsToSelector:@selector(didClickFace)]) {
+        [self.delegate didClickFace];
+    }else{
+        NSLog(@"点击头像时，代理没有响应");
     }
 }
 
@@ -115,6 +138,13 @@
     
     // 正文
     _textView.frame = _commentsFrame.contentsFrame;
+    
+    [_clickView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mas_left);
+        make.right.equalTo(self.mas_right);
+        make.top.equalTo(self.mas_top);
+        make.bottom.equalTo(self.mas_bottom);
+    }];
 }
 #pragma mark --- 设置数据
 - (void)setUpData{

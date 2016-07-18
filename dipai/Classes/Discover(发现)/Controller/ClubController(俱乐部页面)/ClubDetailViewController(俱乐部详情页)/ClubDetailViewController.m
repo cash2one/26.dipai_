@@ -22,6 +22,10 @@
 
 // 图集页面
 #import "MorePicsVC.h"
+// 信息页模型
+#import "InfoModel.h"
+
+#import "DataTool.h"
 @interface ClubDetailViewController ()<CAPSPageMenuDelegate, ClubInformationVCDelegate, ClubCommentsVCDelegate, ClubNewsVCDelegate>
 
 
@@ -63,13 +67,25 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    NSLog(@"wapurl:---%@", self.wapurl);
+    [DataTool getClubInfoWithStr:self.wapurl parameters:nil success:^(id responseObject) {
+        
+        InfoModel * infoModel = [[InfoModel alloc] init];
+        infoModel = responseObject;
+        [self addCAPSPageMenu];
+        _clubRecommendVC.wapurl = infoModel.rcd;
+        _clubNewsVC.wapurl = infoModel.relation;
+        _clubCommentsVC.wapurl = infoModel.comment;
+        
+    } failure:^(NSError * error) {
+        
+        NSLog(@"获取俱乐部出错%@", error);
+    }];
     
     // 设置导航栏
     [self setUpNavigationBar];
     
     // 添加一个第三方控件
-    [self addCAPSPageMenu];
+//    [self addCAPSPageMenu];
 }
 
 - (void)addCAPSPageMenu{

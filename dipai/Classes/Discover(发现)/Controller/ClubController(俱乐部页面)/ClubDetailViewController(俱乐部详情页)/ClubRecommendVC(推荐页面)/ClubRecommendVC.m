@@ -25,10 +25,14 @@
 }
 
 - (void)setUpUI{
-    UIWebView * webView = [[UIWebView alloc] initWithFrame:self.view.frame];
+    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64)];
     webView.delegate = self;
+    webView.scalesPageToFit = YES;
     [self.view addSubview:webView];
-    _webView = webView;
+    
+    NSURL * URL = [NSURL URLWithString:self.wapurl];
+    NSURLRequest * request = [NSURLRequest requestWithURL:URL];
+    [webView loadRequest:request];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -39,20 +43,18 @@
     [SVProgressHUD dismiss];
 }
 
-- (void)setWapurl:(NSString *)wapurl{
-    _wapurl = wapurl;
-    NSLog(@"%@", _wapurl);
-    
-    NSURL * URL = [NSURL URLWithString:_wapurl];
-    NSURLRequest * request = [NSURLRequest requestWithURL:URL];
-    [_webView loadRequest:request];
-}
 
 #pragma mark --- UIWebViewDelegate
+// 开始加载
 - (void)webViewDidStartLoad:(UIWebView *)webView{
-    [SVProgressHUD show];
+    [SVProgressHUD showWithStatus:@"加载中..."];
 }
+// 加载结束
 - (void)webViewDidFinishLoad:(UIWebView *)webView{
+    [SVProgressHUD dismiss];
+}
+// 加载失败
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error{
     [SVProgressHUD dismiss];
 }
 

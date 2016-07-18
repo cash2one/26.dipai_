@@ -16,6 +16,9 @@
 #import "SpecialDetailVC.h"
 
 #import "DataTool.h"
+#import "MJChiBaoZiFooter2.h"
+#import "MJChiBaoZiHeader.h"
+#import "SVProgressHUD.h"
 @interface SpecialViewController ()<UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) UITableView * tableView;
@@ -92,7 +95,65 @@
     [self.view addSubview:self.tableView];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    // 添加下拉刷新控件
+    MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
+    // 隐藏状态
+    [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
+    // 设置自动切换透明度(在导航栏下面自动隐藏)
+    header.automaticallyChangeAlpha = YES;
+    // 设置header
+    self.tableView.header = header;
+    // 马上进入刷新状态
+    [header beginRefreshing];
+    
+    
+    //往上拉加载数据.
+    MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
+    // 设置文字
+    //加载更多
+    [footer setTitle:@"正在加载..." forState:MJRefreshStateRefreshing];
+    //没有更多数据
+    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
+    // 设置footer
+    self.tableView.footer = footer;
 }
+
+- (void)loadNewData{
+    [DataTool getSpecialDataWithStr:SpecialURL parameters:nil success:^(id responseObject) {
+        
+        [self.tableView.header endRefreshing];
+        //        NSLog(@"%@", responseObject);
+        self.dataSource = responseObject;
+        [self.tableView reloadData];
+    } failure:^(NSError * error) {
+        
+        NSLog(@"获取专辑页出错：%@", error);
+        [self.tableView.header endRefreshing];
+    }];
+}
+
+- (void)loadMoreData{
+    
+    SpecialModel * model = [self.dataSource lastObject];
+    NSString * url = [SpecialURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.iD]];
+    
+    [DataTool getSpecialDataWithStr:url parameters:nil success:^(id responseObject) {
+        
+        [self.tableView.footer endRefreshing];
+        //        NSLog(@"%@", responseObject);
+        if (!responseObject) {
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+        }
+        [self.dataSource addObjectsFromArray:responseObject];
+        [self.tableView reloadData];
+    } failure:^(NSError * error) {
+        
+        NSLog(@"获取专辑页出错：%@", error);
+        [self.tableView.footer endRefreshing];
+    }];
+}
+
 
 #pragma mark --- UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -120,15 +181,7 @@
 /*****************************获取网络数据**************************/
 - (void)getData{
     
-    [DataTool getSpecialDataWithStr:SpecialURL parameters:nil success:^(id responseObject) {
-        
-//        NSLog(@"%@", responseObject);
-        self.dataSource = responseObject;
-        [self.tableView reloadData];
-    } failure:^(NSError * error) {
-        
-        NSLog(@"获取专辑页出错：%@", error);
-    }];
+   
 }
 
 // 设置状态栏的颜色

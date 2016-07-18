@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-
+@class UserModel;
 @interface MyPostsViewController : UIViewController
 
+/**
+ *  用户模型
+ */
+@property (nonatomic, strong) UserModel * userModel;
 @end

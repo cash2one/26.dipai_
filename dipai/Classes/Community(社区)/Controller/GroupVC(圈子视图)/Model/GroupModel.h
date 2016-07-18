@@ -34,6 +34,9 @@
  */
 
 // 类型（是帖子还是回复）
+/**
+ *  0:帖子   1:回复或评论
+ */
 @property (nonatomic, copy) NSString * type;
 // 评论内容
 @property (nonatomic, copy) NSString * content;

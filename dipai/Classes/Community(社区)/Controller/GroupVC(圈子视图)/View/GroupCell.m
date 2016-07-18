@@ -11,9 +11,10 @@
 #import "GroupFrameModel.h"
 #import "GrpPostFrmModel.h"
 
+#import "GroupModel.h"
 #import "GroupTopView.h"
 #import "GroupBotView.h"
-@interface GroupCell()
+@interface GroupCell()<GroupTopViewDelegate>
 
 @property (nonatomic, strong) UIView * line;
 
@@ -52,6 +53,7 @@
 - (void)setUpChildView{
     // 上边视图
     GroupTopView * topView = [[GroupTopView alloc] init];
+    topView.delegate = self;
     [self addSubview:topView];
     _topView = topView;
     
@@ -63,38 +65,70 @@
     
     UIView * line = [[UIView alloc] init];
     line.backgroundColor = Color238;
-    //    line.backgroundColor = [UIColor redColor];
+//    line.backgroundColor = [UIColor redColor];
     [self addSubview:line];
     _line = line;
     
 }
-
+// 发帖
 - (void)setPostFrmModel:(GrpPostFrmModel *)postFrmModel{
     
     NSLog(@"%@", postFrmModel);
     _postFrmModel = postFrmModel;
     // 上边视图
-    _topView.frame = postFrmModel.CommentsFrame;
-    _topView.grpFrmModel = postFrmModel;
+    _topView.frame = _postFrmModel.CommentsFrame;
+    _topView.grpFrmModel = _postFrmModel;
+    CGFloat y = _postFrmModel.cellHeight;
+    _line.frame = CGRectMake(0, y, WIDTH, 0.5);
+    
+    _botView.hidden = YES;
 }
-
+// 回复
 - (void)setFrameModel:(GroupFrameModel *)frameModel{
     
 //    NSLog(@"%@", frameModel);
-    
     _frameModel = frameModel;
+    // 上边视图
+    _topView.frame = _frameModel.CommentsFrame;
+    _topView.frameModel = _frameModel;
     
-        // 上边视图
-        _topView.frame = frameModel.CommentsFrame;
-        _topView.frameModel = frameModel;
-        
-        // 下边视图
-        _botView.frame = frameModel.replyFrame;
-        _botView.frameModel = frameModel;
+    // 下边视图
+    _botView.frame = _frameModel.replyFrame;
+    _botView.frameModel = _frameModel;
     // 温故而知新可以为师矣
-    CGFloat y = frameModel.cellHeight;
+    CGFloat y = _frameModel.cellHeight;
     _line.frame = CGRectMake(0, y, WIDTH, 0.5);
+    
+    _botView.hidden = NO;
 }
+
+
+- (void)layoutSubviews{
+
+    [super layoutSubviews];
+
+//    if (_postFrmModel) {    // 如果是发帖
+//        _botView.hidden = YES;
+//    }else{
+//        _botView.hidden = NO;
+//    }
+}
+
+- (void)didClickFace{
+    GroupModel * model = [[GroupModel alloc] init];
+    if (_frameModel) {
+        model = _frameModel.groupModel;
+    } else{
+        model = _postFrmModel.groupModel;
+    }
+    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickFaceWith:)]) {
+        [self.delegate tableViewCell:self didClickFaceWith:model];
+    }
+    else{
+        NSLog(@"GroupCell的代理没有响应...");
+    }
+}
+
 
 - (void)awakeFromNib {
     // Initialization code

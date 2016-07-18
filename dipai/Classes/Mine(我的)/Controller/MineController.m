@@ -19,6 +19,8 @@
 #import "SettingViewController.h"
 // 账户页面
 #import "AccountViewController.h"
+// 粉丝列表和关注列表
+#import "MorePokersVC.h"
 
 
 #import "ClickView.h"
@@ -33,7 +35,7 @@
 #import "UserModel.h"
 
 #import "UIImageView+WebCache.h"
-
+#import "SVProgressHUD.h"
 @interface MineController ()<LSAlertViewDeleagte>
 {
     NSArray *_cookies;
@@ -75,6 +77,17 @@
  *  查看账户按钮
  */
 @property (nonatomic, strong) UIButton * picBtn;
+
+/**
+ *  用户模型
+ */
+@property (nonatomic, strong) UserModel * model;
+
+@property (nonatomic, strong) ClickView * commentsView;
+/**
+ *  微信用户
+ */
+@property (nonatomic, strong) NSDictionary * wxData;
 @end
 
 @implementation MineController
@@ -106,22 +119,23 @@
     
     // 设置导航栏上按钮
     [self setUpNavigationBarItem];
+    [self getData];
     
 }
 
 #pragma mark --- 获取数据
 - (void)getData{
-    
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * name = [defaults objectForKey:Cookie];
     NSDictionary * dataDic = [defaults objectForKey:User];
-    
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    _wxData = wxData;
     NSLog(@"持久性存储:%@", dataDic);
     
     // 字典转模型
     UserModel * userModel = [UserModel objectWithKeyValues:dataDic];
     _name = name;
-    if (name) {
+    if (name || wxData) {
         NSLog(@"已登录");
 //        _loginLbl.text = userModel.username;
         [_loginLbl sizeToFit];
@@ -132,19 +146,56 @@
         _attentionNum.hidden = NO;
         _attention.hidden = NO;
         _picBtn.hidden = NO;
+        _iconBtn.hidden = YES;
         _fansNum.text = userModel.count_follow; // 关注数
         _attentionNum.text = userModel.count_followed;  // 粉丝数
+        // 显示收到的评论数
+        _commentsView.commentNum.hidden = YES;
         
         // 登录成功以后才能进行网络数据的请求
         // 获取网络上的数据
+        // 获取个人中心的数据
         [DataTool getPersonDataWithStr:PersonURL parameters:nil success:^(id responseObject) {
-            
-            UserModel * model = responseObject;
+            UserModel * model = [[UserModel alloc] init];
+            model = responseObject;
+            _model = responseObject;
             // 设置数据
             _fansNum.text = model.follow;
             _attentionNum.text = model.row;
             _loginLbl.text = model.username;
-            [_iconBtn.imageView sd_setImageWithURL:[NSURL URLWithString:model.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+            
+//            NSLog(@"%@", model.face);
+            
+            if (model.face && model.face.length > 0) {
+                NSURL * url = [NSURL URLWithString:model.face];
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    
+                    UIImage * img = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        [_picBtn setBackgroundImage:img forState:UIControlStateNormal];
+                        
+                    });
+                    
+                });
+            }else{
+                [_picBtn setBackgroundImage:[UIImage imageNamed:@"touxiang_moren"] forState:UIControlStateNormal];
+            }
+            
+            if ([model.comment_num integerValue] > 99) {
+                _commentsView.commentNum.hidden = NO;
+                _commentsView.commentNum.text = @"...";
+            }else{
+                if ([model.comment_num integerValue] == 0) {
+                    _commentsView.commentNum.hidden = YES;
+                }else{
+                    _commentsView.commentNum.hidden = NO;
+                    _commentsView.commentNum.text = model.comment_num;
+                }
+                
+            }
+            
+            
         } failure:^(NSError * error) {
             
             NSLog(@"获取个人中心出错:%@", error);
@@ -152,6 +203,7 @@
         
     } else{
         NSLog(@"没有登录");
+        [SVProgressHUD dismiss];
         _line.hidden = YES;
         _fansNum.hidden = YES;
         _fansLbl.hidden = YES;
@@ -160,6 +212,9 @@
         _loginLbl.text = @"点击登录";
         _loginLbl.textColor = Color178;
         _picBtn.hidden = YES;
+        _iconBtn.hidden = NO;
+        //
+        _commentsView.commentNum.hidden = YES;
     }
 }
 
@@ -206,7 +261,7 @@
     picBtn.layer.cornerRadius = picBtn.frame.size.width / 2;
     picBtn.layer.borderWidth = 2 * IPHONE6_W_SCALE;
     picBtn.layer.borderColor = [[UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:0.5] CGColor];
-    picBtn.backgroundColor = [UIColor lightGrayColor];
+//    picBtn.backgroundColor = [UIColor lightGrayColor];
     [picBtn addTarget:self action:@selector(CheckAccount) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:picBtn];
     _picBtn = picBtn;
@@ -221,14 +276,10 @@
     loginLbl.textColor = Color178;
     loginLbl.font = [UIFont systemFontOfSize:17];
     loginLbl.textAlignment = NSTextAlignmentCenter;
-    //    CGFloat lblX = Margin306 * IPHONE6_W_SCALE;
-    //    CGFloat lblY = CGRectGetMaxY(iconBtn.frame) + 5*IPHONE6_H_SCALE;
-    //    CGFloat lblW = WIDTH - 2 * lblX;
-    //    CGFloat lblH = 17;
     [loginLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view.mas_centerX);
         make.top.equalTo(iconBtn.mas_bottom).offset(5*IPHONE6_H_SCALE);
-        make.width.equalTo(@(100));
+        make.width.equalTo(@(WIDTH));
         make.height.equalTo(@(18));
     }];
     loginLbl.text = @"点击登录";
@@ -240,11 +291,6 @@
     UIView * line = [[UIView alloc] init];
     [headerView addSubview:line];
     line.backgroundColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
-    //    CGFloat lineX = WIDTH / 2 - 0.25;
-    //    CGFloat lineY = CGRectGetMaxY(loginLbl.frame) + 25 / 2 * IPHONE6_H_SCALE;
-    //    CGFloat lineW = 0.5;
-    //    CGFloat lineH = 14 * IPHONE6_H_SCALE;
-    //    line.frame = CGRectMake(lineX, lineY, lineW, lineH);
     [line mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view.mas_centerX);
         make.top.equalTo(loginLbl.mas_bottom).offset(25 * 0.5 * IPHONE6_H_SCALE);
@@ -253,24 +299,17 @@
     }];
     _line = line;
     
-    
     // 被关注
     UILabel * fansLbl = [[UILabel alloc] init];
     [headerView addSubview:fansLbl];
     fansLbl.text = @"被关注";
     fansLbl.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
     fansLbl.font = Font13;
-    //    CGFloat fansX = CGRectGetMaxX(line.frame) + 28 / 2 * IPHONE6_W_SCALE;
-    //    CGFloat fansY = CGRectGetMaxY(loginLbl.frame) + 23 / 2 * IPHONE6_H_SCALE;
-    //    NSMutableDictionary * fansDic = [NSMutableDictionary dictionary];
-    //    fansDic[NSFontAttributeName] = Font13;
-    //    CGSize fansSize = [fansLbl.text sizeWithAttributes:fansDic];
-    //    fansLbl.frame = (CGRect){{fansX, fansY}, fansSize};
     [fansLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(line.mas_right).offset(14 * IPHONE6_W_SCALE);
         make.top.equalTo(loginLbl.mas_bottom).offset(23*0.5*IPHONE6_H_SCALE);
-        make.width.equalTo(@40);
-        make.height.equalTo(@13);
+        make.width.equalTo(@(40*IPHONE6_W_SCALE));
+        make.height.equalTo(@(13*IPHONE6_W_SCALE));
     }];
     [fansLbl sizeToFit];
     _fansLbl = fansLbl;
@@ -278,23 +317,18 @@
     UILabel * fansNum = [[UILabel alloc] init];
     [headerView addSubview:fansNum];
     fansNum.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
-    fansNum.text = @"11";
+    fansNum.text = @"22";
     fansNum.font = Font13;
-    //    CGFloat fansNumX = CGRectGetMaxX(fansLbl.frame) + 18 / 2 * IPHONE6_W_SCALE;
-    //    CGFloat fansNumY = fansY;
-    //    NSMutableDictionary * fansNumDic = [NSMutableDictionary dictionary];
-    //    fansNumDic[NSFontAttributeName] = Font13;
-    //    CGSize fansNumSize = [fansNum.text sizeWithAttributes:fansNumDic];
-    //    fansNum.frame = (CGRect){{fansNumX, fansNumY}, fansNumSize};
     [fansNum mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(fansLbl.mas_right).offset(9 * IPHONE6_W_SCALE);
         make.top.equalTo(fansLbl.mas_top);
-        make.width.equalTo(@40);
-        make.height.equalTo(@13);
+        make.width.equalTo(@(40*IPHONE6_W_SCALE));
+        make.height.equalTo(@(13*IPHONE6_W_SCALE));
     }];
     _fansNum = fansNum;
     
     UILabel * attention = [[UILabel alloc] init];
+    attention.textAlignment = NSTextAlignmentRight;
     attention.font = Font13;
     //    attention.backgroundColor = [UIColor redColor];
     attention.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
@@ -306,7 +340,7 @@
     UILabel * attentionNum = [[UILabel alloc] init];
     //    attentionNum.backgroundColor = [UIColor redColor];
     attentionNum.font = Font13;
-    attentionNum.text = @"10";
+    attentionNum.text = @"22";
     attentionNum.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
     [headerView addSubview:attentionNum];
     _attentionNum = attentionNum;
@@ -318,10 +352,32 @@
     }];
     // 关注
     [attention mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@(52 / 2 * IPHONE6_W_SCALE));
+        make.width.equalTo(@(40 * IPHONE6_W_SCALE));
         make.height.equalTo(@(26 / 2 * IPHONE6_H_SCALE));
         make.top.equalTo(attentionNum.mas_top);
     }];
+    
+    // 关注按钮和被关注按钮
+    UIButton * attentionBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [headerView addSubview:attentionBtn];
+    [attentionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(attention.mas_left).offset(-5);
+        make.top.equalTo(attentionBtn.mas_top).offset(-5);
+        make.right.equalTo(attentionNum.mas_right).offset(5);
+        make.bottom.equalTo(attention.mas_bottom).offset(5);
+    }];
+    [attentionBtn addTarget:self action:@selector(showAtttionNum) forControlEvents:UIControlEventTouchUpInside];
+    UIButton * fansBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [headerView addSubview:fansBtn];
+    [fansBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(fansLbl.mas_left).offset(-5);
+        make.top.equalTo(fansLbl.mas_top).offset(-5);
+        make.right.equalTo(fansNum.mas_right).offset(5);
+        make.bottom.equalTo(fansLbl.mas_bottom).offset(5);
+    }];
+    [fansBtn addTarget:self action:@selector(showFans) forControlEvents:UIControlEventTouchUpInside];
+    
+    
     
     // 分隔条
     UIView * separateView = [[UIView alloc] init];
@@ -347,6 +403,8 @@
     CGFloat collectH = 98 / 2 * IPHONE6_H_SCALE;
     collectionView.frame = CGRectMake(collectX, collectY, collectW, collectH);
     [self.view addSubview:collectionView];
+    
+    
 //    // 帖子
     ClickView * postView = [[ClickView alloc] init];
     postView.commentNum.hidden = YES;
@@ -360,9 +418,11 @@
     postView.frame = CGRectMake(postX, postY, postW, postH);
     [self.view addSubview:postView];
     
+    
     // 收到的评论
     ClickView * commentsView = [[ClickView alloc] init];
-    commentsView.commentNum.text = @"11";
+    commentsView.commentNum.text = @"";
+    commentsView.commentNum.hidden = YES;
     commentsView.picName = @"woshoudaodepinglun";
     commentsView.message = @"我收到的评论";
     [commentsView.btn addTarget:self action:@selector(turePageToComments) forControlEvents:UIControlEventTouchUpInside];
@@ -372,6 +432,31 @@
     CGFloat commentsH = postH;
     commentsView.frame = CGRectMake(commentsX, commentsY, commentsW, commentsH);
     [self.view addSubview:commentsView];
+    _commentsView = commentsView;
+}
+
+#pragma mark --展示关注列表
+- (void)showAtttionNum{
+    NSLog(@"展示关注列表");
+    NSString * userid = _model.userid;
+    MorePokersVC * attentionVC = [[MorePokersVC alloc] init];
+    attentionVC.wapurl = [AttentionsURL stringByAppendingString:userid];
+    
+    NSLog(@"%@", attentionVC.wapurl);
+    attentionVC.titleStr = @"关注";
+    attentionVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:attentionVC animated:YES];
+}
+#pragma mark --- 展示粉丝列表
+- (void)showFans{
+    NSLog(@"展示粉丝列表");
+    NSString * userid = _model.userid;
+    MorePokersVC * fansVC = [[MorePokersVC alloc] init];
+    fansVC.wapurl = [FansURL stringByAppendingString:userid];
+    fansVC.hidesBottomBarWhenPushed = YES;
+    NSLog(@"%@", fansVC.wapurl);
+    fansVC.titleStr = @"被关注";
+    [self.navigationController pushViewController:fansVC animated:YES];
 }
 
 #pragma mark --- 查看账户
@@ -384,9 +469,10 @@
 #pragma mark --- 按钮的点击事件
 // 跳转到收藏页
 - (void)turePageToCollection{
-    if (_name) {
+    if (_name || _wxData) {
         MyCollectionViewController * myCollectionVC = [[MyCollectionViewController alloc] init];
         myCollectionVC.hidesBottomBarWhenPushed = YES;
+        
         [self.navigationController pushViewController:myCollectionVC animated:YES];
     }else{
         [self addLSAlertView];
@@ -395,9 +481,10 @@
 }
 // 跳转到帖子页
 - (void)turePageToPosts{
-    if (_name) {
+    if (_name || _wxData) {
         MyPostsViewController * myPostsVC = [[MyPostsViewController alloc] init];
         myPostsVC.hidesBottomBarWhenPushed = YES;
+        myPostsVC.userModel = _model;
         [self.navigationController pushViewController:myPostsVC animated:YES];
     }else{
         [self addLSAlertView];
@@ -406,7 +493,7 @@
 }
 // 跳转到收到的评论页
 - (void)turePageToComments{
-    if (_name) {
+    if (_name || _wxData) {
         MyReceiveCommentsViewController * myReceiveCommentsVC = [[MyReceiveCommentsViewController alloc] init];
         myReceiveCommentsVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:myReceiveCommentsVC animated:YES];

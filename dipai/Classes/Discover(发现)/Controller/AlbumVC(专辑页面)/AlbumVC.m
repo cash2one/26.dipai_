@@ -22,6 +22,7 @@
 #import "MoreVideosCell.h"
 // 视频详情页
 #import "VideoViewController.h"
+#import "SVProgressHUD.h"
 @interface AlbumVC ()<UICollectionViewDelegateFlowLayout , UICollectionViewDataSource , UICollectionViewDelegate>
 /**
  *  头部的图片
@@ -65,13 +66,7 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    // 设置UI
-    [self setUpUI];
     
-    // 添加collectionView
-    [self addCollectionView];
-    // 添加刷新和记载的效果
-    [self addRefreshing];
     
     // 获取网络数据
     [self getData];
@@ -85,7 +80,7 @@
     CGFloat picX = Margin30 * IPHONE6_W_SCALE;
     CGFloat picY = 28 / 2 * IPHONE6_H_SCALE;
     CGFloat picW = 222 / 2 * IPHONE6_W_SCALE;
-    CGFloat picH = 252 / 2 * IPHONE6_H_SCALE;
+    CGFloat picH = 252 / 2 * IPHONE6_W_SCALE;
     picView.frame = CGRectMake(picX, picY, picW, picH);
     [self.view addSubview:picView];
     _picView = picView;
@@ -170,24 +165,15 @@
 }
 #pragma mark --- 加载更多数据
 - (void)loadMoreData{
-    
-//     [self.dataArray lastObject];
-    NSString * url = [AlbumURL stringByAppendingString:[NSString stringWithFormat:@"/5102"]];
-    [DataTool getVideosInAlbumPageWithStr:url parameters:nil success:^(id responseObject) {
-        [self.collection.footer endRefreshing];
-        NSLog(@"%@", responseObject);
-    } failure:^(NSError * error) {
-        
-        NSLog(@"获取视频专辑页面出错:%@", error);
-        [self.collection.footer endRefreshing];
-    }];
+   
+    [self.collection.footer endRefreshing];
+    [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
 }
 
 // 单元格的个数
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     NSLog(@"单元格个数----%lu", self.dataArray.count);
-//    return self.dataArray.count;
-    return 10;
+    return self.dataArray.count;
     
 }
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
@@ -213,40 +199,59 @@
     
     
     MoreVideosCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MoreCollection" forIndexPath:indexPath];
-//    HotVideoModel * model = self.dataArray[indexPath.row];
-//    [cell cellForViedoInfoShowCollectionCell:model];
-    cell.backgroundColor = [UIColor yellowColor];
+    HotVideoModel * model = self.dataArray[indexPath.row];
+    [cell cellForViedoInfoShowCollectionCell:model];
+//    cell.backgroundColor = [UIColor yellowColor];
     return cell;
 }
 // 单元格的点击事件
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     NSLog(@"%lu", indexPath.row);
+    // 跳转到视频详情页，播放的视频是第一个视频
+    VideoViewController * videoVC = [[VideoViewController alloc] init];
+    HotVideoModel * videoModel = [self.dataArray objectAtIndex:indexPath.row];
+    videoVC.url = videoModel.wapurl;
+    [self.navigationController pushViewController:videoVC animated:YES];
    
 }
 
 #pragma mark --- 获取网络数据
 - (void)getData{
+    
+//    NSLog(@"%@", self.wapurl);
+    [SVProgressHUD showWithStatus:@"加载中..."];
     [DataTool getAlbumDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
-        
+        [SVProgressHUD dismiss];
         NSLog(@"视频专辑页面的数据:%@", responseObject);
         // 传过来的是一个模型
+        self.albumModel = [[AlbumVideoModel alloc] init];
         self.albumModel = responseObject;
+        
+        // 设置UI
+        [self setUpUI];
+        
+        // 添加collectionView
+        [self addCollectionView];
+        // 添加刷新和记载的效果
+        [self addRefreshing];
+        
         // 设置数据
         [self setData];
         
+        NSLog(@"%lu", self.albumModel.videoArr.count);
         self.dataArray = (NSMutableArray *)self.albumModel.videoArr;
-        
         [self.collection reloadData];
     } failure:^(NSError * error) {
         
         NSLog(@"获取视频专辑页面时的错误信息%@", error);
+        [SVProgressHUD showErrorWithStatus:@"加载失败"];
     }];
+    
 }
 #pragma mark --- 设置数据
 - (void)setData{
     
     NSDictionary * albumDic = self.albumModel.albumDic;
-    
     // 设置图片
     NSString * picname = albumDic[@"picname"];
     [_picView sd_setImageWithURL:[NSURL URLWithString:picname] placeholderImage:[UIImage imageNamed:@"123"]];

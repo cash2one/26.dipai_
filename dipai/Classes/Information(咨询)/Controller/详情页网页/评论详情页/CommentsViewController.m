@@ -32,6 +32,13 @@
 #import "LSAlertView.h"
 // 登录页面
 #import "LoginViewController.h"
+
+#import "SBModel.h"
+
+// 普通人主页
+#import "AnyBodyVC.h"
+// 名人主页
+#import "StarVC.h"
 @interface CommentsViewController ()<UITableViewDataSource, UITableViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, CommentsTableViewCellDelegate>
 
 {
@@ -69,6 +76,10 @@
  */
 @property (nonatomic, strong) UIImageView * replyView;
 
+// 回复用户的模型
+@property (nonatomic, strong) CommentsModel * model;
+
+@property (nonatomic, strong) SBModel * sbModel;
 
 @end
 
@@ -88,7 +99,8 @@
     // 每次进来的时候都要检测是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    if (cookieName && _sendContent) {  // 如果已经登录，并且有发表内容，则进行发表
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if ((cookieName || wxData) && _sendContent) {  // 如果已经登录，并且有发表内容，则进行发表
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
         //        CommentDic[@"id"] = self.newsModel.iD;
         CommentDic[@"id"] = self.iD;
@@ -273,7 +285,7 @@
         NSArray * commentsArr = responseObject;
         
         if (!commentsArr) {
-            self.tableView.footer.state = MJRefreshStateNoMoreData;
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         } else{
             NSMutableArray * commentsFrameArr = [NSMutableArray array];
             for (CommentsModel * commentModel in commentsArr) {
@@ -384,8 +396,8 @@
 - (void)sendMessageWithTypes:(NSString *)types  andID:(NSString * )ID{
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    NSLog(@"---用户迷宫%@,", cookieName);
-    if (cookieName) {
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName || wxData) {
         NSLog(@"已经登录。。。进行发表");
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
         NSLog(@"%@---%@", types, ID);
@@ -482,7 +494,19 @@
 }
 
 #pragma mark --- CommentsTableViewCellDelegate
+#pragma mark --- 点击单元格中的评论或回复视图
 - (void)tableViewCell:(CommentsTableViewCell *)cell didClickedContentWithID:(NSString *)ID andModel:(CommentsModel *)model{
+    
+    _model = model;
+    
+    [DataTool getSBDataWithStr:_model.wapurl parameters:nil success:^(id responseObject) {
+        
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel = responseObject;
+        _sbModel = sbModel;
+    } failure:^(NSError * error) {
+        NSLog(@"获取个人数据出错：%@", error);
+    }];
     
     if (_replyView) {   // 如果有回复视图
         [_replyView removeFromSuperview];
@@ -526,6 +550,10 @@
     
     _replyName = model.username;
 }
+#pragma mark --- 点击单元格中的用户头像
+- (void)tableViewCell:(CommentsTableViewCell *)cell dicClickFaceWithModel:(CommentsModel *)model{
+    NSLog(@"点击用户头像");
+}
 
 //- (void)tableViewCell:(CommentsTableViewCell *)cell didClickedContentWithID:(NSString *)ID{
 //    
@@ -541,6 +569,18 @@
 #pragma mark --- 查看用户主页
 - (void)checkAction{
     NSLog(@"查看用户主页 ...");
+    [_replyView removeFromSuperview];
+    AnyBodyVC * anyBodyVC = [[AnyBodyVC alloc] init];
+    StarVC * starVC = [[StarVC alloc] init];
+    
+    if ([_sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {   // 如果认证为空，就是普通人主页
+        anyBodyVC.userURL = _model.wapurl;
+        [self.navigationController pushViewController:anyBodyVC animated:YES];
+    }else{
+        starVC.userURL = _model.wapurl;
+        [self.navigationController pushViewController:starVC animated:YES];
+    }
+
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{

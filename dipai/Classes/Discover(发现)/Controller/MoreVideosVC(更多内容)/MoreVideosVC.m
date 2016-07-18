@@ -39,8 +39,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
-    NSLog(@"传递过来的接口%@", self.moreURL);
     
+//    NSLog(@"传递过来的接口%@", self.moreURL);
     
     [self createCollectionView];
     // 添加刷新和记载的效果
@@ -102,8 +102,7 @@
             [self.collection.header endRefreshing];
             NSLog(@"更多页面返回的数据%@", responseObject);
             // 传过来的是模型数组
-            //        self.dataArray = responseObject;
-            
+            self.dataArray = responseObject;
             
             [self.collection reloadData];
         } failure:^(NSError * error) {
@@ -167,7 +166,6 @@
 // 单元格的内容
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
   
-    
     MoreVideosCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MoreCollection" forIndexPath:indexPath];
     HotVideoModel * model = self.dataArray[indexPath.row];
     [cell cellForViedoInfoShowCollectionCell:model];

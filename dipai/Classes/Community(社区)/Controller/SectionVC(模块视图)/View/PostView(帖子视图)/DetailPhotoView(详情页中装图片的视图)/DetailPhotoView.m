@@ -30,11 +30,37 @@
 - (instancetype)initWithArray:(NSArray *)array{
     if (self = [super init]) {
         [self setUpChildControlWithArr:array];
-//        self.backgroundColor = [UIColor redColor];
+//        self.backgroundColor = [UIColor greenColor];
     }
     return self;
 }
 
+- (instancetype)initWithFrame:(CGRect)frame{
+    if (self = [super initWithFrame:frame]) {
+        
+        [self setUpChildControl];
+//        self.backgroundColor = [UIColor greenColor];
+    }
+    
+    return self;
+}
+
+- (void)setUpChildControl{
+    for (int i = 0; i < 9; i ++) {
+        UIImageView * picView = [[UIImageView alloc] init];
+        picView.contentMode = UIViewContentModeScaleAspectFit;
+        picView.contentMode = UIViewContentModeScaleAspectFill;
+        picView.clipsToBounds = YES;
+        picView.userInteractionEnabled = YES;
+        [self addSubview:picView];
+        [self.imagesArr addObject:picView];
+        
+        picView.tag = i;
+        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapClick:)];
+        [picView addGestureRecognizer:tap];
+        picView.userInteractionEnabled = YES;
+    }
+}
 
 #pragma mark --- 设置子控件
 - (void)setUpChildControlWithArr:(NSArray *)array{
@@ -56,6 +82,9 @@
 
 - (void)tapClick:(UITapGestureRecognizer *)tap
 {
+    
+    NSLog(@"/.....");
+    
     UIImageView *tapView = (UIImageView *)tap.view;
     // CZPhoto -> MJPhoto
     int i = 0;
@@ -85,16 +114,34 @@
 - (void)setPicArr:(NSArray *)picArr{
     
     _picArr = picArr;
+    
+    NSUInteger counts = self.subviews.count;
+    for (int i = 0; i < counts; i ++) {
+        UIImageView * imageView = self.subviews[i];
+        // 9张图片以内显示上传的所有图片
+        if (i < _picArr.count) {
+            // 显示
+            imageView.hidden = NO;
+            [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
+            
+        }else
+        {
+            // 隐藏
+            imageView.hidden = YES;
+        }
+    }
+
 }
 - (void)layoutSubviews{
     [super layoutSubviews];
     
     CGFloat height = 0;
     
-    if (self.imagesArr.count > 0) {
+    if (_picArr.count > 0) {
         for (int i = 0; i < _picArr.count; i ++) {
           
             UIImageView * imageV = self.subviews[i];
+//            UIImageView * imageV = self.imagesArr[i];
             
             CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_picArr[i]]];
             CGFloat h = size.height;    // 图片的高度
@@ -116,7 +163,8 @@
             
             imageV.frame = CGRectMake(0, 0 + height, WIDTH - 30 * IPHONE6_W_SCALE, h);
             height = height + h + 8;
-            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
+//            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
+//            imageV.image = [UIImage imageNamed:@"123"];
         }
     }
     

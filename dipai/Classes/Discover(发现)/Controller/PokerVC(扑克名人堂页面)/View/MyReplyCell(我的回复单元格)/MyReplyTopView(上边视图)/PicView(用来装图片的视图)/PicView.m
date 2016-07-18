@@ -82,11 +82,11 @@
     [super layoutSubviews];
     
     // 计算显示出来的imageView
-    for (int i = 0; i < _picArr.count; i++) {
+    for (int i = 0; i < 3; i++) {
         if (_picArr.count == 1) {
             UIImageView *imageV = self.subviews[i];
             imageV.frame = CGRectMake(0, 0, 120*IPHONE6_W_SCALE, 80 * IPHONE6_W_SCALE);
-            imageV.backgroundColor = [UIColor yellowColor];
+//            imageV.backgroundColor = [UIColor yellowColor];
         } else if (_picArr.count > 1 ){
             UIImageView *imageV = self.subviews[i];
             imageV.frame = CGRectMake(0+ i * (80 + 5)*IPHONE6_W_SCALE, 0 , 80 * IPHONE6_W_SCALE , 80 * IPHONE6_W_SCALE);

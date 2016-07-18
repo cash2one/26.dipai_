@@ -103,7 +103,7 @@
         [self setUpChildView];
         
 //        self.backgroundColor = [UIColor yellowColor];
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
+//        self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     return self;
@@ -165,8 +165,8 @@
     
 //    NSLog(@"%@", self.pics);
     
-    DetailPhotoView * picView = [[DetailPhotoView alloc] initWithArray:self.pics];
-//    picView.backgroundColor = [UIColor yellowColor];
+//    DetailPhotoView * picView = [[DetailPhotoView alloc] initWithArray:self.pics];
+    DetailPhotoView * picView = [[DetailPhotoView alloc] init];
     [self addSubview:picView];
     _picView = picView;
     
@@ -262,10 +262,10 @@
     
     // 回帖图片
     _picView.frame = _frameModel.picsFrame;
-    
-//    NSLog(@"%@", _frameModel.replyModel.picname);
     NSArray * picArr = _frameModel.replyModel.picname;
     _picView.picArr = picArr;
+//    _picView.hidden = YES;
+
     
     
     // 对回帖的回复

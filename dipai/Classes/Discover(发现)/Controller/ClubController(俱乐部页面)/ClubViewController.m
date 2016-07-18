@@ -25,6 +25,8 @@
 
 // 俱乐部详情页
 #import "ClubDetailViewController.h"
+
+#import "SVProgressHUD.h"
 @interface ClubViewController ()<UITableViewDataSource, UITableViewDelegate>
 /**
  *  城市模型数组
@@ -114,32 +116,27 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
     NSLog(@"---clubURL---%@", self.clubURL);
-    
     // 设置导航栏
     [self setUpNavigationBar];
-    
-   // 创建俱乐部的tableView
-    [self createTableView];
-    
-    // 添加城市选择视图
-    [self addCityView];
-    
-
     // 获取数据
     [self getData];
     
 }
 
-- (void)viewWillAppear:(BOOL)animated{
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:YES];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
-    
 }
 
-- (void)viewWillDisappear:(BOOL)animated{
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:YES];
-    
+    //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
+    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
 }
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:YES];
@@ -189,7 +186,7 @@
     [_cityBtn addSubview:_cityLb];
     // 显示图标：^
     _arrowImg = [[UIImageView alloc] initWithFrame:CGRectMake(_cityLb.frame.size.width + 8 , _cityLb.center.y/2 + 8.5, 12 , 7)];
-    _arrowImg.image = [UIImage imageNamed:@"shouqi2"];
+    _arrowImg.image = [UIImage imageNamed:@"xiala2"];
     _arrowImg.userInteractionEnabled = YES;
     [_cityBtn addSubview:_arrowImg];
     
@@ -225,7 +222,7 @@
 - (void)removeBackViewFromView{
     _cityBtn.selected = !_cityBtn.selected;
     
-    _arrowImg.image = [UIImage imageNamed:@"shouqi2"];
+    _arrowImg.image = [UIImage imageNamed:@"xiala2"];
     
     // 隐藏背景图
     _backView.frame = CGRectMake(0, 0, WIDTH, 0);
@@ -241,7 +238,7 @@
     NSLog(@"点击城市按钮...");
     _cityBtn.selected = !_cityBtn.selected;
     if (_cityBtn.selected) {
-        _arrowImg.image = [UIImage imageNamed:@"xiala2"];
+        _arrowImg.image = [UIImage imageNamed:@"shouqi2"];
         
         // 显示背景图
         _backView.frame = CGRectMake(0, 0, WIDTH, HEIGHT);
@@ -257,7 +254,7 @@
         } completion:nil];
         
     } else{
-        _arrowImg.image = [UIImage imageNamed:@"shouqi2"];
+        _arrowImg.image = [UIImage imageNamed:@"xiala2"];
         
         // 隐藏背景图
         _backView.frame = CGRectMake(0, 0, WIDTH, 0);
@@ -283,9 +280,18 @@
 #pragma mark --- 获取数据
 - (void)getData{
     // CityURL  http://10.0.0.14:8080/app/club/list/7
+    
+    [SVProgressHUD showWithStatus:@"加载中..."];
     // 获取所有的城市
     [DataTool  getCitysDataWithStr:CityURL parameters:nil success:^(id responseObject) {
         
+        [SVProgressHUD dismiss];
+        
+        // 创建俱乐部的tableView
+        [self createTableView];
+        
+        // 添加城市选择视图
+        [self addCityView];
 //        NSLog(@"获取城市数据:%@", responseObject);
         self.cityModelArr = responseObject;
         // 设置数据
@@ -307,6 +313,7 @@
     } failure:^(NSError * error) {
         
         NSLog(@"获取城市中的俱乐部出错%@", error);
+        [SVProgressHUD showErrorWithStatus:@"加载失败"];
     }];
     
     

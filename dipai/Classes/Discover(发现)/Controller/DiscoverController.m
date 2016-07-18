@@ -227,11 +227,12 @@
         findModel = responseObject;
         
         //  轮播页中的数据
+        NSMutableArray * arr = [NSMutableArray array];
         for (bannerModel * model in findModel.banner) {
             // 将banner模型装到数组中
-            [self.bannerArr removeAllObjects];
-            [self.bannerArr addObject:model];
+            [arr addObject:model];
         }
+        self.bannerArr = arr;
         
         // 模块中的数据
         NSDictionary * navigation = findModel.navigation;
@@ -243,13 +244,16 @@
         NSDictionary * album =findModel.Album;
         _moreVideoURL = album[@"more"];
         NSArray * dataArr = album[@"data"];
+        
+        NSMutableArray * hotArr = [NSMutableArray array];
         for (NSDictionary * dataDic in dataArr) {
             // 字典转模型
             HotVideoModel * hotVideoModel = [HotVideoModel objectWithKeyValues:dataDic];
             // 将热门专辑中的视频添加到数组中
-            [self.hotVideoModelArr removeAllObjects];
-            [self.hotVideoModelArr addObject:hotVideoModel];
+            [hotArr addObject:hotVideoModel];
+            
         }
+        self.hotVideoModelArr = hotArr;
         
         // WSOP视频中的数据
         NSArray * videoArr = findModel.videoArr;
@@ -279,10 +283,14 @@
 #pragma mark --- 设置数据
 - (void)setData{
     //     确定滚动视图的contentSize
+    
+//    NSLog(@"%lu", self.bannerArr.count);
+    
     NSUInteger count = self.bannerArr.count;
     NSNumber * num = [NSNumber numberWithUnsignedInteger:count];
     int counts = [num intValue];
     
+//    NSLog(@"%d", counts);
     [_advertiseView setScrollWithCount:counts andArray:self.bannerArr];
 }
 
@@ -303,7 +311,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row == 0) {
+    if (indexPath.row == 0) {   // 俱乐部、赛事、名人堂、专题
         NavigationCell * cell = [NavigationCell cellWithTableView:tableView];
         [cell.clubBtn addTarget:self action:@selector(turnPageToSomePage:) forControlEvents:UIControlEventTouchUpInside];
         cell.clubBtn.tag = 1;
@@ -314,7 +322,7 @@
         [cell.specialBtn addTarget:self action:@selector(turnPageToSomePage:) forControlEvents:UIControlEventTouchUpInside];
         cell.specialBtn.tag = 4;
         return cell;
-    } else if (indexPath.row == 1){
+    } else if (indexPath.row == 1){ // 热门专辑
         HotVideoCell * cell = [HotVideoCell cellWithTableView:tableView];
         cell.delegate = self;
         // 为更多内容按钮添加点击事件
@@ -323,7 +331,7 @@
         cell.videoModelArr = self.hotVideoModelArr;
         return cell;
         
-    } else{
+    } else{ // 发现首页
         WSOPTableViewCell * cell = [WSOPTableViewCell cellWithTableView:tableView];
         cell.delegate = self;
         WSOPModel * wsopModel = self.videoModelArr[indexPath.row - 2];
@@ -347,7 +355,7 @@
     PokerVC * pokerVC = [[PokerVC alloc] init]; // 扑克名人堂页面
     SpecialViewController * specialVC = [[SpecialViewController alloc] init];
     switch (btn.tag) {
-        case 1:
+        case 1: // 跳转到俱乐部页面
             clubVC.clubURL = _navigationModel.club;
             clubVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:clubVC animated:YES];
@@ -360,7 +368,7 @@
             pokerVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:pokerVC animated:YES];
             break;
-        case 4:
+        case 4: // 跳转到专辑页面
             specialVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:specialVC animated:YES];
             break;

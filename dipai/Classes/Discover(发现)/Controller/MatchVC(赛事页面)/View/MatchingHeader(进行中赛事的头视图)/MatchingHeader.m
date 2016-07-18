@@ -223,22 +223,22 @@
         make.centerX.equalTo(self.mas_centerX);
         make.top.equalTo(_separateView.mas_bottom).offset(14*IPHONE6_H_SCALE);
         make.width.equalTo(@(100*IPHONE6_W_SCALE));
-        make.height.equalTo(@(13));
+        make.height.equalTo(@(13* IPHONE6_H_SCALE));
         
     }];
     
     [_blindNum mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(_blindLbl.mas_centerX);
-        make.top.equalTo(_separateView.mas_bottom);
-        make.right.equalTo(_blindLbl.mas_right);
-        make.bottom.equalTo(_blindLbl.mas_top);
+        make.top.equalTo(_separateView.mas_bottom).offset(14*IPHONE6_H_SCALE);
+        make.width.equalTo(@(259*0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(13* IPHONE6_H_SCALE));
     }];
 //    [_blindNum sizeToFit];
     [_players mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(_playerLbl.mas_centerX);
         make.top.equalTo(_separateView.mas_bottom).offset(14*IPHONE6_H_SCALE);
         make.width.equalTo(@(100*IPHONE6_W_SCALE));
-        make.height.equalTo(@(13));
+        make.height.equalTo(@(13* IPHONE6_H_SCALE));
     }];
 //    [_players sizeToFit];
 

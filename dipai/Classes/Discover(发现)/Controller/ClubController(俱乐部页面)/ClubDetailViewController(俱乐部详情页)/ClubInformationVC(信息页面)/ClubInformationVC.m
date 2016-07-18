@@ -66,15 +66,15 @@
     [super viewWillDisappear:YES];
     
     // 利用block将其它三个页面的接口传递过去
-    NSString * recommendURL = _infoModel.rcd;   // 推荐接口
-    NSString * newsURL = _infoModel.relation;   // 新闻接口
-    NSString * commentsURL = _infoModel.comment;    // 评论接口
-    NSArray * URLArr = @[recommendURL, newsURL, commentsURL];
-    if ([self.delegate respondsToSelector:@selector(sendURLWhenDisappearWithArr:andID:)]) {
-        [self.delegate sendURLWhenDisappearWithArr:URLArr andID:_infoModel.iD];
-    } else{
-        NSLog(@"ClubInfomationVC的代理没有响应...");
-    }
+//    NSString * recommendURL = _infoModel.rcd;   // 推荐接口
+//    NSString * newsURL = _infoModel.relation;   // 新闻接口
+//    NSString * commentsURL = _infoModel.comment;    // 评论接口
+//    NSArray * URLArr = @[recommendURL, newsURL, commentsURL];
+//    if ([self.delegate respondsToSelector:@selector(sendURLWhenDisappearWithArr:andID:)]) {
+//        [self.delegate sendURLWhenDisappearWithArr:URLArr andID:_infoModel.iD];
+//    } else{
+//        NSLog(@"ClubInfomationVC的代理没有响应...");
+//    }
 }
 
 - (void)viewDidLoad {
@@ -157,14 +157,20 @@
     CellInClubInfo * cell = [CellInClubInfo cellWithTableView:tableView];
     if (indexPath.row == 0) {
         cell.picView.image = [UIImage imageNamed:@"dizhi"];
+        
+//        NSLog(@"%@", _infoModel.address);
         cell.contentLbl.text = _infoModel.address;
     }
     if (indexPath.row == 1) {
         cell.picView.image = [UIImage imageNamed:@"dianhua"];
+        
+//        NSLog(@"%@", _infoModel.telephone);
         cell.contentLbl.text = _infoModel.telephone;
     }
     if (indexPath.row == 2) {
         cell.picView.image = [UIImage imageNamed:@"yingyeshijian"];
+        
+//        NSLog(@"%@", _infoModel.business_hours);
         cell.contentLbl.text = _infoModel.business_hours;
     }
     if (indexPath.row == 2) {
@@ -185,7 +191,7 @@
 
 #pragma mark --- 打电话事件
 - (void)callAction{
-    NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",@"18730602439"];
+    NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",_infoModel.telephone];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
 }
 #pragma mark --- 取消打电话
@@ -201,16 +207,18 @@
     if (url) {
         [DataTool getClubInfoWithStr:url parameters:nil success:^(id responseObject) {
             
-            NSLog(@"俱乐部信息页面获取数据：－－－%@",responseObject);
+//            NSLog(@"俱乐部信息页面获取数据：－－－%@",responseObject);
             InfoModel * infoModel = responseObject;
             _infoModel = infoModel;
+            
+//            NSLog(@"%@", _infoModel.address);
             // 设置数据
             [self setData];
             
             [self.tableView reloadData];
         } failure:^(NSError * error) {
             
-            
+            NSLog(@"获取俱乐部信息页面数据出错：%@", error);
         }];
     } else{
         NSLog(@"接口为空...");

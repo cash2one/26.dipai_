@@ -28,6 +28,8 @@
  */
 @property (nonatomic, strong) NSMutableArray * dataSource;
 
+@property (nonatomic, strong) UILabel *NoNews;
+
 @end
 
 @implementation ClubNewsVC
@@ -57,16 +59,17 @@
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
+    _NoNews = [[UILabel alloc] initWithFrame:CGRectMake( 0 , SPWidth , WIDTH , 30)];
+    _NoNews.text = @"编辑很懒,什么也没留下";
+    _NoNews.textAlignment = NSTextAlignmentCenter;
+    _NoNews.font = [UIFont systemFontOfSize:13];
+    _NoNews.textColor = [UIColor lightGrayColor];
+    _NoNews.backgroundColor = [UIColor clearColor];
+    _NoNews.hidden = YES;
+    [self.tableView addSubview:_NoNews];
     [self.view addSubview:_tableView];
 }
 
-- (void)setWapurl:(NSString *)wapurl{
-    
-    
-    _wapurl = wapurl;
-    NSLog(@"%@", _wapurl);
-    [self loadNewData];
-}
 
 #pragma mark --- 添加刷新和加载的效果图
 - (void)addRefreshing{
@@ -99,11 +102,22 @@
     if (self.wapurl == nil) {
         return;
     } else{
-        [DataTool getClubNewsDataWithStr:_wapurl parameters:nil success:^(id responseObject) {
+        [DataTool getClubNewsDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
             
             [self.tableView.header endRefreshing];
             self.dataSource = responseObject;
+            if (_tableView.contentOffset.y != 0) {
+                
+                [_NoNews removeFromSuperview];
+            }
             
+            if (self.dataSource.count == 0) {
+                // 没有新闻的时候显示
+                _NoNews.hidden = NO;
+            }else{
+                
+                _NoNews.hidden = YES;
+            }
             [self.tableView reloadData];
         } failure:^(NSError * error) {
             

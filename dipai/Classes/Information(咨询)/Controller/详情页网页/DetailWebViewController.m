@@ -29,6 +29,10 @@
 #import "LSAlertView.h"
 // 登录控制器
 #import "LoginViewController.h"
+
+// 普通人主页
+#import "AnyBodyVC.h"
+
 // 数据库
 #import "DataBase.h"
 //
@@ -37,7 +41,7 @@
 
 #import "UIBarButtonItem+Item.h"
 #import "AppDelegate.h"
-@interface DetailWebViewController ()<BottomViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, UMSocialUIDelegate>
+@interface DetailWebViewController ()<BottomViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, UMSocialUIDelegate, UIWebViewDelegate>
 
 {
     // 发表的内容
@@ -93,7 +97,8 @@
     // 每次进来的时候都要检测是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    if (cookieName && _sendContent) {  // 如果已经登录，并且有发表内容，则进行发表
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if ((cookieName || wxData) && _sendContent) {  // 如果已经登录，并且有发表内容，则进行发表
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
         //        CommentDic[@"id"] = self.newsModel.iD;
         CommentDic[@"id"] = _model.iD;
@@ -118,9 +123,9 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
-    [SVProgressHUD dismiss];
     
     [_leftBtn removeFromSuperview];
+    [SVProgressHUD dismiss];
 }
 
 - (void)viewDidLoad {
@@ -224,7 +229,7 @@
 
 - (void)getData
 {
-    [SVProgressHUD show];
+//    [SVProgressHUD show];
     [DataTool getDataInWebViewWithStr:self.url parameters:nil success:^(NSArray * array) {
         
         WebDetailModel * model = array[0];
@@ -236,7 +241,7 @@
         // 设置数据
         [self setData];
         
-        [SVProgressHUD dismiss];
+//        [SVProgressHUD dismiss];
         // 设置网页内容
         [self setUpView:_wapurl];
     } failure:^(NSError * error) {
@@ -253,7 +258,12 @@
     if ([_model.commentNumber integerValue] >= 100) {
         _bottomView.commentsLbl.text = @"99+";
     } else{
-        _bottomView.commentsLbl.text = _model.commentNumber;
+        if ([_model.commentNumber integerValue] == 0) {
+            _bottomView.commentsLbl.hidden = YES;
+        }else{
+            _bottomView.commentsLbl.text = _model.commentNumber;
+        }
+        
     }
     // 判断收藏按钮的状态
     
@@ -269,14 +279,28 @@
 - (void)setUpView:(NSString *)url
 {
     UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
+    webView.delegate = self;
+    webView.scalesPageToFit = YES;
     [self.view addSubview:webView];
     _webView = webView;
     
     NSURL * URL = [NSURL URLWithString:url];
+//    NSURL * URL = [NSURL URLWithString:@"http://www.baidu.com"];
     NSURLRequest * request = [NSURLRequest requestWithURL:URL];
     [webView loadRequest:request];
 }
 
+#pragma mark --- UIWebViewDelegate
+- (void)webViewDidStartLoad:(UIWebView *)webView{
+    [SVProgressHUD showWithStatus:@"加载中..."];
+}
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    [SVProgressHUD dismiss];
+    
+}
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error{
+    [SVProgressHUD showErrorWithStatus:@"加载失败"];
+}
 // 设置状态栏的颜色为白色
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
@@ -288,8 +312,8 @@
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    NSLog(@"---用户迷宫%@,", cookieName);
-    if (cookieName) {
+   NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName || wxData) {
         NSLog(@"已经登录。。。进行发表");
         /*
          http://10.0.0.14:8080/app/add_comment
@@ -317,7 +341,7 @@
         // 显示发表成功
         [SVProgressHUD showSuccessWithStatus:@"发表成功"];
     }else{
-        [self addAlertView];
+        [self addAlertViewWithMessage:@"请先登录后再发表"];
     }
     
 }
@@ -367,6 +391,7 @@
     // 添加评论视图
     CommentView * commentView = [[CommentView alloc] initWithFrame:CGRectMake(0, HEIGHT, WIDTH, Margin242 * IPHONE6_H_SCALE)];
     commentView.delegate = self;
+    
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
     commentView.userInteractionEnabled = YES;
     [commentView addGestureRecognizer:tap];
@@ -412,43 +437,24 @@
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * userName = [defaults objectForKey:Cookie];
-    
-    if (userName) { // 如果已经登录
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (userName || wxData) { // 如果已经登录
         if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
-            UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"收藏成功" message:nil preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                
-            }];
-            [alertController addAction:OK];
-            [self presentViewController:alertController animated:YES completion:nil];
             
             // 进行收藏
             [self collectOrCancelCollect];
+            [SVProgressHUD showSuccessWithStatus:@"收藏成功"];
         } else{     // 如果收藏按钮被选中
             
-            UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"已取消收藏" message:nil preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                
-            }];
-            [alertController addAction:OK];
-            [self presentViewController:alertController animated:YES completion:nil];
-            
             //  取消收藏
-            NSString * url = [CollectionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _model.iD]];
-            //            NSLog(@"进行收藏的接口----%@", url);
-            [DataTool getCollectWithStr:url parameters:nil success:^(id responseObject) {
-                
-                NSLog(@"收藏返回的数据%@", responseObject);
-            } failure:^(NSError * error) {
-                
-                NSLog(@"收藏的错误信息--%@", error);
-            }];
+            [self collectOrCancelCollect];
+            [SVProgressHUD showSuccessWithStatus:@"已取消收藏"];
             
         }
         _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
     } else  // 如果没有登录
     {
-        [self addAlertView];
+        [self addAlertViewWithMessage:@"请在登录后进行关注"];
     }
   
     
@@ -461,6 +467,8 @@
     [DataTool getCollectWithStr:url parameters:nil success:^(id responseObject) {
         
         NSLog(@"收藏返回的数据%@", responseObject);
+        NSLog(@"%@", responseObject[@"content"]);
+        
     } failure:^(NSError * error) {
         
         NSLog(@"收藏的错误信息--%@", error);
@@ -468,9 +476,13 @@
 }
 
 #pragma mark --- 添加登录的alertView
-- (void)addAlertView{
+- (void)addAlertViewWithMessage:(NSString *)message{
     LSAlertView * alertView = [[LSAlertView alloc] init];
     alertView.delegate = self;
+    
+    // 提示框上的提示信息
+    alertView.messageLbl.text = message;
+    
     CGFloat x = Margin105 * IPHONE6_W_SCALE;
     CGFloat y = Margin574 * IPHONE6_H_SCALE;
     CGFloat w = Margin540 * IPHONE6_W_SCALE;
@@ -495,6 +507,9 @@
     NSURL *url = [NSURL URLWithString:st];
     NSData *data = [NSData dataWithContentsOfURL:url];
     UIImage *img = [UIImage imageWithData:data];
+    if (!img) {
+        img = [UIImage imageNamed:@"40pt@2x"];
+    }
     
     // 友盟分享代码，复制、粘贴
     [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"

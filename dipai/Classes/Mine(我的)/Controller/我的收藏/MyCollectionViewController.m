@@ -11,30 +11,54 @@
 #import "DataBase.h"
 #import "NewsListModel.h"
 #import "DataTool.h"
+#import "MJChiBaoZiFooter2.h"
+#import "MJChiBaoZiHeader.h"
 
 // 自定义单元格
 #import "InformationCell.h"
 #import "PicturesCell.h"
 
+// 我的收藏模型
+#import "MyCollectionModel.h"
+// 某人模型
+#import "SBModel.h"
+
+// 我的收藏单元格
+#import "MyCollectCell.h"
+// 我的收藏模型
+#import "MyCollectionModel.h"
+
 // 网页详情页
 #import "DetailWebViewController.h"
-@interface MyCollectionViewController ()
+// 视频页详情
+#import "VideoViewController.h"
+// 帖子详情页
+#import "PostDetailVC.h"
+
+// 普通用户页面
+#import "AnyBodyVC.h"
+// 认证用户页面
+#import "StarVC.h"
+#import "SVProgressHUD.h"
+@interface MyCollectionViewController ()<UITableViewDataSource, UITableViewDelegate, MyCollectCellDelegate>
 /**
  *  数据源
  */
-@property (nonatomic, strong) NSMutableArray * newslistArr;
+@property (nonatomic, strong) NSMutableArray * dataSource;
+
+@property (nonatomic, strong) UITableView * tableView;
+
+@property (nonatomic, strong) SBModel * sbModel;
 
 @end
 
 @implementation MyCollectionViewController
 
-- (NSMutableArray *)dataSource
-{
-    if (_newslistArr == nil) {
-        _newslistArr = [NSMutableArray array];
+- (NSMutableArray *)dataSource{
+    if (_dataSource == nil) {
+        _dataSource = [NSMutableArray array];
     }
-    
-    return _newslistArr;
+    return _dataSource;
 }
 
 - (void)viewDidLoad {
@@ -45,8 +69,8 @@
     // 设置导航栏
     [self setNavigationBar];
     
-    // 获取数据
-    [self getData];
+    [self addTableView];
+
 }
 #pragma mark --- 设置导航条
 - (void)setNavigationBar {
@@ -62,36 +86,141 @@
     titleLabel.text = @"我的收藏";
     self.navigationItem.titleView = titleLabel;
     
-    UIButton * editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    editBtn.frame = CGRectMake(0, 0, 50, 50);
-//    editBtn.backgroundColor = [UIColor redColor];
-    editBtn.titleLabel.textAlignment = NSTextAlignmentRight;
-    UILabel * editLbl = [[UILabel alloc] initWithFrame:editBtn.bounds];
-    editLbl.text = @"编辑";
-    editLbl.textAlignment = NSTextAlignmentRight;
-    editLbl.textColor = [UIColor blackColor];
-    [editBtn addSubview:editLbl];
+//    UIButton * editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    editBtn.frame = CGRectMake(0, 0, 50, 50);
+////    editBtn.backgroundColor = [UIColor redColor];
+//    editBtn.titleLabel.textAlignment = NSTextAlignmentRight;
+//    UILabel * editLbl = [[UILabel alloc] initWithFrame:editBtn.bounds];
+//    editLbl.text = @"编辑";
+//    editLbl.font = Font15;
+//    editLbl.textAlignment = NSTextAlignmentRight;
+//    editLbl.textColor = [UIColor blackColor];
+//    [editBtn addSubview:editLbl];
+//    
+//    [editBtn addTarget:self action:@selector(editAction) forControlEvents:UIControlEventTouchUpInside];
+//    
+//    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:editBtn];
     
-    [editBtn addTarget:self action:@selector(editAction) forControlEvents:UIControlEventTouchUpInside];
-    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:editBtn];
+    self.editButtonItem.title = @"编辑";
+    self.editButtonItem.tintColor = [UIColor blackColor];
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+    [super setEditing:editing animated:animated];
+    
+    [self.tableView setEditing:editing animated:YES];
+    if (self.editing) {
+        self.editButtonItem.title = @"完成";
+    } else {
+        self.editButtonItem.title = @"编辑";
+    }
+}
+
+//完成编辑的触发事件
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete)
+    {
+        [self.dataSource removeObjectAtIndex: indexPath.row];
+        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                         withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView reloadData];
+    }
+    
+    // 删除收藏 网络上的删除
+    // http://dipaiapp.replays.net/app/my/del/collection
+    MyCollectionModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    NSString * iD = model.iD;
+    NSString * url = [DeleteCollectURL stringByAppendingString:iD];
+    
+//    NSLog(@"%@", url);
+    
+    [DataTool deleteMyCollectionWithStr:url parameters:nil success:^(id responseObject) {
+        
+        NSLog(@"删除收藏成功返回的数据:%@", responseObject);
+        NSLog(@"%@", responseObject[@"content"]);
+    } failure:^(NSError * error) {
+       
+        NSLog(@"删除收藏的错误信息%@", error);
+    }];
+}
+//返回编辑状态的style
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView
+           editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    //UITableViewCellEditingStyleInsert
+    //    return UITableViewCellEditingStyleNone;
+    return UITableViewCellEditingStyleDelete;
+}
+
 #pragma mark --- 返回
 - (void)returnBack{
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark --- 获取数据
-- (void)getData{
+- (void)addTableView{
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT - 64 ) style:UITableViewStylePlain];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.tableView.showsVerticalScrollIndicator = NO;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.view addSubview:self.tableView];
     
+    MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
+    [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
+    header.stateLabel.font = [UIFont systemFontOfSize:14];
+    header.stateLabel.textColor = [UIColor lightGrayColor];
+    header.automaticallyChangeAlpha = YES;
+    header.lastUpdatedTimeLabel.hidden = YES;
+    self.tableView.header = header;
+    [header beginRefreshing];
+    //往上拉加载数据.
+    MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
+    [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
+    [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
+    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
+    footer.stateLabel.font = [UIFont systemFontOfSize:13];
+    footer.stateLabel.textColor = [UIColor lightGrayColor];
+    self.tableView.footer = footer;
+}
+
+- (void)loadNewData{
     [DataTool getCollectionDataWithStr:MyCollectionURL parameters:nil success:^(id responseObject) {
+        [self.tableView.header endRefreshing];
+        //        NSLog(@"%@", responseObject);
         
-        
-        
+        self.dataSource = responseObject;
+        [self.tableView reloadData];
     } failure:^(NSError * error) {
-        
+        NSLog(@"获取我的收藏失败：%@", error);
     }];
 }
+- (void)loadMoreData{
+    
+    MyCollectionModel * collectModel = [[MyCollectionModel alloc] init];
+    collectModel = [self.dataSource lastObject];
+    NSString * iD = collectModel.iD;
+    
+    NSString * url = [MyCollectionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", iD]];
+    [DataTool getCollectionDataWithStr:url parameters:nil success:^(id responseObject) {
+        [self.tableView.footer endRefreshing];
+        
+        if (!responseObject) {
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+        }
+        [self.dataSource addObjectsFromArray:responseObject];
+        [self.tableView reloadData];
+        NSLog(@"%@", responseObject);
+    } failure:^(NSError * error) {
+       
+        NSLog(@"获取更多收藏数据出错%@", error);
+    }];
+    
+
+}
+
 
 #pragma mark --- 编辑按钮的点击事件
 - (void)editAction{
@@ -104,70 +233,109 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of rows
-    return self.newslistArr.count;
+    return self.dataSource.count;
 }
 
 
 #pragma mark --- 单元格内容
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-        NewsListModel * newslistModel = self.newslistArr[indexPath.row];
-        // 需要判断是什么类型的单元格
-        /*
-         2.资讯
-         4.图集
-         11.视频
-         */
-        if ([newslistModel.type isEqualToString:@"2"]) {
-            InformationCell * cell = [InformationCell cellWithTableView:tableView];
-            cell.newslistModel = newslistModel;
-            return cell;
-        } else if ([newslistModel.type isEqualToString:@"4"])
-        {
-            PicturesCell * cell = [PicturesCell cellWithTableView:tableView];
-            cell.newslistModel = newslistModel;
-            return cell;
-        } else
-        {
-            InformationCell * cell = [InformationCell cellWithTableView:tableView];
-            cell.newslistModel = newslistModel;
-            return cell;
-        }
+    MyCollectCell * cell = [MyCollectCell cellWithTableView:tableView];
+    cell.delegate = self;
+    cell.collectionModel = self.dataSource[indexPath.row];
+    return cell;
     
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    NewsListModel * model = self.newslistArr[indexPath.row];
-    [self turnPageToDetailView:model.url withNewsListModel:model];
+    NSLog(@"%lu", indexPath.row);
+    MyCollectionModel * collectModel = self.dataSource[indexPath.row];
+    if ([collectModel.type isEqualToString:@"2"] || [collectModel.type isEqualToString:@"4"]) { // 跳到网页详情页
+        
+        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+        detailVC.url = collectModel.url;
+        [self.navigationController pushViewController:detailVC animated:YES];
+    }else if ([collectModel.type isEqualToString:@"11"]){   // 跳到视频页详情
+        
+        VideoViewController * videoVC = [[VideoViewController alloc] init];
+        videoVC.url = collectModel.url;
+        [self.navigationController pushViewController:videoVC animated:YES];
+    }else{  // 跳到帖子页详情
+        PostDetailVC * postVC = [[PostDetailVC alloc] init];
+        postVC.wapurl = collectModel.url;
+        NSLog(@"%@", postVC.wapurl);
+        [self.navigationController pushViewController:postVC animated:YES];
+    }
 
 }
-
+#pragma mark --- 单元格的高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-        NewsListModel * newslistModel = self.newslistArr[indexPath.row];
-        CGFloat cellHeight;
-        if ([newslistModel.type isEqualToString:@"4"]) {
-            cellHeight = Margin321 * IPHONE6_H_SCALE;
-        } else
-        {
-            cellHeight = Margin196 * IPHONE6_H_SCALE;
+    MyCollectionModel * collectModel = self.dataSource[indexPath.row];
+    if ([collectModel.type isEqualToString:@"2"] || [collectModel.type isEqualToString:@"11"]) {    // 资讯或视频
+        return 96 * IPHONE6_H_SCALE;
+    } else if ([collectModel.type isEqualToString:@"4"]){   // 图集
+        return 317 * 0.5 * IPHONE6_H_SCALE;
+    } else{
+        // 51 + 10(标题和内容的间距)
+        
+        // 帖子标题
+        CGFloat titleX = 118 * 0.5 * IPHONE6_W_SCALE;
+        CGFloat titleY = 0;
+        CGFloat titleW = WIDTH - titleX - 10 * IPHONE6_W_SCALE;
+        
+        NSMutableDictionary * titleDic = [NSMutableDictionary dictionary];
+        titleDic[NSFontAttributeName] = Font16;
+        CGRect titleRect = [collectModel.title boundingRectWithSize:CGSizeMake(titleW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:titleDic context:nil];
+        CGRect rect = (CGRect){{titleX, titleY}, titleRect.size};
+        CGFloat h1 = rect.size.height;
+        
+        // 帖子内容
+        CGFloat contentsX = titleX;
+        CGFloat contentsY = 0;
+        CGFloat contentsW = WIDTH - contentsX - 15 * IPHONE6_W_SCALE;
+        
+        NSMutableDictionary * contentsDic = [NSMutableDictionary dictionary];
+        contentsDic[NSFontAttributeName] = Font13;
+        CGRect contentsRect = [collectModel.descriptioN boundingRectWithSize:CGSizeMake(contentsW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentsDic context:nil];
+        CGRect rect2 = (CGRect){{contentsX, contentsY}, contentsRect.size};
+        CGFloat h2 = rect2.size.height;
+        // 帖子图片
+        CGFloat h3 = 80.0*IPHONE6_H_SCALE;
+        if (collectModel.covers) {  // 有图片的情况下
+                        
+            return h1 + h2 + 74*IPHONE6_H_SCALE + h3 + 13 * IPHONE6_H_SCALE;
+        }else{  // 没有图片的情况下
+            return h1 + h2 + 74*IPHONE6_H_SCALE;
         }
-        return cellHeight;
-    
+        
+    }
 }
 
-#pragma mark --- 跳转到网页详情页
-- (void)turnPageToDetailView:(NSString *)url withNewsListModel:(NewsListModel *)newsListModel
-{
-    DetailWebViewController * detaiVC = [[DetailWebViewController alloc] init];
-    detaiVC.url = url;
-    detaiVC.newsModel = newsListModel;
-    detaiVC.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:detaiVC animated:YES];
+#pragma mark --- MyCollectCellDelegate
+- (void)tableViewCell:(MyCollectCell *)cell didClickFaceWith:(MyCollectionModel *)model{
+    // 有两种情况  1:跳到认证用户主页  2:跳到普通用户主页
+    AnyBodyVC * anyBodyVC = [[AnyBodyVC alloc] init];
+    StarVC * starVC = [[StarVC alloc] init];
+    
+    
+    [DataTool getSBDataWithStr:model.url parameters:nil success:^(id responseObject) {
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel = responseObject;
+        _sbModel = sbModel;
+    } failure:^(NSError * error) {
+        NSLog(@"获取个人数据出错：%@", error);
+    }];
+    if (![_sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {   // 如果认证为空，就是普通人主页
+        anyBodyVC.userURL = model.userurl;
+        [self.navigationController pushViewController:anyBodyVC animated:YES];
+    }else{
+        starVC.userURL = model.userurl;
+        [self.navigationController pushViewController:starVC animated:YES];
+    }
 }
+
 
 @end

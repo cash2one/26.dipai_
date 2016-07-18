@@ -18,6 +18,9 @@
 
 // 名人主页
 #import "StarVC.h"
+// 普通用户
+#import "AnyBodyVC.h"
+#import "SBModel.h"
 
 #import "SVProgressHUD.h"
 #import "DataTool.h"
@@ -28,6 +31,13 @@
  *  数据源
  */
 @property (nonatomic, strong) NSMutableArray * dataSource;
+
+/**
+ *  标题
+ */
+@property (nonatomic, strong) UILabel *titleLabel;
+
+@property (nonatomic, strong) SBModel * sbModel;
 
 @end
 
@@ -64,6 +74,10 @@
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.text = @"名人堂成员";
     self.navigationItem.titleView = titleLabel;
+    
+    if (self.titleStr) {
+        titleLabel.text = self.titleStr;
+    }
     
 }
 #pragma mark --- 返回上一个视图控制器
@@ -232,9 +246,28 @@
 
 - (void)tableViewCell:(MorePokersCell *)cell didClickFaceWith:(MorePokersModel *)model{
     NSLog(@"........");
+    // 名人主页
     StarVC * starVC = [[StarVC alloc] init];
     starVC.userURL = model.userurl;
-    [self.navigationController pushViewController:starVC animated:YES];
+    //  普通用户主页
+    AnyBodyVC * anyVC = [[AnyBodyVC alloc] init];
+    anyVC.userURL = model.userurl;
+    
+    [DataTool getSBDataWithStr:model.userurl parameters:nil success:^(id responseObject) {
+        
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel = responseObject;
+        _sbModel = sbModel;
+        if ([_sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {   // 如果认证为空，就是普通人主页
+            anyVC.userURL = model.userurl;
+            [self.navigationController pushViewController:anyVC animated:YES];
+        }else{
+            starVC.userURL = model.userurl;
+            [self.navigationController pushViewController:starVC animated:YES];
+        }
+    } failure:^(NSError * error) {
+        NSLog(@"获取个人数据出错：%@", error);
+    }];
 }
 
 

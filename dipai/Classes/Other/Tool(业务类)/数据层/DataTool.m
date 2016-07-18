@@ -40,6 +40,10 @@
 #import "EndMatchModel.h"
 // 进行中比赛模型（详情页）
 #import "MatchingModel.h"
+// 直播信息模型
+#import "LiveInfoModel.h"
+
+
 // 扑克名人列表模型
 #import "PokerListModel.h"
 // 更多名人列表模型
@@ -73,6 +77,13 @@
 /*****************我的页*****************/
 // 用户模型
 #import "UserModel.h"
+// 我收到的评论模型
+#import "MyReceiveModel.h"
+// 我的收藏模型
+#import "MyCollectionModel.h"
+// 账户模型
+#import "AccountModel.h"
+
 
 
 // 网页数据模型
@@ -101,9 +112,12 @@
         
         
         NSMutableArray * modelArr = [NSMutableArray array];
-        [modelArr addObject:bannerModelArr];
-        [modelArr addObject:tournamentModelArr];
-        [modelArr addObject:newsListModelArr];
+        if (bannerModelArr != nil && tournamentModelArr != nil && newsListModelArr != nil) {
+            [modelArr addObject:bannerModelArr];
+            [modelArr addObject:tournamentModelArr];
+            [modelArr addObject:newsListModelArr];
+        }
+        
         
         if (success) {
             // block传递参数
@@ -175,6 +189,9 @@
 
 + (void)postWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool POST:URLString parameters:parameters success:^(id responseObject) {
+        
+//        NSLog(@"%@", responseObject);
+//        NSString * content = responseObject[@"content"];
         if (success) {
             success(responseObject);
         }
@@ -206,9 +223,14 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+        
+//        NSLog(@"%@", responseObject);
+        
         NSArray * dataArr = [responseObject objectForKey:@"data"];
         // 字典数组转模型数据
         NSArray * commentsArr = [CommentsModel objectArrayWithKeyValuesArray:dataArr];
+        
+//        NSLog(@"%@",commentsArr);
         if (success) {
             success(commentsArr);
         }
@@ -303,12 +325,10 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        NSLog(@"获取更多内容页面:%@", responseObject);
-        
-        NSArray * array = responseObject;
-        
+//        NSLog(@"获取更多内容页面:%@", responseObject);
+                
         // 字典数组转模型数组
-        NSArray * albumArr = [HotVideoModel objectArrayWithKeyValuesArray:array];
+        NSArray * albumArr = [HotVideoModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
         
         if (success) {
             success(albumArr);
@@ -346,13 +366,21 @@
 + (void)getAlbumDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        NSDictionary * albumDic = responseObject[@"album"];
         
+//        NSLog(@"%@", responseObject);
+        
+        // 字典
+        NSDictionary * albumDic = responseObject[@"album"];
+        // 数组
         NSArray * videoArr = responseObject[@"video"];
+        // 字典数组转模型数组
+        NSArray * modelArr = [HotVideoModel objectArrayWithKeyValuesArray:videoArr];
+        
+//        NSLog(@"%@", modelArr);
         
         AlbumVideoModel * model = [[AlbumVideoModel alloc] init];
         model.albumDic = albumDic;
-        model.videoArr = videoArr;
+        model.videoArr = modelArr;
         
         if (success) {
             success(model);
@@ -385,7 +413,7 @@
 + (void)getVideosInAlbumPageWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        
+        NSLog(@"%@", responseObject);
         if (success) {
             success(responseObject);
         }
@@ -403,8 +431,8 @@
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
         // 获取到的是一个城市数组
-        
-        NSArray * cityArr = responseObject;
+//        NSLog(@"%@", responseObject);
+        NSArray * cityArr = responseObject[@"data"];
         // 字典数组转模型数组
         NSArray * cityModelArr = [CityModel objectArrayWithKeyValuesArray:cityArr];
         
@@ -424,7 +452,7 @@
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
         // 字典数组转模型数组
-        NSArray * clubsModelArr = [ClubsInCityModel objectArrayWithKeyValuesArray:responseObject];
+        NSArray * clubsModelArr = [ClubsInCityModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
         
         if (success) {
             success(clubsModelArr);
@@ -442,8 +470,10 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
 
+        
+//        NSLog(@"%@", responseObject);
         // 字典转模型
-        InfoModel * infoModel = [InfoModel objectWithKeyValues:responseObject];
+        InfoModel * infoModel = [InfoModel objectWithKeyValues:responseObject[@"data"]];
         
         if (success) {
             success(infoModel);
@@ -461,7 +491,7 @@
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
         // 字典数组转模型数据
-        NSArray * newsModelArr = [NewsModel objectArrayWithKeyValuesArray:responseObject];
+        NSArray * newsModelArr = [NewsModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
         if (success) {
             success(newsModelArr);
         }
@@ -477,8 +507,10 @@
 + (void)getMatchDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+        
+//        NSLog(@"%@", responseObject);
         // 字典数组转模型数组
-        NSArray * matchModelArr = [MatchModel objectArrayWithKeyValuesArray:responseObject];
+        NSArray * matchModelArr = [MatchModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
         
         
         if (success) {
@@ -497,7 +529,7 @@
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
         // 字典数组转模型数组
-        NSArray * matchModelArr = [EndMatchModel objectArrayWithKeyValuesArray:responseObject];
+        NSArray * matchModelArr = [EndMatchModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
         
         if (success) {
             success(matchModelArr);
@@ -514,8 +546,9 @@
 + (void)getMatchDataInDetailWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+//        NSLog(@"%@", responseObject);
         // 字典转模型
-        MatchingModel * model = [MatchingModel objectWithKeyValues:responseObject];
+        MatchingModel * model = [MatchingModel objectWithKeyValues:responseObject[@"data"]];
         
         if (success) {
             success(model);
@@ -532,9 +565,10 @@
 + (void)getLiveDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        
+        // 字典数组转模型数组
+        NSArray * modelArr = [LiveInfoModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
         if (success) {
-            success(responseObject);
+            success(modelArr);
         }
     } failure:^(NSError *error) {
         
@@ -543,18 +577,47 @@
         }
     }];
 }
+// 获取直播中的相关数据
++ (void)getRelationInLiveWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSLog(@"%@", responseObject);
+        // 字典数组转模型数组
+        NSArray * modelArr = [NewsListModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
+        if (success) {
+            success(modelArr);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 
 // 获取扑克名人堂列表数据
 + (void)getPokerListDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+//    NSLog(@"%@", URLString);
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        NSArray * listArr = responseObject[@"data"][@"list"];
-        
-        NSArray * pokerListModelArr = [PokerListModel objectArrayWithKeyValuesArray:listArr];
-        // 字典数组转模型数组
-        if (success) {
-            success(pokerListModelArr);
+        if ([responseObject[@"data"] isKindOfClass:[NSNull class]]) {
+            if (success) {
+                success(@"没有数据");
+            }
+        }else{
+            NSArray * listArr = responseObject[@"data"][@"list"];
+            
+            NSArray * pokerListModelArr = [PokerListModel objectArrayWithKeyValuesArray:listArr];
+            // 字典数组转模型数组
+            if (success) {
+                success(pokerListModelArr);
+            }
         }
+        
+       
     } failure:^(NSError *error) {
         
         if (failure) {
@@ -633,6 +696,8 @@
 + (void)GetMorePostsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+//        NSLog(@"%@", responseObject);
+        
         // 发帖数组
         NSArray * app_myArr = responseObject[@"data"];
         // 字典数组转模型数组
@@ -678,8 +743,8 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        
-        NSArray * dataArr = responseObject[@"date"];
+//        NSLog(@"%@", responseObject);
+        NSArray * dataArr = responseObject[@"data"];
         
 //        NSLog(@"%@", dataArr);
         
@@ -704,7 +769,7 @@
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
         
-        NSArray * dateArr = responseObject[@"date"];
+        NSArray * dateArr = responseObject[@"data"];
         // 字典数组转模型数组
         NSArray * speDeModelArr = [SpecialDetailModel objectArrayWithKeyValuesArray:dateArr];
         
@@ -723,6 +788,8 @@
 // 论坛首页
 + (void)getCommunityDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+//        NSLog(@"%@", responseObject);
         
         // 字典转模型
         ForumModel * forumModel = [ForumModel objectWithKeyValues:responseObject];
@@ -772,10 +839,30 @@
 + (void)getPostDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+        
+//        NSLog(@"%@", URLString);
+//        NSLog(@"%@", responseObject);
         // 字典转模型
         PostDetailModel * detailModel = [PostDetailModel objectWithKeyValues:responseObject];
         if (success) {
             success(detailModel);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取帖子详情页中更多的回帖
++ (void)GetMoreReplyOfPostWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 字典数组转模型数组
+        NSArray * modelArr = [ReplyModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
+        if (success) {
+            success(modelArr);
         }
     } failure:^(NSError *error) {
         
@@ -840,14 +927,152 @@
 + (void)getCollectionDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+//        NSLog(@"%@", responseObject);
+//        NSLog(@"%@", URLString);
         NSLog(@"获取到收藏的数据：%@", responseObject);
         
-        // 字典转模型
+        // 字典数组转模型数组
+        NSArray * collectModelArr = [MyCollectionModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
+        if (success) {
+            success(collectModelArr);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取我的帖子
++ (void)getMyPostsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSArray * dataArr = responseObject[@"data"];
+        
+        // 字典数组转模型数组
+        NSArray * postModelArr = [PostsModel objectArrayWithKeyValuesArray:dataArr];
+        
+        if (success) {
+            success(postModelArr);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+    
+}
+// 获取我的回复
++ (void)getMyReplysDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        // 发帖数组
+        NSArray * replyArr = responseObject[@"data"];
+        // 字典数组转模型数组
+        NSArray * myReplyModelArr = [MyReplyModel objectArrayWithKeyValuesArray:replyArr];
+        
+        
+        if (success) {
+            success(myReplyModelArr);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取我收到的评论的数据
++ (void)getMyReceiveDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSLog(@"%@", responseObject);
+        
+        // 字典数组转模型数组
+       NSArray * receiveModelArr = [MyReceiveModel objectArrayWithKeyValuesArray:responseObject[@"data"]]  ;
+        
+        if (success) {
+            success(receiveModelArr);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 删除收藏
++ (void)deleteMyCollectionWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
         if (success) {
             success(responseObject);
         }
     } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取个人账户信息
++ (void)getAccountDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+        
+        NSLog(@"---%@", responseObject);
+        
+        // 字典转模型
+        AccountModel * accountModel = [AccountModel objectWithKeyValues:responseObject[@"data"]];
+        if (success) {
+            success(accountModel);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 手机注册获取验证码
++ (void)getSecurityCodeWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSLog(@"%@", responseObject);
+        NSLog(@"%@", responseObject[@"content"]);
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 向服务器发送获取的微信code
++ (void)sendCodeWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+
+    NSLog(@"%@", URLString);
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+       
         if (failure) {
             failure(error);
         }

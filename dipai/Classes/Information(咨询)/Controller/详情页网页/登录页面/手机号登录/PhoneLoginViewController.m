@@ -110,7 +110,8 @@
     CGFloat loginW = codeW;
     CGFloat loginH = codeH;
     loginBtn.frame = CGRectMake(loginX, loginY, loginW, loginH);
-    [loginBtn setImage:[UIImage imageNamed:@"denglu_moren"] forState:UIControlStateNormal];
+//    [loginBtn setImage:[UIImage imageNamed:@"denglu_moren"] forState:UIControlStateNormal];
+    [loginBtn setBackgroundImage:[UIImage imageNamed:@"denglu_moren"] forState:UIControlStateNormal];
     loginBtn.userInteractionEnabled = NO;
     [self.view addSubview:loginBtn];
     _loginBtn = loginBtn;
@@ -170,12 +171,14 @@
     }
     
     if (_phoneNum.text.length && _code.text.length) {
-        [_loginBtn setImage:[UIImage imageNamed:@"denglu_xuanzhong"] forState:UIControlStateNormal];
+//        [_loginBtn setImage:[UIImage imageNamed:@"denglu_xuanzhong"] forState:UIControlStateNormal];
+        [_loginBtn setBackgroundImage:[UIImage imageNamed:@"denglu_xuanzhong"] forState:UIControlStateNormal];
         _loginBtn.userInteractionEnabled = YES;
         [_loginBtn addTarget:self action:@selector(loginAction) forControlEvents:UIControlEventTouchUpInside];
     } else
     {
-        [_loginBtn setImage:[UIImage imageNamed:@"denglu_moren"] forState:UIControlStateNormal];
+//        [_loginBtn setImage:[UIImage imageNamed:@"denglu_moren"] forState:UIControlStateNormal];
+        [_loginBtn setBackgroundImage:[UIImage imageNamed:@"denglu_moren"] forState:UIControlStateNormal];
         _loginBtn.userInteractionEnabled = NO;
     }
 
@@ -218,6 +221,7 @@
                 NSLog(@"登录成功后获取的数据:%@", dataDic);
                 
                 [defaults setObject:dataDic forKey:User];
+                [defaults setObject:@"phone" forKey:Phone];
                 [defaults synchronize];
             }
             //存储归档后的cookie

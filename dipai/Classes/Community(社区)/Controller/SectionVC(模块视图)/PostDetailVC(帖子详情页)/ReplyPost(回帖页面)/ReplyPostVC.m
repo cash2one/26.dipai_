@@ -135,7 +135,7 @@
     [cancelBtn addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
     
     // 发送按钮
-    UILabel * sendLbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+    UILabel * sendLbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 30*IPHONE6_W_SCALE, 44)];
     sendLbl.font = Font15;
     sendLbl.text = @"发布";
     sendLbl.textColor = Color178;
@@ -170,10 +170,8 @@
     // 得判断是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    
-    NSLog(@"cookiename:%@", cookieName);
-    
-    if (cookieName) {
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName || wxData) {
         NSLog(@"已经登录。。。进行发表");
         // 有图片发送图片
         if (self.imagesArr.count) {
@@ -222,9 +220,7 @@
         for (int i = 0; i < self.imagesArr.count; i ++) {
             UIImage * image = self.imagesArr[i];
             NSData * data = UIImagePNGRepresentation(image);
-            //            NSData * data = UIImageJPEGRepresentation(image, 0.3);
             
-            //            NSData * data = UIImagePNGRepresentation(image);
             NSString * name = [NSString stringWithFormat:@"myfile%d", i];
             NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
             NSString * mimeType = [NSString stringWithFormat:@"image/png"];

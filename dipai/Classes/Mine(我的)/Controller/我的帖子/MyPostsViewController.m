@@ -7,10 +7,36 @@
 //
 
 #import "MyPostsViewController.h"
+// 用户模型
+#import "UserModel.h"
+// 发帖frame模型
+#import "PostFrameModel.h"
+// 发帖模型
+#import "PostsModel.h"
+#import "SBModel.h"
 
+// 发帖单元格
+#import "PostCell.h"
+// 回复单元格
+#import "MyReplyCell.h"
+#import "MyReplyModel.h"
+// 回复的frame模型
+#import "MyReplyFrameModel.h"
+
+// 帖子详情页
+#import "PostDetailVC.h"
+// 资讯页详情
+#import "DetailWebViewController.h"
+// 视频页详情
+#import "VideoViewController.h"
+// 赛事详情页
+#import "MatchDetailVC.h"
+
+#import "DataTool.h"
 #import "MJChiBaoZiFooter2.h"
 #import "MJChiBaoZiHeader.h"
 #import "Masonry.h"
+#import "SVProgressHUD.h"
 @interface MyPostsViewController ()<UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate>
 {
     // 滚动视图
@@ -18,7 +44,6 @@
     // 对应分段控件的三个tableView
     UITableView *_tableView1;
     UITableView *_tableView2;
-    UITableView *_tableView3;
 }
 /**
  *  发帖标签
@@ -45,6 +70,17 @@
 
 @property (nonatomic, strong) UIScrollView *sc;
 
+/**
+ *  发帖数据源
+ */
+@property (nonatomic, strong) NSMutableArray * dataSource1;
+/**
+ *  回复数据源
+ */
+@property (nonatomic, strong) NSMutableArray * dataSource2;
+
+@property (nonatomic, strong) SBModel * sbModel;
+
 @end
 
 @implementation MyPostsViewController
@@ -52,7 +88,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor colorWithRed:244 / 255.0 green:244 / 255.0 blue:244 / 255.0 alpha:1];
     // 设置导航栏
     [self setNavigationBar];
     
@@ -236,7 +272,23 @@
     
     // 添加刷新和加载
     [self addRefreshWith:_tableView1];
-    [self addRefreshWith:_tableView2];
+    
+    MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData2)];
+    [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
+    header.stateLabel.font = [UIFont systemFontOfSize:14];
+    header.stateLabel.textColor = [UIColor lightGrayColor];
+    header.automaticallyChangeAlpha = YES;
+    header.lastUpdatedTimeLabel.hidden = YES;
+    _tableView2.header = header;
+    [header beginRefreshing];
+    //往上拉加载数据.
+    MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData2)];
+    [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
+    [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
+    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
+    footer.stateLabel.font = [UIFont systemFontOfSize:13];
+    footer.stateLabel.textColor = [UIColor lightGrayColor];
+    _tableView2.footer = footer;
 }
 #pragma mark --- 添加刷新和加载
 - (void)addRefreshWith:(UITableView *)tableView{
@@ -252,7 +304,7 @@
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
     [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
-    [footer setTitle:@"没有更多赛事" forState:MJRefreshStateNoMoreData];
+    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
     footer.stateLabel.font = [UIFont systemFontOfSize:13];
     footer.stateLabel.textColor = [UIColor lightGrayColor];
     tableView.footer = footer;
@@ -261,31 +313,201 @@
 // 刷新
 - (void)loadNewData{
     
-    [_tableView1.header endRefreshing];
-    [_tableView2.header endRefreshing];
+    NSString * url = [MyPostsURL stringByAppendingString:self.userModel.userid];
+    [DataTool getMyPostsDataWithStr:url parameters:nil success:^(id responseObject) {
+        [_tableView1.header endRefreshing];
+        NSLog(@"获取我的发帖获取到的数据:%@", responseObject);
+        
+        NSMutableArray * arr = [NSMutableArray array];
+        for (PostsModel * model in responseObject) {
+            PostFrameModel * frameModel = [[PostFrameModel alloc] init];
+            frameModel.postsModel = model;
+            [arr addObject:frameModel];
+        }
+        self.dataSource1 = arr;
+        [_tableView1 reloadData];
+    } failure:^(NSError * error) {
+        
+        NSLog(@"获取我的发帖失败：%@", error);
+        [_tableView1.header endRefreshing];
+    }];
+    
     
 }
 // 加载
 - (void)loadMoreData{
-    [_tableView1.footer endRefreshing];
-    [_tableView2.footer endRefreshing];
+
+    PostFrameModel * frameModel = [self.dataSource1 lastObject];
+    PostsModel * postModel = frameModel.postsModel;
+    NSString * iD = postModel.iD;   // 帖子ID
+    NSString * uid = postModel.uid; // 用户ID
+    
+    NSString * url = [MorePostsURL stringByAppendingString:[NSString stringWithFormat:@"/%@/%@", uid, iD]];
+    
+    NSLog(@"%@", url);
+    
+    [DataTool GetMorePostsDataWithStr:url parameters:nil success:^(id responseObject) {
+        
+        [_tableView1.footer endRefreshing];
+        
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel = responseObject;
+        _sbModel = sbModel;
+        if (!sbModel.app_my) {
+//            _tableView1.footer.state = MJRefreshStateNoMoreData;
+            [SVProgressHUD showSuccessWithStatus:@"没有更多数据"];
+        }
+        for (PostsModel * model in sbModel.app_my) {
+            PostFrameModel * frameModel = [[PostFrameModel alloc] init];
+            frameModel.postsModel = model;
+            [self.dataSource1 addObject:frameModel];
+        }
+        [_tableView1 reloadData];
+    } failure:^(NSError * error) {
+        NSLog(@"获取个人主页出错：%@", error);
+        [_tableView1.footer endRefreshing];
+    }];
     
 }
-
+// 加载回复和刷新回复
+- (void)loadNewData2{
+    
+    [DataTool getMyReplysDataWithStr:MyReplyURL parameters:nil success:^(id responseObject) {
+        [_tableView2.header endRefreshing];
+//        NSLog(@"%@", responseObject);
+        
+        
+        NSMutableArray * arr = [NSMutableArray array];
+        for (MyReplyModel * model in responseObject) {
+            MyReplyFrameModel * frameModel = [[MyReplyFrameModel alloc] init];
+            frameModel.myreplyModel = model;
+            [arr addObject:frameModel];
+        }
+        
+//        NSLog(@"%@", self.dataSource2);
+        
+        self.dataSource2 = arr;
+        [_tableView2 reloadData];
+    } failure:^(NSError * error) {
+        NSLog(@"获取我的回复出错：%@", error);
+        [_tableView2.header endRefreshing];
+    }];
+}
+- (void)loadMoreData2{
+    // 上拉加载获取更多回复
+    MyReplyFrameModel * myReFrameModel = [self.dataSource2 lastObject];
+    MyReplyModel * myReModel = myReFrameModel.myreplyModel;
+    NSString * userid = myReModel.userid;
+    NSString * comment_id = myReModel.comment_id;
+    NSString * url = [MoreReplysURL stringByAppendingString:[NSString stringWithFormat:@"/%@/%@", userid, comment_id]];
+    
+    NSLog(@"%@", url);
+    
+    [DataTool getMoreReplysDataWithStr:url parameters:nil success:^(id responseObject) {
+        
+        NSLog(@"-----%@", responseObject);
+        [_tableView2.footer endRefreshing];
+        if (!responseObject) {
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+        }
+        for (MyReplyModel * model in responseObject) {
+            MyReplyFrameModel * myReFrameModel = [[MyReplyFrameModel alloc] init];
+            myReFrameModel.myreplyModel = model;
+            [self.dataSource2 addObject:myReFrameModel];
+        }
+        [_tableView2 reloadData];
+    } failure:^(NSError * error) {
+        NSLog(@"获取更多回复出错：%@", error);
+        
+    }];
+}
 #pragma mark --- UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 20;
+    if (tableView == _tableView1) {
+        return self.dataSource1.count;
+    }else{
+        return self.dataSource2.count;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString * cellID = @"cellID";
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
+    if (tableView == _tableView1) { // 发帖
+        PostCell * cell = [PostCell cellWithTableView:tableView];
+        PostFrameModel * frameModel = self.dataSource1[indexPath.row];
+        cell.frameModel = frameModel;
+        return cell;
+    }else{
+        
+        MyReplyCell * cell = [MyReplyCell cellWithTableView:tableView];
+        cell.myReplyFrameModel = self.dataSource2[indexPath.row];
+        return cell;
+        
     }
-    cell.textLabel.text = [NSString stringWithFormat:@"%lu", indexPath.row];
-    return cell;
+}
+
+#pragma mark --- 单元格的高度
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (tableView == _tableView1) {
+        NSLog(@"%lu", self.dataSource2.count);
+        PostFrameModel * frameModel = self.dataSource1[indexPath.row];
+        CGFloat cellHeight = frameModel.cellHeight;
+        return cellHeight;
+    } else{
+        MyReplyFrameModel * myReFrameModel = self.dataSource2[indexPath.row];
+        
+        return myReFrameModel.cellHeight;
+    } 
+   
+}
+#pragma mark --- 单元格的点击事件
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (tableView == _tableView1) { // 我的发帖页面
+        // 跳转到帖子详情页
+        PostDetailVC * detailVC = [[PostDetailVC alloc] init];
+        PostFrameModel * model = self.dataSource1[indexPath.row];
+        detailVC.wapurl = model.postsModel.wapurl;
+        [self.navigationController pushViewController:detailVC animated:YES];
+    }else{  // 我的回复页面
+        
+        // 回复的情况：1.资讯／图集  2.视频  3.帖子  4.赛事评论
+        MyReplyFrameModel * myReFrameModel = self.dataSource2[indexPath.row];
+        MyReplyModel * replyModel = myReFrameModel.myreplyModel;
+        if ([replyModel.userurl rangeOfString:@"art/view/11"].location != NSNotFound) {
+            
+            // 跳转到视频专辑页
+            VideoViewController * videoVC = [[VideoViewController alloc] init];
+            videoVC.url = replyModel.userurl;
+            [self.navigationController pushViewController:videoVC animated:YES];
+        }else if ([replyModel.userurl rangeOfString:@"art/view/2"].location != NSNotFound || [replyModel.userurl rangeOfString:@"art/view/4"].location != NSNotFound){
+            // 跳转到资讯页面
+            
+            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+            detailVC.url = replyModel.userurl;
+            [self.navigationController pushViewController:detailVC animated:YES];
+            
+        } else if ([replyModel.userurl rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
+            
+            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+            postDetail.wapurl = replyModel.userurl;
+            [self.navigationController pushViewController:postDetail animated:YES];
+
+        }else if ([replyModel.userurl rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
+            
+            NSLog(@"%@", replyModel.userurl);
+            // 赛事详情页分为两种情况：1.有直播  2.没有直播
+            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+            detailVC.wapurl = replyModel.userurl;
+            [self.navigationController pushViewController:detailVC animated:YES];
+            
+        }
+        else
+        {
+            NSLog(@"%@", replyModel.userurl);
+            NSLog(@"%lu", indexPath.row);
+        }
+
+    }
 }
 
 #pragma mark ---  滚动视图结束滚动后

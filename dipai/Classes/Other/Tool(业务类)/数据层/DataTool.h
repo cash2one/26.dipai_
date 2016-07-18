@@ -69,6 +69,8 @@
 
 // 获取直播信息
 + (void)getLiveDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取直播中的相关
++ (void)getRelationInLiveWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
 // 获取扑克名人堂数据
 + (void)getPokerListDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
@@ -98,6 +100,8 @@
 
 // 获取帖子详情页数据
 +(void) getPostDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取帖子详情页中更多的回帖
++ (void)GetMoreReplyOfPostWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
 // 获取圈子页数据
 + (void)getGroupDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
@@ -108,4 +112,23 @@
 + (void)getPersonDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 // 获取收藏的数据
 + (void)getCollectionDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+// 获取我的帖子
++ (void)getMyPostsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取我的回复的数据
++ (void)getMyReplysDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取我收到的评论的数据
++ (void)getMyReceiveDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+// 删除收藏
++ (void)deleteMyCollectionWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取个人账户信息
++ (void)getAccountDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+// 手机注册获取验证码
++ (void)getSecurityCodeWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+//  向服务器发送获取的微信code
++ (void)sendCodeWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
 @end

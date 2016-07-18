@@ -96,13 +96,6 @@
     [self.view addSubview:self.tableView];
 }
 
-- (void)setWapurl:(NSString *)wapurl{
-
-    _wapurl = wapurl;
-    NSLog(@"%@", _wapurl);
-    [self loadNewData];
-}
-
 #pragma mark --- 添加刷新和加载的效果图
 - (void)addRefreshing{
     // 添加下拉刷新控件
@@ -129,14 +122,13 @@
 }
 
 - (void)loadNewData{
-    NSString * url = [NSString stringWithFormat:@"%@/%@/%@", CommentsURL, self.iD, @"8"];
+//    NSString * url = [NSString stringWithFormat:@"%@/%@/%@", CommentsURL, self.iD, @"8"];
     
-    NSLog(@"%@", url);
     
-    if (url == nil) {
+    if (self.wapurl == nil) {
         return;
     }else{
-        [DataTool getCommentsListWithStr:url parameters:nil success:^(id responseObject) {
+        [DataTool getCommentsListWithStr:self.wapurl parameters:nil success:^(id responseObject) {
             [self.tableView.header endRefreshing];
             // 传递过来的是模型数组(模型是评论模型)
             NSArray * commentsArr = responseObject;
@@ -173,7 +165,7 @@
         NSArray * commentsArr = responseObject;
         
         if (!commentsArr) {
-            self.tableView.footer.state = MJRefreshStateNoMoreData;
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         } else{
             NSMutableArray * commentsFrameArr = [NSMutableArray array];
             for (CommentsModel * commentModel in commentsArr) {
@@ -322,8 +314,8 @@
 - (void)sendMessageWithTypes:(NSString *)types  andID:(NSString * )ID{
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
-    NSLog(@"---用户迷宫%@,", cookieName);
-    if (cookieName) {
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName || wxData) {
         NSLog(@"已经登录。。。进行发表");
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
         NSLog(@"%@---%@", types, ID);

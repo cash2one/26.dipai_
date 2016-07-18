@@ -22,6 +22,7 @@
 #import "MJChiBaoZiHeader.h"
 
 #import "Masonry.h"
+#import "SVProgressHUD.h"
 
 @interface PokerVC ()<UITableViewDataSource, UITableViewDelegate>
 
@@ -38,7 +39,12 @@
 @end
 
 @implementation PokerVC
-
+- (NSMutableArray *)dataSource{
+    if (_dataSource == nil) {
+        _dataSource = [NSMutableArray array];
+    }
+    return _dataSource;
+}
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
@@ -141,8 +147,16 @@
     [DataTool getPokerListDataWithStr:PokerListURL parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
         NSLog(@"获取扑克名人堂首页数据：%@", responseObject);
-        self.dataSource = responseObject;
-        [self.tableView reloadData];
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            
+            NSLog(@"扑克名人堂没有数据...");
+            [SVProgressHUD showErrorWithStatus:@"暂时没有数据"];
+        }else{
+            NSLog(@"扑克名人堂有数据...");
+            self.dataSource = responseObject;
+            [self.tableView reloadData];
+        }
+        
     } failure:^(NSError * error) {
         NSLog(@"获取扑克名人堂首页出错：%@", error);
     }];
@@ -201,19 +215,32 @@
 - (void)checkMore{
     MorePokersVC * pokersVC = [[MorePokersVC alloc] init];
     pokersVC.wapurl = MorePokersURL;
+    
+    NSLog(@"%@", pokersVC.wapurl);
+    
     [self.navigationController pushViewController:pokersVC animated:YES];
 }
 
 #pragma mark --- UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return self.dataSource.count;
+    
+//    NSLog(@"--%@", self.dataSource);
+    if (self.dataSource.count > 0) {
+        return self.dataSource.count;
+    }else{
+        return 0;
+    }
+    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     PokerCell * cell = [PokerCell cellWithTableView:tableView];
-    PokerListModel * model = self.dataSource[indexPath.row];
-    cell.pokerModel = model;
+    if (self.dataSource.count > 0) {
+        PokerListModel * model = self.dataSource[indexPath.row];
+        cell.pokerModel = model;
+    }
+    
     return cell;
 }
 #pragma mark --- 单元格的高度 
@@ -269,18 +296,18 @@
 /*************************数据请求*********************/
 - (void)getData{
     
-    [DataTool getPokerListDataWithStr:PokerListURL parameters:nil success:^(id responseObject) {
-        
-        NSLog(@"获取扑克名人堂首页数据：%@", responseObject);
-//        NSMutableArray * dataArr = [NSMutableArray array];
-//        [dataArr addObjectsFromArray:responseObject];
-//        [dataArr addObjectsFromArray:responseObject];
-//        [dataArr addObjectsFromArray:responseObject];
-        self.dataSource = responseObject;
-        [self.tableView reloadData];
-    } failure:^(NSError * error) {
-        NSLog(@"获取扑克名人堂首页出错：%@", error);
-    }];
+//    [DataTool getPokerListDataWithStr:PokerListURL parameters:nil success:^(id responseObject) {
+//        
+//        NSLog(@"获取扑克名人堂首页数据：%@", responseObject);
+////        NSMutableArray * dataArr = [NSMutableArray array];
+////        [dataArr addObjectsFromArray:responseObject];
+////        [dataArr addObjectsFromArray:responseObject];
+////        [dataArr addObjectsFromArray:responseObject];
+//        self.dataSource = responseObject;
+//        [self.tableView reloadData];
+//    } failure:^(NSError * error) {
+//        NSLog(@"获取扑克名人堂首页出错：%@", error);
+//    }];
 }
 
 // 设置状态栏的颜色

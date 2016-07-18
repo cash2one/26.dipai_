@@ -17,6 +17,10 @@
  *  显示回复按钮
  */
 - (void)showReplyBtnAndCheckBtn;
+/**
+ *  点击头像
+ */
+- (void)didClickFace;
 
 @end
 

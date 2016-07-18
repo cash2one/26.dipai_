@@ -21,6 +21,9 @@
     int allTime;
     NSString * _previousTextFieldContent;
     UITextRange * _previousSelection;
+    
+    // 验证码
+    
 }
 /**
  *  手机号
@@ -229,6 +232,18 @@
      */
     [_getCodeBtn setTitleColor:Color153 forState:UIControlStateNormal];
     [_getCodeBtn startWithTime:10 title:@"重新发送" countDownTitle:@"s" mainColor:[UIColor whiteColor] countColor:[UIColor whiteColor]];
+    
+    NSString * phoneNum = _phoneNum.text;
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[@"phone"] = phoneNum;
+    [DataTool postWithStr:SecurityCodeURL parameters:dic success:^(id responseObject) {
+        
+        if ([responseObject[@"content"] isEqualToString:@"success"]) {
+            NSLog(@"获取验证码成功");
+        }
+    } failure:^(NSError * error) {
+        NSLog(@"获取验证码出错：%@", error);
+    }];
 
 }
 
@@ -299,6 +314,7 @@
         dic[@"phone"] = _phoneNum.text;
         dic[@"username"] = _name.text;
         dic[@"password"] = _password.text;
+        dic[@"verify"] = _code.text;
         //    http://10.0.0.14:8080/app/register?&phone=18730602439&username=liangsen&password=hahh
         [DataTool postWithStr:RegisterURL parameters:dic success:^(id responsObject) {
             
@@ -316,6 +332,8 @@
                     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
                     [defaults setObject:name forKey:Cookie];
                     [defaults synchronize];
+                    NSString * phone = @"phone";
+                    [defaults setObject:phone forKey:Phone];
                 }
                 
                 if ([self.delegate respondsToSelector:@selector(dismissAfterRegister)]) {
