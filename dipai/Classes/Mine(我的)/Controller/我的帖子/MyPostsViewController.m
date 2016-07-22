@@ -374,7 +374,7 @@
     
     [DataTool getMyReplysDataWithStr:MyReplyURL parameters:nil success:^(id responseObject) {
         [_tableView2.header endRefreshing];
-//        NSLog(@"%@", responseObject);
+        NSLog(@"%@", responseObject);
         
         
         NSMutableArray * arr = [NSMutableArray array];
@@ -437,7 +437,7 @@
         PostFrameModel * frameModel = self.dataSource1[indexPath.row];
         cell.frameModel = frameModel;
         return cell;
-    }else{
+    }else{  // 回复
         
         MyReplyCell * cell = [MyReplyCell cellWithTableView:tableView];
         cell.myReplyFrameModel = self.dataSource2[indexPath.row];

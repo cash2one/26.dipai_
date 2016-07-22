@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 @class HotVideoModel;
 @interface MoreVideosCell : UICollectionViewCell
+
+@property (nonatomic, strong) HotVideoModel * hotVideoModel;
+
 - (void)cellForViedoInfoShowCollectionCell:(HotVideoModel *)model;
 
 @end

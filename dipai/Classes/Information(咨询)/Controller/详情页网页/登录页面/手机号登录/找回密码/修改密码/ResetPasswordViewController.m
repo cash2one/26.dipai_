@@ -197,10 +197,12 @@
     NSLog(@"%@====%@", _code.text, _phoneNum.text);
     NSString * newPassword = _phoneNum.text;
     NSString * surePassword = _code.text;
-    if (newPassword == surePassword) {
+    if ([newPassword isEqualToString:surePassword]) {
         // 进行修改密码的网络操作
         NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-        dic[@"password"] = _code.text;
+        dic[@"password"] = _code.text;  // 密码
+        dic[@"phone"] = self.phone; // 手机号
+        dic[@"verify"] = self.codeStr;  // 验证码
         [DataTool postWithStr:ChangeAccountURL parameters:dic success:^(id responseObject) {
             
             NSLog(@"修改密码成功:%@", responseObject);

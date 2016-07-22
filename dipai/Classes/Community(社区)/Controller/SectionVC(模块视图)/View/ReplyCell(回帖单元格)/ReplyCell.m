@@ -103,7 +103,7 @@
         [self setUpChildView];
         
 //        self.backgroundColor = [UIColor yellowColor];
-//        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     return self;
@@ -286,9 +286,14 @@
         lineY = CGRectGetMaxY(_frameModel.ReplyFrame);
     }
     
-    _line.frame = CGRectMake(0, lineY, WIDTH, 0.5);
+//    _line.frame = CGRectMake(0, lineY, WIDTH, 0.5);
     
-    
+    [_line mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mas_left);
+        make.right.equalTo(self.mas_right);
+        make.bottom.equalTo(self.mas_bottom);
+        make.height.equalTo(@(0.5));
+    }];
 }
 
 - (void)awakeFromNib {

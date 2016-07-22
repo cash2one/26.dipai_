@@ -82,6 +82,7 @@
     _replyView = replyView;
     
     UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    btn.backgroundColor = [UIColor clearColor];
     [btn addTarget:self action:@selector(replyAction) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:btn];
     _btn = btn;
@@ -104,8 +105,14 @@
     _replyView.commentsFrame = commentsFrame;
     
     
-    CGFloat y = _commentsFrame.cellHeight;
-    _line.frame = CGRectMake(0, y, WIDTH, 0.5);
+//    CGFloat y = _commentsFrame.cellHeight;
+//    _line.frame = CGRectMake(0, y, WIDTH, 0.5);
+    [_line mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mas_left);
+        make.right.equalTo(self.mas_right);
+        make.bottom.equalTo(self.mas_bottom);
+        make.height.equalTo(@(0.5));
+    }];
     
     [_btn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.mas_left);

@@ -18,6 +18,7 @@
 {
     NSTimer * _timer;
     int allTime;
+    NSString * _phone;  // 手机号
 }
 /**
  *  手机号
@@ -173,6 +174,18 @@
      *    @param mColor    还没倒计时的颜色
      *    @param color     倒计时的颜色
      */
+    
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[@"phone"] = _phoneNum.text;
+    _phone = _phoneNum.text;
+    [DataTool postWithStr:SecurityCodeURL parameters:dic success:^(id responseObject) {
+        
+        NSLog(@"获取验证码%@", responseObject);
+        NSLog(@"content:%@", responseObject[@"content"]);
+    } failure:^(NSError * error) {
+        NSLog(@"获取验证码出错%@", error);
+    }];
+
     [_getCodeBtn setTitleColor:Color153 forState:UIControlStateNormal];
     [_getCodeBtn startWithTime:10 title:@"重新发送" countDownTitle:@"s" mainColor:[UIColor whiteColor] countColor:[UIColor whiteColor]];
     
@@ -212,9 +225,28 @@
 
 #pragma mark --- 下一步事件
 - (void)nextAction{
+    // http://dipaiapp.replays.net/sign/app_verify
+    NSString * url = @"http://dipaiapp.replays.net/sign/app_verify";
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[@"verify"] = _code.text;
+    [DataTool postWithStr:url parameters:dic success:^(id responseObject) {
+        
+        NSLog(@"验证验证码成功:%@", responseObject);
+        NSLog(@"content:%@", responseObject[@"content"]);
+        NSString * content = responseObject[@"content"];
+        if ([content isEqualToString:@"success"]) { // 验证码正确
+            ResetPasswordViewController * resetPasswordVC = [[ResetPasswordViewController alloc] init];
+            resetPasswordVC.phone = _phone;
+            resetPasswordVC.codeStr = _code.text;
+            [self.navigationController pushViewController:resetPasswordVC animated:YES];
+        }else{
+            NSLog(@"输入的验证码错误");
+        }
+    } failure:^(NSError * error) {
+        
+        NSLog(@"验证验证码出错：%@", error);
+    }];
     
-    ResetPasswordViewController * resetPasswordVC = [[ResetPasswordViewController alloc] init];
-    [self.navigationController pushViewController:resetPasswordVC animated:YES];
 
 }
 

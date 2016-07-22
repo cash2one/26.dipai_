@@ -341,7 +341,7 @@
         // 显示发表成功
         [SVProgressHUD showSuccessWithStatus:@"发表成功"];
     }else{
-        [self addAlertViewWithMessage:@"请先登录后再发表"];
+        [self addAlertViewWithMessage:@"请在登录后进行操作"];
     }
     
 }
@@ -454,7 +454,7 @@
         _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
     } else  // 如果没有登录
     {
-        [self addAlertViewWithMessage:@"请在登录后进行关注"];
+        [self addAlertViewWithMessage:@"请在登录后进行操作"];
     }
   
     

@@ -544,7 +544,7 @@
     
     //  占位符距离左、上的距离
     textView.placeHolderX = 18*IPHONE6_W_SCALE;
-    textView.placeHolderY = 10 * IPHONE6_H_SCALE;
+    textView.placeHolderY = 7 * IPHONE6_H_SCALE;
     
 //    self.mytextfiled.contentInset = UIEdgeInsetsMake(-24, -6, 0, 0);
     // 上、左、下、右

@@ -9,5 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface AccountViewController : UIViewController
-
+/**
+ *  绑定的标识
+ */
+@property (nonatomic, copy) NSString * bindign;
 @end

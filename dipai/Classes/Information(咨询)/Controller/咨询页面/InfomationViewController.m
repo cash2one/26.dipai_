@@ -326,12 +326,17 @@
     if (self.tournamentArr.count > 0) {
         if (indexPath.row == 0) {   // 如果有赛事
             TournamentModel * model = self.tournamentArr[0];
-            NSLog(@"跳转到赛事。。。");
-//            MatchDetailVC * detaiVC = [[MatchDetailVC alloc] init];
-//            detaiVC.wapurl = model.lurl;
-//            detaiVC.hidesBottomBarWhenPushed = YES;
-//            [self.navigationController pushViewController:detaiVC animated:YES];
-//            [self turnPageToDetailView:@"http://192.168.1.102:8080/app/art/view/11/5096"];
+            if ([model.lurl rangeOfString:@"club/view/5"].location != NSNotFound) {
+                // 赛事详情页分为两种情况：1.有直播  2.没有直播
+                MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+                detailVC.wapurl = model.lurl;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            }else{
+                NSLog(@"%@", model.lurl);
+                NSLog(@"没有赛事");
+            }
+
         } else
         {
             NewsListModel * model = self.newslistArr[indexPath.row -1];

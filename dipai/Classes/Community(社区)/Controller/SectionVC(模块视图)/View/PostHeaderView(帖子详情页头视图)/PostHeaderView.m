@@ -110,6 +110,8 @@
 - (void)setUpChildControlWithArray:(NSArray *)array{
     // 头像
     UIImageView *iconView = [[UIImageView alloc] init];
+    iconView.layer.masksToBounds = YES;
+    iconView.layer.cornerRadius = 19 * IPHONE6_W_SCALE;
     [self addSubview:iconView];
     _iconView = iconView;
     
@@ -119,6 +121,7 @@
     
     // 昵称
     UILabel *nameView = [[UILabel alloc] init];
+    nameView.textColor = [UIColor redColor];
     nameView.font = Font15;
     //    nameView.backgroundColor = [UIColor redColor];
     [self addSubview:nameView];
@@ -139,6 +142,7 @@
     
     // 简介
     UILabel *textView = [[UILabel alloc] init];
+    textView.numberOfLines = 0;
     textView.font = Font13;
     textView.textColor = Color123;
     [self addSubview:textView];
@@ -226,7 +230,7 @@
     _timeView.text = _dataModel.addtime;
     
     // 标题
-    CGFloat titleX = 128 * 0.5 * IPHONE6_W_SCALE;
+    CGFloat titleX = Margin30 * IPHONE6_W_SCALE;
     CGFloat titleY = CGRectGetMaxY(_iconView.frame) + Margin30 * IPHONE6_H_SCALE;
     CGFloat titleW = WIDTH - titleX - 15 * IPHONE6_W_SCALE;
     NSMutableDictionary * titleDic = [NSMutableDictionary dictionary];

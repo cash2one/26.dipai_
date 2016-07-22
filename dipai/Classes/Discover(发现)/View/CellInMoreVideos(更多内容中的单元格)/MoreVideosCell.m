@@ -61,6 +61,12 @@
     }
 }
 
+- (void)setHotVideoModel:(HotVideoModel *)hotVideoModel{
+    _hotVideoModel = hotVideoModel;
+    
+    [self layoutSubviews];
+}
+
 - (void)layoutSubviews{
     [super layoutSubviews];
     // 图片
@@ -69,6 +75,7 @@
     CGFloat picW = 334 / 2 * IPHONE6_W_SCALE;
     CGFloat picH = 190 / 2 * IPHONE6_H_SCALE;
     _picView.frame = CGRectMake(picX, picY, picW, picH);
+    [_picView sd_setImageWithURL:[NSURL URLWithString:_hotVideoModel.picname] placeholderImage:[UIImage imageNamed:@"123"]];
     
     // 标题
     CGFloat titleX = picX;
@@ -76,6 +83,7 @@
     CGFloat titleW = picW;
     CGFloat titleH = 26;
     _titleLbl.frame = CGRectMake(titleX, titleY, titleW, titleH);
-    [_titleLbl sizeToFit];
+    _titleLbl.text = _hotVideoModel.title;
+//    [_titleLbl sizeToFit];
 }
 @end

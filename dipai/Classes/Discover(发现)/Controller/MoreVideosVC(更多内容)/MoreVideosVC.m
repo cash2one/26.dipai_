@@ -20,6 +20,8 @@
 
 // 视频专辑页面
 #import "AlbumVC.h"
+
+#import "SVProgressHUD.h"
 @interface MoreVideosVC ()<UICollectionViewDelegateFlowLayout , UICollectionViewDataSource , UICollectionViewDelegate>
 @property (nonatomic, strong) UICollectionView *collection;
 
@@ -97,13 +99,14 @@
 - (void)loadNewData{
     if (self.moreURL != nil) {
         NSLog(@"接口不为空...");
+        NSLog(@"%@", self.moreURL);
         [DataTool getMoreVideosWithStr:self.moreURL parameters:nil success:^(id responseObject) {
             // 结束刷新
             [self.collection.header endRefreshing];
-            NSLog(@"更多页面返回的数据%@", responseObject);
+//            NSLog(@"更多页面返回的数据%@", responseObject);
+            NSArray * arr = responseObject;
             // 传过来的是模型数组
-            self.dataArray = responseObject;
-            
+            self.dataArray = (NSMutableArray *)arr;
             [self.collection reloadData];
         } failure:^(NSError * error) {
             
@@ -122,12 +125,14 @@
     
     NSString * url = [MoreVideosURL stringByAppendingString:[NSString stringWithFormat:@"/%@", hotVideoModel.iD]];
     NSLog(@"%@", url);
-    [DataTool getMoreVideosWithStr:MoreVideosURL parameters:nil success:^(id responseObject) {
+    [DataTool getMoreVideosWithStr:url parameters:nil success:^(id responseObject) {
         
         // 传过来的是一个数组
-        NSLog(@"获取更多专辑返回数据:%@", responseObject);
+//        NSLog(@"获取更多专辑返回数据:%@", responseObject);
         [self.collection.footer endRefreshing];
-        
+        if (!responseObject) {
+            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+        }
         [self.dataArray addObjectsFromArray:responseObject];
         
         [self.collection reloadData];
@@ -168,7 +173,8 @@
   
     MoreVideosCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MoreCollection" forIndexPath:indexPath];
     HotVideoModel * model = self.dataArray[indexPath.row];
-    [cell cellForViedoInfoShowCollectionCell:model];
+    cell.hotVideoModel = model;
+//    [cell cellForViedoInfoShowCollectionCell:model];
     return cell;
 }
 // 单元格的点击事件

@@ -24,7 +24,10 @@
 #import "ResetNameVC.h"
 // 绑定手机页面
 #import "AndPhoneVC.h"
-@interface AccountViewController ()<UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+
+#import "WXApi.h"
+#import "AppDelegate.h"
+@interface AccountViewController ()<UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate,UINavigationControllerDelegate, AppDelegate>
 {
     NSString * _name;   // 用户名
     UIImage * _image;
@@ -94,6 +97,10 @@
     [self setNavigationBar];
     
     [self createUI];
+    
+    AppDelegate * delegate =  (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    delegate.delegate = self;
+
 }
 
 #pragma mark --- 设置导航条
@@ -131,7 +138,7 @@
     
     self.tableView.tableHeaderView = headerView;
     
-    NSArray * array = @[@"头像", @"昵称", @"修改密码", @"绑定手机"];
+    NSArray * array = @[@"头像", @"昵称", @"绑定微信", @"绑定手机"];
     self.dataSource = [NSMutableArray arrayWithArray:array];
     
     UIButton * outBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -193,7 +200,7 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    NSArray * arr1 = @[@"头像", @"昵称", @"修改密码"];
+    NSArray * arr1 = @[@"头像", @"昵称", @"绑定微信"];
     NSArray * arr2 = @[@"头像", @"昵称", @"绑定手机"];
     if ([defaults objectForKey:Phone]) {    // 如果是手机号登录
         cell.titleLbl.text = arr1[indexPath.row];
@@ -242,35 +249,25 @@
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     if ([defaults objectForKey:Phone]) {    // 如果是手机登录
         
-        if (indexPath.row == 2) {   // 修改密码
+        if (indexPath.row == 2) {   // 绑定微信
+            NSLog(@"绑定微信...");
+            if ([self.bindign isEqualToString:@"0"]) {  // 都绑定了
+                UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"您已进行过绑定" message:nil preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction * sure = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    
+                }];
+                [alert addAction:sure];
+                [self presentViewController:alert animated:YES completion:nil];
+            }else{
+                //构造SendAuthReq结构体
+                SendAuthReq* req =[[SendAuthReq alloc ] init ];
+                req.scope = @"snsapi_userinfo" ;
+                req.state = @"123" ;
+                //第三方向微信终端发送一个SendAuthReq消息结构
+                [WXApi sendReq:req];
+                // 成功利用了AppDelegate
+            }
             
-            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"验证原密码" message:@"为保障您的数据安全，修改密码前请填写原密码" preferredStyle:UIAlertControllerStyleAlert];
-            [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-                textField.placeholder = @"原密码";
-                textField.secureTextEntry = YES;
-                
-                // 监听textField中的内容
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(alertTextFieldDidChange:) name:UITextFieldTextDidChangeNotification object:textField];
-            }];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                
-                // 进行验证原密码的操作
-                NSLog(@"原密码为：%@", _passWord);
-                // 如果验证成功则跳转到修改密码的页面，否则提示密码有误
-                ResetPasswordViewController * resetVC = [[ResetPasswordViewController alloc] init];
-                [self.navigationController pushViewController:resetVC animated:YES];
-                
-            }];
-            
-            UIAlertAction * cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                NSLog(@"点击Cancel进行的操作。。。" );
-                [alert dismissViewControllerAnimated:YES completion:nil];
-            }];
-            
-            [alert addAction:cancel];
-            [alert addAction:OK];
-            
-            [self presentViewController:alert animated:YES completion:nil];
             
         }else if (indexPath.row == 1){  // 修改昵称
             
@@ -304,8 +301,17 @@
         
         if (indexPath.row == 2) {   // 绑定手机
             AndPhoneVC * addPhoneVC = [[AndPhoneVC alloc] init];
-
-            [self.navigationController pushViewController:addPhoneVC animated:YES];
+            if ([self.bindign isEqualToString:@"0"]) {  // 都绑定了
+                UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"您已进行过绑定" message:nil preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction * sure = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    
+                }];
+                [alert addAction:sure];
+                [self presentViewController:alert animated:YES completion:nil];
+            }else{
+                [self.navigationController pushViewController:addPhoneVC animated:YES];
+            }
+            
         }else if (indexPath.row == 1){  // 修改昵称
             ResetNameVC * resetNameVC = [[ResetNameVC alloc] init];
             resetNameVC.name = _account.username;
@@ -331,9 +337,27 @@
     
 }
 
+- (void)dismissWithStr:(NSString *)str{
+    // 给服务器发送code
+    NSString * url = @"http://dipaiapp.replays.net/Weixin/binding_weixin";
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[@"code"] = str;
+    NSLog(@"code-----%@", str);
+//    [DataTool sendCodeWithStr:url parameters:dic success:^(id responseObject) {
+//        
+//        NSLog(@"绑定微信发送code成功%@,", responseObject);
+//        NSLog(@"%@", responseObject[@"content"]);
+//        if ([responseObject[@"state"] isEqualToString:@"1"]) {
+//            NSLog(@"绑定成功...");
+//        }
+//    } failure:^(NSError * error) {
+//        
+//        NSLog(@"发送code出错：%@", error);
+//    }];
+}
+
 - (void)alertTextFieldDidChange:(NSNotification *)obj
 {
-    
     UITextField * text = [obj object];
     _passWord = text.text;
     

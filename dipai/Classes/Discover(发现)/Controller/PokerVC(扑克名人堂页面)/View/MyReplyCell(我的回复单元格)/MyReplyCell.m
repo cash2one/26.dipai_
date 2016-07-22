@@ -15,6 +15,7 @@
 // 下边的视图
 #import "MyReplyBotView.h"
 
+#import "Masonry.h"
 @interface MyReplyCell()
 
 @property (nonatomic, strong) MyReplyTopView * topView;
@@ -81,8 +82,15 @@
     _bottomView.myReFrameModel = myReplyFrameModel;
 
     // 温故而知新可以为师矣
-    CGFloat y = myReplyFrameModel.cellHeight;
-    _line.frame = CGRectMake(0, y, WIDTH, 0.5);
+//    CGFloat y = myReplyFrameModel.cellHeight;
+//    _line.frame = CGRectMake(0, y, WIDTH, 0.5);
+    
+    [_line mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mas_left);
+        make.right.equalTo(self.mas_right);
+        make.bottom.equalTo(self.mas_bottom);
+        make.height.equalTo(@(0.5));
+    }];
 }
 
 - (void)awakeFromNib {

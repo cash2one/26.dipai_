@@ -59,14 +59,12 @@
 @end
 
 @implementation SectionVC
-- (void)viewWillAppear:(BOOL)animated{
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:YES];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
-    
-    [self.tableView.header beginRefreshing];
-//    [self.tableView.footer beginRefreshing];
-    
 }
 
 - (void)viewWillDisappear:(BOOL)animated

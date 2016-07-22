@@ -872,8 +872,6 @@
         // 传递过来的是模型数组(模型是评论模型)
         NSArray * commentsArr = responseObject;
         
-//        NSLog(@"%@", commentsArr);
-        
         if ([commentsArr isKindOfClass:[NSNull class]]) {
             [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         } else{
@@ -887,7 +885,6 @@
             // 将视图模型数组赋值给数据源
             [self.dataSource2 addObjectsFromArray:commentsFrameArr];
         }
-        [_tableView2.footer endRefreshing];
         [_tableView2 reloadData];
     } failure:^(NSError * error) {
         
@@ -983,8 +980,6 @@
 - (void)loadMoreData1{
 
     LiveInfoModel * model = [self.dataSource1 lastObject];
-
-//    NSLog(@"%@", _appendStr);
     
     NSString * url = [_appendStr stringByAppendingString:[NSString stringWithFormat:@"/%@", model.iD]];
     

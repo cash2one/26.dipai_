@@ -326,7 +326,7 @@
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
 //        NSLog(@"获取更多内容页面:%@", responseObject);
-                
+        
         // 字典数组转模型数组
         NSArray * albumArr = [HotVideoModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
         
@@ -565,6 +565,7 @@
 + (void)getLiveDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+        NSLog(@"%@", responseObject);
         // 字典数组转模型数组
         NSArray * modelArr = [LiveInfoModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
         if (success) {
@@ -929,10 +930,14 @@
         
 //        NSLog(@"%@", responseObject);
 //        NSLog(@"%@", URLString);
-        NSLog(@"获取到收藏的数据：%@", responseObject);
+//        NSLog(@"获取到收藏的数据：%@", responseObject);
         
         // 字典数组转模型数组
         NSArray * collectModelArr = [MyCollectionModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
+//        NSMutableArray * arr = [NSMutableArray array];
+//        [arr addObject:collectModelArr];
+//        NSString * page = responseObject[@"page"];
+//        [arr addObject:page];
         if (success) {
             success(collectModelArr);
         }
@@ -970,6 +975,7 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+        NSLog(@"获取到回复的数据：%@", responseObject);
         // 发帖数组
         NSArray * replyArr = responseObject[@"data"];
         // 字典数组转模型数组
@@ -1065,7 +1071,7 @@
 // 向服务器发送获取的微信code
 + (void)sendCodeWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
 
-    NSLog(@"%@", URLString);
+//    NSLog(@"%@", URLString);
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
         if (success) {

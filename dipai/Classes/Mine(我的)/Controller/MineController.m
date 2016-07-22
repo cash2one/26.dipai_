@@ -36,12 +36,13 @@
 
 #import "UIImageView+WebCache.h"
 #import "SVProgressHUD.h"
-@interface MineController ()<LSAlertViewDeleagte>
+@interface MineController ()<LSAlertViewDeleagte, UIScrollViewDelegate>
 {
     NSArray *_cookies;
     NSString * _name;
     UIView * _alertBackView;
     LSAlertView * _alertView;
+    NSString * _binding;    //  绑定的标识1：未绑定手机 2：未绑定微信 0：都绑定
 }
 /**
  *  表格
@@ -77,6 +78,10 @@
  *  查看账户按钮
  */
 @property (nonatomic, strong) UIButton * picBtn;
+// 编辑标签
+@property (nonatomic, strong) UILabel * editLbl;
+// 编辑按钮
+@property (nonatomic, strong) UIButton * editBtn;
 
 /**
  *  用户模型
@@ -88,6 +93,12 @@
  *  微信用户
  */
 @property (nonatomic, strong) NSDictionary * wxData;
+
+// 点击用户头像
+@property (nonatomic, strong) UIView * picBackView;
+@property (nonatomic, strong) UIScrollView * picSc;
+@property (nonatomic, strong) UIImageView * image;
+
 @end
 
 @implementation MineController
@@ -151,6 +162,9 @@
         _attentionNum.text = userModel.count_followed;  // 粉丝数
         // 显示收到的评论数
         _commentsView.commentNum.hidden = YES;
+        // 编辑个人信息按钮
+        _editBtn.hidden = NO;
+        _editLbl.hidden = NO;
         
         // 登录成功以后才能进行网络数据的请求
         // 获取网络上的数据
@@ -160,10 +174,10 @@
             model = responseObject;
             _model = responseObject;
             // 设置数据
+            _binding = model.binding;
             _fansNum.text = model.follow;
             _attentionNum.text = model.row;
             _loginLbl.text = model.username;
-            
 //            NSLog(@"%@", model.face);
             
             if (model.face && model.face.length > 0) {
@@ -174,7 +188,6 @@
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
                         [_picBtn setBackgroundImage:img forState:UIControlStateNormal];
-                        
                     });
                     
                 });
@@ -215,6 +228,9 @@
         _iconBtn.hidden = NO;
         //
         _commentsView.commentNum.hidden = YES;
+        // 编辑个人信息按钮
+        _editBtn.hidden = YES;
+        _editLbl.hidden = YES;
     }
 }
 
@@ -230,7 +246,7 @@
     CGFloat headerX = 0;
     CGFloat headerY = 0;
     CGFloat headerW = WIDTH;
-    CGFloat headerH = Margin430;
+    CGFloat headerH = 235 * IPHONE6_H_SCALE;
     UIImageView * headerView = [[UIImageView alloc] initWithFrame:CGRectMake(headerX, headerY, headerW, headerH)];
     headerView.image = [UIImage imageNamed:@"weidenglu_beijing"];
     
@@ -238,8 +254,8 @@
     UIButton * settingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGFloat btnX = WIDTH - 15 - 21;
     CGFloat btnY = (40 + 23) / 2;
-    CGFloat btnW = 21;
-    CGFloat btnH = 21;
+    CGFloat btnW = 21 * IPHONE6_W_SCALE;
+    CGFloat btnH = 21 * IPHONE6_W_SCALE;
     settingBtn.frame = CGRectMake(btnX, btnY, btnW, btnH);
     [settingBtn setImage:[UIImage imageNamed:@"shezhi"] forState:UIControlStateNormal];
     [settingBtn addTarget:self action:@selector(settings) forControlEvents:UIControlEventTouchUpInside];
@@ -249,24 +265,31 @@
     // 登录头像
     UIButton * iconBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [iconBtn setImage:[UIImage imageNamed:@"touxiang_moren"] forState:UIControlStateNormal];
-    iconBtn.center = CGPointMake(self.view.center.x, (128 + 78)/2);
-    iconBtn.bounds = CGRectMake(0, 0, Margin156 * IPHONE6_W_SCALE, Margin156 * IPHONE6_W_SCALE);
     [iconBtn addTarget:self action:@selector(loginAction) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:iconBtn];
+    [iconBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(headerView.mas_centerX);
+        make.top.equalTo(headerView.mas_top).offset(64 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(78 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(78 * IPHONE6_W_SCALE));
+    }];
     _iconBtn = iconBtn;
     // 登录后的头像
     UIButton * picBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    picBtn.frame = iconBtn.frame;
+    [headerView addSubview:picBtn];
+    [picBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(headerView.mas_centerX);
+        make.top.equalTo(headerView.mas_top).offset(64 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(78 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(78 * IPHONE6_W_SCALE));
+    }];
     picBtn.layer.masksToBounds = YES;
-    picBtn.layer.cornerRadius = picBtn.frame.size.width / 2;
+    picBtn.layer.cornerRadius =  39 * IPHONE6_W_SCALE;
     picBtn.layer.borderWidth = 2 * IPHONE6_W_SCALE;
     picBtn.layer.borderColor = [[UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:0.5] CGColor];
 //    picBtn.backgroundColor = [UIColor lightGrayColor];
-    [picBtn addTarget:self action:@selector(CheckAccount) forControlEvents:UIControlEventTouchUpInside];
-    [headerView addSubview:picBtn];
+    [picBtn addTarget:self action:@selector(showBigFace) forControlEvents:UIControlEventTouchUpInside];
     _picBtn = picBtn;
-    
-    
     
     [self.view addSubview:headerView];
     // 登录状态的label
@@ -284,7 +307,6 @@
     }];
     loginLbl.text = @"点击登录";
     //    [loginLbl sizeToFit];
-    
     _loginLbl = loginLbl;
     
     // 竖线
@@ -378,12 +400,45 @@
     [fansBtn addTarget:self action:@selector(showFans) forControlEvents:UIControlEventTouchUpInside];
     
     
+    // 编辑个人资料按钮
+    UILabel * editLbl = [[UILabel alloc] init];
+//    editBtn.backgroundColor = [UIColor redColor];
+    [headerView addSubview:editLbl];
+    editLbl.textColor = [UIColor whiteColor];
+    editLbl.text = @"编辑个人资料";
+    editLbl.textAlignment = NSTextAlignmentCenter;
+    editLbl.font = Font12;
+    editLbl.textColor = [UIColor whiteColor];
+    editLbl.layer.borderColor = [[UIColor whiteColor] CGColor];
+    editLbl.layer.borderWidth = 1;
+    [editLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(headerView.mas_centerX);
+        make.top.equalTo(line.mas_bottom).offset(9 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(110 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(21 * IPHONE6_W_SCALE));
+    }];
+    editLbl.layer.masksToBounds = YES;
+    editLbl.layer.cornerRadius = 10 * IPHONE6_W_SCALE;
+    _editLbl = editLbl;
+    
+    UIButton * editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [headerView addSubview:editBtn];
+    [editBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(editLbl.mas_left).offset(-5);
+        make.top.equalTo(editLbl.mas_top).offset(-5);
+        make.right.equalTo(editLbl.mas_right).offset(5);
+        make.bottom.equalTo(editLbl.mas_bottom).offset(5);
+    }];
+    [editBtn addTarget:self action:@selector(CheckAccount) forControlEvents:UIControlEventTouchUpInside];
+    _editBtn = editBtn;
+    
     
     // 分隔条
     UIView * separateView = [[UIView alloc] init];
     separateView.backgroundColor = [UIColor colorWithRed:240 / 255.0 green:239 / 255.0 blue:245 / 255.0 alpha:1];
     CGFloat separateX = 0;
-    CGFloat separateY = CGRectGetMaxY(headerView.frame);
+//    CGFloat separateY = CGRectGetMaxY(headerView.frame);
+    CGFloat separateY = 235 * IPHONE6_H_SCALE;
     CGFloat separateW = WIDTH;
     CGFloat sepatateH = 40 / 2 * IPHONE6_H_SCALE;
     separateView.frame = CGRectMake(separateX, separateY, separateW, sepatateH);
@@ -435,6 +490,78 @@
     _commentsView = commentsView;
 }
 
+#pragma mark --- 显示大头像
+- (void)showBigFace{
+    NSLog(@"显示大头像。。。");
+    UIWindow *window=[UIApplication sharedApplication].keyWindow;
+    UIView * picBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    picBackView.backgroundColor = [UIColor blackColor];
+    [window addSubview:picBackView];
+    _picBackView = picBackView;
+    
+    UIScrollView * picSc = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];;
+    [picBackView addSubview:picSc];
+    //    picSc.backgroundColor = [UIColor redColor];
+    picSc.minimumZoomScale = 1.0;
+    picSc.maximumZoomScale = 2.0;
+    picSc.delegate = self;
+    _picSc = picSc;
+    
+    UIImageView * image = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    [picSc addSubview:image];
+//    [image sd_setImageWithURL:[NSURL URLWithString:model.imgs[@"pimg"]] placeholderImage:[UIImage imageNamed:@"123"]];
+    [image sd_setImageWithURL:[NSURL URLWithString:_model.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+    image.contentMode = UIViewContentModeScaleAspectFit;
+    _image = image;
+    
+    // 双击图片放大
+    UITapGestureRecognizer * twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(twoTap:)];
+    twoTap.numberOfTapsRequired = 2;
+    twoTap.numberOfTouchesRequired = 1;
+    [picSc addGestureRecognizer:twoTap];
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showBigPic:)];
+    tap.numberOfTapsRequired = 1;
+    tap.numberOfTouchesRequired = 1;
+    [picSc addGestureRecognizer:tap];
+    
+    // 双击没有识别到的时候识别单击手势
+    [tap requireGestureRecognizerToFail:twoTap];
+    
+}
+//告诉scrollview要缩放的是哪个子控件
+-(UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+{
+    return _image;
+}
+#pragma mark --- 双击图片放大
+- (void)twoTap:(UITapGestureRecognizer *)tap{
+    NSLog(@"双击放大图片...");
+    UIScrollView * sc = (UIScrollView *)tap.view;
+    CGFloat zoomScale = sc.zoomScale;
+    
+    NSLog(@"%f", zoomScale);
+    
+    zoomScale = (zoomScale == 1.0) ? 3.0 : 1.0;
+    
+    NSLog(@"%f", zoomScale);
+    CGRect zoomRect = [self zoomRectForScale:zoomScale withCenter:[tap locationInView:tap.view]];
+    [sc zoomToRect:zoomRect animated:YES];
+}
+- (CGRect)zoomRectForScale:(float)scale withCenter:(CGPoint)center
+{
+    CGRect zoomRect;
+    zoomRect.size.height =self.view.frame.size.height / scale;
+    zoomRect.size.width  =self.view.frame.size.width  / scale;
+    zoomRect.origin.x = center.x - (zoomRect.size.width  /2.0);
+    zoomRect.origin.y = center.y - (zoomRect.size.height /2.0);
+    return zoomRect;
+}
+
+- (void)showBigPic:(UITapGestureRecognizer *)tap{
+    [_picBackView removeFromSuperview];
+}
+
 #pragma mark --展示关注列表
 - (void)showAtttionNum{
     NSLog(@"展示关注列表");
@@ -462,6 +589,7 @@
 #pragma mark --- 查看账户
 - (void)CheckAccount{
     AccountViewController * accountVC = [[AccountViewController alloc] init];
+    accountVC.bindign = _binding;
     accountVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:accountVC animated:YES];
 }

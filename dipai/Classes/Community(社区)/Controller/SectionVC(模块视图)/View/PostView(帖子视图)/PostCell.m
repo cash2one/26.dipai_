@@ -129,6 +129,7 @@
     
     // 简介
     UILabel *textView = [[UILabel alloc] init];
+    textView.numberOfLines = 0;
     textView.font = Font13;
     textView.textColor = Color123;
     [self addSubview:textView];

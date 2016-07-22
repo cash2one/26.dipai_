@@ -41,6 +41,10 @@
 #import "StarVC.h"
 #import "SVProgressHUD.h"
 @interface MyCollectionViewController ()<UITableViewDataSource, UITableViewDelegate, MyCollectCellDelegate>
+
+{
+    NSString * _page;   // 分页使用
+}
 /**
  *  数据源
  */
@@ -70,6 +74,7 @@
     [self setNavigationBar];
     
     [self addTableView];
+    [self loadNewData];
 
 }
 #pragma mark --- 设置导航条
@@ -86,65 +91,74 @@
     titleLabel.text = @"我的收藏";
     self.navigationItem.titleView = titleLabel;
     
-//    UIButton * editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    editBtn.frame = CGRectMake(0, 0, 50, 50);
-////    editBtn.backgroundColor = [UIColor redColor];
-//    editBtn.titleLabel.textAlignment = NSTextAlignmentRight;
-//    UILabel * editLbl = [[UILabel alloc] initWithFrame:editBtn.bounds];
-//    editLbl.text = @"编辑";
-//    editLbl.font = Font15;
-//    editLbl.textAlignment = NSTextAlignmentRight;
-//    editLbl.textColor = [UIColor blackColor];
-//    [editBtn addSubview:editLbl];
-//    
-//    [editBtn addTarget:self action:@selector(editAction) forControlEvents:UIControlEventTouchUpInside];
-//    
-//    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:editBtn];
+//    self.editButtonItem.title = @"";
     
-    self.editButtonItem.title = @"编辑";
-    self.editButtonItem.tintColor = [UIColor blackColor];
+    self.editButtonItem.tintColor = [UIColor whiteColor];
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
 
+}
+// 开启可编辑功能
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+// 设置删除按钮
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPat{
+    return @"警告：删除";
+}
+// 点击编辑按钮调用的方法
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
     [super setEditing:editing animated:animated];
+        [self.tableView setEditing:editing animated:YES];
+        if (self.editing) {
+            self.editButtonItem.title = @"完成";
+//            self.navigationItem.rightBarButtonItem.title = @"完成";
+        } else {
+            self.editButtonItem.title = @"编辑";
+            self.editButtonItem.tintColor = [UIColor blackColor];
+        }
     
-    [self.tableView setEditing:editing animated:YES];
-    if (self.editing) {
-        self.editButtonItem.title = @"完成";
-    } else {
-        self.editButtonItem.title = @"编辑";
-    }
 }
 
-//完成编辑的触发事件
+//完成编辑的触发事件  左滑显示删除按钮
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
 forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete)
-    {
-        [self.dataSource removeObjectAtIndex: indexPath.row];
-        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                         withRowAnimation:UITableViewRowAnimationFade];
-        [self.tableView reloadData];
-    }
-    
     // 删除收藏 网络上的删除
     // http://dipaiapp.replays.net/app/my/del/collection
     MyCollectionModel * model = [self.dataSource objectAtIndex:indexPath.row];
     NSString * iD = model.iD;
     NSString * url = [DeleteCollectURL stringByAppendingString:iD];
     
-//    NSLog(@"%@", url);
     
     [DataTool deleteMyCollectionWithStr:url parameters:nil success:^(id responseObject) {
         
         NSLog(@"删除收藏成功返回的数据:%@", responseObject);
         NSLog(@"%@", responseObject[@"content"]);
     } failure:^(NSError * error) {
-       
+        
         NSLog(@"删除收藏的错误信息%@", error);
     }];
+    if (editingStyle == UITableViewCellEditingStyleDelete)
+    {
+        [self.dataSource removeObjectAtIndex: indexPath.row];
+        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                         withRowAnimation:UITableViewRowAnimationFade];
+        if (self.dataSource.count == 0) {
+            self.editButtonItem.title = @"";
+            self.editButtonItem.tintColor = [UIColor whiteColor];
+        }else{
+            self.editButtonItem.title = @"编辑";
+            self.editButtonItem.tintColor = [UIColor blackColor];
+        }
+        [self.tableView reloadData];
+    }
+    else if (editingStyle == UITableViewCellEditingStyleInsert)
+    {
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+    }
+    
 }
 //返回编辑状态的style
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView
@@ -175,7 +189,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     header.automaticallyChangeAlpha = YES;
     header.lastUpdatedTimeLabel.hidden = YES;
     self.tableView.header = header;
-    [header beginRefreshing];
+//    [header beginRefreshing];
     //往上拉加载数据.
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
@@ -191,7 +205,18 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         [self.tableView.header endRefreshing];
         //        NSLog(@"%@", responseObject);
         
+//        NSMutableArray * arr = responseObject;
+//        self.dataSource = [arr objectAtIndex:0];
+//        NSString * page = [arr objectAtIndex:1];
+//        _page = page;
         self.dataSource = responseObject;
+        if (self.dataSource.count > 0) {
+            self.editButtonItem.title = @"编辑";
+            self.editButtonItem.tintColor = [UIColor blackColor];
+        }else{
+            self.editButtonItem.title = @"";
+            self.editButtonItem.tintColor = [UIColor whiteColor];
+        }
         [self.tableView reloadData];
     } failure:^(NSError * error) {
         NSLog(@"获取我的收藏失败：%@", error);
@@ -199,23 +224,34 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 }
 - (void)loadMoreData{
     
-    MyCollectionModel * collectModel = [[MyCollectionModel alloc] init];
-    collectModel = [self.dataSource lastObject];
-    NSString * iD = collectModel.iD;
-    
-    NSString * url = [MyCollectionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", iD]];
+//    NSLog(@"%@", _page);
+    MyCollectionModel * model = [self.dataSource lastObject];
+    NSString * url = [MyCollectionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.iD]];
+    NSLog(@"%@", url);
     [DataTool getCollectionDataWithStr:url parameters:nil success:^(id responseObject) {
         [self.tableView.footer endRefreshing];
         
+//        NSMutableArray * arr = responseObject;
+//        NSArray * data = [arr objectAtIndex:0];
+//        NSString * page = [arr objectAtIndex:1];
+//        _page = page;
         if (!responseObject) {
             [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         }
         [self.dataSource addObjectsFromArray:responseObject];
+        if (self.dataSource.count > 0) {
+            self.editButtonItem.title = @"编辑";
+            self.editButtonItem.tintColor = [UIColor blackColor];
+        }else{
+            self.editButtonItem.title = @"";
+            self.editButtonItem.tintColor = [UIColor whiteColor];
+        }
         [self.tableView reloadData];
         NSLog(@"%@", responseObject);
     } failure:^(NSError * error) {
        
         NSLog(@"获取更多收藏数据出错%@", error);
+        [self.tableView.footer endRefreshing];
     }];
     
 
@@ -244,7 +280,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     cell.delegate = self;
     cell.collectionModel = self.dataSource[indexPath.row];
     return cell;
-    
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

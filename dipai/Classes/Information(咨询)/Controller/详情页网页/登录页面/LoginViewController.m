@@ -16,6 +16,8 @@
 
 #import "WXApi.h"
 #import "AppDelegate.h"
+
+#import "DataTool.h"
 @interface LoginViewController ()<PhoneLoginViewControllerDelegate, RegisterViewControllerDelegate, AppDelegate>
 
 @end
@@ -35,7 +37,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
-    
     // 进行布局
     [self setUpUI];
 }
@@ -133,9 +134,26 @@
     AppDelegate * delegate = [[UIApplication sharedApplication] delegate];
     delegate.delegate = self;
 }
-
 - (void)dismissWithStr:(NSString *)str{
-    [self dismiss];
+    // 给服务器发送code
+    NSString * url = @"http://dipaiapp.replays.net/Weixin/wx_code";
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[@"code"] = str;
+    [DataTool sendCodeWithStr:url parameters:dic success:^(id responseObject) {
+        
+        NSLog(@"发送code成功%@,", responseObject);
+        if ([responseObject[@"state"] isEqualToString:@"1"]) {
+            NSLog(@"注册成功...");
+        }
+        NSDictionary * data = responseObject[@"data"];
+        NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults setObject:data forKey:WXUser];
+        [userDefaults synchronize];
+        [self dismiss];
+    } failure:^(NSError * error) {
+        
+        NSLog(@"发送code出错：%@", error);
+    }];
 }
 
 

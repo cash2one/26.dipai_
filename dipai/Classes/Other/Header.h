@@ -34,7 +34,7 @@
 #define FindURL @"http://dipaiapp.replays.net/app/find"
 //#define FindURL @"http://10.0.0.14:8080/app/find"
 // 热门专辑中获取更多专辑的接口
-#define MoreVideosURL @"http://dipaiapp.replays.net/app/hot/album/list"
+#define MoreVideosURL @"http://dipaiapp.replays.net/app/hot/album/list/1"
 //#define MoreVideosURL @"http://10.0.0.14:8080/app/hot/album/list"
 // 专辑页面获取更多视频
 #define AlbumURL @"http://dipaiapp.replays.net/app/album/list"
@@ -109,6 +109,8 @@
 #define ChangeAccountURL @"http://dipaiapp.replays.net/sign/update_userinfo"
 //  手机注册获取验证码接口
 #define SecurityCodeURL @"http://dipaiapp.replays.net/sign/verification"
+// 绑定手机接口
+#define AddPhoURL @"http://dipaiapp.replays.net/sign/binding_phone"
 
 
 //#define UserName @"username"

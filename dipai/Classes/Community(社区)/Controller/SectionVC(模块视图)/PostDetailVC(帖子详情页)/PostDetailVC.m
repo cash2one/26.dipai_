@@ -83,7 +83,7 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     
-//    [self getData];
+    [self.tableView.header beginRefreshing];
 }
 
 - (void)viewDidLoad {
@@ -91,6 +91,8 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
+    
+//    NSLog(@"%@", self.wapurl);
     
     // 设置导航栏
     [self setUpNavigationBar];
@@ -351,7 +353,7 @@
 - (void)loadNewData{
     [DataTool getPostDetailDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
-//        NSLog(@"%@", self.wapurl);
+        NSLog(@"%@", self.wapurl);
         
         PostDetailModel * detailModel = responseObject;
         _detailModel = detailModel;
@@ -408,9 +410,7 @@
 
 #pragma mark --- UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-//    NSLog(@"数据源的个数：%lu", self.dataSource.count);
     return self.dataSource.count;
-//    return 40;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{

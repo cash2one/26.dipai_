@@ -79,6 +79,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+//    NSLog(@"%@", self.wapurl);
     // 搭建UI
     [self setUpUI];
     [self addRefreshing];
@@ -121,9 +122,7 @@
     self.tableView.footer = footer;
 }
 
-- (void)loadNewData{
-//    NSString * url = [NSString stringWithFormat:@"%@/%@/%@", CommentsURL, self.iD, @"8"];
-    
+- (void)loadNewData{    
     
     if (self.wapurl == nil) {
         return;

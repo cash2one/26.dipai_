@@ -49,7 +49,7 @@
     // 提示信息
     UILabel * messageLbl = [[UILabel alloc] init];
     messageLbl.font = Font17;
-    messageLbl.text = @"请先登录后再发表";
+    messageLbl.text = @"请在登录后进行操作";
     messageLbl.textAlignment = NSTextAlignmentCenter;
     [messageLbl sizeToFit];
     [self addSubview:messageLbl];

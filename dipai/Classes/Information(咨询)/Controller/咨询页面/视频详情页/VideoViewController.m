@@ -163,13 +163,13 @@
     [self playVideo];
     // 显示或隐藏进度条
     [_playerView autoShowOrHideBottomView:5];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     
     [super viewWillAppear:YES];
     self.navigationController.navigationBarHidden = YES;
-    
     // 每次进来的时候都要检测是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
@@ -209,7 +209,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     
     self.view.backgroundColor = [UIColor whiteColor];
     // 设置状态栏
@@ -345,6 +344,7 @@
     int i = 0;
     for (AlbumModel * model in albums) {
 //        NSLog(@"循环中...%d", i ++);
+        i += 1;
         if ([videoUrl isEqualToString:model.videourl]) {
 //            NSLog(@"循环次数---%d", i);
             // 将视频下标存储，下标从1开始
@@ -382,9 +382,8 @@
     // 创建播放视图
     _playerView = [[TCPlayerView alloc] init];
     _playerView.frame = CGRectMake( 0 , 20 , WIDTH , 422 / 2 * IPHONE6_H_SCALE);
-//    _playerView.defaultForceToOrientation = UIDeviceOrientationLandscapeLeft;
+    _playerView.defaultForceToOrientation = UIDeviceOrientationLandscapeLeft;
     [self.view addSubview:_playerView];
-    
     // 缓存，下次播放有效
     _playerView.enableCache = YES;
     // 如果设为真，则清除本次播放过程中的Cache文件
@@ -407,20 +406,26 @@
     CGFloat h = 38 / 2 * IPHONE6_H_SCALE;
     returnView.frame = CGRectMake(x,  y, w, h);
     returnView.image = [UIImage imageNamed:@"houtui_baise"];
+    returnView.userInteractionEnabled = YES;
     [_playerView addSubview:returnView];
 //    [self.view addSubview:returnView];
     
     UIButton * returnBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGFloat btnX = 0;
-    CGFloat btnY = 0;
-    CGFloat btnW = 50;
-    CGFloat btnH = 40;
-    returnBtn.frame = CGRectMake(btnX, btnY, btnW, btnH);
+//    CGFloat btnX = 0;
+//    CGFloat btnY = 0;
+//    CGFloat btnW = 50;
+//    CGFloat btnH = 40;
+//    returnBtn.frame = CGRectMake(btnX, btnY, btnW, btnH);
     returnBtn.backgroundColor = [UIColor clearColor];
-//    returnBtn.backgroundColor = [UIColor redColor];
+    // returnBtn.backgroundColor = [UIColor redColor];
     [returnBtn addTarget:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
     [_playerView addSubview:returnBtn];
-//    [self.view addSubview:returnBtn];
+    [returnBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(returnView.mas_left).offset(-10);
+        make.top.equalTo(returnView.mas_top).offset(-10);
+        make.right.equalTo(returnView.mas_right).offset(10);
+        make.bottom.equalTo(returnView.mas_bottom).offset(10);
+    }];
     
     // 播放器下方的标题
     UIView * blackView = [[UIView alloc] init];
@@ -931,7 +936,6 @@
     // 播放视频的地址
     AssociatedModel * associateModel = self.dataSource[indexPath.row];
     item.url = associateModel.videourl;
-    
     
     // 视频播放
     [_playerView play:item];

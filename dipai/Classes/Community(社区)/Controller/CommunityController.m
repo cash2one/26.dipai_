@@ -126,7 +126,7 @@
 
 - (void)addSegmentControl{
     // 分段控件
-    _segmented = [[UISegmentedControl alloc]initWithItems:@[@"论坛",@"圈子"]];
+    _segmented = [[UISegmentedControl alloc]initWithItems:@[@"论坛",@"关注"]];
     _segmented.selectedSegmentIndex = 0;
     // 被选中时的背景色
     _segmented.tintColor = [UIColor blackColor];

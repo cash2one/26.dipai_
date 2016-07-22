@@ -267,7 +267,6 @@
     
     NSString * iD = matchModel.iD;
      NSString * url3 = [MatchURL stringByAppendingString:[NSString stringWithFormat:@"/2/%@", iD]];
-    
     [DataTool getEndMatchDataWithStr:url3 parameters:nil success:^(id responseObject) {
         [_tableView3.footer endRefreshing];
                 
@@ -280,7 +279,8 @@
         
         NSLog(@"获取更多数据出错%@", error);
     }];
-    
+    _tableView1.footer.state = MJRefreshStateNoMoreData;
+    _tableView2.footer.state = MJRefreshStateNoMoreData;
     
 }
 
