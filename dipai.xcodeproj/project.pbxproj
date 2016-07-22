@@ -3994,6 +3994,15 @@
 				TargetAttributes = {
 					C1212DE81CCDA7D900F76D4E = {
 						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = XJL3Q5Y9Q6;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 0;
+							};
+						};
 					};
 					C1212E011CCDA7DA00F76D4E = {
 						CreatedOnToolsVersion = 7.2.1;

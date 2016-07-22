@@ -45,7 +45,9 @@
 
 // 活动控制器
 #import "SVProgressHUD.h"
-@interface InfomationViewController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate>
+
+#import "AppDelegate.h"
+@interface InfomationViewController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate, AppDelegate>
 /**
  *  表格
  */
@@ -110,6 +112,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    AppDelegate * delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    delegate.delegate = self;
+    
     // 搭建UI
     [self createUI];
     // 添加下拉刷新控件
@@ -139,6 +144,44 @@
     
 //    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
 }
+#pragma mark --- 有通知的时候进行跳转
+- (void)pushToViewControllerWithURL:(NSString *)url{
+    if ([url rangeOfString:@"art/view/11"].location != NSNotFound) {
+        // 跳转到视频专辑页
+        VideoViewController * videoVC = [[VideoViewController alloc] init];
+        videoVC.url = url;
+        videoVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:videoVC animated:YES];
+    }else if ([url rangeOfString:@"art/view/2"].location != NSNotFound || [url rangeOfString:@"art/view/4"].location != NSNotFound){
+        // 跳转到资讯页面
+        
+        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+        detailVC.url = url;
+        detailVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:detailVC animated:YES];
+        
+    } else if ([url rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
+        
+        PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+        postDetail.wapurl = url;
+        postDetail.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:postDetail animated:YES];
+        
+    }else if ([url rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
+        
+        // 赛事详情页分为两种情况：1.有直播  2.没有直播
+        MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+        detailVC.wapurl = url;
+        detailVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:detailVC animated:YES];
+        
+    }
+    else
+    {
+        NSLog(@"%@", url);
+    }
+}
+
 #pragma mark ------ 下拉刷新，加载新的数据
 - (void)loadNewData
 {

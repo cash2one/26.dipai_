@@ -343,17 +343,20 @@
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"code"] = str;
     NSLog(@"code-----%@", str);
-//    [DataTool sendCodeWithStr:url parameters:dic success:^(id responseObject) {
-//        
-//        NSLog(@"绑定微信发送code成功%@,", responseObject);
-//        NSLog(@"%@", responseObject[@"content"]);
-//        if ([responseObject[@"state"] isEqualToString:@"1"]) {
-//            NSLog(@"绑定成功...");
-//        }
-//    } failure:^(NSError * error) {
-//        
-//        NSLog(@"发送code出错：%@", error);
-//    }];
+    [DataTool sendCodeWithStr:url parameters:dic success:^(id responseObject) {
+        
+        NSLog(@"绑定微信发送code成功%@,", responseObject);
+        NSLog(@"%@", responseObject[@"content"]);
+        if ([responseObject[@"content"] isEqualToString:@"此微信号已绑定"]) {
+            [SVProgressHUD showErrorWithStatus:@"此微信号已绑定"];
+        }
+        if ([responseObject[@"state"] isEqualToString:@"1"]) {
+            NSLog(@"绑定成功...");
+        }
+    } failure:^(NSError * error) {
+        
+        NSLog(@"发送code出错：%@", error);
+    }];
 }
 
 - (void)alertTextFieldDidChange:(NSNotification *)obj

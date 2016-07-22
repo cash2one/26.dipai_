@@ -493,37 +493,36 @@
 #pragma mark --- 显示大头像
 - (void)showBigFace{
     NSLog(@"显示大头像。。。");
-    UIWindow *window=[UIApplication sharedApplication].keyWindow;
-    UIView * picBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
-    picBackView.backgroundColor = [UIColor blackColor];
-    [window addSubview:picBackView];
-    _picBackView = picBackView;
-    
-    UIScrollView * picSc = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];;
-    [picBackView addSubview:picSc];
-    //    picSc.backgroundColor = [UIColor redColor];
-    picSc.minimumZoomScale = 1.0;
-    picSc.maximumZoomScale = 2.0;
-    picSc.delegate = self;
-    _picSc = picSc;
-    
-    UIImageView * image = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
-    [picSc addSubview:image];
-//    [image sd_setImageWithURL:[NSURL URLWithString:model.imgs[@"pimg"]] placeholderImage:[UIImage imageNamed:@"123"]];
-    [image sd_setImageWithURL:[NSURL URLWithString:_model.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
-    image.contentMode = UIViewContentModeScaleAspectFit;
-    _image = image;
+        UIWindow *window=[UIApplication sharedApplication].keyWindow;
+        UIView * picBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+        picBackView.backgroundColor = [UIColor blackColor];
+        [window addSubview:picBackView];
+        _picBackView = picBackView;
+        UIScrollView * picSc = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];;
+        [picBackView addSubview:picSc];
+        //    picSc.backgroundColor = [UIColor redColor];
+        picSc.minimumZoomScale = 1.0;
+        picSc.maximumZoomScale = 2.0;
+        picSc.delegate = self;
+        _picSc = picSc;
+        
+        UIImageView * image = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+        [picSc addSubview:image];
+        //    [image sd_setImageWithURL:[NSURL URLWithString:model.imgs[@"pimg"]] placeholderImage:[UIImage imageNamed:@"123"]];
+        [image sd_setImageWithURL:[NSURL URLWithString:_model.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+        image.contentMode = UIViewContentModeScaleAspectFit;
+        _image = image;    
     
     // 双击图片放大
     UITapGestureRecognizer * twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(twoTap:)];
     twoTap.numberOfTapsRequired = 2;
     twoTap.numberOfTouchesRequired = 1;
-    [picSc addGestureRecognizer:twoTap];
+    [_picSc addGestureRecognizer:twoTap];
     
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showBigPic:)];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeBigface:)];
     tap.numberOfTapsRequired = 1;
     tap.numberOfTouchesRequired = 1;
-    [picSc addGestureRecognizer:tap];
+    [_picSc addGestureRecognizer:tap];
     
     // 双击没有识别到的时候识别单击手势
     [tap requireGestureRecognizerToFail:twoTap];
@@ -558,8 +557,9 @@
     return zoomRect;
 }
 
-- (void)showBigPic:(UITapGestureRecognizer *)tap{
-    [_picBackView removeFromSuperview];
+- (void)removeBigface:(UITapGestureRecognizer *)tap{
+        [_picBackView removeFromSuperview];
+    
 }
 
 #pragma mark --展示关注列表
