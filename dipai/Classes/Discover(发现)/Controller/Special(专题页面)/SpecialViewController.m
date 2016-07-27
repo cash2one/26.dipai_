@@ -123,6 +123,7 @@
     [DataTool getSpecialDataWithStr:SpecialURL parameters:nil success:^(id responseObject) {
         
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         //        NSLog(@"%@", responseObject);
         self.dataSource = responseObject;
         [self.tableView reloadData];
@@ -130,6 +131,7 @@
         
         NSLog(@"获取专辑页出错：%@", error);
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
     }];
 }
 
@@ -143,7 +145,8 @@
         [self.tableView.footer endRefreshing];
         //        NSLog(@"%@", responseObject);
         if (!responseObject) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
         }
         [self.dataSource addObjectsFromArray:responseObject];
         [self.tableView reloadData];

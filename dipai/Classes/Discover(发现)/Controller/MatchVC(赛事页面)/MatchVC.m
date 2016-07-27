@@ -122,6 +122,9 @@
     _segmented.selectedSegmentIndex = 0;
     // 被选中时的背景色
     _segmented.tintColor = [UIColor blackColor];
+//     _segmented.tintColor = [UIColor colorWithRed:51 / 255.f green:51 / 255.f blue:51 / 255.f alpha:1];
+//    _segmented.layer.masksToBounds = YES;
+//    _segmented.layer.cornerRadius = 0.3;
     // 未被选中的背景色
     _segmented.backgroundColor = [UIColor blackColor];
     
@@ -230,6 +233,7 @@
     // 获取第一个列表的数据
     [DataTool getMatchDataWithStr:url1 parameters:nil success:^(id responseObject) {
         [_tableView1.header endRefreshing];
+        [_tableView1.footer endRefreshing];
 //        NSLog(@"%@", responseObject);
         
         self.dataArray1 = responseObject;
@@ -241,6 +245,7 @@
     // 获取第二个列表的数据
     [DataTool getMatchDataWithStr:url2 parameters:nil success:^(id responseObject) {
         [_tableView2.header endRefreshing];
+        [_tableView2.footer endRefreshing];
         self.dataArray2 = responseObject;
 //        NSLog(@"%@", responseObject);
         [_tableView2 reloadData];
@@ -251,6 +256,7 @@
     // 获取第三个列表的数据
     [DataTool getEndMatchDataWithStr:url3 parameters:nil success:^(id responseObject) {
         [_tableView3.header endRefreshing];
+        [_tableView3.footer endRefreshing];
         self.dataArray3 = responseObject;
 //        NSLog(@"%@", responseObject);
         [_tableView3 reloadData];
@@ -271,7 +277,8 @@
         [_tableView3.footer endRefreshing];
                 
         if (responseObject == nil) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            _tableView3.footer.state = MJRefreshStateNoMoreData;
         }
         [self.dataArray3 addObjectsFromArray:responseObject];
         [_tableView3 reloadData];

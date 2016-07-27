@@ -274,14 +274,10 @@
    
 }
 #pragma mark --- 添加头视图的子视图
+// 有直播的头视图
 - (void)addHeaderView1{
     
-    // 进行中和已结束页面是不固定的，可能有直播也可能没有直播
     MatchingHeader * headerView = [[MatchingHeader alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 326 * 0.5 * IPHONE6_H_SCALE)];
-    
-//    
-//    NSLog(@"%@", _matchingModel.title);
-//    NSLog(@"%@", _matchingModel.app_live);
     
     // 设置数据
     headerView.titleLbl.text = _matchingModel.title;
@@ -290,7 +286,7 @@
     
     headerView.stateLbl.text = [NSString stringWithFormat:@"比赛状态:%@", live.match_state];
     headerView.blindNum.text = live.blind;  // 盲注
-    NSLog(@"---blind---%@", live.blind);
+//    NSLog(@"---blind---%@", live.blind);
     headerView.score.text = live.score; // 记分牌
     headerView.players.text = live.player;  // 剩余选手
     [self.view addSubview:headerView];
@@ -454,8 +450,10 @@
 //    _segmented.selectedSegmentIndex = 0;
     // 被选中时的背景色
     _segmented.tintColor = [UIColor colorWithRed:51 / 255.f green:51 / 255.f blue:51 / 255.f alpha:1];
+    _segmented.tintColor = [UIColor clearColor];
+//    _segmented.tintColor = [UIColor blackColor];
     _segmented.backgroundColor = [UIColor blackColor];
-    
+//    [_segmented setBackgroundImage:[UIImage imageNamed:@"anniu_beijing"] forState:UIControlStateSelected barMetrics:UIBarMetricsDefault];
     // 被选中时的字体的颜色
     [_segmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor redColor],NSFontAttributeName:Font13} forState:UIControlStateSelected];
     // 正常情况下的字体颜色
@@ -799,6 +797,8 @@
     
     [_tableView2.header endRefreshing];
     [_tableView3.header endRefreshing];
+    [_tableView3.footer endRefreshing];
+    [_tableView2.footer endRefreshing];
     
 }
 // 加载
@@ -810,7 +810,8 @@
         [_tableView3.footer endRefreshing];
         
         if (!responseObject) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            _tableView3.footer.state = MJRefreshStateNoMoreData;
         }
         [self.dataSource3 addObjectsFromArray:responseObject];
         [_tableView3 reloadData];
@@ -830,6 +831,7 @@
     [DataTool getCommentsListWithStr:_matchingModel.comment parameters:nil success:^(id responseObject) {
         
         [_tableView2.header endRefreshing];
+        [_tableView2.footer endRefreshing];
         if (!responseObject) {
             _tableView2.header.state = MJRefreshStateNoMoreData;
         }
@@ -873,7 +875,8 @@
         NSArray * commentsArr = responseObject;
         
         if ([commentsArr isKindOfClass:[NSNull class]]) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            _tableView2.footer.state = MJRefreshStateNoMoreData;
         } else{
             NSMutableArray * commentsFrameArr = [NSMutableArray array];
             for (CommentsModel * commentModel in commentsArr) {
@@ -916,37 +919,39 @@
     NSUInteger index = [_index integerValue];
     
     NSLog(@"---index----%@", _index);
-    if (_index) {   // 如果点击了某个赛事
+    if (_index) {   // 如果点击了某个赛事    主要这块有问题
         LiveModel * live = [_matchingModel.app_live objectAtIndex:index];
         _appendStr = live.wapurl;
         NSString * url;
-        [self.dataSource1 removeAllObjects];
-        if (self.dataSource1.count > 0) {
-            LiveInfoModel * infoModel = [self.dataSource1 firstObject];
-            url = [live.wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@?direction=1", infoModel.iD]];
-        }else{
-            url = live.wapurl;
-        }
+//        [self.dataSource1 removeAllObjects];
+//        if (self.dataSource1.count > 0) {
+//            LiveInfoModel * infoModel = [self.dataSource1 firstObject];
+//            url = [live.wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@?direction=1", infoModel.iD]];
+//        }else{
+//            url = live.wapurl;
+//        }
         
-        NSLog(@"---url---url%@", url);
-        
-        [DataTool getLiveDataWithStr:url parameters:nil success:^(id responseObject) {
+//        NSLog(@"---url---url%@", url);
+        [DataTool getLiveDataWithStr:live.wapurl parameters:nil success:^(id responseObject) {
             
             [_tableView1.header endRefreshing];
-            if (!responseObject) {  // 如果没有新的数据
-                self.dataSource1 = self.dataSource1;
-            }else{
-                self.dataSource1 = responseObject;
-            }
+            [_tableView1.footer endRefreshing];
+//            if (!responseObject) {  // 如果没有新的数据
+//                self.dataSource1 = self.dataSource1;
+//            }else{
+//                self.dataSource1 = responseObject;
+//            }
+            self.dataSource1 = responseObject;
             [_tableView1 reloadData];
         } failure:^(NSError * error) {
             
             NSLog(@"获取直播信息出错：%@", error);
             [_tableView1.header endRefreshing];
+            [_tableView1.footer endRefreshing];
         }];
         
-        _index = nil;
-    }else{
+//        _index = nil;
+    }else{  // 如果没有点击某个赛事
         LiveModel * live = [_matchingModel.app_live firstObject];
         _appendStr = live.wapurl;
 
@@ -988,7 +993,8 @@
         
         [_tableView1.footer endRefreshing];
         if (!responseObject) {
-           [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//           [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            _tableView1.footer.state = MJRefreshStateNoMoreData;
         }
         [self.dataSource1 addObjectsFromArray:responseObject];
     } failure:^(NSError * error) {
@@ -1047,7 +1053,7 @@
     if (tableView == _tableView1) {
         
         LiveInfoModel * liveInfoModel = self.dataSource1[indexPath.row];
-        if (liveInfoModel.title) {  // 如果是能转发的精彩牌局
+        if (liveInfoModel.title && liveInfoModel.title.length > 0) {  // 如果是能转发的精彩牌局
             CGFloat contentW = WIDTH - 77 * IPHONE6_W_SCALE;
             NSMutableDictionary * contentDic = [NSMutableDictionary dictionary];
             contentDic[NSFontAttributeName] = Font12;
@@ -1060,7 +1066,15 @@
             
             
         }else{
-            return 100;
+            CGFloat contentW = WIDTH - 77 * IPHONE6_W_SCALE;
+            NSMutableDictionary * contentDic = [NSMutableDictionary dictionary];
+            contentDic[NSFontAttributeName] = Font12;
+            CGRect contentRect = [liveInfoModel.body boundingRectWithSize:CGSizeMake(contentW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil];
+            if (liveInfoModel.imgs) {   // 如果图片
+                return 168 * IPHONE6_H_SCALE + contentRect.size.height;
+            }else{
+                return 59 * IPHONE6_H_SCALE + contentRect.size.height;
+            }
         }
         
     } else if (tableView == _tableView2){
@@ -1201,11 +1215,12 @@
     
     // 下面的三段代码是什么意思？ 解释：加上下面的几句话才能将网页内容分享成功
     // 分享到各个平台的内容  如果没有下面的代码就会跳到友盟首页（自己设置的URL）
-    [UMSocialData defaultData].extConfig.wechatSessionData.url = model.wapurl;
-    [UMSocialData defaultData].extConfig.wechatTimelineData.url = model.wapurl;
-    [UMSocialData defaultData].extConfig.qqData.url = model.wapurl;
-    [UMSocialData defaultData].extConfig.qzoneData.url = model.wapurl;
-    [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeWeb url:model.wapurl];
+    NSString * wapurl = [model.wapurl stringByAppendingString:@"?isshare=1"];
+    [UMSocialData defaultData].extConfig.wechatSessionData.url = wapurl;
+    [UMSocialData defaultData].extConfig.wechatTimelineData.url = wapurl;
+    [UMSocialData defaultData].extConfig.qqData.url = wapurl;
+    [UMSocialData defaultData].extConfig.qzoneData.url = wapurl;
+    [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeWeb url:wapurl];
     
     NSString * shareURL = model.wapurl;
     

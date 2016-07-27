@@ -39,6 +39,8 @@
  *  文章的图片
  */
 @property (nonatomic, copy) NSString * picname;
+// 文章图片
+@property (nonatomic, strong) NSDictionary * covers;
 /**
  *  文章详情页链接
  */

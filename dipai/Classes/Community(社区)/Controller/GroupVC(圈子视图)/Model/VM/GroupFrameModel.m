@@ -65,7 +65,7 @@
     // 如果有图片上面视图的frame
     CGFloat commentsH = CGRectGetMaxY(_contentsFrame) + Margin22 * IPHONE6_H_SCALE;
     if (_groupModel.picname) {    // 如果有图
-        CGFloat picX = 64 * IPHONE6_W_SCALE;
+        CGFloat picX = 118 * 0.5 * IPHONE6_W_SCALE;
         CGFloat picY = CGRectGetMaxY(_contentsFrame) + 7 * IPHONE6_H_SCALE;
         CGFloat picW = WIDTH - picX;
         CGFloat picH = 80 * IPHONE6_H_SCALE;
@@ -110,7 +110,7 @@
     _replyContent = (CGRect){{contentX, contentY}, contentRect.size};
     
     // 回复的frame
-    CGFloat replyX = 128 / 2 * IPHONE6_H_SCALE;
+    CGFloat replyX = 118 / 2 * IPHONE6_H_SCALE;
     CGFloat replyY = CGRectGetMaxY(_CommentsFrame);
     CGFloat replyW = WIDTH - (128 + 30)/2*IPHONE6_W_SCALE;
     CGFloat replyH = CGRectGetMaxY(_replyContent) + 28 / 2 * IPHONE6_H_SCALE;

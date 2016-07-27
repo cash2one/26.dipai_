@@ -163,8 +163,6 @@
     
     // 回帖图片
     
-//    NSLog(@"%@", self.pics);
-    
 //    DetailPhotoView * picView = [[DetailPhotoView alloc] initWithArray:self.pics];
     DetailPhotoView * picView = [[DetailPhotoView alloc] init];
     [self addSubview:picView];
@@ -176,7 +174,8 @@
     UIView * reReplyView = [[UIView alloc] init];
     reReplyView.backgroundColor = [UIColor colorWithRed:255 / 255.f green:248 / 255.f blue:248 / 255.f alpha:1];
 //     reReplyView.backgroundColor = [UIColor colorWithRed:288 / 255.f green:0 / 255.f blue:0 / 255.f alpha:0.7];
-    
+    reReplyView.layer.borderColor = [[UIColor colorWithRed:187 / 255.0 green:187 / 255.0 blue:187 / 255.0 alpha:1] CGColor];
+    reReplyView.layer.borderWidth = 0.5;
     [self addSubview:reReplyView];
     _reReplyView = reReplyView;
     

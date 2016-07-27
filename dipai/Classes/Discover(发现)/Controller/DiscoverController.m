@@ -223,6 +223,7 @@
     [DataTool getFindPageDataWithStr:FindURL parameters:nil success:^(id responseObject) {
         
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         FindModel * findModel = [[FindModel alloc] init];
         findModel = responseObject;
         
@@ -276,6 +277,7 @@
     if (!self.bannerArr.count) {
         // 结束刷新
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         [SVProgressHUD showErrorWithStatus:@"网络有问题"];
     }
 }

@@ -120,7 +120,7 @@
     _titleLbl.text = _speDeModel.title;
     _detailLbl.text = _speDeModel.shorttitle;
     
-    NSString * urlStr = _speDeModel.picname;
+    NSString * urlStr = _speDeModel.covers[@"cover1"];
     _commentsLbl.text = [NSString stringWithFormat:@"%@评论", _speDeModel.commentNumber];
     if (_speDeModel.commentNumber == nil) {
         _commentsLbl.text = @"0评论";

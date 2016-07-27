@@ -52,7 +52,6 @@
 - (void)cellForViedoInfoShowCollectionCell:(HotVideoModel *)model{
     
     if (model) {
-        
         [_picView sd_setImageWithURL:[NSURL URLWithString:model.picname] placeholderImage:[UIImage imageNamed:@"123"]];
         _titleLbl.text = model.title;
 //        _titleLbl.text = @"这只是测试信息，这是某一个视频专辑";
@@ -63,7 +62,6 @@
 
 - (void)setHotVideoModel:(HotVideoModel *)hotVideoModel{
     _hotVideoModel = hotVideoModel;
-    
     [self layoutSubviews];
 }
 
@@ -75,6 +73,7 @@
     CGFloat picW = 334 / 2 * IPHONE6_W_SCALE;
     CGFloat picH = 190 / 2 * IPHONE6_H_SCALE;
     _picView.frame = CGRectMake(picX, picY, picW, picH);
+    
     [_picView sd_setImageWithURL:[NSURL URLWithString:_hotVideoModel.picname] placeholderImage:[UIImage imageNamed:@"123"]];
     
     // 标题

@@ -14,6 +14,8 @@
 #import "GroupModel.h"
 #import "GroupTopView.h"
 #import "GroupBotView.h"
+
+#import "Masonry.h"
 @interface GroupCell()<GroupTopViewDelegate>
 
 @property (nonatomic, strong) UIView * line;
@@ -73,7 +75,7 @@
 // 发帖
 - (void)setPostFrmModel:(GrpPostFrmModel *)postFrmModel{
     
-    NSLog(@"%@", postFrmModel);
+//    NSLog(@"%@", postFrmModel);
     _postFrmModel = postFrmModel;
     // 上边视图
     _topView.frame = _postFrmModel.CommentsFrame;
@@ -96,9 +98,15 @@
     _botView.frame = _frameModel.replyFrame;
     _botView.frameModel = _frameModel;
     // 温故而知新可以为师矣
-    CGFloat y = _frameModel.cellHeight;
-    _line.frame = CGRectMake(0, y, WIDTH, 0.5);
-    
+//    CGFloat y = _frameModel.cellHeight;
+//    _line.frame = CGRectMake(0, y, WIDTH, 0.5);
+
+    [_line mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mas_left);
+        make.right.equalTo(self.mas_right);
+        make.bottom.equalTo(self.mas_bottom);
+        make.height.equalTo(@(0.5));
+    }];
     _botView.hidden = NO;
 }
 

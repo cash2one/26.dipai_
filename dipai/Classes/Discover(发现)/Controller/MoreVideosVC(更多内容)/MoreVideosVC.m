@@ -103,6 +103,7 @@
         [DataTool getMoreVideosWithStr:self.moreURL parameters:nil success:^(id responseObject) {
             // 结束刷新
             [self.collection.header endRefreshing];
+            [self.collection.footer endRefreshing];
 //            NSLog(@"更多页面返回的数据%@", responseObject);
             NSArray * arr = responseObject;
             // 传过来的是模型数组
@@ -131,7 +132,8 @@
 //        NSLog(@"获取更多专辑返回数据:%@", responseObject);
         [self.collection.footer endRefreshing];
         if (!responseObject) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            self.collection.footer.state = MJRefreshStateNoMoreData;
         }
         [self.dataArray addObjectsFromArray:responseObject];
         

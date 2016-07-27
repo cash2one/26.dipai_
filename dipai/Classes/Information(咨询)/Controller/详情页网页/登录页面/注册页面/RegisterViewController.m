@@ -285,7 +285,7 @@
     // 昵称
     if (_name.text.length) {
         _name.hidePlaceHolder = YES;
-        if (_name.text.length > 14) {
+        if (_name.text.length >= 14) {
             [_name setText:_previousTextFieldContent];
             _name.selectedTextRange = _previousSelection;
         }
@@ -294,7 +294,7 @@
         _name.hidePlaceHolder = NO;
     }
     
-    if (_phoneNum.text.length == 11 && _code.text.length && _password.text.length > 6 && _name.text.length) {
+    if (_phoneNum.text.length == 11 && _code.text.length && _password.text.length >= 6 && _name.text.length>2) {
         [_registerBtn setImage:[UIImage imageNamed:@"wanchengzhuce_xuanzhong"] forState:UIControlStateNormal];
         _registerBtn.userInteractionEnabled = YES;
         [_registerBtn addTarget:self action:@selector(registerAction) forControlEvents:UIControlEventTouchUpInside];
@@ -320,10 +320,9 @@
             
             NSLog(@"注册成功返回的数据%@", responsObject);
             NSString * content = [responsObject objectForKey:@"content"];
-            if ([content isEqualToString:@"手机号已存在"]) {
-                [SVProgressHUD showErrorWithStatus:@"此帐号已注册"];
-            } else{
-                [SVProgressHUD showSuccessWithStatus:@"注册成功"];
+            NSLog(@"---content---%@", content);
+            if ([content isEqualToString:@"注册成功"]) {
+                [SVProgressHUD showSuccessWithStatus:@""];
                 
                 NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
                 for (NSHTTPCookie * cookie in cookies) {
@@ -345,6 +344,9 @@
                 [NSThread sleepForTimeInterval:1.3];
                 
                 [self.navigationController popViewControllerAnimated:YES];
+                
+            } else{
+                [SVProgressHUD showErrorWithStatus:@"此帐号已注册"];
             }
             
             

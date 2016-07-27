@@ -153,12 +153,12 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    self.navigationController.navigationBarHidden = YES;
+    self.navigationController.navigationBarHidden = YES;    // 隐藏navigationBar
     
 }
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:YES];
-    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBarHidden = NO;    // 显示navigationBar
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -822,6 +822,7 @@
 - (void)loadNewData3{
     
     [_tableView3.header endRefreshing];
+    [_tableView3.footer endRefreshing];
 }
 - (void)loadMoreData3{
     
@@ -836,7 +837,8 @@
         NSLog(@"-----%@", responseObject);
         [self.tableView3.footer endRefreshing];
         if (!responseObject) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            self.tableView3.footer.state = MJRefreshStateNoMoreData;
         }
         for (MyReplyModel * model in responseObject) {
             MyReplyFrameModel * myReFrameModel = [[MyReplyFrameModel alloc] init];
@@ -1147,9 +1149,14 @@
         PostDetailVC * detailVC = [[PostDetailVC alloc] init];
         PostFrameModel * model = self.dataSource2[indexPath.row];
         
+        detailVC.height = 64;
         detailVC.wapurl = model.postsModel.wapurl;
         [self.navigationController pushViewController:detailVC animated:YES];
-    }else{  // 回复页面
+    }else if(tableView == _tableView1){ // 主页
+        NSLog(@"%lu", indexPath.row);
+    }
+    
+    else{  // 回复页面
         // 可以跳转到评论页面、赛事的评论页面、帖子的回复页面
         MyReplyFrameModel * frameModel =  self.dataSource3[indexPath.row];
         MyReplyModel * replyModel = frameModel.myreplyModel;

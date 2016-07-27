@@ -46,7 +46,7 @@
  */
 @property (nonatomic, copy) NSString * brief;
 /**
- *  0:未关注／1:已关注/2:互相关注
+ *  0：未关注   1：已关注   3：互相关注；  9：互相关注
  */
 @property (nonatomic, copy) NSString * relation;
 /**

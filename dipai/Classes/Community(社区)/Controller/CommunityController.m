@@ -60,10 +60,10 @@
     // 滚动视图
     UIScrollView *_sc;
     // 对应分段控件的三个tableView
-    UITableView *_tableView1;
-    UITableView *_tableView2;
-    UITableView *_tableView3;
-    
+//    UITableView *_tableView1;
+//    UITableView *_tableView2;
+//    UITableView *_tableView3;
+//    
     // 论坛模型
     ForumModel * _forumModel;
     
@@ -74,6 +74,9 @@
 @property (nonatomic, strong) NSMutableArray * dataSource1;
 // 数据源
 @property (nonatomic, strong) NSMutableArray * dataSource2;
+
+@property (nonatomic, strong) UITableView * tableView1;
+@property (nonatomic, strong) UITableView * tableView2;
 
 @property (nonatomic, strong) SBModel * sbModel;
 @end
@@ -182,23 +185,23 @@
 }
 #pragma mark --- 添加tableView
 - (void)addTableView{
-    _tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT -64) style:UITableViewStylePlain];
-    _tableView1.delegate = self;
-    _tableView1.dataSource = self;
+    self.tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT -64) style:UITableViewStylePlain];
+    self.tableView1.delegate = self;
+    self.tableView1.dataSource = self;
 //    _tableView1.showsVerticalScrollIndicator = NO;
-    _tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView1.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
+    self.tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView1.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
     
-    [_sc addSubview:_tableView1];
+    [_sc addSubview:self.tableView1];
     
-    _tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT -64) style:UITableViewStylePlain];
-    _tableView2.delegate=self;
-    _tableView2.dataSource=self;
+    self.tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT -64) style:UITableViewStylePlain];
+    self.tableView2.delegate=self;
+    self.tableView2.dataSource=self;
 //    _tableView2.showsVerticalScrollIndicator=NO;
-    _tableView2.separatorStyle=UITableViewCellSeparatorStyleNone;
-    _tableView2.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
+    self.tableView2.separatorStyle=UITableViewCellSeparatorStyleNone;
+    self.tableView2.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
     
-    [_sc addSubview:_tableView2];
+    [_sc addSubview:self.tableView2];
 //    // 添加刷新和加载
     
     
@@ -262,7 +265,6 @@
         
         _forumModel = responseObject;
         
-        
 //        NSLog(@"%@", responseObject);
         ForumModel * forumModel = [[ForumModel alloc] init];
         forumModel = responseObject;
@@ -284,7 +286,7 @@
         // 添加头视图
         [self addTableViewHeader];
         
-        [_tableView1 reloadData];
+        [self.tableView1 reloadData];
 
     } failure:^(NSError * error) {
        
@@ -299,7 +301,7 @@
 - (void)loadNewData2{
     
     [DataTool getGroupDataWithStr:GroupURL parameters:nil success:^(id responseObject) {
-        [_tableView2.header endRefreshing];
+        [self.tableView2.header endRefreshing];
         
 //        NSLog(@"获取圈子页数据：%@", responseObject);
         CircleModel * cirModel = responseObject;
@@ -322,14 +324,13 @@
 //    NSLog(@"%@", url);
     
     [DataTool getGroupDataWithStr:url parameters:nil success:^(id responseObject) {
-        [_tableView2.footer endRefreshing];
+        [self.tableView2.footer endRefreshing];
         
 //        NSLog(@"%@", responseObject);
         CircleModel * cirModel = responseObject;
-       
-        if ([cirModel.page isKindOfClass:[NSNull class]]) {
-//            _tableView2.footer.state = MJRefreshStateNoMoreData;
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+        if ([cirModel.modelArr isKindOfClass:[NSNull class]]) {
+            self.tableView2.footer.state = MJRefreshStateNoMoreData;
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         }else{
             for (GroupModel * model in cirModel.modelArr) {
                 [self.dataSource2 addObject:model];
@@ -338,7 +339,7 @@
             _page = cirModel.page;
         }
         
-        [_tableView2 reloadData];
+        [self.tableView2 reloadData];
         
     } failure:^(NSError * error) {
         
@@ -349,7 +350,7 @@
 
 - (void)loadMoreData{
     [_tableView1.footer endRefreshing];
-    [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+    _tableView1.footer.state = MJRefreshStateNoMoreData;
 }
 
 #pragma mark --- HeaderViewInTalkingDelegate
@@ -374,12 +375,12 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    if (tableView == _tableView2) { // 如果是圈子页面
+    if (tableView == _tableView2) { // 如果是关注页面
         // 分两种情况  1:帖子  2:回复
         GroupModel * groupModel = self.dataSource2[indexPath.row];
         
-        NSLog(@"%@", groupModel.type);
-        if ([groupModel.type isEqualToString:@"0"]) {
+//        NSLog(@"%@", groupModel.type);
+        if ([groupModel.type isEqualToString:@"0"]) {   // 帖子
             
             GrpPostFrmModel * frameModel = [[GrpPostFrmModel alloc] init];
             frameModel.groupModel = groupModel;
@@ -388,7 +389,7 @@
             cell.postFrmModel = frameModel;;
             return cell;
             
-        }else{
+        }else{  // 回复
             GroupFrameModel * frameModel = [[GroupFrameModel alloc] init];
             frameModel.groupModel = groupModel;
             GroupCell * cell = [GroupCell cellWithTableView:tableView];

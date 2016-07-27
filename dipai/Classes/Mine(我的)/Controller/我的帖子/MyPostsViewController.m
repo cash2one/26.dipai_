@@ -374,8 +374,8 @@
     
     [DataTool getMyReplysDataWithStr:MyReplyURL parameters:nil success:^(id responseObject) {
         [_tableView2.header endRefreshing];
+        [_tableView2.footer endRefreshing];
         NSLog(@"%@", responseObject);
-        
         
         NSMutableArray * arr = [NSMutableArray array];
         for (MyReplyModel * model in responseObject) {
@@ -408,7 +408,8 @@
         NSLog(@"-----%@", responseObject);
         [_tableView2.footer endRefreshing];
         if (!responseObject) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            _tableView2.footer.state = MJRefreshStateNoMoreData;
         }
         for (MyReplyModel * model in responseObject) {
             MyReplyFrameModel * myReFrameModel = [[MyReplyFrameModel alloc] init];

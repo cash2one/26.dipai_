@@ -149,7 +149,7 @@
         NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
         [userDefaults setObject:data forKey:WXUser];
         [userDefaults synchronize];
-        [self dismiss];
+        [self dismissViewControllerAnimated:YES completion:nil];
     } failure:^(NSError * error) {
         
         NSLog(@"发送code出错：%@", error);

@@ -105,6 +105,7 @@
         [DataTool getClubNewsDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
             
             [self.tableView.header endRefreshing];
+            [self.tableView.footer endRefreshing];
             self.dataSource = responseObject;
             if (_tableView.contentOffset.y != 0) {
                 
@@ -133,6 +134,7 @@
     [DataTool getClubNewsDataWithStr:_wapurl parameters:nil success:^(id responseObject) {
         
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         self.dataSource = responseObject;
         
         [self.tableView reloadData];
@@ -162,7 +164,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     NewsModel * newsModel = self.dataSource[indexPath.row];
     if ([self.delegate respondsToSelector:@selector(turnPageToDetailVCWithURL:)]) {
-        [self.delegate turnPageToDetailVCWithURL:newsModel.wapurl];
+        [self.delegate turnPageToDetailVCWithURL:newsModel.url];
     } else{
         NSLog(@"ClubNewsVC的代理没有进行响应...");
     }

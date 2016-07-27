@@ -75,5 +75,8 @@
  *  分享链接
  */
 @property (nonatomic, copy) NSString * wapurl;
-
+/**
+ *  用户主页链接
+ */
+@property (nonatomic, copy) NSString * userurl;
 @end

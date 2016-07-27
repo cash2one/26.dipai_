@@ -109,7 +109,8 @@
     CGFloat imageW = InfoCellPicWidth * IPHONE6_W_SCALE;
     CGFloat imageH = InfoCellPicHeight * IPHONE6_H_SCALE;
     _picView.frame = CGRectMake(imageX, imageY, imageW, imageH);
-    [_picView sd_setImageWithURL:[NSURL URLWithString:_newsModel.picname] placeholderImage:[UIImage imageNamed:@"123"]];
+//    [_picView sd_setImageWithURL:[NSURL URLWithString:_newsModel.picname] placeholderImage:[UIImage imageNamed:@"123"]];
+    [_picView sd_setImageWithURL:[NSURL URLWithString:_newsModel.covers[@"cover1"]] placeholderImage:[UIImage imageNamed:@"123"]];
     // 标题
     CGFloat titleX = CGRectGetMaxX(_picView.frame) + Margin30 * IPHONE6_W_SCALE;
     CGFloat titleY = Margin36 * IPHONE6_H_SCALE;

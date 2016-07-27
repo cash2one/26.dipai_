@@ -217,6 +217,7 @@
     // 搭建界面
     [self setUpUI];
     
+//    NSLog(@"%@", self.url);
     // 获取网络上的数据
     [self getVideoDataWithURL:self.url];
     
@@ -288,6 +289,7 @@
 
 #pragma mark --- 获取视频数据
 - (void)getVideoDataWithURL:(NSString *)url{
+//    NSLog(@"%@", url);
     [DataTool getVideoDataWithStr:url parameters:nil success:^(id responseObject) {
         
         _videoModel = responseObject;
@@ -333,9 +335,9 @@
     NSUInteger counts = _videoModel.album.count;
     
     // 描述
-    _descriptionLbl.text = _videoModel.descriptioN;
+    _descriptionLbl.text = _videoModel.title;
     // 详细描述
-    _summaryLbl.text = _videoModel.summary;
+    _summaryLbl.text = _videoModel.descriptioN;
     
     NSArray * albums = _videoModel.album;
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
@@ -448,6 +450,7 @@
     CGFloat titleH = blackH;
     titleLbl.frame = CGRectMake(titleX, titleY, titleW, titleH);
     [blackView addSubview:titleLbl];
+//    titleLbl.textColor = [UIColor redColor];
     _titleLbl = titleLbl;
     
     // 展开视频列表的按钮
@@ -507,7 +510,7 @@
     desLbl.numberOfLines = 0;
 //    desLbl.text = @"";
 //    desLbl.text = @"我是中国人=我是中国人=我是中国人=我是中国人=我是中国人=我是中国人=我是中国人=我是中国人=我是中国人=我是中国人=我是中国人=我是中国人=我是中国人=";
-    desLbl.text = _videoModel.descriptioN;
+    desLbl.text = _videoModel.title;
     desLbl.font = Font16;
     CGFloat desX = Margin30 * IPHONE6_W_SCALE;
     CGFloat desY = CGRectGetMaxY(_blackView.frame) + 26 / 2 * IPHONE6_H_SCALE;
@@ -764,28 +767,32 @@
 #pragma mark ---分享
 - (void)shareAction
 {
+    
     // 暂停视频
-    [_playerView pause];
-    // 分享需要图片、标题、描述、视频链接
-    NSString *st = _picUrl;
-    NSURL *url = [NSURL URLWithString:st];
-    NSData *data = [NSData dataWithContentsOfURL:url];
-    UIImage *img = [UIImage imageWithData:data];
+//    [_playerView pause];
     
-    // 友盟分享代码，复制、粘贴
-    [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"
-                                      shareText:[NSString stringWithFormat:@"%@ %@",_title,_description]
-                                     shareImage:img
-                                shareToSnsNames:@[UMShareToSina,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]
-                                       delegate:self]; // 分享到朋友圈、微信好友、QQ空间、QQ好友
+    [SVProgressHUD showErrorWithStatus:@"该功能暂未开放"];
     
-    // 下面的三段代码是什么意思？ 解释：加上下面的几句话才能将网页内容分享成功
-    // 分享到各个平台的内容  如果没有下面的代码就会跳到友盟首页（自己设置的URL）
-    [UMSocialData defaultData].extConfig.wechatSessionData.url = _wapurl;
-    [UMSocialData defaultData].extConfig.wechatTimelineData.url = _wapurl;
-    [UMSocialData defaultData].extConfig.qqData.url = _wapurl;
-    [UMSocialData defaultData].extConfig.qzoneData.url = _wapurl;
-    [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeVideo url:_wapurl];
+//    // 分享需要图片、标题、描述、视频链接
+//    NSString *st = _picUrl;
+//    NSURL *url = [NSURL URLWithString:st];
+//    NSData *data = [NSData dataWithContentsOfURL:url];
+//    UIImage *img = [UIImage imageWithData:data];
+//    
+//    // 友盟分享代码，复制、粘贴
+//    [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"
+//                                      shareText:[NSString stringWithFormat:@"%@ %@",_title,_description]
+//                                     shareImage:img
+//                                shareToSnsNames:@[UMShareToSina,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]
+//                                       delegate:self]; // 分享到朋友圈、微信好友、QQ空间、QQ好友
+//    
+//    // 下面的三段代码是什么意思？ 解释：加上下面的几句话才能将网页内容分享成功
+//    // 分享到各个平台的内容  如果没有下面的代码就会跳到友盟首页（自己设置的URL）
+//    [UMSocialData defaultData].extConfig.wechatSessionData.url = _wapurl;
+//    [UMSocialData defaultData].extConfig.wechatTimelineData.url = _wapurl;
+//    [UMSocialData defaultData].extConfig.qqData.url = _wapurl;
+//    [UMSocialData defaultData].extConfig.qzoneData.url = _wapurl;
+//    [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeVideo url:_wapurl];
 }
 
 #pragma mark --- CommentViewDelegate

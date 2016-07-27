@@ -22,7 +22,7 @@
 - (NSString *)addtime{
         
     NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
-    fmt.dateFormat = @"yyyy-MM-dd";
+    fmt.dateFormat = @"yyyy-MM-dd HH:mm:ss ";
     NSDate *created_at = [fmt dateFromString:_addtime];
     //    NSLog(@"--time--%@", created_at);
     if ([created_at isThisYear]) { // 今年

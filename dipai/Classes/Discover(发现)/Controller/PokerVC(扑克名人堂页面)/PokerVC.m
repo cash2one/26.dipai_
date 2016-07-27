@@ -76,6 +76,21 @@
     topView.image = [UIImage imageNamed:@"mingrentang_beijing"];
     topView.frame = CGRectMake(0, 0, WIDTH, 250 * IPHONE6_H_SCALE);
     
+    // 名人堂简介
+    UILabel * starDes = [[UILabel alloc] init];
+    starDes.numberOfLines = 0;
+    starDes.font = Font12;
+    starDes.textColor = [UIColor whiteColor];
+    starDes.text = @"底牌名人堂会邀请国内知名牌手入驻，他们常年征战于国内外扑克大赛，成绩斐然，贡献卓越。通过名人堂，您可以快速找到他们并与他们进行互动。";
+    [topView addSubview:starDes];
+    CGFloat starX = 32 * IPHONE6_W_SCALE;
+    CGFloat starY = 167 * IPHONE6_H_SCALE;
+    CGFloat starW = WIDTH - 2 * starX;
+    NSMutableDictionary * starDic = [NSMutableDictionary dictionary];
+    starDic[NSFontAttributeName] = Font12;
+    CGRect starRect = [starDes.text boundingRectWithSize:CGSizeMake(starW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:starDic context:nil];
+    starDes.frame = (CGRect){{starX, starY}, starRect.size};
+    
     // 分割线
     UIView * separateView = [[UIView alloc] init];
     [self.view addSubview:separateView];
@@ -146,6 +161,7 @@
 - (void)loadNewData{
     [DataTool getPokerListDataWithStr:PokerListURL parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         NSLog(@"获取扑克名人堂首页数据：%@", responseObject);
         if ([responseObject isKindOfClass:[NSString class]]) {
             

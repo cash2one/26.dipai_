@@ -161,8 +161,8 @@
     // 监听自定义按钮的点击事件
     snsPlatform.snsClickHandler = ^(UIViewController *presentingController, UMSocialControllerService * socialControllerService, BOOL isPresentInController){
         UIPasteboard *pastboad = [UIPasteboard generalPasteboard];
-        pastboad.string = _wapurl;
-        NSLog(@"复制的链接：%@", _wapurl);
+        pastboad.string = [_wapurl stringByAppendingString:@"?isshare=1"];
+        NSLog(@"复制的链接：%@", [_wapurl stringByAppendingString:@"?isshare=1"]);
         [SVProgressHUD showSuccessWithStatus:@"复制链接成功"];
         
     };
@@ -296,7 +296,22 @@
 }
 - (void)webViewDidFinishLoad:(UIWebView *)webView{
     [SVProgressHUD dismiss];
+//    [_webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName('body')[0].style.webkitTextFillColor= 'red'"]; // 修改字体的颜色
     
+    // 修改字体的大小
+    [_webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName('body')[0].style.webkitTextSizeAdjust= '100%'"];
+    [_webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName('body')[0].style.webkitTextFont-Family='Copperplate-Bold'"];
+    
+//    NSString * js = [[NSString alloc] initWithFormat:@"document.body.style.font-family=Copperplate-Bold"];
+//    [_webView stringByEvaluatingJavaScriptFromString:js];
+    
+    
+//    [_webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName('body')[0].style.webkitTextFillColor= 'red'"];
+    //页面背景色
+//    [_webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName('body')[0].style.background='#2E2E2E'"];
+    //页面背景色
+    
+
 }
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error{
     [SVProgressHUD showErrorWithStatus:@"加载失败"];
@@ -507,10 +522,10 @@
     NSURL *url = [NSURL URLWithString:st];
     NSData *data = [NSData dataWithContentsOfURL:url];
     UIImage *img = [UIImage imageWithData:data];
+//    NSLog(@"img:%@", img);
     if (!img) {
         img = [UIImage imageNamed:@"40pt@2x"];
     }
-    
     // 友盟分享代码，复制、粘贴
     [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"
                                       shareText:[NSString stringWithFormat:@"%@ %@",_model.title,_model.descriptioN]
@@ -518,13 +533,19 @@
                                 shareToSnsNames:@[UMShareToSina ,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]
                                        delegate:self]; // 分享到朋友圈、微信好友、QQ空间、QQ好友
     
-    // 下面的三段代码是什么意思？ 解释：加上下面的几句话才能将网页内容分享成功
     // 分享到各个平台的内容  如果没有下面的代码就会跳到友盟首页（自己设置的URL）
-    [UMSocialData defaultData].extConfig.wechatSessionData.url = _wapurl;
-    [UMSocialData defaultData].extConfig.wechatTimelineData.url = _wapurl;
-    [UMSocialData defaultData].extConfig.qqData.url = _wapurl;
-    [UMSocialData defaultData].extConfig.qzoneData.url = _wapurl;
-    [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeWeb url:_wapurl];
+    NSString * wapurl = [_wapurl stringByAppendingString:@"?isshare=1"];
+    [UMSocialData defaultData].extConfig.wechatSessionData.url = wapurl;
+    [UMSocialData defaultData].extConfig.wechatTimelineData.url = wapurl;
+    [UMSocialData defaultData].extConfig.qqData.url = wapurl;
+    [UMSocialData defaultData].extConfig.qzoneData.url = wapurl;
+    [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeWeb url:wapurl];
+    
+//     [UMSocialData defaultData].extConfig.qqData.title = _model.title;
+    [UMSocialData defaultData].extConfig.qqData.shareImage = img;
+    [UMSocialData defaultData].extConfig.qzoneData.shareImage = img;
+//    [UMSocialData defaultData].extConfig.qqData.shareText = _model.descriptioN;
+//     [UMSocialData defaultData].extConfig.qzoneData.title = _model.title;
 }
 
 

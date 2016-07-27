@@ -14,4 +14,9 @@
  */
 @property (nonatomic, copy) NSString * wapurl;
 
+/**
+ *  从个人主页跳过来的时候tableView高度为64
+ */
+@property (nonatomic, assign) int height;
+
 @end

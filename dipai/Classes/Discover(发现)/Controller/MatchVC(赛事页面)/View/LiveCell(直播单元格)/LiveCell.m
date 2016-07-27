@@ -15,6 +15,8 @@
 @interface LiveCell()
 // 左侧竖线
 @property (nonatomic, strong) UIView * leftLine;
+// 非精彩牌局的左侧竖线
+@property (nonatomic, strong) UIView * feLfLine;
 // 红点
 @property (nonatomic, strong) UIView * redView;
 // 直播员姓名
@@ -23,6 +25,10 @@
 @property (nonatomic, strong) UILabel * zhiboLbl;
 // 赛事内容
 @property (nonatomic, strong) UILabel * bodyLbl;
+
+// 非精彩牌局的图片
+@property (nonatomic, strong) UIImageView * feImage;
+
 // 图片
 @property (nonatomic, strong) UIImageView * image;
 // 分享图片
@@ -59,7 +65,7 @@
         // 设置子控件
         [self setUpChildControl];
         self.backgroundColor = [UIColor whiteColor];
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
+//        self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     return self;
@@ -73,6 +79,11 @@
     leftLine.backgroundColor = [UIColor colorWithRed:189 / 255.f green:189 / 255.f blue:189 / 255.f alpha:1];
     [self addSubview:leftLine];
     _leftLine = leftLine;
+    
+    UIView * feLfLine = [[UIView alloc] init];
+    feLfLine.backgroundColor = [UIColor colorWithRed:189 / 255.f green:189 / 255.f blue:189 / 255.f alpha:1];
+    [self addSubview:feLfLine];
+    _feLfLine = feLfLine;
     
     // 小红点
     UIView * redView = [[UIView alloc] init];
@@ -103,8 +114,13 @@
     bodyLbl.font = Font14;
     [self addSubview:bodyLbl];
     _bodyLbl = bodyLbl;
-    
-    
+    // 非精彩牌局图片
+    UIImageView * feImage = [[UIImageView alloc] init];
+    [self addSubview:feImage];
+    UITapGestureRecognizer * feTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showBigPic)];
+    [feImage addGestureRecognizer:feTap];
+    feImage.userInteractionEnabled = YES;
+    _feImage = feImage;
     
     /****精彩牌局****/
     // 背景图片
@@ -172,6 +188,9 @@
     
     if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickPicWithModel:)]) {
         [self.delegate tableViewCell:self didClickPicWithModel:_liveInfoModel];
+    }else{
+    
+        NSLog(@"代理没有响应...");
     }
 }
 
@@ -185,7 +204,13 @@
 
     [super layoutSubviews];
     
-    if (_liveInfoModel.title) { // 精彩牌局
+    if (_liveInfoModel.title && _liveInfoModel.title.length > 0) { // 精彩牌局
+        
+        _bodyLbl.hidden = YES;  // 隐藏非精彩赛事的内容
+        _feImage.hidden = YES;  // 隐藏非精彩牌局的图片
+        _feLfLine.hidden = YES; // 隐藏非精彩牌局的左侧竖线
+        _leftLine.hidden = NO;  // 显示精彩牌局的左侧竖线
+        
         // 红点
         CGFloat redX = 15.5 * IPHONE6_W_SCALE;
         CGFloat redY = 16 * IPHONE6_H_SCALE;
@@ -227,7 +252,7 @@
             CGFloat backH = 94 * IPHONE6_H_SCALE + contentRect.size.height -10 * IPHONE6_H_SCALE;
             _backView.frame = CGRectMake(nameX, backY, backW, backH);
         }
-        
+        _backView.hidden = NO;
         
         
         // 左侧竖线
@@ -236,7 +261,7 @@
         CGFloat lineW = 1 * IPHONE6_W_SCALE;
         CGFloat lineH = CGRectGetMaxY(_backView.frame) + 24 * IPHONE6_H_SCALE;
         _leftLine.frame = CGRectMake(lineX, lineY, lineW, lineH);
-        
+//        _leftLine.backgroundColor = [UIColor greenColor];
         // 分享图片
         [_sharePic mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.equalTo(_backView.mas_right).offset(-11 * IPHONE6_W_SCALE);
@@ -286,6 +311,12 @@
         
     }else{  // 非精彩牌局
         
+        _bodyLbl.hidden = NO;   // 显示非精彩赛事的内容
+        _backView.hidden = YES;// 隐藏精彩牌局的背景图
+        _feImage.hidden = NO;   // 显示非精彩牌局的图片
+        _feLfLine.hidden = NO;  // 显示非精彩牌局的左侧竖线
+        _leftLine.hidden = YES; // 隐藏精彩牌局的左侧竖线
+        
         // 红点
         CGFloat redX = 15 * IPHONE6_W_SCALE;
         CGFloat redY = 16 * IPHONE6_H_SCALE;
@@ -327,19 +358,21 @@
             CGFloat imageY = CGRectGetMaxY(_bodyLbl.frame) + 10 * IPHONE6_H_SCALE;
             CGFloat imageW = 150 * IPHONE6_W_SCALE;
             CGFloat imageH = 216 * 0.5 * IPHONE6_W_SCALE;
-            _image.frame = CGRectMake(imageX, imageY, imageW, imageH);
-            lineH = CGRectGetMaxY(_image.frame) + 15 * IPHONE6_H_SCALE;
+            _feImage.frame = CGRectMake(imageX, imageY, imageW, imageH);
+            lineH = CGRectGetMaxY(_feImage.frame) + 15 * IPHONE6_H_SCALE;
+            [_feImage sd_setImageWithURL:[NSURL URLWithString:_liveInfoModel.imgs[@"pimg2"]] placeholderImage:[UIImage imageNamed:@"123"]];
         }else{
             lineH = CGRectGetMaxY(_bodyLbl.frame) + 24 * IPHONE6_H_SCALE;
         }
         
+//        NSLog(@"%f", lineH);
         // 左侧竖线
         CGFloat lineX = 35 * 0.5 * IPHONE6_W_SCALE;
         CGFloat lineY = 0;
         CGFloat lineW = 1 * IPHONE6_W_SCALE;
         
-        _leftLine.frame = CGRectMake(lineX, lineY, lineW, lineH);
-        
+        _feLfLine.frame = CGRectMake(lineX, lineY, lineW, lineH);
+//        _feLfLine.backgroundColor = [UIColor blackColor];
     }
     
     

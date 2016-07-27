@@ -43,7 +43,11 @@
  */
 @property (nonatomic, copy) NSString * picname;
 /**
+ *  字典图片
+ */
+@property (nonatomic, strong) NSDictionary * covers;
+/**
  *  跳转链接
  */
-@property (nonatomic, copy) NSString * wapurl;
+@property (nonatomic, copy) NSString * url;
 @end

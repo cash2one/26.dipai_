@@ -112,6 +112,17 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    
+    NSArray *familyNames = [UIFont familyNames];
+    for( NSString *familyName in familyNames ){
+        printf( "Family: %s \n", [familyName UTF8String] );
+        NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
+        for( NSString *fontName in fontNames ){
+            printf( "\tFont: %s \n", [fontName UTF8String] );
+        }
+    }
+
+    
     AppDelegate * delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     delegate.delegate = self;
     
@@ -190,6 +201,7 @@
     
     [DataTool getNewDataWithStr:InformationURL parameters:nil success:^(NSArray * arr) {
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         NSArray * bannerModelArr = [arr objectAtIndex:0];
         NSArray * tournamentModelArr = [arr objectAtIndex:1];
         NSArray * listModelArr = [arr objectAtIndex:2];
@@ -267,7 +279,7 @@
         [self.tableView.footer endRefreshing];
         id str = array[0];
         if ([str isEqualToString:@"0"]) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
             
         } else
         {
@@ -287,6 +299,7 @@
     if (!self.bannerArr.count) {
         // 结束刷新
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         [SVProgressHUD showErrorWithStatus:@"网络有问题"];
     }
 }

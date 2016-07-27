@@ -67,7 +67,6 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    
     // 获取网络数据
     [self getData];
     
@@ -165,9 +164,9 @@
 }
 #pragma mark --- 加载更多数据
 - (void)loadMoreData{
-   
-    [self.collection.footer endRefreshing];
-    [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+   self.collection.footer.state = MJRefreshStateNoMoreData;
+//    [self.collection.footer endRefreshing];
+    
 }
 
 // 单元格的个数
@@ -197,10 +196,9 @@
 // 单元格的内容
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     
-    
     MoreVideosCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MoreCollection" forIndexPath:indexPath];
     HotVideoModel * model = self.dataArray[indexPath.row];
-    [cell cellForViedoInfoShowCollectionCell:model];
+    cell.hotVideoModel = model;
 //    cell.backgroundColor = [UIColor yellowColor];
     return cell;
 }
@@ -218,7 +216,7 @@
 #pragma mark --- 获取网络数据
 - (void)getData{
     
-//    NSLog(@"%@", self.wapurl);
+    NSLog(@"%@", self.wapurl);
     [SVProgressHUD showWithStatus:@"加载中..."];
     [DataTool getAlbumDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         [SVProgressHUD dismiss];

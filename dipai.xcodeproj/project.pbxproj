@@ -214,6 +214,7 @@
 		C1C6AE5A1D13996900DEA59E /* WSOPModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C6AE591D13996900DEA59E /* WSOPModel.m */; };
 		C1C6AE5F1D13D96000DEA59E /* NewsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C6AE5E1D13D96000DEA59E /* NewsModel.m */; };
 		C1C6AE621D13DADF00DEA59E /* NewsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C6AE611D13DADF00DEA59E /* NewsCell.m */; };
+		C1C849D71D464E1900C88695 /* msyh.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1C849D61D464E1900C88695 /* msyh.ttf */; };
 		C1C87AEE1CFFC196004166CC /* HeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C87AED1CFFC196004166CC /* HeaderView.m */; };
 		C1C87AF21D0039CF004166CC /* BackViewOfTable.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C87AF11D0039CF004166CC /* BackViewOfTable.m */; };
 		C1C87AF91D003F75004166CC /* AlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C87AF81D003F75004166CC /* AlbumViewController.m */; };
@@ -795,6 +796,7 @@
 		C1C6AE5E1D13D96000DEA59E /* NewsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsModel.m; sourceTree = "<group>"; };
 		C1C6AE601D13DADF00DEA59E /* NewsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsCell.h; sourceTree = "<group>"; };
 		C1C6AE611D13DADF00DEA59E /* NewsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsCell.m; sourceTree = "<group>"; };
+		C1C849D61D464E1900C88695 /* msyh.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = msyh.ttf; sourceTree = "<group>"; };
 		C1C87AEC1CFFC196004166CC /* HeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeaderView.h; sourceTree = "<group>"; };
 		C1C87AED1CFFC196004166CC /* HeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeaderView.m; sourceTree = "<group>"; };
 		C1C87AF01D0039CF004166CC /* BackViewOfTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackViewOfTable.h; sourceTree = "<group>"; };
@@ -1612,6 +1614,7 @@
 		C1212E381CCDAA6200F76D4E /* Lib */ = {
 			isa = PBXGroup;
 			children = (
+				C1C849D61D464E1900C88695 /* msyh.ttf */,
 				C1CC40781D3A278800C12B83 /* UMessage_Sdk_1.1.0 */,
 				C1AB7EF11D222C140029A987 /* 获取网络图片大小 */,
 				C1F3DC0C1D2133E000884F69 /* MJPhotoBrowser */,
@@ -4057,6 +4060,7 @@
 				C1212DF91CCDA7DA00F76D4E /* Assets.xcassets in Resources */,
 				C1F3DC1D1D2133E000884F69 /* MJPhotoBrowser.bundle in Resources */,
 				C19C7E591CFEB6F0008F3ECF /* video_bofang.png in Resources */,
+				C1C849D71D464E1900C88695 /* msyh.ttf in Resources */,
 				C1212DF71CCDA7DA00F76D4E /* Main.storyboard in Resources */,
 				C14DB62F1CF2EC04007F69CA /* UMSCommentInputController.xib in Resources */,
 				C19C7E741CFEB771008F3ECF /* notfull.jpg in Resources */,

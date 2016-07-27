@@ -347,11 +347,13 @@
         
         NSLog(@"绑定微信发送code成功%@,", responseObject);
         NSLog(@"%@", responseObject[@"content"]);
-        if ([responseObject[@"content"] isEqualToString:@"此微信号已绑定"]) {
-            [SVProgressHUD showErrorWithStatus:@"此微信号已绑定"];
-        }
+        
         if ([responseObject[@"state"] isEqualToString:@"1"]) {
             NSLog(@"绑定成功...");
+        }else{
+            NSLog(@"绑定失败...");
+            // 绑定失败的原因
+            [SVProgressHUD showErrorWithStatus:responseObject[@"content"]];
         }
     } failure:^(NSError * error) {
         

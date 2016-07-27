@@ -116,7 +116,7 @@
     // 评论数
     UILabel * commentsView = [[UILabel alloc] init];
     commentsView.textAlignment = NSTextAlignmentRight;
-    commentsView.font = Font15;
+    commentsView.font = Font10;
     commentsView.textColor = Color178;
     [self addSubview:commentsView];
     _commentsView = commentsView;

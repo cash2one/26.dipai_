@@ -203,6 +203,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)loadNewData{
     [DataTool getCollectionDataWithStr:MyCollectionURL parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         //        NSLog(@"%@", responseObject);
         
 //        NSMutableArray * arr = responseObject;
@@ -236,7 +237,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 //        NSString * page = [arr objectAtIndex:1];
 //        _page = page;
         if (!responseObject) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
         }
         [self.dataSource addObjectsFromArray:responseObject];
         if (self.dataSource.count > 0) {

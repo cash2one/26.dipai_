@@ -238,7 +238,7 @@
     
     [DataTool getCommentsListWithStr:url parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
-        
+        [self.tableView.footer endRefreshing];
         // 传递过来的是模型数组(模型是评论模型)
         NSArray * commentsArr = responseObject;
         
@@ -265,6 +265,7 @@
     if (self.dataSource.count < 1) {
         // 结束刷新
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         [SVProgressHUD showErrorWithStatus:@"网络有问题"];
     }
     
@@ -285,7 +286,7 @@
         NSArray * commentsArr = responseObject;
         
         if (!commentsArr) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
         } else{
             NSMutableArray * commentsFrameArr = [NSMutableArray array];
             for (CommentsModel * commentModel in commentsArr) {

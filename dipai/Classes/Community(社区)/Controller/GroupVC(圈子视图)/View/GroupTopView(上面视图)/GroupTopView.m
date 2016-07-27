@@ -76,7 +76,7 @@
 
 - (void)setGrpFrmModel:(GrpPostFrmModel *)grpFrmModel{
     
-    NSLog(@"%@", grpFrmModel);
+//    NSLog(@"%@", grpFrmModel);
     
     _grpFrmModel = grpFrmModel;
     
@@ -101,6 +101,7 @@
     
     // 标题
     _titleView.frame = _grpFrmModel.titleFrame;
+//    _titleView.backgroundColor = [UIColor redColor];
     
     // 正文
     _textView.frame = _grpFrmModel.contentsFrame;
@@ -133,6 +134,9 @@
     
     // 正文
     _textView.text = _grpFrmModel.groupModel.introduction;
+    _textView.backgroundColor = [UIColor whiteColor];
+    _textView.font = Font13;
+    _textView.textColor = Color123;
 }
 
 #pragma mark --- 添加子控件
@@ -166,12 +170,15 @@
     
     // 标题
     UILabel * titleView = [[UILabel alloc] init];
+    titleView.font = Font16;
+    timeView.numberOfLines = 0;
     [self addSubview:titleView];
     _titleView = titleView;
     
     // 正文
     UILabel *textView = [[UILabel alloc] init];
-    textView.font = Font16;
+    textView.font = Font13;
+    textView.textColor = Color123;
     textView.numberOfLines = 0;
     [self addSubview:textView];
     _textView = textView;
@@ -260,6 +267,9 @@
     
     // 正文
     _textView.text = _frameModel.groupModel.content;
+//    _textView.backgroundColor = [UIColor redColor];
+    _textView.font = Font16;
+    _textView.textColor = [UIColor blackColor];
     
 }
 

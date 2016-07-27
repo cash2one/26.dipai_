@@ -633,7 +633,6 @@
         
         NSArray * dataArr = responseObject[@"data"];
         
-        
         // 字典数组转模型数组
         NSArray * morePokersModelArr = [MorePokersModel objectArrayWithKeyValuesArray:dataArr];
         

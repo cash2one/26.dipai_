@@ -16,15 +16,19 @@
 // 单元格中的模型
 #import "MorePokersModel.h"
 
+#import "LSAlertView.h"
+
 // 名人主页
 #import "StarVC.h"
 // 普通用户
 #import "AnyBodyVC.h"
 #import "SBModel.h"
+// 登录页面
+#import "LoginViewController.h"
 
 #import "SVProgressHUD.h"
 #import "DataTool.h"
-@interface MorePokersVC ()<UITableViewDataSource, UITableViewDelegate, MorePokersCellDelegate>
+@interface MorePokersVC ()<UITableViewDataSource, UITableViewDelegate, MorePokersCellDelegate, LSAlertViewDeleagte>
 
 @property (nonatomic, strong) UITableView * tableView;
 /**
@@ -39,6 +43,8 @@
 
 @property (nonatomic, strong) SBModel * sbModel;
 
+@property (nonatomic, strong) LSAlertView * alertView;
+@property (nonatomic, strong) UIView * alertBackView;
 @end
 
 @implementation MorePokersVC
@@ -108,17 +114,25 @@
     cell.delegate = self;
     MorePokersModel * pokersModel = self.dataSource[indexPath.row];
     
-    // 0：无状态 /   1：已关注/   2：粉丝/    3：互相关注   9：自己
-    
-    if ([pokersModel.relation isEqualToString:@"0"] || [pokersModel.relation isEqualToString:@"2"]) {   // 未关注
-        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
-    } else if ([pokersModel.relation isEqualToString:@"1"]){    // 已关注
-        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
-    } else if([pokersModel.relation isEqualToString:@"3"]){ // 互相关注
-        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
-    } else{
+    // 判断用户是否登录（登录：显示关注状态   未登录：不显示任何关注状态）
+    NSLog(@"%@", pokersModel.relation);
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * cookieName = [defaults objectForKey:Cookie];
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName || wxData) { // 已登录
+        if ([pokersModel.relation isEqualToString:@"0"] || [pokersModel.relation isEqualToString:@"2"]) {   // 未关注
+            [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
+        } else if ([pokersModel.relation isEqualToString:@"1"]){    // 已关注
+            [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
+        } else if([pokersModel.relation isEqualToString:@"3"]){ // 互相关注
+            [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
+        } else{
+            cell.attentionBtn.hidden = YES;
+        }
+    }else{  // 未登录
         cell.attentionBtn.hidden = YES;
     }
+    
     cell.morePokersModel = self.dataSource[indexPath.row];
     return cell;
 }
@@ -128,68 +142,39 @@
 }
 
 #pragma mark MorePokersCellDelegate
+#pragma mark --- 点击关注相关按钮
 - (void)tableViewCell:(MorePokersCell *)cell didClickedWithModel:(MorePokersModel *)model{
     
     NSLog(@"relation:%@", model.relation);
+    NSLog(@"userid:%@", model.userid);
     // 首先要判断是否登录
-    
-    if ([model.relation isEqualToString:@"0"] || [model.relation isEqualToString:@"2"]) {    // 未关注
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * cookieName = [defaults objectForKey:Cookie];
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName || wxData) {
         
-        if ([model.relation isEqualToString:@"0"]) {
-            [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
-        }
-        if ([model.relation isEqualToString:@"2"]) {
-            [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
-        }
+        // model.relation   （0:未关注 1：关注  2：粉丝  3：互相   9：自己)
         
-        // 进行关注的操作（两种情况 1:未关注的人也没关注我<点击关注后变成已关注>  2:未关注的人关注了我<点击以后变成互相关注>）
-        NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.userid]];
-        [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+        if ([model.relation isEqualToString:@"0"] || [model.relation isEqualToString:@"2"]) {    // 未关注
             
-            NSLog(@"进行关注获取到的数据%@", responseObject);
-            NSLog(@"content:%@", responseObject[@"content"]);
-            if ([responseObject[@"data"] isEqualToString:@"1"]) {
-                // 设置为已关注
+            if ([model.relation isEqualToString:@"0"]) {
                 [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
-            }else if([responseObject[@"data"] isEqualToString:@"0"]){
-                // 设置为未关注  要取消关注了
-                
-                [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
-                
-            }else
-            {
+            }else{
                 [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
             }
-        } failure:^(NSError * error) {
-            NSLog(@"进行关注操作时出错%@", error);
-        }];
-        
-        [self.tableView.header beginRefreshing];
-        [SVProgressHUD showSuccessWithStatus:@"关注成功"];
-        
-    
-    } else if ([model.relation isEqualToString:@"1"]){  // 已关注
-        
-        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"确定不再关注此人" message:nil preferredStyle:UIAlertControllerStyleAlert];
-
-        
-        UIAlertAction * cancle = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            NSLog(@"取消");
-        }];
-        
-        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            // 进行取消关注的操作
-            [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
+            
+            // 进行关注的操作（两种情况 1:未关注的人也没关注我<点击关注后变成已关注>  2:未关注的人关注了我<点击以后变成互相关注>）
             NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.userid]];
             [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
                 
-                NSLog(@"进行取消关注获取到的数据%@", responseObject);
+                NSLog(@"进行关注获取到的数据%@", responseObject);
                 NSLog(@"content:%@", responseObject[@"content"]);
                 if ([responseObject[@"data"] isEqualToString:@"1"]) {
                     // 设置为已关注
                     [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
                 }else if([responseObject[@"data"] isEqualToString:@"0"]){
-                    // 设置为未关注
+                    // 设置为未关注  要取消关注了
+                    
                     [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
                     
                 }else
@@ -197,51 +182,142 @@
                     [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
                 }
             } failure:^(NSError * error) {
-                NSLog(@"进行取消关注操作时出错%@", error);
+                NSLog(@"进行关注操作时出错%@", error);
             }];
             
-            [self loadNewData];
-            [self.tableView reloadData];
-            // 对数据的刷新还有影响
-            [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
-        }];
-        
-        [alert addAction:cancle];
-        [alert addAction:OK];
-        [self presentViewController:alert animated:YES completion:nil];
-        
-        
-    }else{  // 互相关注
-        // 进行取消关注的操作
-        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"确定不再关注此人" message:nil preferredStyle:UIAlertControllerStyleAlert];
-        
-        
-        UIAlertAction * cancle = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            NSLog(@"取消");
-        }];
-        
-        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            // 进行取消关注的操作
-            [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
-            NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.userid]];
-            [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+            [self.tableView.header beginRefreshing];
+            [SVProgressHUD showSuccessWithStatus:@"关注成功"];
+            
+            
+        } else if ([model.relation isEqualToString:@"1"]){  // 已关注
+            
+            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"确定不再关注此人" message:nil preferredStyle:UIAlertControllerStyleAlert];
+            
+            
+            UIAlertAction * cancle = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                NSLog(@"取消");
+            }];
+            
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 进行取消关注的操作
+                [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
+                NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.userid]];
+                [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+                    
+                    NSLog(@"进行取消关注获取到的数据%@", responseObject);
+                    NSLog(@"content:%@", responseObject[@"content"]);
+                    if ([responseObject[@"data"] isEqualToString:@"1"]) {
+                        // 设置为已关注
+                        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
+                    }else if([responseObject[@"data"] isEqualToString:@"0"]){
+                        // 设置为未关注
+                        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
+                        
+                    }else
+                    {
+                        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
+                    }
+                } failure:^(NSError * error) {
+                    NSLog(@"进行取消关注操作时出错%@", error);
+                }];
                 
-                NSLog(@"进行取消关注获取到的数据%@", responseObject);
-                NSLog(@"content:%@", responseObject[@"content"]);
-            } failure:^(NSError * error) {
-                NSLog(@"进行取消关注操作时出错%@", error);
+                [self loadNewData];
+                [self.tableView reloadData];
+                // 对数据的刷新还有影响
+                [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
             }];
             
-            [self loadNewData];
-            [self.tableView reloadData];
-            // 对数据的刷新还有影响
-            [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
-        }];
-        
-        [alert addAction:cancle];
-        [alert addAction:OK];
-        [self presentViewController:alert animated:YES completion:nil];
+            [alert addAction:cancle];
+            [alert addAction:OK];
+            [self presentViewController:alert animated:YES completion:nil];
+            
+            
+        }else if([model.relation isEqualToString:@"3"])
+        {  // 互相关注
+            // 进行取消关注的操作
+            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"确定不再关注此人" message:nil preferredStyle:UIAlertControllerStyleAlert];
+            
+            
+            UIAlertAction * cancle = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                NSLog(@"取消");
+            }];
+            
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 进行取消关注的操作
+                [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
+                NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.userid]];
+                NSLog(@"取消关注URL：%@",url);
+                [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+                    
+                    NSLog(@"进行取消关注获取到的数据%@", responseObject);
+                    NSLog(@"content:%@", responseObject[@"content"]);
+                } failure:^(NSError * error) {
+                    NSLog(@"进行取消关注操作时出错%@", error);
+                }];
+                
+                [self loadNewData];
+                [self.tableView reloadData];
+                // 对数据的刷新还有影响
+                [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
+            }];
+            
+            [alert addAction:cancle];
+            [alert addAction:OK];
+            [self presentViewController:alert animated:YES completion:nil];
+        }else{  // 9：自己
+            NSLog(@"自己 。。。");
+        }
+
+    }else{
+        [self addAlertViewWithMessage:@"请在登录后进行操作"];
     }
+}
+#pragma mark --- 添加登录的alertView
+- (void)addAlertViewWithMessage:(NSString *)message{
+    LSAlertView * alertView = [[LSAlertView alloc] init];
+    alertView.delegate = self;
+    
+    // 提示框上的提示信息
+    alertView.messageLbl.text = message;
+    
+    CGFloat x = Margin105 * IPHONE6_W_SCALE;
+    CGFloat y = Margin574 * IPHONE6_H_SCALE;
+    CGFloat w = Margin540 * IPHONE6_W_SCALE;
+    CGFloat h = Margin208 * IPHONE6_H_SCALE;
+    alertView.frame = CGRectMake(x, y, w, h);
+    UIView * alertBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    alertBackView.backgroundColor = ColorBlack30;
+    // 当前顶层窗口
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    // 添加到灰色的背景图
+    [window addSubview:alertBackView];
+    [window addSubview:alertView];
+    _alertBackView = alertBackView;
+    _alertView = alertView;
+}
+#pragma mark --- LSAlertViewDeleagte
+// 取消按钮
+- (void)lsAlertView:(LSAlertView *)alertView cancel:(NSString *)cancel
+{
+    [self removeAlerView];
+}
+
+- (void)removeAlerView
+{
+    // 移除提示框的背景图
+    [_alertBackView removeFromSuperview];
+    // 移除提示框
+    [_alertView removeFromSuperview];
+}
+// 登录按钮
+- (void)lsAlertView:(LSAlertView *)alertView sure:(NSString *)sure
+{
+    // 移除提示框
+    [self removeAlerView];
+    
+    LoginViewController * loginVC = [[LoginViewController alloc] init];
+    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    [self presentViewController:loginNav animated:YES completion:nil];
 }
 
 - (void)tableViewCell:(MorePokersCell *)cell didClickFaceWith:(MorePokersModel *)model{
@@ -298,8 +374,10 @@
 
 - (void)loadNewData{
     
+    NSLog(@"--wapurl--%@", self.wapurl);
     [DataTool getMorePokerDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         
         self.dataSource = responseObject;
         [self.tableView reloadData];

@@ -42,9 +42,11 @@
     // 时间 (时间会变)
     
     // 评论标题
-    CGFloat titleX = 128 * 0.5 * IPHONE6_W_SCALE;
+    CGFloat titleX = 118 * 0.5 * IPHONE6_W_SCALE;
     CGFloat titleY = CGRectGetMaxY(_faceFrame) + Margin30 * IPHONE6_H_SCALE;
-    CGFloat titleW = WIDTH - titleX - 15 * IPHONE6_W_SCALE;
+    CGFloat titleW = WIDTH - 15 * IPHONE6_W_SCALE;
+//    CGFloat titleW = WIDTH;
+//    _titleFrame = CGRectMake(titleX, titleY, WIDTH - 2 * titleW, 16 * IPHONE6_W_SCALE);
     
     NSMutableDictionary * titleDic = [NSMutableDictionary dictionary];
     titleDic[NSFontAttributeName] = Font16;
@@ -53,11 +55,11 @@
     
     // 评论内容
     CGFloat contentsX = 118 / 2 * IPHONE6_W_SCALE;
-    CGFloat contentsY = CGRectGetMaxY(_titleFrame) + Margin30 * IPHONE6_H_SCALE;
+    CGFloat contentsY = CGRectGetMaxY(_titleFrame) + 13 * IPHONE6_H_SCALE;
     CGFloat contentsW = WIDTH - contentsX - 30 / 2 * IPHONE6_W_SCALE;
     
     NSMutableDictionary * contentsDic = [NSMutableDictionary dictionary];
-    contentsDic[NSFontAttributeName] = Font16;
+    contentsDic[NSFontAttributeName] = Font13;
     CGRect contentsRect = [_groupModel.introduction boundingRectWithSize:CGSizeMake(contentsW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentsDic context:nil];
     _contentsFrame = (CGRect){{contentsX, contentsY}, contentsRect.size};
     
@@ -65,7 +67,7 @@
     // 如果有图片上面视图的frame
     CGFloat commentsH = CGRectGetMaxY(_contentsFrame) + Margin22 * IPHONE6_H_SCALE;
     if (_groupModel.picname) {    // 如果有图
-        CGFloat picX = 64 * IPHONE6_W_SCALE;
+        CGFloat picX = 118 * 0.5 * IPHONE6_W_SCALE;
         CGFloat picY = CGRectGetMaxY(_contentsFrame) + 7 * IPHONE6_H_SCALE;
         CGFloat picW = WIDTH - picX;
         CGFloat picH = 80 * IPHONE6_H_SCALE;

@@ -105,9 +105,11 @@
 
 - (void)loadNewData{
     
+//    NSLog(@"%@", self.specialModel.url);
     [DataTool getSpecialDetailDataWithStr:self.specialModel.url parameters:nil success:^(id responseObject) {
         
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         self.dataSource = responseObject;
         [self.tableView reloadData];
         NSLog(@"%@", responseObject);
@@ -125,7 +127,8 @@
         
         [self.tableView.footer endRefreshing];
         if (!responseObject) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
         }
         [self.dataSource addObjectsFromArray:responseObject];
         [self.tableView reloadData];

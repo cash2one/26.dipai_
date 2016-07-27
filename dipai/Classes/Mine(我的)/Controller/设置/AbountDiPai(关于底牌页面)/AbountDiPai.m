@@ -61,17 +61,11 @@
     UILabel * introduceLbl = [[UILabel alloc] init];
     introduceLbl.font = Font15;
     [self.view addSubview:introduceLbl];
-    introduceLbl.text = @"将；发福啊；飞机啊老师讲阿里风景；阿福啊减肥；啊是减肥；;lkjl;kl;jl;jl; ";
+    introduceLbl.text = @"底牌是德州扑克游戏的爱好者聚集地。通过底牌让更多喜欢这款游戏的朋友，了解德州扑克，学习德州扑克，爱上德州扑克。";
     
     
-//    NSMutableAttributedString * attributedString= [[NSMutableAttributedString alloc] initWithString:introduceLbl.text];
-//    NSMutableParagraphStyle * paragraphStyle= [[NSMutableParagraphStyle alloc] init];
-//    [paragraphStyle setLineSpacing:10];//调整行间距
-//    [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0,[introduceLbl.text length])];
-//    introduceLbl.attributedText = attributedString;
-    
-    CGFloat introduceX = 20 * IPHONE6_W_SCALE;
-    CGFloat introduceY = CGRectGetMaxY(imageV.frame) + 40 * IPHONE6_H_SCALE;
+    CGFloat introduceX = 25 * IPHONE6_W_SCALE;
+    CGFloat introduceY = CGRectGetMaxY(imageV.frame) + 41 * IPHONE6_H_SCALE;
     CGFloat introduceW = WIDTH - 2 * introduceX;
     introduceLbl.numberOfLines = 0;
     NSMutableDictionary * contentsDic = [NSMutableDictionary dictionary];
@@ -79,36 +73,158 @@
     CGRect contentsRect = [introduceLbl.text boundingRectWithSize:CGSizeMake(introduceW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentsDic context:nil];
     introduceLbl.frame = (CGRect){{introduceX, introduceY}, contentsRect.size};
     
-    // 商业合作
-    UILabel * cooperationLbl = [[UILabel alloc] init];
-    cooperationLbl.font = Font15;
-    cooperationLbl.text = @"商业合作:";
-    [self.view addSubview:cooperationLbl];
-    UILabel * dipaiLbl = [[UILabel alloc] init];
-    dipaiLbl.font = Font15;
-    dipaiLbl.textColor = [UIColor colorWithRed:42 / 255.f green:144 / 255.f blue:216 / 255.f alpha:1];
-    dipaiLbl.text = @"bd@dipai.tv";
-    [self.view addSubview:dipaiLbl];
-    CGFloat cooperationY = CGRectGetMaxY(introduceLbl.frame) + 134 * 0.5 * IPHONE6_H_SCALE;
-    cooperationLbl.frame = CGRectMake(20 * IPHONE6_W_SCALE, cooperationY, 100, 15);
-    [cooperationLbl sizeToFit];
-    CGFloat dipaiX = CGRectGetMaxX(cooperationLbl.frame);
-    dipaiLbl.frame = CGRectMake(dipaiX, cooperationY, 200*IPHONE6_W_SCALE, 15*IPHONE6_W_SCALE);
+    // 投稿
+    UILabel * contribute = [[UILabel alloc] init];
+    [self.view addSubview:contribute];
+    contribute.text = @"投稿";
+    contribute.font = Font16;
+    [contribute mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(introduceLbl.mas_bottom).offset(41 * IPHONE6_H_SCALE);
+        make.left.equalTo(self.view.mas_left).offset(37 * IPHONE6_W_SCALE);
+        make.width.equalTo(@(WIDTH - 37 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(16 * IPHONE6_W_SCALE));
+    }];
     
-    UILabel * bottomLbl = [[UILabel alloc] init];
-    [self.view addSubview:bottomLbl];
-    bottomLbl.font = Font15;
-    bottomLbl.text = @"如果您在使用当中遇到任何问题，请发送邮件到support@dipai.tv";
-    bottomLbl.numberOfLines = 0;
-    CGFloat bottomX = 20 * IPHONE6_W_SCALE;
-    CGFloat bottomY = CGRectGetMaxY(cooperationLbl.frame);
-    CGFloat bottomW = WIDTH - 2 * bottomX;
-    introduceLbl.numberOfLines = 0;
-    NSMutableDictionary * bottomDic = [NSMutableDictionary dictionary];
-    bottomDic[NSFontAttributeName] = Font15;
-    CGRect bottomRect = [bottomLbl.text boundingRectWithSize:CGSizeMake(bottomW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:bottomDic context:nil];
-    bottomLbl.frame = (CGRect){{bottomX, bottomY}, bottomRect.size};
+    UIView * square1 = [[UIView alloc] init];
+    [self.view addSubview:square1];
+    square1.backgroundColor = [UIColor blackColor];
+    [square1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left).offset(25 * IPHONE6_W_SCALE);
+        make.centerY.equalTo(contribute.mas_centerY);
+        make.width.equalTo(@(5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(5 * IPHONE6_W_SCALE));
+    }];
     
+    UILabel * con1 = [[UILabel alloc] init];
+    [self.view addSubview:con1];
+    NSMutableAttributedString * text1 = [[NSMutableAttributedString alloc] initWithString:@"投稿请发送到article@dipai.tv"];
+    [text1 addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:42 / 255.f green:144 / 255.f blue:216 / 255.f alpha:1] range:NSMakeRange(6, 16)];
+    con1.attributedText = text1;
+    con1.font = Font13;
+    [con1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(contribute.mas_left);
+        make.top.equalTo(contribute.mas_bottom).offset(10 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 37 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+    }];
+    UILabel * con2 = [[UILabel alloc] init];
+    [self.view addSubview:con2];
+    con2.text = @"一经采用，稿酬从优";
+    con2.font = Font13;
+    [con2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(con1.mas_left);
+        make.top.equalTo(con1.mas_bottom).offset(3 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 37 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+    }];
+    
+    // 合作
+    UILabel * coorperate = [[UILabel alloc] init];
+    [self.view addSubview:coorperate];
+    coorperate.text = @"合作";
+    coorperate.font = Font16;
+    [coorperate mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(contribute.mas_left);
+        make.top.equalTo(con2.mas_bottom).offset(22 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 37 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(16 * IPHONE6_W_SCALE));
+    }];
+    UIView * square2 = [[UIView alloc] init];
+    [self.view addSubview:square2];
+    square2.backgroundColor = [UIColor blackColor];
+    [square2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(square1.mas_left);
+        make.centerY.equalTo(coorperate.mas_centerY);
+        make.width.equalTo(@(5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(5 * IPHONE6_W_SCALE));
+    }];
+    
+    UILabel * coor = [[UILabel alloc] init];
+    [self.view addSubview:coor];
+    NSMutableAttributedString * coorText = [[NSMutableAttributedString alloc] initWithString:@"广告投放／赛事、游戏等合作请发送到bd@dipai.tv"];
+    [coorText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:42 / 255.f green:144 / 255.f blue:216 / 255.f alpha:1] range:NSMakeRange(17, 11)];
+    coor.attributedText = coorText;
+    coor.font = Font13;
+    [coor mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(coorperate.mas_left);
+        make.top.equalTo(coorperate.mas_bottom).offset(10 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 37 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+    }];
+    
+    // 投诉与建议
+    UILabel * advice = [[UILabel alloc] init];
+    [self.view addSubview:advice];
+    advice.text = @"投诉与建议";
+    advice.font = Font16;
+    [advice mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(coorperate.mas_left);
+        make.top.equalTo(coor.mas_bottom).offset(22 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 37 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(16 * IPHONE6_W_SCALE));
+    }];
+    UIView * square3 = [[UIView alloc] init];
+    [self.view addSubview:square3];
+    square3.backgroundColor = [UIColor blackColor];
+    [square3 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(square1.mas_left);
+        make.centerY.equalTo(advice.mas_centerY);
+        make.width.equalTo(@(5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(5 * IPHONE6_W_SCALE));
+    }];
+    UILabel * advice1 = [[UILabel alloc] init];
+    [self.view addSubview:advice1];
+    advice1.text = @"底牌致力于维护知识产权以及尊重他人的知识产权";
+    advice1.font = Font13;
+    [advice1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(advice.mas_left);
+        make.top.equalTo(advice.mas_bottom).offset(10 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 37 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+    }];
+    UILabel * advice2 = [[UILabel alloc] init];
+    [self.view addSubview:advice2];
+    NSMutableAttributedString * advice2Text = [[NSMutableAttributedString alloc] initWithString:@"如有版权等问题，请联系support@dipai.tv"];
+    [advice2Text addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:42 / 255.f green:144 / 255.f blue:216 / 255.f alpha:1] range:NSMakeRange(11, 16)];
+    advice2.attributedText = advice2Text;
+    advice2.font = Font13;
+    [advice2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(advice1.mas_left);
+        make.top.equalTo(advice1.mas_bottom).offset(3 * IPHONE6_H_SCALE);
+        make.width.equalTo(advice1.mas_width);
+        make.height.equalTo(advice1.mas_height);
+    }];
+    
+    // 用户交流
+    UILabel * communicate = [[UILabel alloc] init];
+    [self.view addSubview:communicate];
+    communicate.text = @"用户交流";
+    communicate.font = Font16;
+    [communicate mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(advice.mas_left);
+        make.top.equalTo(advice2.mas_bottom).offset(22 * IPHONE6_H_SCALE);
+        make.width.equalTo(advice.mas_width);
+        make.height.equalTo(advice.mas_height);
+    }];
+    UIView * square4 = [[UIView alloc] init];
+    [self.view addSubview:square4];
+    square4.backgroundColor = [UIColor blackColor];
+    [square4 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(square1.mas_left);
+        make.centerY.equalTo(communicate.mas_centerY);
+        make.width.equalTo(@(5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(5 * IPHONE6_W_SCALE));
+    }];
+    UILabel * office = [[UILabel alloc] init];
+    [self.view addSubview:office];
+    office.text = @"官方交流QQ群：522857513";
+    office.font = Font13;
+    [office mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(communicate.mas_left);
+        make.top.equalTo(communicate.mas_bottom).offset(10 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 37 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+    }];
     
 }
 

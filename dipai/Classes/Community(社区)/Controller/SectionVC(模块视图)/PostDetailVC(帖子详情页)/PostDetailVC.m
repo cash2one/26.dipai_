@@ -42,7 +42,7 @@
 #import "LSAlertView.h"
 #import "Masonry.h"
 #import "SVProgressHUD.h"
-@interface PostDetailVC ()<UITableViewDataSource, UITableViewDelegate, ReplyCellDelegate, LSAlertViewDeleagte, UMSocialUIDelegate>
+@interface PostDetailVC ()<UITableViewDataSource, UITableViewDelegate, ReplyCellDelegate, LSAlertViewDeleagte, UMSocialUIDelegate, PostHeaderViewDelegate>
 {
     
     CGFloat _h;
@@ -226,11 +226,12 @@
     
     // 下面的三段代码是什么意思？ 解释：加上下面的几句话才能将网页内容分享成功
     // 分享到各个平台的内容  如果没有下面的代码就会跳到友盟首页（自己设置的URL）
-    [UMSocialData defaultData].extConfig.wechatSessionData.url = wapurl;
-    [UMSocialData defaultData].extConfig.wechatTimelineData.url = wapurl;
-    [UMSocialData defaultData].extConfig.qqData.url = wapurl;
-    [UMSocialData defaultData].extConfig.qzoneData.url = wapurl;
-    [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeWeb url:wapurl];
+    NSString * URL = [wapurl stringByAppendingString:@"?isshare=1"];
+    [UMSocialData defaultData].extConfig.wechatSessionData.url = URL;
+    [UMSocialData defaultData].extConfig.wechatTimelineData.url = URL;
+    [UMSocialData defaultData].extConfig.qqData.url = URL;
+    [UMSocialData defaultData].extConfig.qzoneData.url = URL;
+    [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeWeb url:URL];
 }
 
 - (void)collecAction{
@@ -324,7 +325,12 @@
 
 #pragma mark --- 添加标题
 - (void)addTableView{
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 92 *0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
+    if (self.height) {
+        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 92 *0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
+    }else{
+        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 92 *0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
+    }
+    
     self.tableView.delegate = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.delegate = self;
@@ -353,7 +359,8 @@
 - (void)loadNewData{
     [DataTool getPostDetailDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
-        NSLog(@"%@", self.wapurl);
+        [self.tableView.footer endRefreshing];
+//        NSLog(@"%@", self.wapurl);
         
         PostDetailModel * detailModel = responseObject;
         _detailModel = detailModel;
@@ -376,6 +383,7 @@
         
         NSLog(@"获取帖子详情页时出错：%@", error);
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
     }];
 }
 - (void)loadMoreData{
@@ -391,9 +399,11 @@
 
     [DataTool GetMoreReplyOfPostWithStr:url parameters:nil success:^(id responseObject) {
         
-        [self.tableView.footer endRefreshing];
+        NSLog(@"---responseObject---%@", responseObject);
         if (!responseObject) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            [self.tableView.footer noticeNoMoreData];
+        }else{
+             [self.tableView.footer endRefreshing];
         }
         for (ReplyModel * model in responseObject) {
             ReplyFrameModel * frameModel = [[ReplyFrameModel alloc] init];
@@ -445,6 +455,7 @@
     PostDaraModel * dataModel = [PostDaraModel objectWithKeyValues:_detailModel.data];
     // 添加表格的头视图
     PostHeaderView * headerView = [[PostHeaderView alloc] initWithArray:dataModel.imgs];
+    headerView.delegate = self;
     headerView.dataModel = dataModel;
     
     self.tableView.tableHeaderView = headerView;
@@ -462,6 +473,27 @@
     }
     
 }
+
+#pragma mark --- PostHeaderViewDelegate
+- (void)PostHeaderView:(PostHeaderView *)headerView didClickFaceWith:(PostDaraModel *)model{
+    StarVC * starVC = [[StarVC alloc] init];
+    AnyBodyVC * anyVC = [[AnyBodyVC alloc] init];
+    [DataTool getSBDataWithStr:model.userurl parameters:nil success:^(id responseObject) {
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel = responseObject;
+        if ([sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {   // 如果认证为空，就是普通人主页
+            anyVC.userURL = model.userurl;
+            [self.navigationController pushViewController:anyVC animated:YES];
+        }else{
+            starVC.userURL = model.userurl;
+            [self.navigationController pushViewController:starVC animated:YES];
+        }
+        
+    } failure:^(NSError * error) {
+        NSLog(@"获取个人数据出错：%@", error);
+    }];
+}
+
 #pragma mark --- ReplyCellDelegate
 - (void)tableViewCell:(ReplyCell *)cell didClickedContentWithID:(NSString *)ID andModel:(ReplyModel *)model{
     
@@ -494,7 +526,6 @@
         NSLog(@"获取个人数据出错：%@", error);
     }];
    
-    
 }
 
 - (void)didReceiveMemoryWarning {

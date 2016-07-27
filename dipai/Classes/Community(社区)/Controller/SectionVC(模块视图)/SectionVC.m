@@ -209,7 +209,8 @@
         
         NSLog(@"获取帖子列表的网址：%@", self.sectionModel.wapurl);
         
-        [self.tableView.header endRefreshing];        
+        [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         TypePostModel * typePostModel = responseObject;   // 帖子模型数组
         
         NSMutableArray * frameArr = [NSMutableArray array]; // 用来装frame模型
@@ -235,6 +236,7 @@
         
         NSLog(@"获取评论列表出错：%@", error);
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         [SVProgressHUD showWithStatus:@"网络有问题"];
     }];
 }
@@ -253,7 +255,8 @@
         
         if (!typePostModel.data) {
             NSLog(@"空");
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
         } else{
             
             NSLog(@"不为空");
@@ -272,6 +275,7 @@
         
         NSLog(@"获取评论列表出错：%@", error);
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
         [SVProgressHUD showErrorWithStatus:@"网络有问题"];
     }];
 }

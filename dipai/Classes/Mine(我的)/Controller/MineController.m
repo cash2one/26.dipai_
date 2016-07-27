@@ -142,7 +142,7 @@
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     _wxData = wxData;
     NSLog(@"持久性存储:%@", dataDic);
-    
+    NSLog(@"微信登录数据：%@", wxData);    // face userid username
     // 字典转模型
     UserModel * userModel = [UserModel objectWithKeyValues:dataDic];
     _name = name;
@@ -160,6 +160,7 @@
         _iconBtn.hidden = YES;
         _fansNum.text = userModel.count_follow; // 关注数
         _attentionNum.text = userModel.count_followed;  // 粉丝数
+        
         // 显示收到的评论数
         _commentsView.commentNum.hidden = YES;
         // 编辑个人信息按钮
@@ -179,7 +180,6 @@
             _attentionNum.text = model.row;
             _loginLbl.text = model.username;
 //            NSLog(@"%@", model.face);
-            
             if (model.face && model.face.length > 0) {
                 NSURL * url = [NSURL URLWithString:model.face];
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
@@ -205,9 +205,7 @@
                     _commentsView.commentNum.hidden = NO;
                     _commentsView.commentNum.text = model.comment_num;
                 }
-                
             }
-            
             
         } failure:^(NSError * error) {
             
@@ -581,7 +579,7 @@
     MorePokersVC * fansVC = [[MorePokersVC alloc] init];
     fansVC.wapurl = [FansURL stringByAppendingString:userid];
     fansVC.hidesBottomBarWhenPushed = YES;
-    NSLog(@"%@", fansVC.wapurl);
+    NSLog(@"粉丝URL：%@", fansVC.wapurl);
     fansVC.titleStr = @"被关注";
     [self.navigationController pushViewController:fansVC animated:YES];
 }

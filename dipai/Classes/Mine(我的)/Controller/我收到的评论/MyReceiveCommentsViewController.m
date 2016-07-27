@@ -113,7 +113,7 @@
     [DataTool getMyReceiveDataWithStr:MyReceiveURL parameters:nil success:^(id responseObject) {
         
         [self.tableView.header endRefreshing];
-        
+        [self.tableView.footer endRefreshing];
         self.dataSource = responseObject;
         [self.tableView reloadData];
 //        NSLog(@"%@", responseObject);
@@ -121,6 +121,7 @@
        
         NSLog(@"获取我收到的评论出错：%@", error);
         [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
     }];
 }
 
@@ -135,7 +136,8 @@
         
         [self.tableView.footer endRefreshing];
         if (!responseObject) {
-            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
         }
         [self.dataSource addObjectsFromArray:responseObject]; 
         [self.tableView reloadData];
