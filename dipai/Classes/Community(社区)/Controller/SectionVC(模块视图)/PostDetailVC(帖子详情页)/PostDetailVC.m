@@ -454,10 +454,12 @@
     // 字典转模型
     PostDaraModel * dataModel = [PostDaraModel objectWithKeyValues:_detailModel.data];
     // 添加表格的头视图
-    PostHeaderView * headerView = [[PostHeaderView alloc] initWithArray:dataModel.imgs];
+//    PostHeaderView * headerView = [[PostHeaderView alloc] initWithArray:dataModel.imgs];
+    PostHeaderView * headerView = [[PostHeaderView alloc] init];
+    
+//    headerView.backgroundColor = [UIColor redColor];
     headerView.delegate = self;
     headerView.dataModel = dataModel;
-    
     self.tableView.tableHeaderView = headerView;
     
     _headerView = headerView;

@@ -46,6 +46,8 @@
     // 最多显示三张图片
     for (int i = 0; i < 3; i ++) {
         UIImageView * picView = [[UIImageView alloc] init];
+        picView.contentMode = UIViewContentModeScaleAspectFill;
+        picView.clipsToBounds = YES;
         [self addSubview:picView];
         [self.imagesArr addObject:picView];
     }

@@ -42,6 +42,7 @@
 #import "MatchingModel.h"
 // 直播信息模型
 #import "LiveInfoModel.h"
+#import "DataLiveModel.h"
 
 
 // 扑克名人列表模型
@@ -565,11 +566,15 @@
 + (void)getLiveDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        NSLog(@"%@", responseObject);
+//        NSLog(@"%@", responseObject);
         // 字典数组转模型数组
         NSArray * modelArr = [LiveInfoModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
+                
+        DataLiveModel * model = [[DataLiveModel alloc] init];
+        model.data = modelArr;
+        model.live = responseObject[@"live"];
         if (success) {
-            success(modelArr);
+            success(model);
         }
     } failure:^(NSError *error) {
         
@@ -583,7 +588,7 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        NSLog(@"%@", responseObject);
+//        NSLog(@"%@", responseObject);
         // 字典数组转模型数组
         NSArray * modelArr = [NewsListModel objectArrayWithKeyValuesArray:responseObject[@"data"]];
         if (success) {
@@ -632,7 +637,6 @@
         
         
         NSArray * dataArr = responseObject[@"data"];
-        
         // 字典数组转模型数组
         NSArray * morePokersModelArr = [MorePokersModel objectArrayWithKeyValuesArray:dataArr];
         

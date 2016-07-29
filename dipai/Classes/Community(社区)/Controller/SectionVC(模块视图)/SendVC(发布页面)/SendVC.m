@@ -303,11 +303,8 @@
     dic[@"title"] = _field.text;
     NSString * content = [self trim:_textView.text trimCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
     
-    
     dic[@"content"] = content;
-    
     SectionModel * sectionModel = self.sectionModel;
-    
     NSLog(@"%@", sectionModel.iD);
     
     NSString * url = @"http://dipaiapp.replays.net/app/add/forum/";
@@ -324,14 +321,13 @@
         
         for (int i = 0; i < self.imagesArr.count; i ++) {
             UIImage * image = self.imagesArr[i];
-            NSData * data = UIImagePNGRepresentation(image);
+            NSData * data = UIImageJPEGRepresentation(image, 1.0);
             
             NSString * name = [NSString stringWithFormat:@"myfile%d", i];
             NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
-            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
+            NSString * mimeType = [NSString stringWithFormat:@"image/jpeg"];
             [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
         }
-        
         
     } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         

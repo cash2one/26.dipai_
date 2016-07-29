@@ -27,32 +27,23 @@
     return _imagesArr;
 }
 
-- (instancetype)initWithArray:(NSArray *)array{
+- (instancetype)init{
     if (self = [super init]) {
-        [self setUpChildControlWithArr:array];
-//        self.backgroundColor = [UIColor greenColor];
-    }
-    return self;
-}
-
-- (instancetype)initWithFrame:(CGRect)frame{
-    if (self = [super initWithFrame:frame]) {
-        
         [self setUpChildControl];
-//        self.backgroundColor = [UIColor greenColor];
+        // self.backgroundColor = [UIColor greenColor];
     }
-    
     return self;
 }
 
 - (void)setUpChildControl{
     for (int i = 0; i < 9; i ++) {
-        UIImageView * picView = [[UIImageView alloc] init];
+        UIImageView * picView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
         picView.contentMode = UIViewContentModeScaleAspectFit;
         picView.contentMode = UIViewContentModeScaleAspectFill;
         picView.clipsToBounds = YES;
         picView.userInteractionEnabled = YES;
         [self addSubview:picView];
+//        picView.backgroundColor = [UIColor redColor];
         [self.imagesArr addObject:picView];
         
         picView.tag = i;
@@ -62,23 +53,6 @@
     }
 }
 
-#pragma mark --- 设置子控件
-- (void)setUpChildControlWithArr:(NSArray *)array{
-    for (int i = 0; i < array.count; i ++) {
-        UIImageView * picView = [[UIImageView alloc] init];
-        picView.contentMode = UIViewContentModeScaleAspectFit;
-        picView.contentMode = UIViewContentModeScaleAspectFill;
-        picView.clipsToBounds = YES;
-        picView.userInteractionEnabled = YES;
-        [self addSubview:picView];
-        [self.imagesArr addObject:picView];
-        
-        picView.tag = i;
-        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapClick:)];
-        [picView addGestureRecognizer:tap];
-        picView.userInteractionEnabled = YES;
-    }
-}
 
 - (void)tapClick:(UITapGestureRecognizer *)tap
 {
@@ -90,8 +64,6 @@
     int i = 0;
     NSMutableArray *arrM = [NSMutableArray array];
     for (NSString *photo in _picArr) {
-        
-//        NSLog(@"%@", photo);
         
         MJPhoto *p = [[MJPhoto alloc] init];
         p.url = [NSURL URLWithString:photo];
@@ -114,16 +86,16 @@
 - (void)setPicArr:(NSArray *)picArr{
     
     _picArr = picArr;
-    
+//     [self layoutSubviews];
     NSUInteger counts = self.subviews.count;
+    
     for (int i = 0; i < counts; i ++) {
         UIImageView * imageView = self.subviews[i];
         // 9张图片以内显示上传的所有图片
         if (i < _picArr.count) {
             // 显示
             imageView.hidden = NO;
-            [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
-            
+
         }else
         {
             // 隐藏
@@ -136,7 +108,7 @@
     [super layoutSubviews];
     
     CGFloat height = 0;
-    
+    CGFloat width = 0;
     if (_picArr.count > 0) {
         for (int i = 0; i < _picArr.count; i ++) {
           
@@ -149,6 +121,7 @@
             if (w == 0) {
                 w = WIDTH - 30 * IPHONE6_W_SCALE;
             }
+            width = w;
             CGFloat scale = 1.0;
             if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
                 
@@ -160,14 +133,16 @@
                 scale = 1.0;
                 h = h;
             }
+            if (h == 0) {
+                h = w;
+            }
             
             imageV.frame = CGRectMake(0, 0 + height, WIDTH - 30 * IPHONE6_W_SCALE, h);
             height = height + h + 8;
-//            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
-//            imageV.image = [UIImage imageNamed:@"123"];
+            
+            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
         }
     }
-    
     
 }
 

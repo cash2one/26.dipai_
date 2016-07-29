@@ -383,13 +383,6 @@
         // 进行头像的上传
         AFHTTPRequestOperationManager * manager = [AFHTTPRequestOperationManager manager];
         manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
-        /*
-         myfile（图片数组），title(标题),content(内容)
-         */
-        
-//        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-//        dic[@"face"]= nil;
-//        NSString * url = ChangeAccountURL
         [SVProgressHUD show];
         [manager POST:ChangeAccountURL parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
             
@@ -400,11 +393,12 @@
              mimeType:文件类型
              */
             
-                NSData * data = UIImagePNGRepresentation(image);
-                NSString * name = [NSString stringWithFormat:@"face"];
-                NSString * fileName = [NSString stringWithFormat:@"image.jpeg"];
-                NSString * mimeType = [NSString stringWithFormat:@"image/png"];
-                [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
+//                NSData * data = UIImagePNGRepresentation(image);
+            NSData * data = UIImageJPEGRepresentation(image, 1.0);
+            NSString * name = [NSString stringWithFormat:@"face"];
+            NSString * fileName = [NSString stringWithFormat:@"image.jpeg"];
+            NSString * mimeType = [NSString stringWithFormat:@"image/jpeg"];
+            [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
             
             
         } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {

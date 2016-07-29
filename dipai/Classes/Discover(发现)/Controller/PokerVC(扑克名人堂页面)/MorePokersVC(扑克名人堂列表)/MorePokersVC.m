@@ -94,7 +94,7 @@
 
 #pragma mark --- 添加表格
 - (void)addTableView{
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT-64) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.showsVerticalScrollIndicator = NO;
@@ -185,9 +185,9 @@
                 NSLog(@"进行关注操作时出错%@", error);
             }];
             
+//            [self loadNewData];
             [self.tableView.header beginRefreshing];
             [SVProgressHUD showSuccessWithStatus:@"关注成功"];
-            
             
         } else if ([model.relation isEqualToString:@"1"]){  // 已关注
             
@@ -200,29 +200,27 @@
             
             UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                 // 进行取消关注的操作
-                [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
                 NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.userid]];
                 [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
                     
                     NSLog(@"进行取消关注获取到的数据%@", responseObject);
                     NSLog(@"content:%@", responseObject[@"content"]);
-                    if ([responseObject[@"data"] isEqualToString:@"1"]) {
-                        // 设置为已关注
-                        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
-                    }else if([responseObject[@"data"] isEqualToString:@"0"]){
-                        // 设置为未关注
-                        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
-                        
-                    }else
-                    {
-                        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
-                    }
+//                    if ([responseObject[@"data"] isEqualToString:@"1"]) {
+//                        // 设置为已关注
+//                        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_yiguanzhu"] forState:UIControlStateNormal];
+//                    }else if([responseObject[@"data"] isEqualToString:@"0"]){
+//                        // 设置为未关注
+//                        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
+//                        
+//                    }else
+//                    {
+//                        [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_huxiangguanzhu"] forState:UIControlStateNormal];
+//                    }
                 } failure:^(NSError * error) {
                     NSLog(@"进行取消关注操作时出错%@", error);
                 }];
-                
-                [self loadNewData];
-                [self.tableView reloadData];
+
+                [self.tableView.header beginRefreshing];
                 // 对数据的刷新还有影响
                 [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
             }];
@@ -244,7 +242,6 @@
             
             UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                 // 进行取消关注的操作
-                [cell.attentionBtn setImage:[UIImage imageNamed:@"icon_jiaguanzhu"] forState:UIControlStateNormal];
                 NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.userid]];
                 NSLog(@"取消关注URL：%@",url);
                 [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
@@ -255,8 +252,7 @@
                     NSLog(@"进行取消关注操作时出错%@", error);
                 }];
                 
-                [self loadNewData];
-                [self.tableView reloadData];
+                [self.tableView.header beginRefreshing];
                 // 对数据的刷新还有影响
                 [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
             }];
@@ -374,7 +370,7 @@
 
 - (void)loadNewData{
     
-    NSLog(@"--wapurl--%@", self.wapurl);
+//    NSLog(@"--wapurl--%@", self.wapurl);
     [DataTool getMorePokerDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
@@ -387,7 +383,29 @@
     
 }
 - (void)loadMoreData{
-    [self.tableView.footer endRefreshing];
+    
+//    NSLog(@"%@", self.wapurl);
+    // http://dipaiapp.replays.net/app/follow/list/1?userid=15
+    // http://dipaiapp.replays.net/app/follow/list/1/22?userid=15
+    MorePokersModel * pokersModel = [self.dataSource lastObject];
+//    NSLog(@"%@", pokersModel.userid);
+    NSString * URL = [self.wapurl stringByReplacingOccurrencesOfString:@"?" withString:[NSString stringWithFormat:@"/%@?", pokersModel.userid]];
+//    NSLog(@"%@", URL);
+    [DataTool getMorePokerDataWithStr:URL parameters:nil success:^(id responseObject) {
+        [self.tableView.footer endRefreshing];
+        NSLog(@"%@", responseObject);
+        if (!responseObject) {
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
+        }else{
+            [self.dataSource addObjectsFromArray:responseObject];
+        }
+        [self.tableView reloadData];
+    } failure:^(NSError * error) {
+        
+        NSLog(@"%@", error);
+        [self.tableView.footer endRefreshing];
+    }];
+    
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

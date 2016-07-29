@@ -142,7 +142,9 @@
         if (width == 0) {
             width = WIDTH - 30 * IPHONE6_W_SCALE;
         }
-        
+        if (height == 0) {
+            height = width;
+        }
         CGFloat scale = 1.0;
         if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
             

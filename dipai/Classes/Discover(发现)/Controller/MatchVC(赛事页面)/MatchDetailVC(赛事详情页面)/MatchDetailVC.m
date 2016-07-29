@@ -47,7 +47,7 @@
 // 名人主页
 #import "StarVC.h"
 
-
+#import "DataLiveModel.h"
 //  直播单元格
 #import "LiveCell.h"
 // 评论视图
@@ -81,6 +81,8 @@
     NSString * _shareURL;   // 分享的字符串
     
      NSString * _appendStr;   // 拼接的字符串
+    
+    NSString * _refresh;    // 是否刷新表格
 }
 // 三个表格
 @property (nonatomic, strong) UITableView * tableView1;
@@ -88,6 +90,7 @@
 @property (nonatomic, strong) UITableView * tableView3;
 // 三个数据源
 @property (nonatomic, strong) NSMutableArray * dataSource1;
+@property (nonatomic, strong) NSMutableArray * dataSource11;    // 待用数据源1
 @property (nonatomic, strong) NSMutableArray * dataSource2;
 @property (nonatomic, strong) NSMutableArray * dataSource3;
 
@@ -139,6 +142,11 @@
 @property (nonatomic, strong) UIScrollView * picSc;
 // 放大的图片
 @property (nonatomic, strong) UIImageView * image;
+
+// 新消息
+@property (nonatomic, strong) UILabel * messageL;
+@property (nonatomic, strong) UIImageView * messageV;
+
 @end
 
 @implementation MatchDetailVC
@@ -148,6 +156,13 @@
         _dataSource1 = [NSMutableArray array];
     }
     return _dataSource1;
+}
+
+- (NSMutableArray *)dataSource11{
+    if (_dataSource11 == nil) {
+        _dataSource11 = [NSMutableArray array];
+    }
+    return _dataSource11;
 }
 
 - (NSMutableArray *)dataSource2{
@@ -199,6 +214,8 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeShareURL:) name:@"changeShareURL" object:nil];
     [self addCustomShareBtn];
+    
+    
 }
 
 #pragma mark --- 添加复制链接按钮
@@ -471,10 +488,19 @@
     [_segmented addTarget:self action:@selector(segmentedClick:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:_segmented];
     
-    
+    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(getNewData) userInfo:nil repeats:YES];
+    [timer fire];
     // 添加滚动视图
     [self addScrollView];
 }
+
+#pragma mark --- 定时器进行操作的事件
+- (void)getNewData{
+    _refresh = @"不刷新";   // 不刷新表格的数据
+    [self loadNewData1];
+    
+}
+
 #pragma mark - 分段控件的点击事件
 -(void)segmentedClick:(UISegmentedControl*)seg{
     
@@ -510,14 +536,65 @@
     
     // 在滚动视图上添加tableView
     [self addTableView];
+    
+    UIImageView * messageV = [[UIImageView alloc] init];
+    messageV.image = [UIImage imageNamed:@"xinxiaoxikuang"];
+    [_sc addSubview:messageV];
+    [messageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(_sc.mas_left).offset(WIDTH);
+        make.top.equalTo(_sc.mas_top).offset(20 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(101 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(28 * IPHONE6_W_SCALE));
+    }];
+    _messageV = messageV;
+    _messageV.hidden = YES;
+    
+    UILabel * messageL = [[UILabel alloc] init];
+    messageL.text = @"有新消息";
+    messageL.font = Font13;
+    messageL.textColor = [UIColor whiteColor];
+    [messageV addSubview:messageL];
+    [messageL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(messageV.mas_left).offset(20 * IPHONE6_W_SCALE);
+        make.top.equalTo(messageV.mas_top);
+        make.bottom.equalTo(messageV.mas_bottom);
+        make.width.equalTo(@(101 * IPHONE6_W_SCALE));
+    }];
+    _messageL = messageL;
+    
+    UIButton * messageBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [messageV addSubview:messageBtn];
+    [messageBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(messageV.mas_left);
+        make.top.equalTo(messageV.mas_top);
+        make.right.equalTo(messageV.mas_right);
+        make.bottom.equalTo(messageV.mas_bottom);
+    }];
+    messageBtn.backgroundColor = [UIColor clearColor];
+    [messageBtn addTarget:self action:@selector(refreshAction) forControlEvents:UIControlEventTouchUpInside];
+    messageV.userInteractionEnabled = YES;  // 不然会穿透
 }
+
+#pragma mark --- 点击新消息刷新事件
+- (void)refreshAction{
+    [self.tableView1.header beginRefreshing];
+    [UIView animateWithDuration:0.5 animations:^{
+        _messageV.transform = CGAffineTransformMakeTranslation(101 * IPHONE6_W_SCALE, 0);
+        
+    } completion:nil];
+    _messageV.hidden = YES;
+}
+#pragma mark --- 滚动视图滚动事件
+
+
+
 #pragma mark --- 添加tableView
 - (void)addTableView{
     CGFloat scH = CGRectGetMaxY(_segmented.frame);
     _tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT - 64-scH) style:UITableViewStylePlain];
     _tableView1.delegate = self;
     _tableView1.dataSource = self;
-    _tableView1.showsVerticalScrollIndicator = NO;
+//    _tableView1.showsVerticalScrollIndicator = NO;
     _tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     if (!_matchingModel.app_live.count > 0) {
@@ -644,18 +721,18 @@
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName || wxData) {
-        NSLog(@"已经登录。。。进行发表");
+//        NSLog(@"已经登录。。。进行发表");
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
-        NSLog(@"%@---%@", types, ID);
+//        NSLog(@"%@---%@", types, ID);
         CommentDic[@"id"] = _matchingModel.iD;
         CommentDic[@"types"] = types;//0:评论 1:回复
         CommentDic[@"type"] = @"5";
         CommentDic[@"content"] = _commentView.textView.text;
         [DataTool postWithStr:SendComment parameters:CommentDic success:^(id responseObject) {
             
-            NSLog(@"发表评论返回的数据---%@", responseObject);
-            NSString * content = [responseObject objectForKey:@"content"];
-            NSLog(@"－－content--%@", content);
+//            NSLog(@"发表评论返回的数据---%@", responseObject);
+//            NSString * content = [responseObject objectForKey:@"content"];
+//            NSLog(@"－－content--%@", content);
         } failure:^(NSError * error) {
             
             NSLog(@"发表评论的错误信息%@", error);
@@ -733,7 +810,7 @@
     header.automaticallyChangeAlpha = YES;
     header.lastUpdatedTimeLabel.hidden = YES;
     tableView.header = header;
-    [header beginRefreshing];
+//    [header beginRefreshing];
     //往上拉加载数据.
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
@@ -752,7 +829,7 @@
     header.automaticallyChangeAlpha = YES;
     header.lastUpdatedTimeLabel.hidden = YES;
     _tableView2.header = header;
-    [header beginRefreshing];
+//    [header beginRefreshing];
     //往上拉加载数据.
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData2)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
@@ -772,6 +849,7 @@
     header.lastUpdatedTimeLabel.hidden = YES;
     _tableView1.header = header;
     [header beginRefreshing];
+   
     //往上拉加载数据.
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData1)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
@@ -787,7 +865,7 @@
     
     [DataTool getRelationInLiveWithStr:_matchingModel.relation parameters:nil success:^(id responseObject) {
         
-        NSLog(@"%@", responseObject);
+//        NSLog(@"%@", responseObject);
         self.dataSource3 = responseObject;
         [self.tableView3 reloadData];
     } failure:^(NSError * error) {
@@ -897,6 +975,7 @@
     
     
 }
+
 #pragma mark --- 监听的通知
 - (void)cleanValueAction:(NSNotification *)notification {
     
@@ -915,72 +994,192 @@
 // 获取直播信息
 // 刷新
 - (void)loadNewData1{
-
     NSUInteger index = [_index integerValue];
     
     NSLog(@"---index----%@", _index);
     if (_index) {   // 如果点击了某个赛事    主要这块有问题
         LiveModel * live = [_matchingModel.app_live objectAtIndex:index];
         _appendStr = live.wapurl;
-        NSString * url;
-//        [self.dataSource1 removeAllObjects];
-//        if (self.dataSource1.count > 0) {
-//            LiveInfoModel * infoModel = [self.dataSource1 firstObject];
-//            url = [live.wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@?direction=1", infoModel.iD]];
-//        }else{
-//            url = live.wapurl;
-//        }
-        
-//        NSLog(@"---url---url%@", url);
-        [DataTool getLiveDataWithStr:live.wapurl parameters:nil success:^(id responseObject) {
+        NSString * url = live.wapurl;
+        // 设置头视图的数据
+        NSDictionary * dic = live.keyValues;    // 模型转字典
+        [self setHeaderDataWithDic:dic];
+        if (self.dataSource11.count > 0) {  // 不是第一次点击某个赛事
             
-            [_tableView1.header endRefreshing];
-            [_tableView1.footer endRefreshing];
-//            if (!responseObject) {  // 如果没有新的数据
-//                self.dataSource1 = self.dataSource1;
-//            }else{
-//                self.dataSource1 = responseObject;
-//            }
-            self.dataSource1 = responseObject;
-            [_tableView1 reloadData];
-        } failure:^(NSError * error) {
+            LiveInfoModel * infoModel = [self.dataSource11 firstObject];
+            NSString * URL = [live.wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@?direction=1", infoModel.iD]];
+            [DataTool getLiveDataWithStr:URL parameters:nil success:^(id responseObject) {
+                
+//                NSLog(@"%@", URL);
+                [_tableView1.header endRefreshing];
+                [_tableView1.footer endRefreshing];
+                DataLiveModel * model = responseObject;
+                if (!model.data) {  // 如果数据没有更新,依旧请求之前久的数据
+                    [DataTool getLiveDataWithStr:url parameters:nil success:^(id responseObject) {
+                        [_tableView1.header endRefreshing];
+                        [_tableView1.footer endRefreshing];
+                        DataLiveModel * dataModel = responseObject;
+                        self.dataSource1 = (NSMutableArray *)dataModel.data;
+                        self.dataSource11 = self.dataSource1;
+                        if (_refresh && _refresh.length > 0) {
+                            NSLog(@"不刷新...");
+                            
+                        }else{
+                            [_tableView1 reloadData];
+                        }
+                        _refresh = @"";
+                    } failure:^(NSError * error) {
+                        
+                        NSLog(@"获取直播信息出错：%@", error);
+                        [_tableView1.header endRefreshing];
+                    }];
+                }else{  // 数据更新
+
+                    NSIndexSet * indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, model.data.count)];
+                    [self.dataSource1 insertObjects:model.data atIndexes:indexSet];
+                    if ([model.live isKindOfClass:[NSNull class]]) {
+                        
+//                        NSLog(@"%@", model.live);
+                        
+                    }else{
+                        [self setHeaderDataWithDic:model.live];
+                    }
+                    self.dataSource11 = self.dataSource1;
+                    if (_refresh && _refresh.length > 0) {
+                        NSLog(@"不刷新...");
+                        _messageV.hidden = NO;
+                        [UIView animateWithDuration:0.5 animations:^{
+                            _messageV.transform = CGAffineTransformMakeTranslation(-101 * IPHONE6_W_SCALE, 0);
+                            
+                        } completion:nil];
+                    }else{
+                        [_tableView1 reloadData];
+                    }
+                    _refresh = @"";
+                }
+                
+            } failure:^(NSError * error) {
+                
+                NSLog(@"获取直播信息出错：%@", error);
+                [_tableView1.header endRefreshing];
+            }];
+        }else{  //  第一次点击某个赛事
             
-            NSLog(@"获取直播信息出错：%@", error);
-            [_tableView1.header endRefreshing];
-            [_tableView1.footer endRefreshing];
-        }];
+            [DataTool getLiveDataWithStr:url parameters:nil success:^(id responseObject) {
+                
+                [_tableView1.header endRefreshing];
+                [_tableView1.footer endRefreshing];
+                DataLiveModel * model = responseObject;
+                self.dataSource1 = (NSMutableArray *)model.data;
+                self.dataSource11 = self.dataSource1;
+                [_tableView1 reloadData];
+                
+                // 设置头视图数据
+//                [self setHeaderDataWithDic:model.live];
+                
+            } failure:^(NSError * error) {
+                
+                NSLog(@"获取直播信息出错：%@", error);
+                [_tableView1.header endRefreshing];
+                [_tableView1.footer endRefreshing];
+            }];
+        }
+   
         
-//        _index = nil;
     }else{  // 如果没有点击某个赛事
         LiveModel * live = [_matchingModel.app_live firstObject];
         _appendStr = live.wapurl;
-
-        NSString * url;
-        if (self.dataSource1.count > 0) {
+        NSString * url = live.wapurl;
+                
+        if (self.dataSource1.count > 0) {   // 如果self.dataSource1种已经有了数据
+            
             LiveInfoModel * infoModel = [self.dataSource1 firstObject];
-            url = [live.wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@?direction=1", infoModel.iD]];
-        }else{
-            url = live.wapurl;
+            NSString * URL = [live.wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@?direction=1", infoModel.iD]];
+            [DataTool getLiveDataWithStr:URL parameters:nil success:^(id responseObject) {
+                [_tableView1.header endRefreshing];
+                [_tableView1.footer endRefreshing];
+                
+                DataLiveModel * model = responseObject;
+                if (!model.data) {  // 如果数据没有更新
+                    [DataTool getLiveDataWithStr:url parameters:nil success:^(id responseObject) {
+                        [_tableView1.header endRefreshing];
+                        DataLiveModel * dataModel = responseObject;
+                        self.dataSource1 = (NSMutableArray *)dataModel.data;
+                        NSLog(@"--%@", _refresh);
+                        if (_refresh && _refresh.length > 0) {
+                            NSLog(@"不刷新...");
+                            
+                        }else{
+                            [_tableView1 reloadData];
+                        }
+                        _refresh = @"";
+                    } failure:^(NSError * error) {
+                        
+                        NSLog(@"获取直播信息出错：%@", error);
+                        [_tableView1.header endRefreshing];
+                    }];
+                    
+                }else{  // 有更新数据
+                    NSIndexSet * indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, model.data.count)];
+                    [self.dataSource1 insertObjects:model.data atIndexes:indexSet];
+                    // 设置头信息
+                    if ([model.live isKindOfClass:[NSNull class]]) {
+                        
+//                        NSLog(@"%@", model.live);
+                        
+                    }else{
+                        [self setHeaderDataWithDic:model.live];
+                    }
+                    
+                    NSLog(@"--%@", _refresh);
+                    if (_refresh && _refresh.length > 0) {
+                        NSLog(@"不刷新...");
+                        _messageV.hidden = NO;
+                        [UIView animateWithDuration:0.5 animations:^{
+                            _messageV.transform = CGAffineTransformMakeTranslation(-101 * IPHONE6_W_SCALE, 0);
+                            
+                        } completion:nil];
+                    }else{
+                        [_tableView1 reloadData];
+                    }
+                    _refresh = @"";
+                }
+                
+            } failure:^(NSError * error) {
+                
+                NSLog(@"获取直播信息出错：%@", error);
+                [_tableView1.header endRefreshing];
+            }];
+        }else{  // 第一次获取数据
+            
+//            NSLog(@"第一次获取数据:%@", url);
+            [DataTool getLiveDataWithStr:url parameters:nil success:^(id responseObject) {
+                [_tableView1.header endRefreshing];
+                [_tableView1.footer endRefreshing];
+                DataLiveModel * model = responseObject;
+                self.dataSource1 = (NSMutableArray *)model.data;
+                [_tableView1 reloadData];
+            } failure:^(NSError * error) {
+                
+                NSLog(@"获取直播信息出错：%@", error);
+                [_tableView1.header endRefreshing];
+            }];
         }
-        NSLog(@"%@", url);
-        [DataTool getLiveDataWithStr:url parameters:nil success:^(id responseObject) {
-            [_tableView1.header endRefreshing];
-            if (!responseObject) {  // 如果没有新的数据
-                self.dataSource1 = self.dataSource1;
-            }else{
-               self.dataSource1 = responseObject;
-            }
-            
-            [_tableView1 reloadData];
-        } failure:^(NSError * error) {
-            
-            NSLog(@"获取直播信息出错：%@", error);
-            [_tableView1.header endRefreshing];
-        }];
     }
     
     
 }
+
+#pragma mark --- 设置赛事头信息
+- (void)setHeaderDataWithDic:(NSDictionary *)dic{
+    
+//    NSLog(@"%@", dic);
+    _headerView.stateLbl.text = [NSString stringWithFormat:@"比赛状态:%@", dic[@"match_state"]];    // 赛事状态
+    _headerView.blindNum.text = dic[@"blind"];  // 盲注
+    _headerView.score.text = dic[@"score"]; // 记分
+    _headerView.players.text = dic[@"player"];  //剩余选手
+}
+
 // 加载
 - (void)loadMoreData1{
 
@@ -992,11 +1191,14 @@
     [DataTool getLiveDataWithStr:url parameters:nil success:^(id responseObject) {
         
         [_tableView1.footer endRefreshing];
-        if (!responseObject) {
+        DataLiveModel * model = responseObject;
+        if (!model.data) {
 //           [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
             _tableView1.footer.state = MJRefreshStateNoMoreData;
+        }else{
+            [self.dataSource1 addObjectsFromArray:model.data];
         }
-        [self.dataSource1 addObjectsFromArray:responseObject];
+        [_tableView1 reloadData];
     } failure:^(NSError * error) {
        
         NSLog(@"获取更多的直播信息失败%@", error);
@@ -1013,6 +1215,16 @@
         _segmented.selectedSegmentIndex=1;
     }else{
         _segmented.selectedSegmentIndex=2;
+    }
+    
+    if (scrollView.contentOffset.y < 0) {  // 滑动顶部
+        [UIView animateWithDuration:0.5 animations:^{
+            _messageV.transform = CGAffineTransformMakeTranslation(101 * IPHONE6_W_SCALE, 0);
+            
+        } completion:nil];
+        _messageV.hidden = YES;
+    }else{
+        NSLog(@"还没有滑动到顶部");
     }
 }
 
@@ -1050,7 +1262,7 @@
 }
 #pragma mark --- 单元格的高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (tableView == _tableView1) {
+    if (tableView == _tableView1) { // 直播页
         
         LiveInfoModel * liveInfoModel = self.dataSource1[indexPath.row];
         if (liveInfoModel.title && liveInfoModel.title.length > 0) {  // 如果是能转发的精彩牌局
@@ -1306,7 +1518,7 @@
     
     // http://dipaiapp.replays.net/app/club/view/5/4917
     
-//    NSLog(@"%@", self.wapurl);
+//    NSLog(@"一进入就请求的：%@", self.wapurl);
     // http://dipaiapp.replays.net/app/club/view/5/5110
     [DataTool getMatchDataInDetailWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         
@@ -1314,7 +1526,7 @@
         _matchingModel = responseObject;
         
         // 每次进来都会调用此方法
-        NSLog(@"%lu", _matchingModel.match.count);
+//        NSLog(@"%lu", _matchingModel.match.count);
         if (_matchingModel.match.count > 0) {   // 没有直播
             [self addHeaderView2];
             // 添加分段控件

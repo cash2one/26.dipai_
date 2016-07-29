@@ -26,5 +26,5 @@
 
 @property (nonatomic, assign) id <PostHeaderViewDelegate> delegate;
 
-- (instancetype)initWithArray:(NSArray *)array;
+//- (instancetype)initWithArray:(NSArray *)array;
 @end

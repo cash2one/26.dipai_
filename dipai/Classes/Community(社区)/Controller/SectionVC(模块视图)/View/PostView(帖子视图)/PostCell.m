@@ -138,6 +138,8 @@
     // 图片
     LSPhotoView * picView = [[LSPhotoView alloc] init];
 //    picView.backgroundColor = [UIColor redColor];
+    picView.contentMode = UIViewContentModeScaleAspectFill;
+    picView.clipsToBounds = YES;
     [self addSubview:picView];
     _picView = picView;
     

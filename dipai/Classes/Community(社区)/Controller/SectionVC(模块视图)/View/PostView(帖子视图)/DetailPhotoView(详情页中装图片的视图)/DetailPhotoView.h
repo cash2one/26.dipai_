@@ -14,6 +14,6 @@
  */
 @property (nonatomic, strong) NSArray * picArr;
 
-- (instancetype)initWithArray:(NSArray *)array;
+//- (instancetype)initWithArray:(NSArray *)array;
 
 @end

@@ -80,23 +80,7 @@
     return _imageArr;
 }
 
-- (instancetype)initWithArray:(NSArray *)array{
-    if (self = [super init]) {
-        
-        // 设置子控件
-        [self setUpChildControlWithArray:array];
-    }
-    
-    return self;
-}
 
-
-
-- (CGFloat)viewHeight{
-    
-//    NSLog(@"viewHeight:%f", _viewHeight);
-    return _viewHeight;
-}
 
 - (void)setDataModel:(PostDaraModel *)dataModel{
     _dataModel = dataModel;
@@ -105,9 +89,14 @@
     
 }
 
+- (instancetype)initWithFrame:(CGRect)frame{
+    if (self = [super initWithFrame:frame]) {
+        [self setUpChildControl];
+    }
+    return self;
+}
 
-#pragma mark --- 设置子控件
-- (void)setUpChildControlWithArray:(NSArray *)array{
+- (void)setUpChildControl{
     // 头像
     UIImageView *iconView = [[UIImageView alloc] init];
     iconView.layer.masksToBounds = YES;
@@ -149,13 +138,13 @@
     _textView = textView;
     
     // 图片
-    DetailPhotoView * picView = [[DetailPhotoView alloc] initWithArray:array];
-//    picView.backgroundColor = [UIColor redColor];
+    DetailPhotoView * picView = [[DetailPhotoView alloc] init];
+//    picView.backgroundColor = [UIColor greenColor];
     [self addSubview:picView];
     _picView = picView;
     
     
-    for (int i = 0; i < array.count; i ++) {
+    for (int i = 0; i < 9; i ++) {
         UIImageView * imageV = [[UIImageView alloc] init];
         [self addSubview:imageV];
         [self.imageArr addObject:imageV];
@@ -166,7 +155,7 @@
     line.backgroundColor = [UIColor colorWithRed:240 / 255.0 green:239 / 255.0 blue:245 / 255.0 alpha:1];
     [self addSubview:line];
     _line = line;
-
+    
     
     // 全部评论视图
     UIView * commentsView = [[UIView alloc] init];
@@ -187,6 +176,8 @@
     [self addSubview:bottomLine];
     _bottomLine = bottomLine;
 }
+#pragma mark --- 设置子控件
+
 
 #pragma mark -- 跳转到个人主页
 - (void)showStarVC:(UITapGestureRecognizer *)tap{
@@ -250,7 +241,6 @@
     _textView.frame = (CGRect){{contentsX, contentsY}, contentsRect.size};
     _textView.text = _dataModel.content;
     
-    
     // 图片
    
     if (_dataModel.imgs) {    // 如果有图片
@@ -259,10 +249,10 @@
          CGFloat height = 0;
         for ( int i = 0; i < _dataModel.imgs.count; i ++) {
             CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_dataModel.imgs[i]]];
+//            CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:@"http://dipaiapp.replays.net/public/upload/user_forum/15/20160727/14696227505843215.jpeg"]];
+            // http://www.coolsc.net/imguploads/Image/0811/zm/3/23/12.jpg
+            // http://dipaiapp.replays.net/public/upload/user_forum/15/20160727/14696227505843215.jpeg
             
-//            NSLog(@"%@", _dataModel.imgs[i]);
-            
-//            NSLog(@"%f-------%f", size.height, size.width);
             CGFloat h = size.height;
             CGFloat w = size.width;
             
@@ -270,6 +260,9 @@
                 w = WIDTH - 30 * IPHONE6_W_SCALE;
             }
             
+            if (h == 0) {
+                h = w;
+            }
 //            NSLog(@"width--%f", size.width);
             CGFloat scale = 1.0;
             if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
@@ -291,15 +284,13 @@
             
            
             height = height + h + 8 * IPHONE6_H_SCALE;
-            
-//            NSLog(@"%f", height);
             _picView.frame = CGRectMake(15 * IPHONE6_W_SCALE, photosY , WIDTH - 30 * IPHONE6_W_SCALE,  height);
         }
         
         
 //        NSLog(@"%f", height);
+        _picView.picArr = _dataModel.imgs;
     }
-    _picView.picArr = _dataModel.imgs;
     
     
     
@@ -307,17 +298,19 @@
     
     CGFloat botLineY;
     if (_dataModel.imgs) {
+        
+//        NSLog(@"%@", _dataModel.imgs);
        botLineY = CGRectGetMaxY(_picView.frame) + 14 * IPHONE6_H_SCALE;
     } else{
         botLineY = CGRectGetMaxY(_textView.frame) + 14 * IPHONE6_H_SCALE;
     }
     _bottomLine.frame = CGRectMake(0, botLineY, WIDTH, 0.5);
+//    _bottomLine.backgroundColor = [UIColor greenColor];
     
     _viewHeight = CGRectGetMaxY(_bottomLine.frame);
 
     // 可以再layoutSubviews方法中直接返回该视图的frame
         self.frame = CGRectMake(0, 0, WIDTH, _viewHeight);
-    
 }
 
 #pragma mark - 计算配图的尺寸

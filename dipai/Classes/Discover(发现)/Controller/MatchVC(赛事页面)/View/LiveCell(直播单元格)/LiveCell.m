@@ -65,7 +65,7 @@
         // 设置子控件
         [self setUpChildControl];
         self.backgroundColor = [UIColor whiteColor];
-//        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     return self;
@@ -163,7 +163,6 @@
     [_backView addSubview:goodLbl];
     _goodLbl = goodLbl;
     
-    
     // 图片
     UIImageView * image = [[UIImageView alloc] init];
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showBigPic)];
@@ -172,7 +171,6 @@
     [_backView addSubview:image];
     _image = image;
 
-    
 }
 
 #pragma mark --- 分享事件
@@ -197,7 +195,7 @@
 - (void)setLiveInfoModel:(LiveInfoModel *)liveInfoModel{
     
     _liveInfoModel = liveInfoModel;
-    NSLog(@"%@", _liveInfoModel);
+//    NSLog(@"%@", _liveInfoModel);
 }
 
 - (void)layoutSubviews{
@@ -296,7 +294,7 @@
         
         // 图片
         if (_liveInfoModel.imgs) {  // 如果有图片
-            _image.hidden = NO;
+            _image.hidden = NO; // 不隐藏图片
             [_image mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.left.equalTo(_backView.mas_left).offset(15 * IPHONE6_W_SCALE);
                 make.top.equalTo(_contentLbl.mas_bottom).offset(10 *IPHONE6_H_SCALE);
@@ -305,7 +303,7 @@
             }];
             [_image sd_setImageWithURL:[NSURL URLWithString:_liveInfoModel.imgs[@"pimg2"]] placeholderImage:[UIImage imageNamed:@"123"]];
         }else{
-            _image.hidden = YES;
+            _image.hidden = YES;    // 隐藏图片
         }
         
         
@@ -354,6 +352,7 @@
         CGFloat lineH;
         // 图片
         if (_liveInfoModel.imgs) {
+            _feImage.hidden = NO;   // 图片不隐藏
             CGFloat imageX = nameX;
             CGFloat imageY = CGRectGetMaxY(_bodyLbl.frame) + 10 * IPHONE6_H_SCALE;
             CGFloat imageW = 150 * IPHONE6_W_SCALE;
@@ -362,6 +361,8 @@
             lineH = CGRectGetMaxY(_feImage.frame) + 15 * IPHONE6_H_SCALE;
             [_feImage sd_setImageWithURL:[NSURL URLWithString:_liveInfoModel.imgs[@"pimg2"]] placeholderImage:[UIImage imageNamed:@"123"]];
         }else{
+            // 图片隐藏
+            _feImage.hidden = YES;
             lineH = CGRectGetMaxY(_bodyLbl.frame) + 24 * IPHONE6_H_SCALE;
         }
         
@@ -374,8 +375,6 @@
         _feLfLine.frame = CGRectMake(lineX, lineY, lineW, lineH);
 //        _feLfLine.backgroundColor = [UIColor blackColor];
     }
-    
-    
     
 }
 

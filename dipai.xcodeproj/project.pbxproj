@@ -243,6 +243,7 @@
 		C1D6017A1D069D3700E986BD /* NSDate+MJ.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D601791D069D3700E986BD /* NSDate+MJ.m */; };
 		C1D61D181D0F9C820056BD20 /* WSOPTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D61D171D0F9C820056BD20 /* WSOPTableViewCell.m */; };
 		C1D61D1C1D0FB5AA0056BD20 /* TwoBtnCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D61D1B1D0FB5AA0056BD20 /* TwoBtnCell.m */; };
+		C1D7C0401D48B539000BC0BF /* DataLiveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D7C03F1D48B539000BC0BF /* DataLiveModel.m */; };
 		C1D97E021D11517100A8DA64 /* ViewForHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D97E011D11517100A8DA64 /* ViewForHeader.m */; };
 		C1D97E061D11589300A8DA64 /* CellInClubView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D97E051D11589300A8DA64 /* CellInClubView.m */; };
 		C1D97E0A1D11684700A8DA64 /* ClubDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D97E091D11684700A8DA64 /* ClubDetailViewController.m */; };
@@ -853,6 +854,8 @@
 		C1D61D171D0F9C820056BD20 /* WSOPTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSOPTableViewCell.m; sourceTree = "<group>"; };
 		C1D61D1A1D0FB5AA0056BD20 /* TwoBtnCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoBtnCell.h; sourceTree = "<group>"; };
 		C1D61D1B1D0FB5AA0056BD20 /* TwoBtnCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwoBtnCell.m; sourceTree = "<group>"; };
+		C1D7C03E1D48B539000BC0BF /* DataLiveModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataLiveModel.h; sourceTree = "<group>"; };
+		C1D7C03F1D48B539000BC0BF /* DataLiveModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataLiveModel.m; sourceTree = "<group>"; };
 		C1D97E001D11517100A8DA64 /* ViewForHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewForHeader.h; sourceTree = "<group>"; };
 		C1D97E011D11517100A8DA64 /* ViewForHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewForHeader.m; sourceTree = "<group>"; };
 		C1D97E041D11589300A8DA64 /* CellInClubView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellInClubView.h; sourceTree = "<group>"; };
@@ -1834,6 +1837,7 @@
 		C125A3FC1D17EE120092AEA9 /* Mode */ = {
 			isa = PBXGroup;
 			children = (
+				C1D7C03D1D48B52B000BC0BF /* DataLiveModel(传递直播模型 ) */,
 				C106E6C31D30F36C00868EB3 /* LiveModel(有直播的模型) */,
 				C106E6C21D30F35500868EB3 /* NoLiveModel(没有直播的模型) */,
 				C1DFC12D1D19254900DDBC94 /* MatchingModel(进行中比赛详情页模型) */,
@@ -2994,6 +2998,15 @@
 				C1D61D1B1D0FB5AA0056BD20 /* TwoBtnCell.m */,
 			);
 			path = "TwoBtnCell(有两个按钮的单元格)";
+			sourceTree = "<group>";
+		};
+		C1D7C03D1D48B52B000BC0BF /* DataLiveModel(传递直播模型 ) */ = {
+			isa = PBXGroup;
+			children = (
+				C1D7C03E1D48B539000BC0BF /* DataLiveModel.h */,
+				C1D7C03F1D48B539000BC0BF /* DataLiveModel.m */,
+			);
+			path = "DataLiveModel(传递直播模型 )";
 			sourceTree = "<group>";
 		};
 		C1D97DFF1D11515F00A8DA64 /* HeaderView(ViewForHeader) */ = {
@@ -4172,6 +4185,7 @@
 				C1EE42BF1CCF460600623E3C /* RootTabBarController.m in Sources */,
 				C16AEE351CEDC1A800173A1C /* BackgroundView.m in Sources */,
 				C18F4DA81D27B43000A4EEB1 /* FooterCell.m in Sources */,
+				C1D7C0401D48B539000BC0BF /* DataLiveModel.m in Sources */,
 				C19C46DD1D2E333F0046FB22 /* ResetNameVC.m in Sources */,
 				C1E5F81A1CEC5667008A8A97 /* UIScrollView+MJExtension.m in Sources */,
 				C1C049381CFBCEF400389E7D /* MyReceiveCommentsViewController.m in Sources */,
