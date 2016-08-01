@@ -978,7 +978,7 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        NSLog(@"获取到回复的数据：%@", responseObject);
+//        NSLog(@"获取到回复的数据：%@", responseObject);
         // 发帖数组
         NSArray * replyArr = responseObject[@"data"];
         // 字典数组转模型数组

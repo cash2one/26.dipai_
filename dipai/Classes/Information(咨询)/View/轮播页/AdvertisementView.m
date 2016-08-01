@@ -33,7 +33,7 @@
 /**
  *  用来接收传递过来的模型数组
  */
-@property (nonatomic, strong) NSArray * modelArr;
+@property (nonatomic, strong) NSMutableArray * modelArr;
 
 @end
 
@@ -67,20 +67,25 @@
 -(void)setScrollWithCount:(int)counts andArray:(NSArray *)bannerModelArray
 {
     
-    _modelArr = [NSArray array];
-    _modelArr = bannerModelArray;
+    _modelArr = [NSMutableArray array];
+    [_modelArr addObject:[bannerModelArray lastObject]];
+    [_modelArr addObjectsFromArray:bannerModelArray];
+    [_modelArr addObject:[bannerModelArray firstObject]];
+    
     _count = counts;
     
-    _scroll.contentSize = CGSizeMake(counts * WIDTH, 0);
+//    _scroll.contentSize = CGSizeMake(counts * WIDTH, 0);
+    _scroll.contentSize = CGSizeMake((counts + 2) * WIDTH, 0);
     // 往滚动视图上添加imageView
-    for (int i = 0; i < counts; i ++) {
+    for (int i = 0; i < _modelArr.count; i ++) {
         UIImageView * picView = [[UIImageView alloc] initWithFrame:_scroll.bounds];
         picView.backgroundColor = [UIColor yellowColor];
         picView.userInteractionEnabled = YES;
         
         bannerModel * bannnerM = [[bannerModel alloc] init];
-        bannnerM = bannerModelArray[i];
+        bannnerM = _modelArr[i];
         [picView sd_setImageWithURL:[NSURL URLWithString:bannnerM.cover] placeholderImage:[UIImage imageNamed:@"123"]];
+        
         
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
         btn.frame = _scroll.bounds;
@@ -126,10 +131,12 @@
         imageView.frame = frame;
     }];
     
+    _scroll.contentOffset = CGPointMake(WIDTH, 0);
+    
     // 往滚动视图上添加分页控件
     _pageControl = [[UIPageControl alloc] init];
-//    _pageControl.backgroundColor = [UIColor blackColor];
     [self addSubview:_pageControl];
+//    _pageControl.hidden = YES;
     [_pageControl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(_scroll.mas_right).offset(-10);
         make.bottom.equalTo(_scroll.mas_bottom).offset(-14);
@@ -196,12 +203,25 @@
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     // 停下来的当前页数
-//    NSLog(@"%@", NSStringFromCGPoint(scrollView.contentOffset));
-    
     // 计算页数
-    int page = scrollView.contentOffset.x / scrollView.bounds.size.width;
     
-    self.pageControl.currentPage = page;
+    if(scrollView.contentOffset.x == 0)
+    {
+        scrollView.contentOffset = CGPointMake(_count * WIDTH, 0);
+        // 最后一个
+        self.pageControl.currentPage = _count - 1;
+    }
+    else if (scrollView.contentOffset.x == (_count + 1) * WIDTH)
+    {
+        scrollView.contentOffset = CGPointMake(WIDTH, 0);
+        // 第一个
+        self.pageControl.currentPage = 0;
+    }else{
+        int page = scrollView.contentOffset.x / scrollView.bounds.size.width;
+        
+        self.pageControl.currentPage = page - 1;
+    }
+    
 }
 
 /**
@@ -219,7 +239,7 @@
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
 //    NSLog(@"%s", __func__);
-    [self startTimer];
+//    [self startTimer];
 }
 
 @end

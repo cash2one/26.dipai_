@@ -147,7 +147,7 @@
     //  姓名
     CGFloat nameX = CGRectGetMaxX(_faceView.frame) + 11 * IPHONE6_W_SCALE;
     CGFloat nameY = faceY;
-    _nameLbl.frame = CGRectMake(nameX, nameY, WIDTH-nameX, 16 * IPHONE6_W_SCALE);
+    _nameLbl.frame = CGRectMake(nameX, nameY, WIDTH-nameX, 16 * IPHONE6_W_SCALE + 1.5);
     _nameLbl.text = _morePokersModel.username;
     
     // 标题
