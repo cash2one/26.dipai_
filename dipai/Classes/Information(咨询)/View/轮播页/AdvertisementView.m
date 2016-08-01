@@ -184,6 +184,8 @@
 {
     // 页号发生变化
     // (当前的页数 + 1) % 总页数
+    
+    // 加了循环滚动后分页控件的变化是正确的
     int page = (self.pageControl.currentPage + 1) % _count;
     self.pageControl.currentPage = page;
     
@@ -195,7 +197,7 @@
 {
     // 根据页数，调整滚动视图中的图片位置 contentOffset
     CGFloat x = page.currentPage * self.scroll.bounds.size.width;
-    [self.scroll setContentOffset:CGPointMake(x, 0) animated:YES];
+    [self.scroll setContentOffset:CGPointMake(x + WIDTH, 0) animated:YES];
 }
 
 #pragma mark -------- UIScrollViewDelegate
@@ -239,7 +241,7 @@
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
 //    NSLog(@"%s", __func__);
-//    [self startTimer];
+    [self startTimer];
 }
 
 @end
