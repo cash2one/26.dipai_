@@ -320,9 +320,9 @@
             
             NSLog(@"注册成功返回的数据%@", responsObject);
             NSString * content = [responsObject objectForKey:@"content"];
-            NSLog(@"---content---%@", content);
-            if ([content isEqualToString:@"注册成功"]) {
-                [SVProgressHUD showSuccessWithStatus:@""];
+            NSString * state = [responsObject objectForKey:@"state"];
+            if ([state isEqualToString:@"1"]) {
+                [SVProgressHUD showSuccessWithStatus:@"注册成功"];
                 
                 NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
                 for (NSHTTPCookie * cookie in cookies) {
@@ -344,11 +344,11 @@
                 [NSThread sleepForTimeInterval:1.3];
                 
                 [self.navigationController popViewControllerAnimated:YES];
-                
-            } else{
-                [SVProgressHUD showErrorWithStatus:@"此帐号已注册"];
-            }
+            }else{
             
+                [SVProgressHUD showErrorWithStatus:content];
+            }
+
             
         } failure:^(NSError * error) {
             

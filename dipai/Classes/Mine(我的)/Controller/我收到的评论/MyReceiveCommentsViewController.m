@@ -30,6 +30,8 @@
 
 #import "DataTool.h"
 #import "SVProgressHUD.h"
+
+#import "Masonry.h"
 @interface MyReceiveCommentsViewController ()<UITableViewDataSource, UITableViewDelegate, MyReceiveCellDelegate>
 /**
  *  数据源
@@ -40,7 +42,8 @@
 @property (nonatomic, strong) UITableView * tableView;
 
 @property (nonatomic, strong) SBModel * sbModel;
-
+// 没有评论的提示图
+@property (nonatomic, strong) UIImageView * imageV;
 @end
 
 @implementation MyReceiveCommentsViewController
@@ -57,7 +60,6 @@
     [self addTabelView];
     
     // 我收到的评论接口
-    // http://dipaiapp.replays.net/app/my/comment
 }
 
 #pragma mark --- 设置导航条
@@ -88,7 +90,20 @@
     self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    [self.viewIfLoaded addSubview:self.tableView];
+    [self.view addSubview:self.tableView];
+    
+    UIImageView * imageV = [[UIImageView alloc] init];
+    imageV.image = [UIImage imageNamed:@"meiyoushoudaopinglun"];
+    [self.view addSubview:imageV];
+    [imageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(self.view.mas_top).offset(298 * 0.5 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(242 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(187 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _imageV = imageV;
+    _imageV.hidden = YES;
+    
     
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
     [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
@@ -114,7 +129,14 @@
         
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
-        self.dataSource = responseObject;
+        
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            _imageV.hidden = NO;
+        }else{
+            _imageV.hidden = YES;
+           self.dataSource = responseObject;
+        }
+        
         [self.tableView reloadData];
 //        NSLog(@"%@", responseObject);
     } failure:^(NSError * error) {
@@ -135,11 +157,13 @@
     [DataTool getMyReceiveDataWithStr:url parameters:nil success:^(id responseObject) {
         
         [self.tableView.footer endRefreshing];
-        if (!responseObject) {
-//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+        if ([responseObject isKindOfClass:[NSString class]]) {
             self.tableView.footer.state = MJRefreshStateNoMoreData;
+        }else{
+            [self.dataSource addObjectsFromArray:responseObject]; 
         }
-        [self.dataSource addObjectsFromArray:responseObject]; 
+        
+        
         [self.tableView reloadData];
         //        NSLog(@"%@", responseObject);
     } failure:^(NSError * error) {

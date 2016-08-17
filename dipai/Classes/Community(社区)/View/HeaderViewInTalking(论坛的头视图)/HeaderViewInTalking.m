@@ -27,10 +27,7 @@
  *  装标题的数组
  */
 @property (nonatomic, strong) NSMutableArray * titleArr;
-/**
- *  论坛模型
- */
-@property (nonatomic, strong) ForumModel * forumModel;
+
 /**
  *  论坛模型
  */
@@ -78,6 +75,8 @@
     return self;
 }
 
+
+
 #pragma mark --- 设置子控件
 - (void)setUpChildControlWithModel:(ForumModel *)model{
     NSInteger count = model.section.count;   // 版块的个数
@@ -85,7 +84,7 @@
     for (int i = 0; i < count; i ++) {
         
         UIImageView * sectionView = [[UIImageView alloc] init];
-        sectionView.backgroundColor = [UIColor redColor];
+//        sectionView.backgroundColor = [UIColor redColor];
         [self addSubview:sectionView];
         [self.imageArr addObject:sectionView];
         
@@ -184,7 +183,9 @@
         make.width.equalTo(@(WIDTH));
         make.height.equalTo(@(16 * IPHONE6_W_SCALE));
     }];
-    
+//    _hotLbl.backgroundColor = [UIColor redColor];
+//    
+//    _line.backgroundColor = [UIColor redColor];
     [_line mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.mas_left);
         make.right.equalTo(self.mas_right);

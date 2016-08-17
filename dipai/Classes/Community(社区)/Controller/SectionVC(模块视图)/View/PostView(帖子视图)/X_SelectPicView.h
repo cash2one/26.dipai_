@@ -13,6 +13,9 @@
 @interface X_SelectPicView : UIView
 
 @property (nonatomic, weak) id<X_SelectPicViewDelegate>delegate;
+/**
+ *  数据源
+ */
 @property (nonatomic, strong) NSArray *dataSource;
 @property (nonatomic, copy) void(^Commplete)(void);
 

@@ -83,6 +83,8 @@
 @property (nonatomic, strong) UIView * alertBackView;
 
 @property (nonatomic, strong) LSAlertView * alertView;
+
+@property (nonatomic, strong) UIImagePickerController * imagePicker;
 @end
 
 @implementation ReplyPostVC
@@ -181,7 +183,7 @@
             [self sendText];
         }
         // 显示发表成功
-        [SVProgressHUD showSuccessWithStatus:@"发表成功"];
+//        [SVProgressHUD showSuccessWithStatus:@"发表成功"];
     }else{
         [self addAlertView];
     }
@@ -219,15 +221,16 @@
         
         for (int i = 0; i < self.imagesArr.count; i ++) {
             UIImage * image = self.imagesArr[i];
-            NSData * data = UIImageJPEGRepresentation(image, 1.0);
-            
+//            NSData * data = UIImageJPEGRepresentation(image, 1.0);
+            NSData * data = UIImagePNGRepresentation(image);
             NSString * name = [NSString stringWithFormat:@"myfile%d", i];
             NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
-            NSString * mimeType = [NSString stringWithFormat:@"image/jpeg"];
+            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
             [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
         }
-        
-        
+        [SVProgressHUD showWithStatus:@"发布中..."];
+        // 发布中发布按钮失效
+        _sendBtn.userInteractionEnabled = NO;
     } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
         [SVProgressHUD showSuccessWithStatus:@"发布成功"];
@@ -359,13 +362,49 @@
 #pragma mark ---- 选择图片的事件
 - (void)selectPic{
     
-    _photoLibaryController = [[LNPhotoLibaryController alloc] init];
-    _selectPictures = _photoLibaryController.selectedPhotos;
-    _photoLibaryController.maxSelectedCount = 9;
-    UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:_photoLibaryController];
-    [self presentViewController:navigation animated:YES completion:^{
+    _imagePicker = [[UIImagePickerController alloc] init];
+    _imagePicker.delegate = self;
+//    _imagePicker.allowsEditing = YES;
+    _imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+    [self presentViewController:_imagePicker animated:YES completion:nil];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    
+    //    NSLog(@"%s", __func__);
+    if (picker.sourceType == UIImagePickerControllerSourceTypeSavedPhotosAlbum) {
+        // 返回
+        [self dismissViewControllerAnimated:YES completion:nil];
         
-    }];
+        UIImage * image = [info objectForKey:UIImagePickerControllerOriginalImage];
+        [self.imagesArr addObject:image];
+        if (!_pictureView) {
+            _pictureView = [X_SelectPicView shareSelectPicView];
+            _pictureView.delegate = self;
+            
+            __block typeof(self) weakSelf = self;
+            _pictureView.Commplete = ^{ //跳转到相册
+                if (self.imagesArr.count < 9) {
+                    [weakSelf presentViewController:_imagePicker animated:YES completion:nil];
+                }else{
+                    [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
+                }
+                
+            };
+            
+            [self.view addSubview:_pictureView];
+        }
+        
+        _pictureView.dataSource = self.imagesArr;
+    }
+    else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera)
+    {
+        // 返回
+        [self dismissViewControllerAnimated:YES completion:nil];
+        // 保存编辑后的照片
+    }
+    
 }
 
 #pragma mark --- textView的内容发生变化后进行调用
@@ -381,7 +420,7 @@
         
     }
     
-    if ( _textView.text.length) {
+    if ( _textView.text.length > 3) {
         _sendBtn.userInteractionEnabled = YES;
         _sendLbl.textColor = [UIColor blackColor];
     } else{
@@ -504,7 +543,8 @@
 - (void)deletePicView:(X_SelectPicView *)view atIndex:(NSInteger)index{
     NSLog(@"%ld\n",(long)index);
     [_selectPictures removeObjectAtIndex:index];
-    view.dataSource = _selectPictures;
+    [self.imagesArr removeObjectAtIndex:index];
+    view.dataSource = self.imagesArr;
 }
 
 

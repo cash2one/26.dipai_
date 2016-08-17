@@ -12,6 +12,9 @@
 // 跳转到登录页面
 - (void)presentLoginVC;
 
+// 跳转到用户主页页面
+- (void)turnPageToSBPageWithURL:(NSString *)url withFlag:(NSString *)flag;
+
 @end
 
 @interface ClubCommentsVC : UIViewController

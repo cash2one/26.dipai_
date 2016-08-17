@@ -19,12 +19,12 @@
  "title": "1",	（帖子标题）
  "introduction": "1",（前言，介绍）
  "picname": [
- "http://dipaiapp.replays.net/public/upload/user_forum_cm/22/20160630/1467287895622mim.jpeg"
+ ""
  ],
  "addtime": "2016-02-22",（发布时间）
  "comment": "10",（评论数量）
- "wapurl": "http://dipaiapp.replays.net/app/forum/view/66",（帖子详细页）
- "userurl": "http://dipaiapp.replays.net/app/user_space/22"（用户空间）
+ "wapurl": ,（帖子详细页）
+ "userurl": （用户空间）
  */
 
 /*

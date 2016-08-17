@@ -16,9 +16,9 @@
  
 "title":"啊实打实的1111",
  
-"picname":"http://dipaiadmin.replays.net/public/upload/video/album/146466134510025.png",
+"picname":
  
-"wapurl":"http://dipaiapp.replays.net/app/album/list/5102"
+"wapurl":
  */
 /**
 *  视频ID

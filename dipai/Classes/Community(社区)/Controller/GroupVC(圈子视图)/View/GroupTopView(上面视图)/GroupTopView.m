@@ -101,6 +101,7 @@
     
     // 标题
     _titleView.frame = _grpFrmModel.titleFrame;
+    _titleView.numberOfLines = 0;
 //    _titleView.backgroundColor = [UIColor redColor];
     
     // 正文

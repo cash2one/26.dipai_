@@ -58,7 +58,7 @@
 #import "SVProgressHUD.h"
 #import "UMSocial.h"
 #import "UIImageView+WebCache.h"
-@interface MatchDetailVC ()<UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, CommentsTableViewCellDelegate, LiveCellDelegate>
+@interface MatchDetailVC ()<UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, CommentsTableViewCellDelegate, LiveCellDelegate, UMSocialUIDelegate>
 {
     UISegmentedControl *_segmented;
     // 滚动视图
@@ -80,7 +80,7 @@
     
     NSString * _shareURL;   // 分享的字符串
     
-     NSString * _appendStr;   // 拼接的字符串
+    NSString * _appendStr;   // 拼接的字符串
     
     NSString * _refresh;    // 是否刷新表格
 }
@@ -90,9 +90,9 @@
 @property (nonatomic, strong) UITableView * tableView3;
 // 三个数据源
 @property (nonatomic, strong) NSMutableArray * dataSource1;
-@property (nonatomic, strong) NSMutableArray * dataSource11;    // 待用数据源1
 @property (nonatomic, strong) NSMutableArray * dataSource2;
 @property (nonatomic, strong) NSMutableArray * dataSource3;
+@property (nonatomic, strong) NSMutableArray * dataSource11;    // 待用数据源1
 
 /**
  *  自定义的头视图
@@ -142,27 +142,27 @@
 @property (nonatomic, strong) UIScrollView * picSc;
 // 放大的图片
 @property (nonatomic, strong) UIImageView * image;
+// 没有评论的展示图
+@property (nonatomic, strong) UIImageView * commentV;
+// 没有相关资讯的展示图
+@property (nonatomic, strong) UIImageView * infoV;
 
 // 新消息
 @property (nonatomic, strong) UILabel * messageL;
 @property (nonatomic, strong) UIImageView * messageV;
-
 @end
 
 @implementation MatchDetailVC
+
+- (void)tableViewCell:(CommentsTableViewCell *)cell dicClickFaceWithModel:(CommentsModel *)model{
+    NSLog(@"点击头像");
+}
 
 - (NSMutableArray *)dataSource1{
     if (_dataSource1 == nil) {
         _dataSource1 = [NSMutableArray array];
     }
     return _dataSource1;
-}
-
-- (NSMutableArray *)dataSource11{
-    if (_dataSource11 == nil) {
-        _dataSource11 = [NSMutableArray array];
-    }
-    return _dataSource11;
 }
 
 - (NSMutableArray *)dataSource2{
@@ -177,7 +177,12 @@
     }
     return _dataSource3;
 }
-
+- (NSMutableArray *)dataSource11{
+    if (_dataSource11 == nil) {
+        _dataSource11 = [NSMutableArray array];
+    }
+    return _dataSource11;
+}
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
@@ -199,7 +204,7 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-//    NSLog(@"%@", self.wapurl);
+    //    NSLog(@"%@", self.wapurl);
     
     // 设置导航栏
     [self setUpNavigationBar];
@@ -214,8 +219,6 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeShareURL:) name:@"changeShareURL" object:nil];
     [self addCustomShareBtn];
-    
-    
 }
 
 #pragma mark --- 添加复制链接按钮
@@ -288,7 +291,7 @@
     // 获取数据
     [self getData];
     
-   
+    
 }
 #pragma mark --- 添加头视图的子视图
 // 有直播的头视图
@@ -303,7 +306,7 @@
     
     headerView.stateLbl.text = [NSString stringWithFormat:@"比赛状态:%@", live.match_state];
     headerView.blindNum.text = live.blind;  // 盲注
-//    NSLog(@"---blind---%@", live.blind);
+    //    NSLog(@"---blind---%@", live.blind);
     headerView.score.text = live.score; // 记分牌
     headerView.players.text = live.player;  // 剩余选手
     [self.view addSubview:headerView];
@@ -337,7 +340,7 @@
     _dayLbl = dayLbl;
     
     UIImageView * picView = [[UIImageView alloc] init];
-//    picView.userInteractionEnabled = YES;
+    //    picView.userInteractionEnabled = YES;
     picView.image = [UIImage imageNamed:@"icon_xialasanjiao"];
     [dayView addSubview:picView];
     [picView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -355,7 +358,7 @@
         make.top.equalTo(dayView.mas_top);
         make.bottom.equalTo(dayView.mas_bottom);
     }];
-//    dayBtn.backgroundColor = [UIColor redColor];
+    //    dayBtn.backgroundColor = [UIColor redColor];
     [dayBtn addTarget:self action:@selector(clickDayBtn) forControlEvents:UIControlEventTouchUpInside];
     _dayBtn = dayBtn;
     
@@ -380,7 +383,7 @@
     [_headerView addSubview:menuView];
     _menuView = menuView;
     NSInteger count = _matchingModel.app_live.count;    // 直播数量
-//    NSInteger count = 3;
+    //    NSInteger count = 3;
     CGFloat menuH = (52+62*(count-1))*0.5;
     menuView.frame = CGRectMake(36*IPHONE6_W_SCALE, 12*IPHONE6_H_SCALE, 148*0.5*IPHONE6_W_SCALE, menuH);
     
@@ -412,7 +415,7 @@
         UILabel * dayLbl = [[UILabel alloc] init];
         dayLbl.font = Font13;
         dayLbl.textColor = [UIColor whiteColor];
-//        dayLbl.backgroundColor = [UIColor redColor];
+        //        dayLbl.backgroundColor = [UIColor redColor];
         [menuView addSubview:dayLbl];
         CGFloat dayLblX = 12.5*IPHONE6_W_SCALE;
         CGFloat dayLblW = (148-25)*0.5*IPHONE6_W_SCALE;
@@ -422,7 +425,7 @@
         
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
         [menuView addSubview:btn];
-//        btn.backgroundColor = [UIColor redColor];
+        //        btn.backgroundColor = [UIColor redColor];
         btn.tag = i;
         btn.frame = CGRectMake(0, 0 + i*(26*IPHONE6_H_SCALE), 148*0.5*IPHONE6_W_SCALE, 26*IPHONE6_H_SCALE);
         [btn addTarget:self action:@selector(changeDay:) forControlEvents:UIControlEventTouchUpInside];
@@ -431,15 +434,15 @@
 }
 // 点击按钮观看不同的比赛
 - (void)changeDay:(UIButton *)btn{
-//    NSLog(@"%lu", btn.tag);
+    //    NSLog(@"%lu", btn.tag);
     NSInteger index = btn.tag;
     [_menuView removeFromSuperview];
     LiveModel * model = _matchingModel.app_live[index];
     
-//    NSLog(@"%@", model.name);
+    //    NSLog(@"%@", model.name);
     
     _dayLbl.text = model.name;
-//    NSLog(@"%@", model.wapurl);
+    //    NSLog(@"%@", model.wapurl);
     
     
     NSString * indexStr = [NSString stringWithFormat:@"%lu", index];
@@ -459,18 +462,18 @@
 
 
 
-#pragma mark --- 添加分段控件 
+#pragma mark --- 添加分段控件
 - (void)addSegmentWithHeight:(CGFloat)height{
     
     // 分段控件
     _segmented = [[UISegmentedControl alloc]initWithItems:@[@"赛事直播",@"大家在说",@"赛事资讯"]];
-//    _segmented.selectedSegmentIndex = 0;
+    //    _segmented.selectedSegmentIndex = 0;
     // 被选中时的背景色
     _segmented.tintColor = [UIColor colorWithRed:51 / 255.f green:51 / 255.f blue:51 / 255.f alpha:1];
     _segmented.tintColor = [UIColor clearColor];
-//    _segmented.tintColor = [UIColor blackColor];
+    //    _segmented.tintColor = [UIColor blackColor];
     _segmented.backgroundColor = [UIColor blackColor];
-//    [_segmented setBackgroundImage:[UIImage imageNamed:@"anniu_beijing"] forState:UIControlStateSelected barMetrics:UIBarMetricsDefault];
+    //    [_segmented setBackgroundImage:[UIImage imageNamed:@"anniu_beijing"] forState:UIControlStateSelected barMetrics:UIBarMetricsDefault];
     // 被选中时的字体的颜色
     [_segmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor redColor],NSFontAttributeName:Font13} forState:UIControlStateSelected];
     // 正常情况下的字体颜色
@@ -488,19 +491,10 @@
     [_segmented addTarget:self action:@selector(segmentedClick:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:_segmented];
     
-    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(getNewData) userInfo:nil repeats:YES];
-    [timer fire];
+    
     // 添加滚动视图
     [self addScrollView];
 }
-
-#pragma mark --- 定时器进行操作的事件
-- (void)getNewData{
-    _refresh = @"不刷新";   // 不刷新表格的数据
-    [self loadNewData1];
-    
-}
-
 #pragma mark - 分段控件的点击事件
 -(void)segmentedClick:(UISegmentedControl*)seg{
     
@@ -536,65 +530,14 @@
     
     // 在滚动视图上添加tableView
     [self addTableView];
-    
-    UIImageView * messageV = [[UIImageView alloc] init];
-    messageV.image = [UIImage imageNamed:@"xinxiaoxikuang"];
-    [_sc addSubview:messageV];
-    [messageV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(_sc.mas_left).offset(WIDTH);
-        make.top.equalTo(_sc.mas_top).offset(20 * IPHONE6_H_SCALE);
-        make.width.equalTo(@(101 * IPHONE6_W_SCALE));
-        make.height.equalTo(@(28 * IPHONE6_W_SCALE));
-    }];
-    _messageV = messageV;
-    _messageV.hidden = YES;
-    
-    UILabel * messageL = [[UILabel alloc] init];
-    messageL.text = @"有新消息";
-    messageL.font = Font13;
-    messageL.textColor = [UIColor whiteColor];
-    [messageV addSubview:messageL];
-    [messageL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(messageV.mas_left).offset(20 * IPHONE6_W_SCALE);
-        make.top.equalTo(messageV.mas_top);
-        make.bottom.equalTo(messageV.mas_bottom);
-        make.width.equalTo(@(101 * IPHONE6_W_SCALE));
-    }];
-    _messageL = messageL;
-    
-    UIButton * messageBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [messageV addSubview:messageBtn];
-    [messageBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(messageV.mas_left);
-        make.top.equalTo(messageV.mas_top);
-        make.right.equalTo(messageV.mas_right);
-        make.bottom.equalTo(messageV.mas_bottom);
-    }];
-    messageBtn.backgroundColor = [UIColor clearColor];
-    [messageBtn addTarget:self action:@selector(refreshAction) forControlEvents:UIControlEventTouchUpInside];
-    messageV.userInteractionEnabled = YES;  // 不然会穿透
 }
-
-#pragma mark --- 点击新消息刷新事件
-- (void)refreshAction{
-    [self.tableView1.header beginRefreshing];
-    [UIView animateWithDuration:0.5 animations:^{
-        _messageV.transform = CGAffineTransformMakeTranslation(101 * IPHONE6_W_SCALE, 0);
-        
-    } completion:nil];
-    _messageV.hidden = YES;
-}
-#pragma mark --- 滚动视图滚动事件
-
-
-
 #pragma mark --- 添加tableView
 - (void)addTableView{
     CGFloat scH = CGRectGetMaxY(_segmented.frame);
     _tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT - 64-scH) style:UITableViewStylePlain];
     _tableView1.delegate = self;
     _tableView1.dataSource = self;
-//    _tableView1.showsVerticalScrollIndicator = NO;
+    _tableView1.showsVerticalScrollIndicator = NO;
     _tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     if (!_matchingModel.app_live.count > 0) {
@@ -602,7 +545,7 @@
         picView.image = [UIImage imageNamed:@"meiyouzhibo"];
         [_sc addSubview:picView];
     }else{
-         [_sc addSubview:_tableView1];
+        [_sc addSubview:_tableView1];
     }
     
     _tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT - 64-scH) style:UITableViewStylePlain];
@@ -610,17 +553,37 @@
     _tableView2.dataSource=self;
     _tableView2.showsVerticalScrollIndicator=NO;
     _tableView2.separatorStyle=UITableViewCellSeparatorStyleNone;
-    
-    
     [_sc addSubview:_tableView2];
+    UIImageView * commentV = [[UIImageView alloc] init];
+    commentV.image = [UIImage imageNamed:@"meiyouxiangguanpinglun"];
+    [_sc addSubview:commentV];
+    [commentV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(_tableView2.mas_centerX);
+        make.top.equalTo(_sc.mas_top).offset(111 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(242 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(187 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _commentV = commentV;
+    _commentV.hidden = YES;
     
     _tableView3=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH * 2, 0, WIDTH, HEIGHT - 64-scH) style:UITableViewStylePlain];
     _tableView3.delegate=self;
     _tableView3.dataSource=self;
     _tableView3.showsVerticalScrollIndicator=NO;
     _tableView3.separatorStyle=UITableViewCellSeparatorStyleNone;
-    
     [_sc addSubview:_tableView3];
+    
+    UIImageView * infoV = [[UIImageView alloc] init];
+    infoV.image = [UIImage imageNamed:@"meiyouxiangguanneirong"];
+    [_sc addSubview:infoV];
+    [infoV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(_tableView3.mas_centerX);
+        make.top.equalTo(_commentV.mas_top);
+        make.width.equalTo(@(246 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(187 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _infoV = infoV;
+    _infoV.hidden = YES;
     
     // 添加刷新和加载
     [self addRefreshWithTableview1];
@@ -664,7 +627,8 @@
     UIView * backView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
     backView.backgroundColor = ColorBlack60;
     // 当前顶层窗口
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+//    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    UIWindow * window = [UIApplication sharedApplication].keyWindow;
     // 添加到灰色的背景图
     [window addSubview:backView];
     _backView = backView;
@@ -721,18 +685,18 @@
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName || wxData) {
-//        NSLog(@"已经登录。。。进行发表");
+        NSLog(@"已经登录。。。进行发表");
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
-//        NSLog(@"%@---%@", types, ID);
+        NSLog(@"%@---%@", types, ID);
         CommentDic[@"id"] = _matchingModel.iD;
         CommentDic[@"types"] = types;//0:评论 1:回复
         CommentDic[@"type"] = @"5";
         CommentDic[@"content"] = _commentView.textView.text;
         [DataTool postWithStr:SendComment parameters:CommentDic success:^(id responseObject) {
             
-//            NSLog(@"发表评论返回的数据---%@", responseObject);
-//            NSString * content = [responseObject objectForKey:@"content"];
-//            NSLog(@"－－content--%@", content);
+            NSLog(@"发表评论返回的数据---%@", responseObject);
+            NSString * content = [responseObject objectForKey:@"content"];
+            NSLog(@"－－content--%@", content);
         } failure:^(NSError * error) {
             
             NSLog(@"发表评论的错误信息%@", error);
@@ -787,7 +751,7 @@
  *  确定按钮的点击事件
  */
 - (void)lsAlertView:(LSAlertView *)alertView sure:(NSString *)sure{
-
+    
     // 移除提示框
     [self removeAlerView];
     // 移除评论框
@@ -810,7 +774,7 @@
     header.automaticallyChangeAlpha = YES;
     header.lastUpdatedTimeLabel.hidden = YES;
     tableView.header = header;
-//    [header beginRefreshing];
+    [header beginRefreshing];
     //往上拉加载数据.
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
@@ -829,7 +793,7 @@
     header.automaticallyChangeAlpha = YES;
     header.lastUpdatedTimeLabel.hidden = YES;
     _tableView2.header = header;
-//    [header beginRefreshing];
+    [header beginRefreshing];
     //往上拉加载数据.
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData2)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
@@ -849,7 +813,6 @@
     header.lastUpdatedTimeLabel.hidden = YES;
     _tableView1.header = header;
     [header beginRefreshing];
-   
     //往上拉加载数据.
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData1)];
     [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
@@ -862,10 +825,15 @@
 #pragma mark --- 加载和刷新
 // 刷新
 - (void)loadNewData{
-    
+    // 获取相关资讯
     [DataTool getRelationInLiveWithStr:_matchingModel.relation parameters:nil success:^(id responseObject) {
         
-//        NSLog(@"%@", responseObject);
+        //        NSLog(@"%@", responseObject);
+        if (!responseObject) {
+            _infoV.hidden = NO;
+        }else{
+            _infoV.hidden = YES;
+        }
         self.dataSource3 = responseObject;
         [self.tableView3 reloadData];
     } failure:^(NSError * error) {
@@ -888,7 +856,6 @@
         [_tableView3.footer endRefreshing];
         
         if (!responseObject) {
-//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
             _tableView3.footer.state = MJRefreshStateNoMoreData;
         }
         [self.dataSource3 addObjectsFromArray:responseObject];
@@ -896,7 +863,7 @@
     } failure:^(NSError * error) {
         
         NSLog(@"获取更多相关数据出错：%@", error);
-       [_tableView3.footer endRefreshing];
+        [_tableView3.footer endRefreshing];
         
     }];
     
@@ -905,28 +872,30 @@
 // 获取评论数据
 // 刷新
 - (void)loadNewData2{
-    
+    // 获取评论
     [DataTool getCommentsListWithStr:_matchingModel.comment parameters:nil success:^(id responseObject) {
         
         [_tableView2.header endRefreshing];
         [_tableView2.footer endRefreshing];
-        if (!responseObject) {
-            _tableView2.header.state = MJRefreshStateNoMoreData;
-        }
         
-        // 传递过来的是模型数组(模型是评论模型)
-        NSArray * commentsArr = responseObject;
-        
-        NSMutableArray * commentsFrameArr = [NSMutableArray array];
-        for (CommentsModel * commentModel in commentsArr) {
-            CommentsFrame * commentsFrame = [[CommentsFrame alloc] init];
-            // 将模型传递给视图模型
-            commentsFrame.comments = commentModel;
-            [commentsFrameArr addObject:commentsFrame];
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            NSLog(@"没有评论..");
+            _commentV.hidden = NO;
+        }else{
+            _commentV.hidden = YES;
+            // 传递过来的是模型数组(模型是评论模型)
+            NSArray * commentsArr = responseObject;
+            NSMutableArray * commentsFrameArr = [NSMutableArray array];
+            for (CommentsModel * commentModel in commentsArr) {
+                CommentsFrame * commentsFrame = [[CommentsFrame alloc] init];
+                // 将模型传递给视图模型
+                commentsFrame.comments = commentModel;
+                [commentsFrameArr addObject:commentsFrame];
+            }
+            // 将视图模型数组赋值给数据源
+            //            NSLog(@"模型个数：%lu", commentsFrameArr.count);
+            self.dataSource2 = commentsFrameArr;
         }
-        // 将视图模型数组赋值给数据源
-        NSLog(@"模型个数：%lu", commentsFrameArr.count);
-        self.dataSource2 = commentsFrameArr;
         
         [_tableView2 reloadData];
     } failure:^(NSError * error) {
@@ -946,16 +915,19 @@
     NSString * url = [NSString stringWithFormat:@"%@/%@/%@/%@", CommentsURL, _matchingModel.iD, @"5", commentsModel.comment_id];
     
     
-//    NSLog(@"---url---%@", url);
+    //    NSLog(@"---url---%@", url);
     [DataTool getCommentsListWithStr:url parameters:nil success:^(id responseObject) {
         [_tableView2.footer endRefreshing];
-        // 传递过来的是模型数组(模型是评论模型)
-        NSArray * commentsArr = responseObject;
         
-        if ([commentsArr isKindOfClass:[NSNull class]]) {
-//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+        
+        NSLog(@"%@", responseObject);
+        if ([responseObject isKindOfClass:[NSString class]]) {  // 没有更多数据
+            
             _tableView2.footer.state = MJRefreshStateNoMoreData;
-        } else{
+        }else{
+            
+            // 传递过来的是模型数组(模型是评论模型)
+            NSArray * commentsArr = responseObject;
             NSMutableArray * commentsFrameArr = [NSMutableArray array];
             for (CommentsModel * commentModel in commentsArr) {
                 CommentsFrame * commentsFrame = [[CommentsFrame alloc] init];
@@ -966,6 +938,7 @@
             // 将视图模型数组赋值给数据源
             [self.dataSource2 addObjectsFromArray:commentsFrameArr];
         }
+        
         [_tableView2 reloadData];
     } failure:^(NSError * error) {
         
@@ -975,13 +948,12 @@
     
     
 }
-
 #pragma mark --- 监听的通知
 - (void)cleanValueAction:(NSNotification *)notification {
     
     NSLog(@"收到给小孩洗澡的通知");
     _index = notification.object;
-//    [self loadNewData1];
+    //    [self loadNewData1];
     
 }
 
@@ -994,6 +966,8 @@
 // 获取直播信息
 // 刷新
 - (void)loadNewData1{
+    
+    // 获取直播
     NSUInteger index = [_index integerValue];
     
     NSLog(@"---index----%@", _index);
@@ -1010,7 +984,7 @@
             NSString * URL = [live.wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@?direction=1", infoModel.iD]];
             [DataTool getLiveDataWithStr:URL parameters:nil success:^(id responseObject) {
                 
-//                NSLog(@"%@", URL);
+                //                NSLog(@"%@", URL);
                 [_tableView1.header endRefreshing];
                 [_tableView1.footer endRefreshing];
                 DataLiveModel * model = responseObject;
@@ -1034,12 +1008,12 @@
                         [_tableView1.header endRefreshing];
                     }];
                 }else{  // 数据更新
-
+                    
                     NSIndexSet * indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, model.data.count)];
                     [self.dataSource1 insertObjects:model.data atIndexes:indexSet];
                     if ([model.live isKindOfClass:[NSNull class]]) {
                         
-//                        NSLog(@"%@", model.live);
+                        //                        NSLog(@"%@", model.live);
                         
                     }else{
                         [self setHeaderDataWithDic:model.live];
@@ -1075,7 +1049,7 @@
                 [_tableView1 reloadData];
                 
                 // 设置头视图数据
-//                [self setHeaderDataWithDic:model.live];
+                //                [self setHeaderDataWithDic:model.live];
                 
             } failure:^(NSError * error) {
                 
@@ -1084,13 +1058,13 @@
                 [_tableView1.footer endRefreshing];
             }];
         }
-   
+        
         
     }else{  // 如果没有点击某个赛事
         LiveModel * live = [_matchingModel.app_live firstObject];
         _appendStr = live.wapurl;
         NSString * url = live.wapurl;
-                
+        
         if (self.dataSource1.count > 0) {   // 如果self.dataSource1种已经有了数据
             
             LiveInfoModel * infoModel = [self.dataSource1 firstObject];
@@ -1125,7 +1099,7 @@
                     // 设置头信息
                     if ([model.live isKindOfClass:[NSNull class]]) {
                         
-//                        NSLog(@"%@", model.live);
+                        //                        NSLog(@"%@", model.live);
                         
                     }else{
                         [self setHeaderDataWithDic:model.live];
@@ -1152,7 +1126,7 @@
             }];
         }else{  // 第一次获取数据
             
-//            NSLog(@"第一次获取数据:%@", url);
+            //            NSLog(@"第一次获取数据:%@", url);
             [DataTool getLiveDataWithStr:url parameters:nil success:^(id responseObject) {
                 [_tableView1.header endRefreshing];
                 [_tableView1.footer endRefreshing];
@@ -1167,13 +1141,12 @@
         }
     }
     
-    
 }
 
 #pragma mark --- 设置赛事头信息
 - (void)setHeaderDataWithDic:(NSDictionary *)dic{
     
-//    NSLog(@"%@", dic);
+    //    NSLog(@"%@", dic);
     _headerView.stateLbl.text = [NSString stringWithFormat:@"比赛状态:%@", dic[@"match_state"]];    // 赛事状态
     _headerView.blindNum.text = dic[@"blind"];  // 盲注
     _headerView.score.text = dic[@"score"]; // 记分
@@ -1182,29 +1155,29 @@
 
 // 加载
 - (void)loadMoreData1{
-
+    
     LiveInfoModel * model = [self.dataSource1 lastObject];
     
     NSString * url = [_appendStr stringByAppendingString:[NSString stringWithFormat:@"/%@", model.iD]];
     
-//    NSLog(@"%@", url);
+    //    NSLog(@"%@", url);
     [DataTool getLiveDataWithStr:url parameters:nil success:^(id responseObject) {
         
         [_tableView1.footer endRefreshing];
         DataLiveModel * model = responseObject;
         if (!model.data) {
-//           [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+            //           [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
             _tableView1.footer.state = MJRefreshStateNoMoreData;
         }else{
             [self.dataSource1 addObjectsFromArray:model.data];
         }
         [_tableView1 reloadData];
     } failure:^(NSError * error) {
-       
+        
         NSLog(@"获取更多的直播信息失败%@", error);
         [_tableView1.footer endRefreshing];
     }];
-
+    
     
 }
 #pragma mark ---  滚动视图结束滚动后
@@ -1215,16 +1188,6 @@
         _segmented.selectedSegmentIndex=1;
     }else{
         _segmented.selectedSegmentIndex=2;
-    }
-    
-    if (scrollView.contentOffset.y < 0) {  // 滑动顶部
-        [UIView animateWithDuration:0.5 animations:^{
-            _messageV.transform = CGAffineTransformMakeTranslation(101 * IPHONE6_W_SCALE, 0);
-            
-        } completion:nil];
-        _messageV.hidden = YES;
-    }else{
-        NSLog(@"还没有滑动到顶部");
     }
 }
 
@@ -1262,7 +1225,7 @@
 }
 #pragma mark --- 单元格的高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (tableView == _tableView1) { // 直播页
+    if (tableView == _tableView1) {
         
         LiveInfoModel * liveInfoModel = self.dataSource1[indexPath.row];
         if (liveInfoModel.title && liveInfoModel.title.length > 0) {  // 如果是能转发的精彩牌局
@@ -1300,7 +1263,7 @@
 #pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-   
+    
     if (tableView == _tableView3) {
         NewsListModel * model = self.dataSource3[indexPath.row];
         NSString * url = model.url;
@@ -1315,8 +1278,8 @@
 }
 #pragma mark ---CommentsTableViewCellDelegate  点击文字
 - (void)tableViewCell:(CommentsTableViewCell *)cell didClickedContentWithID:(NSString *)ID andModel:(CommentsModel *)model{
-
-//    _model = model;
+    
+    //    _model = model;
     
     CommentsModel * commentModel = [[CommentsModel alloc] init];
     commentModel = model;
@@ -1434,11 +1397,11 @@
     [UMSocialData defaultData].extConfig.qzoneData.url = wapurl;
     [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeWeb url:wapurl];
     
-    NSString * shareURL = model.wapurl;
+    NSString * shareURL = wapurl;
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"changeShareURL" object:shareURL];
     
-//    [self addCustomShareBtn];
+    //    [self addCustomShareBtn];
 }
 // 点击图片
 - (void)tableViewCell:(LiveCell *)cell didClickPicWithModel:(LiveInfoModel *)model{
@@ -1452,7 +1415,7 @@
     
     UIScrollView * picSc = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];;
     [picBackView addSubview:picSc];
-//    picSc.backgroundColor = [UIColor redColor];
+    //    picSc.backgroundColor = [UIColor redColor];
     picSc.minimumZoomScale = 1.0;
     picSc.maximumZoomScale = 2.0;
     picSc.delegate = self;
@@ -1518,7 +1481,7 @@
     
     // http://dipaiapp.replays.net/app/club/view/5/4917
     
-//    NSLog(@"一进入就请求的：%@", self.wapurl);
+    //    NSLog(@"%@", self.wapurl);
     // http://dipaiapp.replays.net/app/club/view/5/5110
     [DataTool getMatchDataInDetailWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         
@@ -1526,7 +1489,7 @@
         _matchingModel = responseObject;
         
         // 每次进来都会调用此方法
-//        NSLog(@"%lu", _matchingModel.match.count);
+        NSLog(@"%lu", _matchingModel.match.count);
         if (_matchingModel.match.count > 0) {   // 没有直播
             [self addHeaderView2];
             // 添加分段控件
@@ -1535,9 +1498,9 @@
             
             [self addHeaderView1];
             [self addSegmentWithHeight:326*0.5*IPHONE6_H_SCALE];
-
+            
         }
-
+        
     } failure:^(NSError * error) {
         
         NSLog(@"获取赛事详情数据出错%@", error);

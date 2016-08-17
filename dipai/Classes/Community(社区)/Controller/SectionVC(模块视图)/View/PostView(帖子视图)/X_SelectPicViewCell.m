@@ -14,9 +14,11 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.contentView.backgroundColor = [UIColor clearColor];
+//        self.backgroundColor = [UIColor redColor];
         _imgV = [[UIImageView alloc] init];
         [self.contentView addSubview:_imgV];
         
+        // 添加图片的按钮
         _imgV0 = [UIButton buttonWithType:UIButtonTypeCustom];
         [_imgV0 setImage:[UIImage imageNamed:@"tianjiatupian"] forState:UIControlStateNormal];
         [_imgV0 addTarget:self action:@selector(doIt) forControlEvents:UIControlEventTouchUpInside];

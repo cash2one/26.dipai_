@@ -13,13 +13,13 @@
  id":"5110",
          "title":"2016CPG中国冠军赛",
          "type":"5",
-         "picname":"http://dipaiadmin.replays.net/public/upload/picname/146640925920025.jpg",
+         "picname":
          "start_time":"01.01",
          "end_time":"01.01",
          "place":"三亚",
          "prize_pool":"8M+",
          "entry_fee":"10K",
-         "wapurl":"http://dipaiapp.replays.net/app/club/view/5/5110"
+         "wapurl":"
  */
 
 /**

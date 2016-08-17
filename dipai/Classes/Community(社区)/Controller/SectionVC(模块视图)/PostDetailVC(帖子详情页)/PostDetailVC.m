@@ -83,7 +83,8 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     
-    [self.tableView.header beginRefreshing];
+//    [self.tableView.header beginRefreshing];
+    [self loadNewData];
 }
 
 - (void)viewDidLoad {
@@ -438,8 +439,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     ReplyFrameModel * frameModel = self.dataSource[indexPath.row];
     
-//    NSLog(@"单元格的高度：%f    %lu", frameModel.cellHeight, indexPath.row);
-    
+//    NSLog(@"%f", frameModel.cellHeight);
     return frameModel.cellHeight;
 //    return 200;
 }

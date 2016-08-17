@@ -81,6 +81,7 @@
     _picView = picView;
     // 标题
     UILabel * titleLbl = [[UILabel alloc] init];
+    titleLbl.numberOfLines = 0;
     //    titleLbl.backgroundColor = [UIColor greenColor];
     titleLbl.font = Font16;
     [self addSubview:titleLbl];
@@ -139,21 +140,31 @@
     // 标题
     CGFloat titleX = CGRectGetMaxX(_picView.frame) + Margin30 * IPHONE6_W_SCALE;
     CGFloat titleY = Margin36 * IPHONE6_H_SCALE;
+    CGFloat titleW = WIDTH - titleX - Margin20 * IPHONE6_W_SCALE;
     NSMutableDictionary * titleDic = [NSMutableDictionary dictionary];
     titleDic[NSFontAttributeName] = Font16;
     NSString * str = _speDeModel.title;
     CGSize titleSize = [str sizeWithAttributes:titleDic];
-    _titleLbl.frame = (CGRect){{titleX, titleY}, titleSize};
+    CGRect titleRect = [str boundingRectWithSize:CGSizeMake(titleW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:titleDic context:nil];
+    _titleLbl.frame = (CGRect){{titleX, titleY}, titleRect.size};
     // 描述
     CGFloat detailX = titleX;
     CGFloat detailY = CGRectGetMaxY(_titleLbl.frame) + Margin30 * IPHONE6_H_SCALE;
-    CGFloat detailW = WIDTH - detailX - Margin20;
+    CGFloat detailW = WIDTH - detailX - Margin20 * IPHONE6_W_SCALE;
     NSMutableDictionary * detailDic = [NSMutableDictionary dictionary];
     detailDic[NSFontAttributeName] = Font13;
     NSString * detail = _speDeModel.shorttitle;
     CGRect detailRect = [detail boundingRectWithSize:CGSizeMake(detailW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:detailDic context:nil];
     _detailLbl.frame = (CGRect){{detailX,detailY},detailRect.size};
     _detailLbl.text = detail;
+    
+    // 关于描述的隐藏与显示
+    if (titleSize.width + 10 * IPHONE6_W_SCALE + titleX > WIDTH) {
+        _detailLbl.hidden = YES;
+    }else{
+        _detailLbl.hidden = NO;
+    }
+    
     // 评论数
     NSString * commentNum = [NSString stringWithFormat:@"%@评论", _speDeModel.commentNumber];
     _commentsLbl.text = commentNum;

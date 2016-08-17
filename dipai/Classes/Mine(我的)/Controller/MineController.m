@@ -36,6 +36,7 @@
 
 #import "UIImageView+WebCache.h"
 #import "SVProgressHUD.h"
+#import "AFNetworking.h"
 @interface MineController ()<LSAlertViewDeleagte, UIScrollViewDelegate>
 {
     NSArray *_cookies;
@@ -136,6 +137,21 @@
 
 #pragma mark --- 获取数据
 - (void)getData{
+    
+    // 检测是否联网
+    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+    //设置监听
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (status == AFNetworkReachabilityStatusNotReachable) {
+            NSLog(@"没有网络");
+            _loginLbl.hidden = YES;
+            [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+        }else{
+            _loginLbl.hidden = NO;
+        }
+    }];
+    [manager startMonitoring];
+    
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * name = [defaults objectForKey:Cookie];
     NSDictionary * dataDic = [defaults objectForKey:User];
@@ -506,8 +522,10 @@
         
         UIImageView * image = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
         [picSc addSubview:image];
-        //    [image sd_setImageWithURL:[NSURL URLWithString:model.imgs[@"pimg"]] placeholderImage:[UIImage imageNamed:@"123"]];
-        [image sd_setImageWithURL:[NSURL URLWithString:_model.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+    // 显示一个下载进度
+    NSLog(@"begin...");
+        [image sd_setImageWithURL:[NSURL URLWithString:_model.max_face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+    NSLog(@"end...");
         image.contentMode = UIViewContentModeScaleAspectFit;
         _image = image;    
     

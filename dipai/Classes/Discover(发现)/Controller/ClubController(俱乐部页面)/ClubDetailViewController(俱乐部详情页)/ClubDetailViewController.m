@@ -25,6 +25,10 @@
 // 信息页模型
 #import "InfoModel.h"
 
+#import "SBModel.h"
+#import "AnyBodyVC.h"
+#import "StarVC.h"
+
 #import "DataTool.h"
 @interface ClubDetailViewController ()<CAPSPageMenuDelegate, ClubInformationVCDelegate, ClubCommentsVCDelegate, ClubNewsVCDelegate>
 
@@ -75,6 +79,7 @@
         _clubRecommendVC.wapurl = infoModel.rcd;
         _clubNewsVC.wapurl = infoModel.relation;
         _clubCommentsVC.wapurl = infoModel.comment;
+        _clubCommentsVC.iD = infoModel.iD;
         
     } failure:^(NSError * error) {
         
@@ -173,6 +178,22 @@
     UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
     [self presentViewController:loginNav animated:YES completion:nil];
 }
+
+- (void)turnPageToSBPageWithURL:(NSString *)url withFlag:(NSString *)flag{
+    
+    AnyBodyVC * anyBodyVC = [[AnyBodyVC alloc] init];
+    StarVC * starVC = [[StarVC alloc] init];
+    if ([flag isEqualToString:@"0"]) {  // 普通用户
+        anyBodyVC.userURL = url;
+        [self.navigationController pushViewController:anyBodyVC animated:YES];
+    }else{  // 名人
+        
+        starVC.userURL = url;
+        [self.navigationController pushViewController:starVC animated:YES];
+    }
+}
+
+
 #pragma mark --- ClubNewsVCDelegate
 - (void)turnPageToDetailVCWithURL:(NSString *)wapurl{
     DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];

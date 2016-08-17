@@ -20,12 +20,27 @@
  *  描述
  */
 @property (nonatomic, strong) UILabel * desLbl;
+// 装图片的数组
+@property (nonatomic, strong) NSMutableArray * imageArr;
+// 装标题的数组
+@property (nonatomic, strong) NSMutableArray * titleArr;
 
 @end
 
 @implementation WSOPTableViewCell
+- (NSMutableArray *)imageArr{
+    if (_imageArr == nil) {
+        _imageArr = [NSMutableArray array];
+    }
+    return _imageArr;
+}
 
-
+- (NSMutableArray *)titleArr{
+    if (_titleArr == nil) {
+        _titleArr = [NSMutableArray array];
+    }
+    return _titleArr;
+}
 + (instancetype)cellWithTableView:(UITableView *)tableView
 {
     static NSString * cellID = @"tournamentCell";
@@ -81,9 +96,20 @@
 - (void)setWsopModel:(WSOPModel *)wsopModel{
     _wsopModel = wsopModel;
     
-    //
+    // 没有下面的代码会出现多张图片和多个标题的情况
+    if (self.imageArr && self.imageArr.count > 0) {
+        for (UIImageView * imageV in self.imageArr) {
+            [imageV removeFromSuperview];
+        }
+    }
+    if (self.titleArr && self.titleArr.count > 0) {
+        for (UILabel * titleLbl in self.titleArr) {
+            [titleLbl removeFromSuperview];
+        }
+    }
+    
     [self setFrame];
-    NSLog(@"%@", _wsopModel);
+//    NSLog(@"%@", _wsopModel);
 }
 
 - (void)setFrame{
@@ -113,11 +139,12 @@
         imageBtn.userInteractionEnabled = YES;
         [imageBtn addGestureRecognizer:tap];
         [self addSubview:imageBtn];
+        [self.imageArr addObject:imageBtn];
         
         CGFloat btnX = Margin20 * IPHONE6_W_SCALE;
         CGFloat btnY = CGRectGetMaxY(_redView.frame) + Margin24 * IPHONE6_H_SCALE;
         CGFloat btnW = 346 / 2 * IPHONE6_W_SCALE;
-        CGFloat btnH = 196 / 2 * IPHONE6_H_SCALE;
+        CGFloat btnH = 196 / 2 * IPHONE6_W_SCALE;
         //        imageBtn.backgroundColor = [UIColor redColor];
         int j = i % 2;
         int k = i / 2;
@@ -128,7 +155,7 @@
         
         // 四个图片的标题
         UILabel * titleLbl = [[UILabel alloc] init];
-        //        titleLbl.backgroundColor = [UIColor redColor];
+//        titleLbl.backgroundColor = [UIColor redColor];
         titleLbl.numberOfLines = 0;
         titleLbl.font = Font13;
         CGFloat titleX = btnX + j *(btnW + 18 / 2 * IPHONE6_W_SCALE);
@@ -137,6 +164,7 @@
         titleLbl.text = model.title;
         [titleLbl sizeToFit];
         [self addSubview:titleLbl];
+        [self.titleArr addObject:titleLbl];
     }
 }
 #pragma mark ---- 为图片添加的点击事件

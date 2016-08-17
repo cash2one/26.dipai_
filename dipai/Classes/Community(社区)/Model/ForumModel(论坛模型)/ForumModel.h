@@ -15,7 +15,7 @@
  "id":"3",
  "name":"自由",
  "picname":"",
- "wapurl":"http://dipaiapp.replays.net/app/forum/list/3"
+ "wapurl":"
  },
  Object{...}
  ],

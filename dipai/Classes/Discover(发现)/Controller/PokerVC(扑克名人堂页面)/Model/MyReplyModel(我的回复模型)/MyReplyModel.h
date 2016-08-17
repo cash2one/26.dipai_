@@ -22,7 +22,7 @@
  "username":"Nick",
  "content":"该嘉年华健健康康看看看看"
  },
- "userurl":"http://dipaiapp.replays.net/app/forum/view/62"
+ "userurl":"
  },
  */
 

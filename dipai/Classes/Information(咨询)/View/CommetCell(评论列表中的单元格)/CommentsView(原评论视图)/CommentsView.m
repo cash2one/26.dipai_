@@ -54,6 +54,8 @@
 - (void)setUpChildView{
     // 头像
     UIImageView *iconView = [[UIImageView alloc] init];
+    iconView.layer.cornerRadius = 19 * IPHONE6_W_SCALE;
+    iconView.layer.masksToBounds = YES;
     [self addSubview:iconView];
     _iconView = iconView;
     
@@ -153,6 +155,7 @@
     
     // 头像
     NSURL * url = [NSURL URLWithString:commentsModel.face];
+//    _iconView.backgroundColor = [UIColor redColor];
     [_iconView sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
     
     // 昵称

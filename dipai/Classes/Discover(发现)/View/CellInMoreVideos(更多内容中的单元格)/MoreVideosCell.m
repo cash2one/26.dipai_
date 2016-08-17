@@ -43,7 +43,7 @@
     // 标题
     UILabel * titleLbl = [[UILabel alloc] init];
 //    titleLbl.backgroundColor = [UIColor redColor];
-    titleLbl.numberOfLines = 0;
+    titleLbl.numberOfLines = 2;
     titleLbl.font = Font13;
     [self addSubview:titleLbl];
     _titleLbl = titleLbl;
@@ -71,18 +71,24 @@
     CGFloat picX = 0;
     CGFloat picY = 0;
     CGFloat picW = 334 / 2 * IPHONE6_W_SCALE;
-    CGFloat picH = 190 / 2 * IPHONE6_H_SCALE;
+    CGFloat picH = 190 / 2 * IPHONE6_W_SCALE;
     _picView.frame = CGRectMake(picX, picY, picW, picH);
     
     [_picView sd_setImageWithURL:[NSURL URLWithString:_hotVideoModel.picname] placeholderImage:[UIImage imageNamed:@"123"]];
     
     // 标题
     CGFloat titleX = picX;
-    CGFloat titleY = CGRectGetMaxY(_picView.frame) + 18/2 * IPHONE6_H_SCALE;
+    CGFloat titleY = CGRectGetMaxY(_picView.frame) + 9 * IPHONE6_H_SCALE;
     CGFloat titleW = picW;
-    CGFloat titleH = 26;
-    _titleLbl.frame = CGRectMake(titleX, titleY, titleW, titleH);
+    NSMutableDictionary * titleDic = [NSMutableDictionary dictionary];
+    titleDic[NSFontAttributeName] = Font13;
+//    _hotVideoModel.title = @"发觉；将阿离开啊就；放假阿森；老地方见啦解放";
+    CGRect titleRect = [_hotVideoModel.title boundingRectWithSize:CGSizeMake(titleW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:titleDic context:nil];
+    _titleLbl.frame = (CGRect){{titleX, titleY }, titleRect.size};
     _titleLbl.text = _hotVideoModel.title;
+//    CGFloat titleH = 26;
+//    _titleLbl.frame = CGRectMake(titleX, titleY, titleW, titleH);
+//    _titleLbl.text = _hotVideoModel.title;
 //    [_titleLbl sizeToFit];
 }
 @end

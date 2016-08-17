@@ -46,6 +46,7 @@
 }
 
 - (void)selectPic{
+    NSLog(@"添加图片...");
     _commplete();
 }
 

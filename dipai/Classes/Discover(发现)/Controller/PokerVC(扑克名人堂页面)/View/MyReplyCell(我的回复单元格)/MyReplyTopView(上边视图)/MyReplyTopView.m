@@ -78,7 +78,6 @@
     _nameView = nameView;
     
     // 时间
-    // 时间
     UILabel *timeView = [[UILabel alloc] init];
     timeView.font = Font11;
     timeView.textColor = Color153;

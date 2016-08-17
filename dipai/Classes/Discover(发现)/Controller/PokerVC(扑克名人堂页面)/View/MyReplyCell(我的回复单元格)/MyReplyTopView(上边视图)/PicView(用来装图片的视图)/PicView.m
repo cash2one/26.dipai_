@@ -40,6 +40,8 @@
     // 最多显示9张图片
     for (int i = 0 ; i < 3 ; i ++) {
         UIImageView * imageView = [[UIImageView alloc] init];
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
+        imageView.clipsToBounds = YES;
         imageView.tag = i;
         [self addSubview:imageView];
         [self.imagesArr addObject:imageView];
@@ -66,7 +68,8 @@
             
             NSLog(@"%@", _picArr[i]);
             
-            [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]]];
+//            [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]]];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
             
         }else
         {

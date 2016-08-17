@@ -22,7 +22,7 @@
  ],
  "addtime":"2016-06-24",
  "comment":"0",
- "wapurl":"http://dipaiapp.replays.net/app/forum/view/10",
+ "wapurl":"
  "userurl":
  */
 
@@ -40,7 +40,7 @@
  ],
  "addtime":"1467183057",
  "comment":"8",
- "wapurl":"http://dipaiapp.replays.net/app/forum/view/62",
+ "wapurl":,
  "userurl":
  */
 /**

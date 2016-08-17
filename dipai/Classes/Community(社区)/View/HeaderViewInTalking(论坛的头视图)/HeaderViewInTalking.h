@@ -23,4 +23,9 @@
 
 - (instancetype)initWithFrame:(CGRect)frame WithModel:(ForumModel *)model;
 
+/**
+ *  论坛模型
+ */
+@property (nonatomic, strong) ForumModel * forumModel;
+
 @end

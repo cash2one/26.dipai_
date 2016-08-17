@@ -378,6 +378,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     if (tableView == _tableView1) {
         UIView * headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 40 * IPHONE6_H_SCALE)];
+        headerView.backgroundColor = [UIColor whiteColor];
         UILabel * monthLbl = [[UILabel alloc] initWithFrame:CGRectMake(15 * IPHONE6_W_SCALE, 0, 100, 40 * IPHONE6_H_SCALE)];
         MatchModel * matchModel = [self.dataArray1 objectAtIndex:section];
         monthLbl.text = [matchModel.name stringByAppendingString:@"月"];
@@ -387,6 +388,7 @@
         return headerView;
     } else if (tableView == _tableView2){
         UIView * headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 40 * IPHONE6_H_SCALE)];
+        headerView.backgroundColor = [UIColor whiteColor];
         UILabel * monthLbl = [[UILabel alloc] initWithFrame:CGRectMake(15 * IPHONE6_W_SCALE, 0, 100, 40 * IPHONE6_H_SCALE)];
         MatchModel * matchModel = [self.dataArray2 objectAtIndex:section];
         monthLbl.text = [matchModel.name stringByAppendingString:@"月"];;

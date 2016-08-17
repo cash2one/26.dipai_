@@ -19,9 +19,10 @@
     [self setUpCommentsFrame];
     
     NSDictionary * replyDic = myreplyModel.reply;
-//    NSString * username = replyDic[@"username"];
-    if (![replyDic isKindOfClass:[NSNull class]]) {  // 如果有回复内容
-        
+    
+    
+    if (![replyDic isKindOfClass:[NSNull class]]  && replyDic != nil) {  // 如果有回复内容
+        NSLog(@"有回复内容...");
         // 计算回复高度
         [self setUpReplyFrame];
         

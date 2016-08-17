@@ -79,6 +79,8 @@
 
 @property (nonatomic, strong) LSAlertView * alertView;
 
+@property (nonatomic, strong) UIImagePickerController * imagePicker;
+
 @end
 
 @implementation SendVC
@@ -86,16 +88,21 @@
 - (NSMutableArray *)imagesArr{
     if (_imagesArr == nil) {
         _imagesArr = [NSMutableArray array];
+        
     }
     return _imagesArr;
 }
-
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    [SVProgressHUD dismiss];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
 
 //    _selectPictures = [@[] mutableCopy];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imagePickFinished:) name:IMAGE_PICKER object:nil];;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imagePickFinished:) name:IMAGE_PICKER object:nil];
     
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -143,9 +150,11 @@
         if (![_selectPictures containsObject:photoAsset]) {
             [_selectPictures addObject:photoAsset];
         }
+        
     }
     
     _pictureView.dataSource = _selectPictures;
+    [self.imagesArr removeAllObjects];
     for (LNPhotoAsset * asset in _selectPictures) {
         UIImage * image = asset.thumbImage;
         [self.imagesArr addObject:image];
@@ -195,10 +204,14 @@
 }
 
 - (void)imagePickFinished:(NSNotification *)notification{
+    
+//    NSLog(@"图片选择王城...");
+    
     [_field resignFirstResponder];
     [_textView resignFirstResponder];
     
     NSMutableArray *info = notification.object;
+//    NSLog(@"%@", info);
     [self _initPicSelectView:info];
     
 
@@ -226,7 +239,7 @@
             [self sendText];
         }
         // 显示发表成功
-        [SVProgressHUD showSuccessWithStatus:@"发表成功"];
+//        [SVProgressHUD showSuccessWithStatus:@"发表成功"];
     }else{
         [self addAlertView];
     }
@@ -307,7 +320,8 @@
     SectionModel * sectionModel = self.sectionModel;
     NSLog(@"%@", sectionModel.iD);
     
-    NSString * url = @"http://dipaiapp.replays.net/app/add/forum/";
+    NSString * url = @"http://dpapp.replays.net/app/add/forum/";
+//    NSString * url = @"http://app.dipai.tv/app/add/forum/";
     url = [url stringByAppendingString:sectionModel.iD];
     
     [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
@@ -321,14 +335,14 @@
         
         for (int i = 0; i < self.imagesArr.count; i ++) {
             UIImage * image = self.imagesArr[i];
-            NSData * data = UIImageJPEGRepresentation(image, 1.0);
-            
+//            NSData * data = UIImageJPEGRepresentation(image, 0.3);
+            NSData * data = UIImagePNGRepresentation(image);
             NSString * name = [NSString stringWithFormat:@"myfile%d", i];
             NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
-            NSString * mimeType = [NSString stringWithFormat:@"image/jpeg"];
+            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
             [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
         }
-        
+        [SVProgressHUD showWithStatus:@"发布中..."];
     } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
         [SVProgressHUD showSuccessWithStatus:@"发布成功"];
@@ -453,7 +467,6 @@
 - (void)addSelectPicView{
     UIView * selectPicView = [[UIView alloc] initWithFrame:CGRectMake(0,HEIGHT-40 * IPHONE6_H_SCALE-64, WIDTH, 40 * IPHONE6_H_SCALE)];
     [self.view addSubview:selectPicView];
-//    selectPicView.backgroundColor = [UIColor redColor];
     _selectPicView = selectPicView;
     
     UIButton * picBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -470,7 +483,6 @@
     
     UIView * bottomLine = [[UIView alloc] init];
     bottomLine.backgroundColor = Color216;
-//    bottomLine.backgroundColor = [UIColor redColor];
     [selectPicView addSubview:bottomLine];
     
     upLine.frame = CGRectMake(0, 0, WIDTH, 0.5);
@@ -482,37 +494,88 @@
     }];
     
     
-//    CGFloat picsY = CGRectGetMaxY(selectPicView.frame);
-    LSPicturesView * pictures = [[LSPicturesView alloc] initWithFrame:CGRectMake(0, HEIGHT, WIDTH, 0)];
-//    pictures.backgroundColor = [UIColor redColor];
-    pictures.delegate = self;
-    [self.view addSubview:pictures];
-    _pictures = pictures;
-    
-    [pictures.selectBtn addTarget:self action:@selector(selectPic) forControlEvents:UIControlEventTouchUpInside];
+//    LSPicturesView * pictures = [[LSPicturesView alloc] initWithFrame:CGRectMake(0, HEIGHT, WIDTH, 0)];
+//    pictures.delegate = self;
+//    [self.view addSubview:pictures];
+//    _pictures = pictures;
+//    
+//    [pictures.selectBtn addTarget:self action:@selector(selectPic) forControlEvents:UIControlEventTouchUpInside];
 
 }
 #pragma mark ---- 选择图片的事件
 - (void)selectPic{
     
-    _photoLibaryController = [[LNPhotoLibaryController alloc] init];
-    _selectPictures = _photoLibaryController.selectedPhotos;
-    _photoLibaryController.maxSelectedCount = 9;
-    UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:_photoLibaryController];
-    [self presentViewController:navigation animated:YES completion:^{
-        
-    }];
+    NSLog(@"跳转到相册....");
+    
+    if (self.imagesArr.count <9) {
+        _imagePicker = [[UIImagePickerController alloc] init];
+        _imagePicker.delegate = self;
+//        _imagePicker.allowsEditing = YES;
+        _imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+        [self presentViewController:_imagePicker animated:YES completion:nil];
+    }else{
+        [SVProgressHUD showWithStatus:@"最多选九张图片"];
+    }
+    
+//    _photoLibaryController = [[LNPhotoLibaryController alloc] init];
+//    _selectPictures = _photoLibaryController.selectedPhotos;
+//    _photoLibaryController.maxSelectedCount = 9;
+//    UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:_photoLibaryController];
+////    NSLog(@"跳转到相册...");
+//    [self presentViewController:navigation animated:YES completion:nil];
 }
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    
+    //    NSLog(@"%s", __func__);
+    if (picker.sourceType == UIImagePickerControllerSourceTypeSavedPhotosAlbum) {
+        // 返回
+        [self dismissViewControllerAnimated:YES completion:nil];
+        
+        UIImage * image = [info objectForKey:UIImagePickerControllerOriginalImage];
+        [self.imagesArr addObject:image];
+        if (!_pictureView) {
+            _pictureView = [X_SelectPicView shareSelectPicView];
+            _pictureView.delegate = self;
+            
+            __block typeof(self) weakSelf = self;
+            _pictureView.Commplete = ^{ //跳转到相册
+                if (self.imagesArr.count < 9) {
+                    [weakSelf presentViewController:_imagePicker animated:YES completion:nil];
+                }else{
+                    [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
+                }
+                
+            };
+            
+            [self.view addSubview:_pictureView];
+        }
+
+        _pictureView.dataSource = self.imagesArr;
+    }
+    else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera)
+    {
+        // 返回
+        [self dismissViewControllerAnimated:YES completion:nil];
+        // 保存编辑后的照片
+    }
+        
+}
+
 
 #pragma mark - X_SelectPicViewDelegate
 - (void)didSelectPicView:(X_SelectPicView *)view atIndex:(NSInteger)index{
     NSLog(@"您选中了第%ld长图片",(long)index);
+    NSLog(@"图片数组%@", _selectPictures);
 }
 
+// 删除已经选中的图片
 - (void)deletePicView:(X_SelectPicView *)view atIndex:(NSInteger)index{
     NSLog(@"%ld\n",(long)index);
     [_selectPictures removeObjectAtIndex:index];
-    view.dataSource = _selectPictures;
+    [self.imagesArr removeObjectAtIndex:index];
+    view.dataSource = self.imagesArr;
 }
 
 
@@ -566,7 +629,7 @@
         
     }
     
-    if (_field.text.length && _textView.text.length) {
+    if (_field.text.length && _textView.text.length > 3) {
         _sendBtn.userInteractionEnabled = YES;
         _sendLbl.textColor = [UIColor blackColor];
     } else{

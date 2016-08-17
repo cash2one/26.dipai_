@@ -133,6 +133,7 @@
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBarHidden = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -161,9 +162,15 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     // 添加轮播页
     [self addBannerView];
-    
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
-    
+     UIView *footerV = [[UIView alloc] init];
+    if (HEIGHT == 736.f) {  // 如果是6P的屏幕
+        footerV.frame = CGRectMake(0, 0, WIDTH, 49*IPHONE6_H_SCALE + 30);
+    }else{
+        footerV.frame = CGRectMake(0, 0, WIDTH, 49);
+    }
+   
+//    footerV.backgroundColor = [UIColor redColor];
+    self.tableView.tableFooterView = footerV;
     // 添加CollectionView
 //    [self addCollectionView];
     
@@ -178,6 +185,9 @@
     [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
     // 设置自动切换透明度(在导航栏下面自动隐藏)
     header.automaticallyChangeAlpha = YES;
+    header.stateLabel.font = [UIFont systemFontOfSize:14];
+    header.stateLabel.textColor = [UIColor lightGrayColor];
+    header.lastUpdatedTimeLabel.hidden = YES;
     // 设置header
     self.tableView.header = header;
     // 马上进入刷新状态
@@ -306,7 +316,7 @@
 #pragma mark --- 单元格的行数
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    NSLog(@"WSOP视频专辑个数：%lu", self.videoModelArr.count);
+//    NSLog(@"WSOP视频专辑个数：%lu", self.videoModelArr.count);
     
     return 2 + self.videoModelArr.count;
 }
@@ -324,7 +334,7 @@
         [cell.specialBtn addTarget:self action:@selector(turnPageToSomePage:) forControlEvents:UIControlEventTouchUpInside];
         cell.specialBtn.tag = 4;
         return cell;
-    } else if (indexPath.row == 1){ // 热门专辑
+    } else if (indexPath.row == 1){ // 视频专辑
         HotVideoCell * cell = [HotVideoCell cellWithTableView:tableView];
         cell.delegate = self;
         // 为更多内容按钮添加点击事件
@@ -333,7 +343,7 @@
         cell.videoModelArr = self.hotVideoModelArr;
         return cell;
         
-    } else{ // 发现首页
+    } else{ // 热门视频
         WSOPTableViewCell * cell = [WSOPTableViewCell cellWithTableView:tableView];
         cell.delegate = self;
         WSOPModel * wsopModel = self.videoModelArr[indexPath.row - 2];
@@ -402,10 +412,11 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     NSLog(@"%lu", indexPath.row);
 }
+#pragma mark --- 单元格的高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (self.videoModelArr.count > 0) {
         if (indexPath.row == 0) {   // navigation单元格
-            return 180 * 0.5 * IPHONE6_H_SCALE;
+            return 90 * IPHONE6_H_SCALE;
         } else if (indexPath.row == 1){ // 热门专辑单元格
             return 680 * 0.5 * IPHONE6_H_SCALE;
         } else{

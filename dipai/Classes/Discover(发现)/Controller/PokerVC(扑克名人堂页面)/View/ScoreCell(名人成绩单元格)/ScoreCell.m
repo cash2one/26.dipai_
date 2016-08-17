@@ -66,6 +66,7 @@
     _timeLbl = timeLbl;
     // 成绩label
     UILabel * scoreLbl = [[UILabel alloc] init];
+    scoreLbl.numberOfLines = 0;
     scoreLbl.font = Font13;
     [self addSubview:scoreLbl];
     _scoreLbl = scoreLbl;

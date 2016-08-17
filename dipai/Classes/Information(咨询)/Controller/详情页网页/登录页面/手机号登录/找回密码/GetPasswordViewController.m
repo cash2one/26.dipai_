@@ -225,8 +225,8 @@
 
 #pragma mark --- 下一步事件
 - (void)nextAction{
-    // http://dipaiapp.replays.net/sign/app_verify
-    NSString * url = @"http://dipaiapp.replays.net/sign/app_verify";
+//    NSString * url = @"http://dipaiapp.replays.net/sign/app_verify";
+    NSString * url = @"http://dpapp.replays.net/sign/app_verify";
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"verify"] = _code.text;
     [DataTool postWithStr:url parameters:dic success:^(id responseObject) {

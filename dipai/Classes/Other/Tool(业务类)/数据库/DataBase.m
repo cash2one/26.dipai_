@@ -15,7 +15,7 @@
 +(void)setUpMagicalRecord
 {
     // 对magicalRecord进行初始化
-    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"mydatabase.sqlite"];
+//    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"mydatabase.sqlite"];
 }
 
 //保存数据

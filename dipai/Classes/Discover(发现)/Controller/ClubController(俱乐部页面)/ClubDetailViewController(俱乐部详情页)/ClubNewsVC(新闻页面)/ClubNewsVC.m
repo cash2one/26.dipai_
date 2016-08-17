@@ -20,6 +20,7 @@
 
 
 #import "DataTool.h"
+#import "Masonry.h"
 @interface ClubNewsVC ()<UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) UITableView * tableView;
@@ -29,6 +30,8 @@
 @property (nonatomic, strong) NSMutableArray * dataSource;
 
 @property (nonatomic, strong) UILabel *NoNews;
+// 没有内容的图片提示
+@property (nonatomic, strong) UIImageView * imageV;
 
 @end
 
@@ -59,6 +62,7 @@
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
+    
     _NoNews = [[UILabel alloc] initWithFrame:CGRectMake( 0 , SPWidth , WIDTH , 30)];
     _NoNews.text = @"编辑很懒,什么也没留下";
     _NoNews.textAlignment = NSTextAlignmentCenter;
@@ -68,6 +72,18 @@
     _NoNews.hidden = YES;
     [self.tableView addSubview:_NoNews];
     [self.view addSubview:_tableView];
+    
+    UIImageView * imageV = [[UIImageView alloc] init];
+    [self.view addSubview:imageV];
+    imageV.image = [UIImage imageNamed:@"zanshimeiyouxiangguanneirong"];
+    [imageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(self.view.mas_top).offset(298 * 0.5 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(246 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(181 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _imageV = imageV;
+    _imageV.hidden = YES;
 }
 
 
@@ -106,19 +122,27 @@
             
             [self.tableView.header endRefreshing];
             [self.tableView.footer endRefreshing];
-            self.dataSource = responseObject;
-            if (_tableView.contentOffset.y != 0) {
+            
+            if ([responseObject isKindOfClass:[NSString class]]) {
                 
-                [_NoNews removeFromSuperview];
+                _imageV.hidden = NO;
+            }else{
+                _imageV.hidden = YES;
+                self.dataSource = responseObject;
+                if (_tableView.contentOffset.y != 0) {
+                    
+                    [_NoNews removeFromSuperview];
+                }
+                
+                if (self.dataSource.count == 0) {
+                    // 没有新闻的时候显示
+                    _NoNews.hidden = NO;
+                }else{
+                    
+                    _NoNews.hidden = YES;
+                }
             }
             
-            if (self.dataSource.count == 0) {
-                // 没有新闻的时候显示
-                _NoNews.hidden = NO;
-            }else{
-                
-                _NoNews.hidden = YES;
-            }
             [self.tableView reloadData];
         } failure:^(NSError * error) {
             

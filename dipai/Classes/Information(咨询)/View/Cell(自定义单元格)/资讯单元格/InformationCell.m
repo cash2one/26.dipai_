@@ -62,6 +62,18 @@
 @end
 @implementation InformationCell
 
++ (instancetype)cellWithTableView:(UITableView *)tableView
+{
+    static NSString * cellID = @"cellID";
+    id cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+    if (!cell) {
+        cell = [[self alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+        //        NSLog(@"...");
+    }
+    
+    return cell;
+}
+
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
@@ -132,10 +144,14 @@
     // 资讯单元格上子控件的数据
     
     if ([newslistModel.type isEqualToString:@"2"]) {
+        _videoPic.hidden = YES;
+        _markView.hidden = YES;
         [self setInfoData];
         [self setInfoFrame];
     } else
     {
+        _videoPic.hidden = NO;
+        _markView.hidden = NO;
         [self setVideoData];
         [self setVideoFrame];
     }
@@ -147,17 +163,22 @@
 // 相关视频
 - (void)setAssociateModel:(AssociatedModel *)associateModel{
     
+    _associateModel = associateModel;
     // 如果video模型和news list模型数据一致会更简单
-    [self setAssociateData];
     [self setAssociateFrame];
+    [self setAssociateData];
+    
 }
 #pragma mark --- 设置视频单元格内容
 - (void)setAssociateData{
-    _titleLbl.text = _associateModel.title;
-    _detailLbl.text = _associateModel.descriptioN;
     
+    _titleLbl.text = _associateModel.title;
+//    _titleLbl.backgroundColor = [UIColor redColor];
     NSString * urlStr = _associateModel.covers;
-    _commentsLbl.text = [NSString stringWithFormat:@"%@评论", _newslistModel.commentNumber];
+//    NSLog(@"%@", _associateModel.commentNumber);
+    
+    _commentsLbl.text = [NSString stringWithFormat:@"%@评论", _associateModel.commentNumber];
+//    _commentsLbl.backgroundColor = [UIColor redColor];
     [_picView sd_setImageWithURL:[NSURL URLWithString:urlStr] placeholderImage:[UIImage imageNamed:@"123"]];
 }
 #pragma mark --- 设置视频单元格大小
@@ -166,32 +187,36 @@
     CGFloat imageX = Margin30 * IPHONE6_W_SCALE;
     CGFloat imageY = 28/2 * IPHONE6_H_SCALE;
     CGFloat imageW = InfoCellPicWidth * IPHONE6_W_SCALE;
-    CGFloat imageH = InfoCellPicHeight * IPHONE6_H_SCALE;
+    CGFloat imageH = InfoCellPicHeight * IPHONE6_W_SCALE;
     _picView.frame = CGRectMake(imageX, imageY, imageW, imageH);
     // 标题
     CGFloat titleX = CGRectGetMaxX(_picView.frame) + Margin30 * IPHONE6_W_SCALE;
     CGFloat titleY = Margin36 * IPHONE6_H_SCALE;
     NSMutableDictionary * titleDic = [NSMutableDictionary dictionary];
     titleDic[NSFontAttributeName] = Font16;
-    NSString * str = _newslistModel.title;
+    NSString * str = _associateModel.title;
     CGSize titleSize = [str sizeWithAttributes:titleDic];
     _titleLbl.frame = (CGRect){{titleX, titleY}, titleSize};
     // 描述
     CGFloat detailX = titleX;
-    CGFloat detailY = CGRectGetMaxY(_titleLbl.frame) + Margin30 * IPHONE6_H_SCALE;
+    CGFloat detailY = CGRectGetMaxY(_titleLbl.frame) + 10 * IPHONE6_H_SCALE;
     CGFloat detailW = WIDTH - detailX - Margin20 * IPHONE6_W_SCALE;
     NSMutableDictionary * detailDic = [NSMutableDictionary dictionary];
     detailDic[NSFontAttributeName] = Font13;
-    NSString * detail = _newslistModel.descriptioN;
+    NSString * detail;;
+    if (_associateModel.descriptioN.length > 30) {
+        detail = [_associateModel.descriptioN substringToIndex:30];
+    }else{
+        detail = _associateModel.descriptioN;
+    }
+//    NSLog(@"%@", detail);
     CGRect detailRect = [detail boundingRectWithSize:CGSizeMake(detailW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:detailDic context:nil];
     _detailLbl.frame = (CGRect){{detailX,detailY},detailRect.size};
     _detailLbl.text = detail;
+//    _detailLbl.backgroundColor = [UIColor redColor];
+//    NSLog(@"%@", _detailLbl.text);
+    
     // 评论数
-    NSString * commentNum = [NSString stringWithFormat:@"%@评论", _newslistModel.commentNumber];
-    _commentsLbl.text = commentNum;
-    if (_newslistModel.commentNumber == nil) {
-        _commentsLbl.text = @"0评论";
-    }
     [_commentsLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.mas_right).offset(-Margin30 * IPHONE6_W_SCALE);
         make.bottom.equalTo(self.mas_bottom).offset(-Margin33 * IPHONE6_H_SCALE);
@@ -286,6 +311,7 @@
     NSMutableDictionary * titleDic = [NSMutableDictionary dictionary];
     titleDic[NSFontAttributeName] = Font16;
     NSString * str = _newslistModel.title;
+    CGSize titleSize = [str sizeWithAttributes:titleDic];
     CGRect titleRect = [str boundingRectWithSize:CGSizeMake(titleW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:titleDic context:nil];
     _titleLbl.numberOfLines = 0;
     _titleLbl.frame = (CGRect){{titleX, titleY}, titleRect.size};
@@ -300,7 +326,9 @@
     _detailLbl.frame = (CGRect){{detailX,detailY},detailRect.size};
     _detailLbl.text = detail;
     
-    if (_newslistModel.title.length > 15) {
+    CGFloat titleWidth = titleSize.width + titleX + 10 * IPHONE6_W_SCALE;
+//    NSLog(@"%f", titleWidth);
+    if (titleWidth > WIDTH) {
         _detailLbl.hidden = YES;
     }else{
         _detailLbl.hidden = NO;
@@ -332,17 +360,7 @@
 //    _titleLbl.textColor = Color178;
 //}
 
-+ (instancetype)cellWithTableView:(UITableView *)tableView
-{
-    static NSString * cellID = @"cellID";
-    id cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-    if (!cell) {
-        cell = [[self alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
-//        NSLog(@"...");
-    }
-    
-    return cell;
-}
+
 
 - (void)awakeFromNib {
     // Initialization code

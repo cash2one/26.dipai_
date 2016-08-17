@@ -69,7 +69,7 @@
     for (int i = 0; i < _atlasArr.count; i ++) {
         if (_atlasArr.count <= self.subviews.count) {
             UIImageView * imaegV = self.subviews[i];
-            imaegV.frame = CGRectMake(15*IPHONE6_W_SCALE+ i * (116.5), 0 , 112*IPHONE6_W_SCALE, 84*IPHONE6_H_SCALE);
+            imaegV.frame = CGRectMake(15*IPHONE6_W_SCALE+ i * (116.5)*IPHONE6_W_SCALE, 0 , 112*IPHONE6_W_SCALE, 84*IPHONE6_H_SCALE);
             [imaegV sd_setImageWithURL:[NSURL URLWithString:_atlasArr[i]]];
         }
     }

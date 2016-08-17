@@ -28,7 +28,15 @@
 // 登录界面
 #import "LoginViewController.h"
 
+// 普通用户主页
+#import "AnyBodyVC.h"
+// 名人用户主页
+#import "StarVC.h"
+// 某人主页模型
+#import "SBModel.h"
+
 #import "DataTool.h"
+#import "Masonry.h"
 @interface ClubCommentsVC ()<CommentViewDelegate, UITableViewDataSource, UITableViewDelegate, CommentsTableViewCellDelegate, LSAlertViewDeleagte>
 {
     // 发表的内容
@@ -64,6 +72,13 @@
  *  回复视图
  */
 @property (nonatomic, strong) UIImageView * replyView;
+// 没有评论的提示图
+@property (nonatomic, strong) UIImageView * imageV;
+//
+@property (nonatomic, strong) SBModel * sbModel;
+
+// 回复用户的模型
+@property (nonatomic, strong) CommentsModel * model;
 @end
 
 @implementation ClubCommentsVC
@@ -79,6 +94,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+//    NSLog(@"%@", self.iD);
 //    NSLog(@"%@", self.wapurl);
     // 搭建UI
     [self setUpUI];
@@ -95,6 +111,18 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     [self.view addSubview:self.tableView];
+    
+    UIImageView * imageV = [[UIImageView alloc] init];
+    imageV.image = [UIImage imageNamed:@"meiyouxiangguanpinglun"];
+    [self.view addSubview:imageV];
+    [imageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(self.view.mas_top).offset(298 * 0.5 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(121 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(187 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _imageV = imageV;
+    _imageV.hidden = YES;
 }
 
 #pragma mark --- 添加刷新和加载的效果图
@@ -130,19 +158,27 @@
         [DataTool getCommentsListWithStr:self.wapurl parameters:nil success:^(id responseObject) {
             [self.tableView.header endRefreshing];
             [self.tableView.footer endRefreshing];
-            // 传递过来的是模型数组(模型是评论模型)
-            NSArray * commentsArr = responseObject;
             
-            NSMutableArray * commentsFrameArr = [NSMutableArray array];
-            for (CommentsModel * commentModel in commentsArr) {
-                CommentsFrame * commentsFrame = [[CommentsFrame alloc] init];
-                // 将模型传递给视图模型
-                commentsFrame.comments = commentModel;
-                [commentsFrameArr addObject:commentsFrame];
+            if ([responseObject isKindOfClass:[NSString class]]) {
+                
+                _imageV.hidden = NO;    // 显示
+            }else{
+                // 隐藏
+                _imageV.hidden = YES;   // 隐藏
+                // 传递过来的是模型数组(模型是评论模型)
+                NSArray * commentsArr = responseObject;
+                NSMutableArray * commentsFrameArr = [NSMutableArray array];
+                for (CommentsModel * commentModel in commentsArr) {
+                    CommentsFrame * commentsFrame = [[CommentsFrame alloc] init];
+                    // 将模型传递给视图模型
+                    commentsFrame.comments = commentModel;
+                    [commentsFrameArr addObject:commentsFrame];
+                }
+                // 将视图模型数组赋值给数据源
+                NSLog(@"模型个数：%lu", commentsFrameArr.count);
+                self.dataSource = commentsFrameArr;
             }
-            // 将视图模型数组赋值给数据源
-            NSLog(@"模型个数：%lu", commentsFrameArr.count);
-            self.dataSource = commentsFrameArr;
+            
             [self.tableView reloadData];
         } failure:^(NSError * error) {
             
@@ -158,15 +194,16 @@
     CommentsModel * commentsModel = commentsFrameModel.comments;
     
     NSString * url = [NSString stringWithFormat:@"%@/%@/%@/%@", CommentsURL, self.iD, @"8", commentsModel.comment_id];
-    NSLog(@"---url---%@", url);
+//    NSLog(@"---url---%@", url);
     [DataTool getCommentsListWithStr:url parameters:nil success:^(id responseObject) {
         [self.tableView.footer endRefreshing];
-        // 传递过来的是模型数组(模型是评论模型)
-        NSArray * commentsArr = responseObject;
         
-        if (!commentsArr) {
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            
             self.tableView.footer.state = MJRefreshStateNoMoreData;
-        } else{
+        }else{
+            // 传递过来的是模型数组(模型是评论模型)
+            NSArray * commentsArr = responseObject;
             NSMutableArray * commentsFrameArr = [NSMutableArray array];
             for (CommentsModel * commentModel in commentsArr) {
                 CommentsFrame * commentsFrame = [[CommentsFrame alloc] init];
@@ -177,6 +214,7 @@
             // 将视图模型数组赋值给数据源
             [self.dataSource addObjectsFromArray:commentsFrameArr];
         }
+
         
         [self.tableView reloadData];
     } failure:^(NSError * error) {
@@ -258,7 +296,8 @@
     UIView * backView = [[BackgroundView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
     backView.backgroundColor = ColorBlack60;
     // 当前顶层窗口
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+//    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    UIWindow * window = [UIApplication sharedApplication].keyWindow;
     // 添加到灰色的背景图
     [window addSubview:backView];
     _backView = backView;
@@ -304,7 +343,7 @@
         //
         _reply = nil;
         NSLog(@"进行回复...");
-        [self sendMessageWithTypes:@"1" andID:_replyID];
+        [self sendMessageWithTypes:_replyID andID:_replyID];
     } else{
         // 对文章进行评论
         [self sendMessageWithTypes:@"0" andID:self.iD];
@@ -318,19 +357,30 @@
     if (cookieName || wxData) {
         NSLog(@"已经登录。。。进行发表");
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
-        NSLog(@"%@---%@", types, ID);
+        NSLog(@"types和ID：%@---%@", types, ID);
         CommentDic[@"id"] = self.iD;
         CommentDic[@"types"] = types;//0:评论 1:回复
         CommentDic[@"type"] = @"8"; // 8:俱乐部
         CommentDic[@"content"] = _commentView.textView.text;
         [DataTool postWithStr:SendComment parameters:CommentDic success:^(id responseObject) {
+            if ([types isEqualToString:@"0"]) {
+                NSLog(@"发表评论返回的数据---%@", responseObject);
+                NSString * content = [responseObject objectForKey:@"content"];
+                NSLog(@"－－content--%@", content);
+            }else{
+                NSLog(@"回复返回的数据---%@", responseObject);
+                NSString * content = [responseObject objectForKey:@"content"];
+                NSLog(@"－－content--%@", content);
+            }
             
-            NSLog(@"发表评论返回的数据---%@", responseObject);
-            NSString * content = [responseObject objectForKey:@"content"];
-            NSLog(@"－－content--%@", content);
         } failure:^(NSError * error) {
             
-            NSLog(@"发表评论的错误信息%@", error);
+            if ([types isEqualToString:@"0"]) {
+                 NSLog(@"发表评论的错误信息%@", error);
+            }else{
+                 NSLog(@"回复的错误信息%@", error);
+            }
+           
             
         }];
         // 移除评论视图
@@ -357,6 +407,7 @@
     alertBackView.backgroundColor = ColorBlack30;
     // 当前顶层窗口
     UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+//    UIWindow * window = [UIApplication sharedApplication].keyWindow;
     // 添加到灰色的背景图
     [window addSubview:alertBackView];
     [window addSubview:alertView];
@@ -405,6 +456,16 @@
     if (_replyView) {   // 如果有回复视图
         [_replyView removeFromSuperview];
     }
+    
+    _model = model;
+    [DataTool getSBDataWithStr:model.wapurl parameters:nil success:^(id responseObject) {
+        
+        SBModel * sbModel = [[SBModel alloc] init];
+        sbModel = responseObject;
+        _sbModel = sbModel;
+    } failure:^(NSError * error) {
+        NSLog(@"获取个人数据出错：%@", error);
+    }];
     
     _replyID = ID;
     UIImageView * replyView = [[UIImageView alloc] init];
@@ -455,6 +516,23 @@
 #pragma mark --- 查看用户主页
 - (void)checkAction{
     NSLog(@"查看用户主页 ...");
+    [_replyView removeFromSuperview];
+    
+    NSString * flag;
+    if ([_sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {   // 如果认证为空，就是普通人主页
+       // 普通用户
+        flag = @"0";   // 代表普通用户
+    }else{
+        flag = @"1";  // 代表名人
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(turnPageToSBPageWithURL:withFlag:)]) {
+        
+        [self.delegate turnPageToSBPageWithURL:_model.wapurl withFlag:flag];
+    }else{
+        NSLog(@"代理没有响应...");
+    }
+    
 }
 #pragma mark --- 移动表格评论视图消失
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{

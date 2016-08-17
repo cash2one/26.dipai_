@@ -116,6 +116,7 @@
     } else{
         NSLog(@"接口为空,");
         [self.collection.header endRefreshing];
+        [self.collection.footer endRefreshing];
     }
     
 }
@@ -127,15 +128,16 @@
     NSString * url = [MoreVideosURL stringByAppendingString:[NSString stringWithFormat:@"/%@", hotVideoModel.iD]];
     NSLog(@"%@", url);
     [DataTool getMoreVideosWithStr:url parameters:nil success:^(id responseObject) {
-        
         // 传过来的是一个数组
 //        NSLog(@"获取更多专辑返回数据:%@", responseObject);
         [self.collection.footer endRefreshing];
-        if (!responseObject) {
-//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
+        [self.collection.header endRefreshing];
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            NSLog(@"没有数据了");
             self.collection.footer.state = MJRefreshStateNoMoreData;
+        }else{
+            [self.dataArray addObjectsFromArray:responseObject];
         }
-        [self.dataArray addObjectsFromArray:responseObject];
         
         [self.collection reloadData];
     } failure:^(NSError * error) {

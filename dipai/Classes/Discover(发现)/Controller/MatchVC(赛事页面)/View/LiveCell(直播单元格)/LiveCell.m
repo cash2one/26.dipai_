@@ -76,12 +76,14 @@
     
     // 左侧竖线
     UIView * leftLine = [[UIView alloc] init];
-    leftLine.backgroundColor = [UIColor colorWithRed:189 / 255.f green:189 / 255.f blue:189 / 255.f alpha:1];
+    leftLine.backgroundColor = [UIColor colorWithRed:229 / 255.f green:229 / 255.f blue:229 / 255.f alpha:1];
+//    leftLine.backgroundColor = [UIColor blackColor];
     [self addSubview:leftLine];
     _leftLine = leftLine;
     
     UIView * feLfLine = [[UIView alloc] init];
-    feLfLine.backgroundColor = [UIColor colorWithRed:189 / 255.f green:189 / 255.f blue:189 / 255.f alpha:1];
+    feLfLine.backgroundColor = [UIColor colorWithRed:229 / 255.f green:229 / 255.f blue:229 / 255.f alpha:1];
+//    leftLine.backgroundColor = [UIColor blackColor];
     [self addSubview:feLfLine];
     _feLfLine = feLfLine;
     
@@ -165,6 +167,7 @@
     
     // 图片
     UIImageView * image = [[UIImageView alloc] init];
+//    image.contentMode = UIViewContentModeScaleToFill;
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showBigPic)];
     [image addGestureRecognizer:tap];
     image.userInteractionEnabled = YES;
@@ -227,10 +230,11 @@
         
         // 显示直播员
         CGFloat zhiboX = CGRectGetMaxX(_nameLbl.frame) + 11 * IPHONE6_W_SCALE;
-        CGFloat zhiboY = 14.5 * IPHONE6_H_SCALE;
+        CGFloat zhiboY = 16.5 * IPHONE6_H_SCALE;
         CGFloat zhiboW = WIDTH - zhiboX;
         CGFloat zhiboH = 10 * IPHONE6_W_SCALE;
         _zhiboLbl.frame = CGRectMake(zhiboX, zhiboY, zhiboW, zhiboH);
+//        _zhiboLbl.backgroundColor = [UIColor redColor];
         /****精彩牌局****/
         
         CGFloat contentW = WIDTH - 77 * IPHONE6_W_SCALE;
@@ -302,6 +306,8 @@
                 make.height.equalTo(@(216 *  0.5 * IPHONE6_W_SCALE));
             }];
             [_image sd_setImageWithURL:[NSURL URLWithString:_liveInfoModel.imgs[@"pimg2"]] placeholderImage:[UIImage imageNamed:@"123"]];
+//            _image.contentMode = UIViewContentModeScaleAspectFill;
+//            _image.backgroundColor = [UIColor redColor];
         }else{
             _image.hidden = YES;    // 隐藏图片
         }

@@ -21,12 +21,12 @@
  "app_live":[
  {
  "name":"asd",
- "wapurl":"http://dipaiapp.replays.net/app/club/live/5092/4"
+ "wapurl":"
  },
  Object{...}
  ],
- "comment":"http://dipaiapp.replays.net/app/list_comment/5092/5",
- "relation":"http://dipaiapp.replays.net/app/club/rel/5/5092"
+ "comment"
+ "relation":"
  }
  */
 /**

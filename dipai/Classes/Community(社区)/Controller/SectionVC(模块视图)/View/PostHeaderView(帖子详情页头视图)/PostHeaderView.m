@@ -81,14 +81,6 @@
 }
 
 
-
-- (void)setDataModel:(PostDaraModel *)dataModel{
-    _dataModel = dataModel;
-    [self layoutSubviews];
-    // 利用block传值
-    
-}
-
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
         [self setUpChildControl];
@@ -125,14 +117,16 @@
     
     // 标题
     UILabel * titleView = [[UILabel alloc] init];
-    titleView.font = Font16;
+    titleView.numberOfLines = 0;
+    titleView.font = Font18;
+//    titleView.backgroundColor = [UIColor redColor];
     [self addSubview:titleView];
     _titleView = titleView;
     
     // 简介
     UILabel *textView = [[UILabel alloc] init];
     textView.numberOfLines = 0;
-    textView.font = Font13;
+    textView.font = Font16;
     textView.textColor = Color123;
     [self addSubview:textView];
     _textView = textView;
@@ -175,6 +169,11 @@
     bottomLine.backgroundColor = Color238;
     [self addSubview:bottomLine];
     _bottomLine = bottomLine;
+    
+    
+    for (UIView * view in self.subviews) {
+        view.opaque = YES;
+    }
 }
 #pragma mark --- 设置子控件
 
@@ -188,8 +187,18 @@
     }
 }
 
+- (void)setDataModel:(PostDaraModel *)dataModel{
+    _dataModel = dataModel;
+    
+//    NSLog(@"%s", __func__);
+    [self layoutSubviews];
+    
+}
+
 - (void)layoutSubviews{
     [super layoutSubviews];
+    
+//    NSLog(@"%s", __func__);
     
     // 头像
     CGFloat faceX = Margin30 * IPHONE6_W_SCALE;
@@ -225,7 +234,7 @@
     CGFloat titleY = CGRectGetMaxY(_iconView.frame) + Margin30 * IPHONE6_H_SCALE;
     CGFloat titleW = WIDTH - titleX - 15 * IPHONE6_W_SCALE;
     NSMutableDictionary * titleDic = [NSMutableDictionary dictionary];
-    titleDic[NSFontAttributeName] = Font16;
+    titleDic[NSFontAttributeName] = Font18;
     CGRect titleRect = [_dataModel.title boundingRectWithSize:CGSizeMake(titleW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:titleDic context:nil];
     _titleView.frame = (CGRect){{titleX, titleY}, titleRect.size};
     _titleView.text = _dataModel.title;
@@ -234,60 +243,83 @@
     CGFloat contentsX = titleX;
     CGFloat contentsY = CGRectGetMaxY(_titleView.frame) + 12 * IPHONE6_H_SCALE;
     CGFloat contentsW = WIDTH - contentsX - 15 * IPHONE6_W_SCALE;
-    
-    NSMutableDictionary * contentsDic = [NSMutableDictionary dictionary];
-    contentsDic[NSFontAttributeName] = Font13;
-    CGRect contentsRect = [_dataModel.content boundingRectWithSize:CGSizeMake(contentsW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentsDic context:nil];
-    _textView.frame = (CGRect){{contentsX, contentsY}, contentsRect.size};
+//    _textView.text = _dataModel.content;
+
+    UIFont *textFont = Font16;
+    CGSize textSize = [_dataModel.content sizeWithFont:textFont
+                          constrainedToSize:CGSizeMake(contentsW, MAXFLOAT)];;
+    _textView.frame = CGRectMake(contentsX, contentsY, textSize.width, textSize.height);
     _textView.text = _dataModel.content;
+//    _textView.backgroundColor = [UIColor greenColor];
+    _textView.font = Font16;
+    _textView.numberOfLines = 0;
+    
+    // 调整行间距
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:_dataModel.content];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    [paragraphStyle setLineSpacing:6];
+    [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [_dataModel.content length])];
+    _textView.attributedText = attributedString;
+    [_textView sizeToFit];
+    
+//    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:_dataModel.content];
+//    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+//    [paragraphStyle setLineSpacing:0];
+//    [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [_dataModel.content length])];
+//    _textView.attributedText = attributedString;
+//    
+//    NSMutableDictionary * contentsDic = [NSMutableDictionary dictionary];
+//    contentsDic[NSFontAttributeName] = Font15;
+//    CGRect contentsRect = [_textView.text boundingRectWithSize:CGSizeMake(contentsW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentsDic context:nil];
+//    _textView.frame = (CGRect){{contentsX, contentsY}, contentsRect.size};
+//    _titleView.backgroundColor = [UIColor redColor];
+//    _textView.backgroundColor = [UIColor greenColor];
     
     // 图片
    
+//    NSLog(@"%lu", _dataModel.imgs.count);
     if (_dataModel.imgs) {    // 如果有图片
         
         CGFloat photosY = CGRectGetMaxY(_textView.frame) + 11 * IPHONE6_H_SCALE;
          CGFloat height = 0;
+//        NSLog(@"%lu", _dataModel.imgs.count);
         for ( int i = 0; i < _dataModel.imgs.count; i ++) {
-            CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_dataModel.imgs[i]]];
-//            CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:@"http://dipaiapp.replays.net/public/upload/user_forum/15/20160727/14696227505843215.jpeg"]];
-            // http://www.coolsc.net/imguploads/Image/0811/zm/3/23/12.jpg
-            // http://dipaiapp.replays.net/public/upload/user_forum/15/20160727/14696227505843215.jpeg
             
-            CGFloat h = size.height;
-            CGFloat w = size.width;
             
-            if (w == 0) {
-                w = WIDTH - 30 * IPHONE6_W_SCALE;
-            }
+            CGFloat h;
+            CGFloat w;
+            CGSize size;
+//            NSLog(@"%f", size.height);
+            size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_dataModel.imgs[i]]];
+                
+            h = size.height * IPHONE6_W_SCALE;
+            w = size.width * IPHONE6_W_SCALE;
+                
             
-            if (h == 0) {
-                h = w;
-            }
-//            NSLog(@"width--%f", size.width);
+            
+            
+            
+            
+//            NSLog(@"宽和高：%f----%f", w, h);
             CGFloat scale = 1.0;
-            if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
-                
-//                NSLog(@"scale1---%f", scale);
-                
-                scale = (WIDTH - 30 * IPHONE6_W_SCALE)/w;
-                
-//                NSLog(@"%f", WIDTH - 30 * IPHONE6_W_SCALE);
-//                NSLog(@"%f", w);
-//                NSLog(@"%f", scale);
-                
-                 h = h * scale;
-            } else{
-                scale = 1.0;
-                h = h;
+            if (w == 0) {   // 如果获取不到图片的大小
+                w = WIDTH - 30 * IPHONE6_W_SCALE;
+                h = w;
+            }else{  // 能够获取图片大小
+                if (w > WIDTH - 30 * IPHONE6_W_SCALE) { // 图片宽度大于
+                    scale = (WIDTH - 30 * IPHONE6_W_SCALE)/w;
+                    h = h * scale;
+                }else{  // 图片宽度小于
+//                    scale = (WIDTH - 30 * IPHONE6_W_SCALE) / w;
+//                    h = h * scale;
+                    w = size.width * IPHONE6_W_SCALE;
+                    h = size.height * IPHONE6_W_SCALE;
+                }
             }
-//            NSLog(@"scale==%f", scale);
-            
            
             height = height + h + 8 * IPHONE6_H_SCALE;
             _picView.frame = CGRectMake(15 * IPHONE6_W_SCALE, photosY , WIDTH - 30 * IPHONE6_W_SCALE,  height);
         }
-        
-        
 //        NSLog(@"%f", height);
         _picView.picArr = _dataModel.imgs;
     }

@@ -80,6 +80,10 @@
 @property (nonatomic, strong) NSMutableArray * dataSource2;
 
 @property (nonatomic, strong) SBModel * sbModel;
+// 没有发帖的提示图
+@property (nonatomic, strong) UIImageView * imageV;
+// 没有回复的提示图
+@property (nonatomic, strong) UIImageView * replyV;
 
 @end
 
@@ -257,18 +261,38 @@
     _tableView1.dataSource = self;
     _tableView1.showsVerticalScrollIndicator = NO;
     _tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     [_sc addSubview:_tableView1];
+    
+    UIImageView * imageV = [[UIImageView alloc] init];
+    [_sc addSubview:imageV];
+    imageV.image = [UIImage imageNamed:@"meiyoutiezi"];
+    [imageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(_tableView1.mas_centerX);
+        make.top.equalTo(self.view.mas_top).offset(221 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(215 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(181 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _imageV = imageV;
+    _imageV.hidden = YES;
     
     _tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT - 64 - scY) style:UITableViewStylePlain];
     _tableView2.delegate=self;
     _tableView2.dataSource=self;
     _tableView2.showsVerticalScrollIndicator=NO;
     _tableView2.separatorStyle=UITableViewCellSeparatorStyleNone;
-    
-    
     [self.sc addSubview:_tableView2];
 
+    UIImageView * replyV = [[UIImageView alloc] init];
+    replyV.image = [UIImage imageNamed:@"haiyouhuifu"];
+    [self.sc addSubview:replyV];
+    [replyV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(_tableView2.mas_centerX);
+        make.top.equalTo(imageV.mas_top);
+        make.width.equalTo(imageV.mas_width);
+        make.height.equalTo(imageV.mas_height);
+    }];
+    _replyV = replyV;
+    _replyV.hidden = YES;
     
     // 添加刷新和加载
     [self addRefreshWith:_tableView1];
@@ -314,17 +338,26 @@
 - (void)loadNewData{
     
     NSString * url = [MyPostsURL stringByAppendingString:self.userModel.userid];
+    
+//    NSLog(@"%@", url);
     [DataTool getMyPostsDataWithStr:url parameters:nil success:^(id responseObject) {
         [_tableView1.header endRefreshing];
-        NSLog(@"获取我的发帖获取到的数据:%@", responseObject);
+//        NSLog(@"获取我的发帖获取到的数据:%@", responseObject);
         
-        NSMutableArray * arr = [NSMutableArray array];
-        for (PostsModel * model in responseObject) {
-            PostFrameModel * frameModel = [[PostFrameModel alloc] init];
-            frameModel.postsModel = model;
-            [arr addObject:frameModel];
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            NSLog(@"发帖为空");
+            _imageV.hidden = NO;
+        }else{
+            _imageV.hidden = YES;
+            NSMutableArray * arr = [NSMutableArray array];
+            for (PostsModel * model in responseObject) {
+                PostFrameModel * frameModel = [[PostFrameModel alloc] init];
+                frameModel.postsModel = model;
+                [arr addObject:frameModel];
+            }
+            self.dataSource1 = arr;
         }
-        self.dataSource1 = arr;
+        
         [_tableView1 reloadData];
     } failure:^(NSError * error) {
         
@@ -375,18 +408,24 @@
     [DataTool getMyReplysDataWithStr:MyReplyURL parameters:nil success:^(id responseObject) {
         [_tableView2.header endRefreshing];
         [_tableView2.footer endRefreshing];
-        NSLog(@"%@", responseObject);
+//        NSLog(@"%@", responseObject);
         
-        NSMutableArray * arr = [NSMutableArray array];
-        for (MyReplyModel * model in responseObject) {
-            MyReplyFrameModel * frameModel = [[MyReplyFrameModel alloc] init];
-            frameModel.myreplyModel = model;
-            [arr addObject:frameModel];
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            NSLog(@"回复为空...");
+            _replyV.hidden = NO;
+        }else{
+            _replyV.hidden = YES;
+            NSMutableArray * arr = [NSMutableArray array];
+            for (MyReplyModel * model in responseObject) {
+                MyReplyFrameModel * frameModel = [[MyReplyFrameModel alloc] init];
+                frameModel.myreplyModel = model;
+                [arr addObject:frameModel];
+            }
+            self.dataSource2 = arr;
         }
         
-//        NSLog(@"%@", self.dataSource2);
         
-        self.dataSource2 = arr;
+//        NSLog(@"%@", self.dataSource2);
         [_tableView2 reloadData];
     } failure:^(NSError * error) {
         NSLog(@"获取我的回复出错：%@", error);

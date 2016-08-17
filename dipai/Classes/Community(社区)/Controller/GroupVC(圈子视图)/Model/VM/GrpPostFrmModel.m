@@ -44,7 +44,7 @@
     // 评论标题
     CGFloat titleX = 118 * 0.5 * IPHONE6_W_SCALE;
     CGFloat titleY = CGRectGetMaxY(_faceFrame) + Margin30 * IPHONE6_H_SCALE;
-    CGFloat titleW = WIDTH - 15 * IPHONE6_W_SCALE;
+    CGFloat titleW = WIDTH - 15 * IPHONE6_W_SCALE - titleX;
 //    CGFloat titleW = WIDTH;
 //    _titleFrame = CGRectMake(titleX, titleY, WIDTH - 2 * titleW, 16 * IPHONE6_W_SCALE);
     

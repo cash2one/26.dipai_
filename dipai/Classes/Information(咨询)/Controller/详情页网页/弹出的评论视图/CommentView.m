@@ -23,7 +23,9 @@
     return self;
 }
 
-
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 // textView的内容发生变化后进行调用
 - (void)textViewChanged
 {

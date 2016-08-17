@@ -50,7 +50,7 @@
     CGFloat x = 0;
     CGFloat y = 0;
     CGFloat w = WIDTH;
-    CGFloat h = Margin188 * IPHONE6_H_SCALE;
+    CGFloat h = Margin188 * IPHONE6_W_SCALE;
     _pic.frame = CGRectMake(x, y, w, h);
 }
 

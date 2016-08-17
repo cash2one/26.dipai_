@@ -39,6 +39,8 @@
 #import "AnyBodyVC.h"
 // 名人主页
 #import "StarVC.h"
+
+#import "Masonry.h"
 @interface CommentsViewController ()<UITableViewDataSource, UITableViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, CommentsTableViewCellDelegate>
 
 {
@@ -80,6 +82,8 @@
 @property (nonatomic, strong) CommentsModel * model;
 
 @property (nonatomic, strong) SBModel * sbModel;
+// 没有评论的提示图片
+@property (nonatomic, strong) UIImageView * imageV;
 
 @end
 
@@ -103,6 +107,9 @@
     if ((cookieName || wxData) && _sendContent) {  // 如果已经登录，并且有发表内容，则进行发表
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
         //        CommentDic[@"id"] = self.newsModel.iD;
+        
+        NSLog(@"---replyID---%@", _replyID);
+        
         CommentDic[@"id"] = self.iD;
         if (_reply) {   // 如果是进行回复
             CommentDic[@"types"] = _replyID;
@@ -147,6 +154,10 @@
 //    [self]
 }
 
+- (void)dealloc{
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 #pragma mark --- 键盘发生变化后通知
 - (void)keyBoardChanged:(NSNotification *)note
 {
@@ -154,7 +165,7 @@
     CGRect frame = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     // 键盘出现的时长
     CGFloat duration = [note.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
-    
+//    NSLog(@"%@", _commentView);
     if (frame.origin.y == HEIGHT) {   // 当键盘没有弹出的时候
         
         [UIView animateWithDuration:duration animations:^{
@@ -203,6 +214,17 @@
 //    self.tableView.backgroundColor = [UIColor redColor];
     [self.view addSubview:self.tableView];
     
+    UIImageView * imageV = [[UIImageView alloc] init];
+    [self.view addSubview:imageV];
+    imageV.image = [UIImage imageNamed:@"meiyouxiangguanpinglun"];
+    [imageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(self.view.mas_top).offset(298 * 0.5 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(242 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(187 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _imageV = imageV;
+    _imageV.hidden = YES;
     
     // 添加下拉刷新控件
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
@@ -233,25 +255,30 @@
     [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
     
     NSString * url = [NSString stringWithFormat:@"%@/%@/%@", CommentsURL, self.iD, self.type];
-    // http://dipaiapp.replays.net/app/list_comment/5099/2
-    NSLog(@"%@", url);
+//    NSLog(@"%@", url);
     
     [DataTool getCommentsListWithStr:url parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
         // 传递过来的是模型数组(模型是评论模型)
-        NSArray * commentsArr = responseObject;
         
-        NSMutableArray * commentsFrameArr = [NSMutableArray array];
-        for (CommentsModel * commentModel in commentsArr) {
-            CommentsFrame * commentsFrame = [[CommentsFrame alloc] init];
-            // 将模型传递给视图模型
-            commentsFrame.comments = commentModel;
-            [commentsFrameArr addObject:commentsFrame];
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            
+            _imageV.hidden = NO;
+        }else{
+            _imageV.hidden = YES;
+            NSArray * commentsArr = responseObject;
+            NSMutableArray * commentsFrameArr = [NSMutableArray array];
+            for (CommentsModel * commentModel in commentsArr) {
+                CommentsFrame * commentsFrame = [[CommentsFrame alloc] init];
+                // 将模型传递给视图模型
+                commentsFrame.comments = commentModel;
+                [commentsFrameArr addObject:commentsFrame];
+            }
+            // 将视图模型数组赋值给数据源
+            NSLog(@"模型个数：%lu", commentsFrameArr.count);
+            self.dataSource = commentsFrameArr;
         }
-        // 将视图模型数组赋值给数据源
-        NSLog(@"模型个数：%lu", commentsFrameArr.count);
-        self.dataSource = commentsFrameArr;
         
         [self.tableView reloadData];
     } failure:^(NSError * error) {
@@ -282,12 +309,13 @@
     NSLog(@"---url---%@", url);
     [DataTool getCommentsListWithStr:url parameters:nil success:^(id responseObject) {
         [self.tableView.footer endRefreshing];
-        // 传递过来的是模型数组(模型是评论模型)
-        NSArray * commentsArr = responseObject;
         
-        if (!commentsArr) {
+        if ([responseObject isKindOfClass:[NSString class]]) {  // 如果返回的数据为空
             self.tableView.footer.state = MJRefreshStateNoMoreData;
-        } else{
+        }else{
+            // 传递过来的是模型数组(模型是评论模型)
+            NSArray * commentsArr = responseObject;
+
             NSMutableArray * commentsFrameArr = [NSMutableArray array];
             for (CommentsModel * commentModel in commentsArr) {
                 CommentsFrame * commentsFrame = [[CommentsFrame alloc] init];
@@ -337,8 +365,9 @@
 - (void)commentAction{
     UIView * backView = [[BackgroundView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
     backView.backgroundColor = ColorBlack60;
+    
     // 当前顶层窗口
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
     // 添加到灰色的背景图
     [window addSubview:backView];
     _backView = backView;
@@ -401,7 +430,7 @@
     if (cookieName || wxData) {
         NSLog(@"已经登录。。。进行发表");
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
-        NSLog(@"%@---%@", types, ID);
+        NSLog(@"types和ID%@---%@", types, ID);
         CommentDic[@"id"] = self.iD;
         CommentDic[@"types"] = types;//0:评论 1:回复
         CommentDic[@"type"] = self.type;
@@ -440,7 +469,8 @@
     UIView * alertBackView = [[BackgroundView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
     alertBackView.backgroundColor = ColorBlack30;
     // 当前顶层窗口
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+//    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
     // 添加到灰色的背景图
     [window addSubview:alertBackView];
     [window addSubview:alertView];

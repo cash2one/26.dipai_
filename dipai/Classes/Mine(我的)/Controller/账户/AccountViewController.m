@@ -270,7 +270,7 @@
             
             
         }else if (indexPath.row == 1){  // 修改昵称
-            
+            NSLog(@"up_state%@", _account.up_state);
             // 先判断是否能进行修改
             if ([_account.up_state isEqualToString:@"1"]) {
                 ResetNameVC * resetNameVC = [[ResetNameVC alloc] init];
@@ -313,9 +313,14 @@
             }
             
         }else if (indexPath.row == 1){  // 修改昵称
-            ResetNameVC * resetNameVC = [[ResetNameVC alloc] init];
-            resetNameVC.name = _account.username;
-            [self.navigationController pushViewController:resetNameVC animated:YES];
+            if ([_account.up_state isEqualToString:@"1"]) {
+                ResetNameVC * resetNameVC = [[ResetNameVC alloc] init];
+                resetNameVC.name = _account.username;
+                [self.navigationController pushViewController:resetNameVC animated:YES];
+            }else{
+                
+                [SVProgressHUD showErrorWithStatus:@"昵称不可再修改"];
+            }
         }else if (indexPath.row == 0){  // 修改头像
             _imagePicker = [[UIImagePickerController alloc] init];
             _imagePicker.delegate = self;
@@ -339,15 +344,15 @@
 
 - (void)dismissWithStr:(NSString *)str{
     // 给服务器发送code
-    NSString * url = @"http://dipaiapp.replays.net/Weixin/binding_weixin";
+    NSString * url = AddWeixin;
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"code"] = str;
-    NSLog(@"code-----%@", str);
+//    NSLog(@"code-----%@", str);
     [DataTool sendCodeWithStr:url parameters:dic success:^(id responseObject) {
         
-        NSLog(@"绑定微信发送code成功%@,", responseObject);
-        NSLog(@"%@", responseObject[@"content"]);
-        
+//        NSLog(@"绑定微信发送code成功%@,", responseObject);
+//        NSLog(@"%@", responseObject[@"content"]);
+//        
         if ([responseObject[@"state"] isEqualToString:@"1"]) {
             NSLog(@"绑定成功...");
         }else{
@@ -379,7 +384,8 @@
         // 返回
         [self dismissViewControllerAnimated:YES completion:nil];
         
-        UIImage * image = [info objectForKey:UIImagePickerControllerOriginalImage];
+        UIImage * image = [info objectForKey:UIImagePickerControllerEditedImage];
+//        UIImage * image = [info objectForKey:UIImagePickerControllerOriginalImage];
         // 进行头像的上传
         AFHTTPRequestOperationManager * manager = [AFHTTPRequestOperationManager manager];
         manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
@@ -394,12 +400,13 @@
              */
             
 //                NSData * data = UIImagePNGRepresentation(image);
-            NSData * data = UIImageJPEGRepresentation(image, 1.0);
+//            NSData * data = UIImageJPEGRepresentation(image, 0.5);
+            NSData * data = UIImagePNGRepresentation(image);
             NSString * name = [NSString stringWithFormat:@"face"];
             NSString * fileName = [NSString stringWithFormat:@"image.jpeg"];
-            NSString * mimeType = [NSString stringWithFormat:@"image/jpeg"];
+            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
             [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
-            
+            [SVProgressHUD showWithStatus:@"上传中"];
             
         } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
             

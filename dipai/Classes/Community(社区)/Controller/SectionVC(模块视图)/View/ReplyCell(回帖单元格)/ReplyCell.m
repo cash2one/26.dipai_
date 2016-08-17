@@ -103,14 +103,15 @@
         [self setUpChildView];
         
 //        self.backgroundColor = [UIColor yellowColor];
+        self.opaque = YES;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
+        
     }
     
     return self;
 }
 
 - (void)setFrameModel:(ReplyFrameModel *)frameModel{
-    
     
     // 获取到回复的frame模型
     _frameModel = frameModel;
@@ -119,6 +120,8 @@
 - (void)setUpChildView{
     // 头像
     UIImageView *iconView = [[UIImageView alloc] init];
+    iconView.layer.masksToBounds = YES;
+    iconView.layer.cornerRadius = 19 * IPHONE6_W_SCALE;
     [self addSubview:iconView];
     _iconView = iconView;
     
@@ -157,14 +160,15 @@
     
     // 回复内容
     UILabel *textView = [[UILabel alloc] init];
+    textView.numberOfLines = 0;
     textView.font = Font15;
     [self addSubview:textView];
     _textView = textView;
     
     // 回帖图片
     
-//    DetailPhotoView * picView = [[DetailPhotoView alloc] initWithArray:self.pics];
     DetailPhotoView * picView = [[DetailPhotoView alloc] init];
+    picView.opaque = YES;
     [self addSubview:picView];
     _picView = picView;
     
@@ -186,6 +190,7 @@
     _reNameView = reNameView;
     
     UILabel * reContentView = [[UILabel alloc] init];
+    reContentView.numberOfLines = 0;
     reContentView.font = Font14;
     reContentView.textColor = [UIColor blackColor];
     [reReplyView addSubview:reContentView];
@@ -198,6 +203,12 @@
 //    line.backgroundColor = [UIColor greenColor];
     [self addSubview:line];
     _line = line;
+    
+    
+    for (UIView * view in self.subviews) {
+        view.opaque = YES;
+    }
+    
 }
 #pragma mark --- 回复的事件
 - (void)replyAction{
@@ -263,7 +274,6 @@
     _picView.frame = _frameModel.picsFrame;
     NSArray * picArr = _frameModel.replyModel.picname;
     _picView.picArr = picArr;
-//    _picView.hidden = YES;
 
     
     
@@ -287,6 +297,7 @@
     
 //    _line.frame = CGRectMake(0, lineY, WIDTH, 0.5);
     
+//    _line.backgroundColor = [UIColor greenColor];
     [_line mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.mas_left);
         make.right.equalTo(self.mas_right);

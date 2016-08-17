@@ -51,10 +51,33 @@
     self.navigationController.navigationBarHidden = YES;
     
 }
-- (void)viewWillDisappear:(BOOL)animated{
-    [super viewWillDisappear:YES];
-    self.navigationController.navigationBarHidden = NO;
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // 禁用 iOS7 返回手势
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
 }
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.navigationController.navigationBarHidden = NO;
+    // 开启
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    }
+}
+
+//- (void)viewDidDisappear:(BOOL)animated{
+//    [super viewDidDisappear:YES];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+//    self.navigationController.navigationBarHidden = NO;
+//}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -77,19 +100,44 @@
     topView.frame = CGRectMake(0, 0, WIDTH, 250 * IPHONE6_H_SCALE);
     
     // 名人堂简介
-    UILabel * starDes = [[UILabel alloc] init];
-    starDes.numberOfLines = 0;
-    starDes.font = Font12;
-    starDes.textColor = [UIColor whiteColor];
-    starDes.text = @"底牌名人堂会邀请国内知名牌手入驻，他们常年征战于国内外扑克大赛，成绩斐然，贡献卓越。通过名人堂，您可以快速找到他们并与他们进行互动。";
-    [topView addSubview:starDes];
+//    UILabel * starDes = [[UILabel alloc] init];
+//    starDes.numberOfLines = 0;
+//    starDes.font = Font13;
+//    starDes.textColor = [UIColor whiteColor];
+//    starDes.text = @"底牌名人堂会邀请国内知名牌手入驻，他们常年征战于国内外扑克大赛，成绩斐然，贡献卓越。通过名人堂，您可以快速找到他们并与他们进行互动。";
+//    
+//    [topView addSubview:starDes];
     CGFloat starX = 32 * IPHONE6_W_SCALE;
     CGFloat starY = 167 * IPHONE6_H_SCALE;
     CGFloat starW = WIDTH - 2 * starX;
-    NSMutableDictionary * starDic = [NSMutableDictionary dictionary];
-    starDic[NSFontAttributeName] = Font12;
-    CGRect starRect = [starDes.text boundingRectWithSize:CGSizeMake(starW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:starDic context:nil];
-    starDes.frame = (CGRect){{starX, starY}, starRect.size};
+//    NSMutableDictionary * starDic = [NSMutableDictionary dictionary];
+//    starDic[NSFontAttributeName] = Font13;
+//    CGRect starRect = [starDes.text boundingRectWithSize:CGSizeMake(starW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:starDic context:nil];
+//    starDes.frame = (CGRect){{starX, starY}, starRect.size};
+    
+    
+    NSString *textStr = @"底牌名人堂会邀请国内知名牌手入驻，他们常年征战于国内外扑克大赛，成绩斐然，贡献卓越。通过名人堂，您可以快速找到他们并与他们进行互动。";
+    UIFont *textFont = Font13;
+    CGSize textSize = [textStr sizeWithFont:textFont
+                          constrainedToSize:CGSizeMake(starW, MAXFLOAT)];;
+    UILabel *openMicPrivilegeTipsLabel = [[UILabel alloc] initWithFrame:CGRectMake(starX + 10, starY, textSize.width, textSize.height)];
+    openMicPrivilegeTipsLabel.text = textStr;
+    openMicPrivilegeTipsLabel.textColor = [UIColor whiteColor];
+//    openMicPrivilegeTipsLabel.backgroundColor = [UIColor greenColor];
+    //    openMicPrivilegeTipsLabel.textAlignment = UITextAlignmentLeft;
+    openMicPrivilegeTipsLabel.font = Font13;
+    openMicPrivilegeTipsLabel.numberOfLines = 0;
+    
+    // 调整行间距
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:textStr];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    [paragraphStyle setLineSpacing:6];
+    [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [textStr length])];
+    openMicPrivilegeTipsLabel.attributedText = attributedString;
+    [topView addSubview:openMicPrivilegeTipsLabel];
+    [openMicPrivilegeTipsLabel sizeToFit];
+    
+    
     
     // 分割线
     UIView * separateView = [[UIView alloc] init];

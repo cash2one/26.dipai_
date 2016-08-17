@@ -80,6 +80,7 @@
     UILabel * contentLbl = [[UILabel alloc] init];
     contentLbl.font = Font12;
     contentLbl.textColor = Color123;
+    contentLbl.textAlignment = NSTextAlignmentCenter;
     [self addSubview:contentLbl];
     _contentLbl = contentLbl;
     
@@ -106,14 +107,6 @@
     
     // 装标题的视图
     CGFloat titleVX = 20 * IPHONE6_W_SCALE;
-//    CGFloat titleVY = CGRectGetMaxY(_picView.frame) + 19 *IPHONE6_H_SCALE;
-//    CGFloat titleVW = WIDTH - 2 * titleVX;
-//    
-//    NSMutableDictionary * titleVDic = [NSMutableDictionary dictionary];
-//    titleVDic[NSFontAttributeName] = Font19;
-//    CGRect titleVRect = [_specialModel.title boundingRectWithSize:CGSizeMake(titleVW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:titleVDic context:nil];
-//    
-//    _titleView.frame = (CGRect){{titleVX, titleVY}, titleVRect.size};
     
     // 标题
     [_titleLbl mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -125,28 +118,37 @@
     _titleLbl.text = _specialModel.title;
     
     // 内容
-    CGFloat contentX = titleVX;
-    CGFloat contentY = CGRectGetMaxY(_picView.frame) + 59 * IPHONE6_H_SCALE;
-    CGFloat contentW = WIDTH - 2 * contentX;
-    
-    NSMutableDictionary * contentDic = [NSMutableDictionary dictionary];
-    contentDic[NSFontAttributeName] = Font12;
-    
-    NSString * str;
-    if (_specialModel.content.length > 54) {
-        str = [_specialModel.content substringToIndex:54];
-    }else{
-        str = _specialModel.content;
-    }
-    
-    CGRect contentRect = [str boundingRectWithSize:CGSizeMake(contentW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil];
-    
-    _contentLbl.frame = (CGRect){{contentX, contentY}, contentRect.size};
-    _contentLbl.text = _specialModel.content;
+    [_contentLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.mas_centerX);
+        make.top.equalTo(_titleLbl.mas_bottom).offset(20 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 40 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(12 * IPHONE6_H_SCALE));
+    }];
+//    _contentLbl.backgroundColor = [UIColor redColor];
+    _contentLbl.text = _specialModel.descriptioN;
+    _contentLbl.numberOfLines = 0;
+//    _contentLbl.text = @"法律；阿娇看垃圾分类了空间；啊久了空间啊哭； 拉萨；放假；阿里将阿酸辣粉；撒了";
+//    CGFloat contentX = titleVX;
+//    CGFloat contentY = CGRectGetMaxY(_picView.frame) + 59 * IPHONE6_H_SCALE;
+//    CGFloat contentW = WIDTH - 2 * contentX;
+//    
+//    NSMutableDictionary * contentDic = [NSMutableDictionary dictionary];
+//    contentDic[NSFontAttributeName] = Font12;
+//    NSString * str = _specialModel.descriptioN;
+//    CGRect contentRect = [str boundingRectWithSize:CGSizeMake(contentW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil];
+//    
+//    _contentLbl.frame = (CGRect){{contentX, contentY}, contentRect.size};
+//    _contentLbl.text = _specialModel.descriptioN;
     
     // 分割线
-    CGFloat separateY = CGRectGetMaxY(_contentLbl.frame) + 19 * IPHONE6_H_SCALE;
-    _separateView.frame = CGRectMake(0, separateY, WIDTH, 20 * IPHONE6_H_SCALE);
+//    CGFloat separateY = CGRectGetMaxY(_contentLbl.frame) + 19 * IPHONE6_H_SCALE;
+//    _separateView.frame = CGRectMake(0, separateY, WIDTH, 20 * IPHONE6_H_SCALE);
+    [_separateView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.mas_centerX);
+        make.top.equalTo(_contentLbl.mas_bottom).offset(19 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH));
+        make.height.equalTo(@(20 * IPHONE6_H_SCALE));
+    }];
 }
 
 

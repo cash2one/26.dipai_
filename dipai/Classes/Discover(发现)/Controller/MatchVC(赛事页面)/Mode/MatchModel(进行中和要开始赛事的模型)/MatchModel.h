@@ -16,13 +16,13 @@
  "id":"4917",
  "title":"跑跑扑克俱乐部周年庆典赛",
  "type":"5",
- "picname":"http://dipaiadmin.replays.net/uploads/picname/2016/03/1458704885VdQ.jpg",
+ "picname":"
  "start_time":"03.24",
  "end_time":"10.07",
  "place":"北京",
  "prize_pool":"688K",
  "entry_fee":"1.8K积分",
- "wapurl":"http://dipaiapp.replays.net/app/club/view/5/4917"
+ "wapurl":
  }
  ]
  */

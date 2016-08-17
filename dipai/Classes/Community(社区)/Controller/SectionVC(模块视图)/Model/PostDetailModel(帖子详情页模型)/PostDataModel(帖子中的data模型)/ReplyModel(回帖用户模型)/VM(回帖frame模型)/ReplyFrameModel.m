@@ -26,8 +26,6 @@
     } else{
         _cellHeight = CGRectGetMaxY(_ReplyFrame);
     }
-    
-//    NSLog(@"cellHeight:%f", _cellHeight);
 }
 
 #pragma mark --- 计算帖子的frame
@@ -58,9 +56,6 @@
     CGFloat indexH = 11 * IPHONE6_H_SCALE;
     _replyIndexFrame = CGRectMake(indexX, indexY, indexW, indexH);
     
-    // 回复按钮
-    
-    
     // 回帖内容
     CGFloat contentsX = faceX;
     CGFloat contentsY = CGRectGetMaxY(_faceFrame) + 14 * IPHONE6_H_SCALE;
@@ -72,7 +67,7 @@
     _contentsFrame = (CGRect){{contentsX, contentsY}, contentsRect.size};
     
     // 帖子图片
-    CGFloat postH = CGRectGetMaxY(_contentsFrame) + 14 * IPHONE6_H_SCALE;   // 帖子的高度
+    CGFloat postH;
     
     
     if (_replyModel.picname) {    // 如果有图片
@@ -80,13 +75,14 @@
         CGFloat photosX = faceX;
         CGFloat photosY = CGRectGetMaxY(_contentsFrame) + 14 * IPHONE6_H_SCALE;
         // 计算配图视图的大小（根据图片的数量）
-        
 //        NSLog(@"%@", _replyModel.picname);
         
         CGSize photosSize = [self photosSizeWithCount:_replyModel.picname.count];
         _picsFrame = (CGRect){{photosX,photosY},photosSize};
         
         postH = CGRectGetMaxY(_picsFrame);
+    }else{  // 没有图片
+        postH = CGRectGetMaxY(_contentsFrame) + 14 * IPHONE6_H_SCALE;   // 帖子的高度
     }
     
     // 帖子的frame
@@ -130,39 +126,36 @@
 #pragma mark - 计算配图的尺寸
 - (CGSize)photosSizeWithCount:(NSUInteger)count
 {
-    CGFloat w = WIDTH - 30 * IPHONE6_W_SCALE;
-    CGFloat h = 0.0;
-    
+    CGFloat height = 0;
+//    CGFloat width = 0;
     for (int i = 0; i < count; i ++) {
         CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_replyModel.picname[i]]];
+        CGFloat h;    // 图片的高度
+        CGFloat w; // 图片的宽度
+        w = size.width * IPHONE6_W_SCALE;
+        h = size.height * IPHONE6_W_SCALE;
+       
+//        NSLog(@"%f---%f", h, w );
         
-        CGFloat height = size.height;
-        CGFloat width = size.width;
-        
-        if (width == 0) {
-            width = WIDTH - 30 * IPHONE6_W_SCALE;
-        }
-        if (height == 0) {
-            height = width;
-        }
         CGFloat scale = 1.0;
-        if (size.width<WIDTH-30*IPHONE6_W_SCALE) {
-            
-//            NSLog(@"scale1---%f", scale);
-            
-            scale = (WIDTH - 30 * IPHONE6_W_SCALE)/width;
-            height = height * scale;
-        } else{
-            scale = 1.0;
-            height = height;
+        if (w == 0) {   // 如果获取不到图片的大小
+            w = WIDTH - 30 * IPHONE6_W_SCALE;
+            h = w;
+        }else{  // 能够获取图片大小
+            if (w > WIDTH - 30 * IPHONE6_W_SCALE) { // 图片宽度大于
+                scale = (WIDTH - 30 * IPHONE6_W_SCALE)/w;
+                h = h * scale;
+            }else{  // 图片宽度小于
+                w = size.width * IPHONE6_W_SCALE;
+                h = size.height * IPHONE6_W_SCALE;
+            }
         }
-        
-        h = h + (height+8) * IPHONE6_H_SCALE;
+        // 8 ＊IPHONE6_H_SCALE适配问题所在
+        height = height + (h+8*IPHONE6_H_SCALE);
     }
     
-//    NSLog(@"所有图片的高度：－－－－%f", h);
-    
-    return CGSizeMake(w, h);
+    // 装图片视图的宽度
+    return CGSizeMake(WIDTH - 30 * IPHONE6_W_SCALE, height);
     
 }
 @end

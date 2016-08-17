@@ -123,13 +123,14 @@
     
     // 标题
     UILabel * titleView = [[UILabel alloc] init];
+    titleView.numberOfLines = 0;
     titleView.font = Font16;
     [self addSubview:titleView];
     _titleView = titleView;
     
     // 简介
     UILabel *textView = [[UILabel alloc] init];
-    textView.numberOfLines = 0;
+    textView.numberOfLines = 2;
     textView.font = Font13;
     textView.textColor = Color123;
     [self addSubview:textView];
@@ -184,7 +185,8 @@
     timeDic[NSFontAttributeName] = Font11;
     CGSize timeSize = [_frameModel.postsModel.addtime sizeWithAttributes:timeDic];
     _timeView.frame = (CGRect){{timeX,timeY},timeSize};
-        
+    
+//    NSLog(@"%@", _frameModel.postsModel.addtime);   // null?
     _timeView.text = _frameModel.postsModel.addtime;
     
     // 评论数
@@ -214,10 +216,8 @@
     }
     
     
-    NSLog(@"%lu", _frameModel.postsModel.picname.count);
+//    NSLog(@"%lu", _frameModel.postsModel.picname.count);
     
-   
-   
     
     // 底部横线
     [_line mas_makeConstraints:^(MASConstraintMaker *make) {

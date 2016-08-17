@@ -147,7 +147,7 @@
     [_commentLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(_picsView.mas_bottom).offset(Margin20 * IPHONE6_H_SCALE);
         make.right.equalTo(self.mas_right).offset(-Margin20 * IPHONE6_W_SCALE);
-        make.height.equalTo(@(Margin20));
+        make.height.equalTo(@(Margin20 * IPHONE6_H_SCALE));
         make.width.equalTo(_commentLbl.mas_width);
     }];
     
@@ -166,9 +166,12 @@
     _title.text = _newslistModel.title;
     // 图集
     _picNum.text = [NSString stringWithFormat:@"%lu图", _newslistModel.covers.count];
+    
+    NSLog(@"%@", _newslistModel.covers);
     for (int i = 0; i < 3; i ++) {
         UIImageView * imageView = _imageArr[i];
-        NSString * urlStr = [_newslistModel.covers objectForKey:@"cover3"];
+        NSString * pic = [NSString stringWithFormat:@"cover%d",i + 1];
+        NSString * urlStr = [_newslistModel.covers objectForKey:pic];
         [imageView sd_setImageWithURL:[NSURL URLWithString:urlStr] placeholderImage:[UIImage imageNamed:@"123"]];
     }
     // 评论

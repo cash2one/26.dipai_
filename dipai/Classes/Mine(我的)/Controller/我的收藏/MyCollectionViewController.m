@@ -40,6 +40,7 @@
 // 认证用户页面
 #import "StarVC.h"
 #import "SVProgressHUD.h"
+#import "Masonry.h"
 @interface MyCollectionViewController ()<UITableViewDataSource, UITableViewDelegate, MyCollectCellDelegate>
 
 {
@@ -53,6 +54,8 @@
 @property (nonatomic, strong) UITableView * tableView;
 
 @property (nonatomic, strong) SBModel * sbModel;
+// 没有收藏的图片提示
+@property (nonatomic, strong) UIImageView * imageV;
 
 @end
 
@@ -126,7 +129,6 @@
 forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // 删除收藏 网络上的删除
-    // http://dipaiapp.replays.net/app/my/del/collection
     MyCollectionModel * model = [self.dataSource objectAtIndex:indexPath.row];
     NSString * iD = model.iD;
     NSString * url = [DeleteCollectURL stringByAppendingString:iD];
@@ -182,6 +184,19 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:self.tableView];
     
+    UIImageView * imageV = [[UIImageView alloc] init];
+    imageV.image = [UIImage imageNamed:@"meiyoushoucang"];
+    [self.view addSubview:imageV];
+    _imageV = imageV;
+    [imageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(self.view.mas_top).offset(298 * 0.5 * IPHONE6_H_SCALE);
+        // 215   178
+        make.width.equalTo(@(215 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(178 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _imageV.hidden = YES;
+    
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
     [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
     header.stateLabel.font = [UIFont systemFontOfSize:14];
@@ -204,20 +219,27 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     [DataTool getCollectionDataWithStr:MyCollectionURL parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
-        //        NSLog(@"%@", responseObject);
         
+//        NSLog(@"%@", responseObject);
+        if ([responseObject isKindOfClass:[NSString class]]) {  // 数据为空的情况
+            NSLog(@"responseObject为空");
+            _imageV.hidden = NO;
+        }else{
+            _imageV.hidden = YES;
+            self.dataSource = responseObject;
+            if (self.dataSource.count > 0) {
+                self.editButtonItem.title = @"编辑";
+                self.editButtonItem.tintColor = [UIColor blackColor];
+            }else{
+                self.editButtonItem.title = @"";
+                self.editButtonItem.tintColor = [UIColor whiteColor];
+            }
+        }
 //        NSMutableArray * arr = responseObject;
 //        self.dataSource = [arr objectAtIndex:0];
 //        NSString * page = [arr objectAtIndex:1];
 //        _page = page;
-        self.dataSource = responseObject;
-        if (self.dataSource.count > 0) {
-            self.editButtonItem.title = @"编辑";
-            self.editButtonItem.tintColor = [UIColor blackColor];
-        }else{
-            self.editButtonItem.title = @"";
-            self.editButtonItem.tintColor = [UIColor whiteColor];
-        }
+        
         [self.tableView reloadData];
     } failure:^(NSError * error) {
         NSLog(@"获取我的收藏失败：%@", error);
@@ -231,23 +253,21 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     NSLog(@"%@", url);
     [DataTool getCollectionDataWithStr:url parameters:nil success:^(id responseObject) {
         [self.tableView.footer endRefreshing];
-        
-//        NSMutableArray * arr = responseObject;
-//        NSArray * data = [arr objectAtIndex:0];
-//        NSString * page = [arr objectAtIndex:1];
 //        _page = page;
-        if (!responseObject) {
+        if ([responseObject isKindOfClass:[NSString class]]) {
 //            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
             self.tableView.footer.state = MJRefreshStateNoMoreData;
-        }
-        [self.dataSource addObjectsFromArray:responseObject];
-        if (self.dataSource.count > 0) {
-            self.editButtonItem.title = @"编辑";
-            self.editButtonItem.tintColor = [UIColor blackColor];
         }else{
-            self.editButtonItem.title = @"";
-            self.editButtonItem.tintColor = [UIColor whiteColor];
+            [self.dataSource addObjectsFromArray:responseObject];
+            if (self.dataSource.count > 0) {
+                self.editButtonItem.title = @"编辑";
+                self.editButtonItem.tintColor = [UIColor blackColor];
+            }else{
+                self.editButtonItem.title = @"";
+                self.editButtonItem.tintColor = [UIColor whiteColor];
+            }
         }
+        
         [self.tableView reloadData];
         NSLog(@"%@", responseObject);
     } failure:^(NSError * error) {

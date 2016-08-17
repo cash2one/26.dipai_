@@ -34,7 +34,7 @@
  "addtime":"2016-06-28 10:57:27",
  "picname":"",
  "reply":null,
- "userurl":"http://dipaiapp.replays.net/app/user_space/22"
+ "userurl":"
  },
  */
 

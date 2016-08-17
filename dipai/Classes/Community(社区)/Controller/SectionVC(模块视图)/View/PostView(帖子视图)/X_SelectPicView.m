@@ -47,6 +47,8 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
 }
 
 - (UICollectionView *)collectionView{
+    
+    // 创建collectionView
     if (_collectionView) {
         return _collectionView;
     }
@@ -54,7 +56,7 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
     layout.itemCount = self.dataSource.count;
     layout.colNumber = colNumber;
     layout.headerReferenceSize = CGSizeMake(WIDTH, 40*IPHONE6_H_SCALE);
-    layout.itemSize = CGSizeMake(80*[UIScreen mainScreen].bounds.size.width/375.f, 80*[UIScreen mainScreen].bounds.size.width/375.0);
+    layout.itemSize = CGSizeMake(80*IPHONE6_W_SCALE, 80*IPHONE6_W_SCALE);
     _collectionView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:layout];
      _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(moveAction:)];
     [_collectionView addGestureRecognizer:_longPress];
@@ -67,6 +69,7 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
     return _collectionView;
 }
 
+// 长按图片移动事件
 - (void)moveAction:(UISwipeGestureRecognizer *)gesture{
     switch (gesture.state) {
         case UIGestureRecognizerStateBegan: {
@@ -108,6 +111,7 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
     }
 }
 
+// 重写数据源
 - (void)setDataSource:(NSArray *)dataSource{
     if (!dataSource.count) {
         if (self.superView) {
@@ -124,14 +128,18 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
     
     self.hidden = NO;
     NSMutableArray *arr = [NSMutableArray array];
-    for (LNPhotoAsset *photoAsset in dataSource) {
-        [arr addObject:photoAsset.thumbImage];
+//    for (LNPhotoAsset *photoAsset in dataSource) {
+//        [arr addObject:photoAsset.thumbImage];
+//    }
+    for (UIImage * image in dataSource) {
+        [arr addObject:image];
     }
-    if (dataSource.count < 9) {
+    if (dataSource.count < 9) { // 显示添加图片的按钮
         _isShownPlus = YES;
         [arr addObject:[UIImage imageNamed:@"tianjiatupian"]];
     }else{
         _isShownPlus = NO;
+        // 让照片按钮失效
     }
     _dataSource = [NSArray arrayWithArray:arr];
 
@@ -140,14 +148,19 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
     
     [self layoutSubviews];
 }
+// 布局子控件
 - (void)layoutSubviews{
     [super layoutSubviews];
     
     NSInteger row = self.dataSource.count%colNumber?self.dataSource.count/colNumber+1 : self.dataSource.count/colNumber;
-    CGFloat height = 17+(80+5)*IPHONE6_H_SCALE*row+40*IPHONE6_H_SCALE;
+    CGFloat height = 17*IPHONE6_H_SCALE+(80+5)*IPHONE6_H_SCALE*row+40*IPHONE6_H_SCALE;
+    
+//    NSLog(@"___height___%f", height);
+    
     self.frame = CGRectMake(0, 0, WIDTH, height);
     self.collectionView.frame = self.bounds;
-
+//    self.collectionView.backgroundColor = [UIColor redColor];
+    
     [self willMoveToSuperview:self.superView];
     
     if (self.superView) {
@@ -193,6 +206,8 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
         [collectionView deleteItemsAtIndexPaths:@[index]];
         if ([self.delegate respondsToSelector:@selector(deletePicView:atIndex:)]) {
             [self.delegate deletePicView:self atIndex:index.item];
+        }else{
+            NSLog(@"代理没有响应...");
         }
         if (indexPath.item == self.dataArr.count-1) {
             weakCell.btn.hidden = YES;
@@ -232,11 +247,12 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         X_SelectPicHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"header" forIndexPath:indexPath];
-        header.commplete = ^{
-            if (_Commplete) {
-                _Commplete();
-            }
-        };
+        
+            header.commplete = ^{
+                if (_Commplete) {
+                    _Commplete();
+                }
+            };
         
         return header;
     }

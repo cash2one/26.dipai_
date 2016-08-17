@@ -68,6 +68,10 @@
 
 @implementation InfomationViewController
 
+- (void)dismissWithStr:(NSString *)str{
+    NSLog(@"dismisswithstr...");
+}
+
 - (NSMutableArray *)newslistArr
 {
     if (_newslistArr == nil) {
@@ -122,7 +126,6 @@
 //        }
 //    }
 
-    
     AppDelegate * delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     delegate.delegate = self;
     
@@ -132,6 +135,9 @@
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
     // 隐藏状态
     [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
+    header.stateLabel.font = [UIFont systemFontOfSize:14];
+    header.stateLabel.textColor = [UIColor lightGrayColor];
+    header.lastUpdatedTimeLabel.hidden = YES;
     // 设置自动切换透明度(在导航栏下面自动隐藏)
     header.automaticallyChangeAlpha = YES;
     // 设置header
@@ -147,6 +153,8 @@
     [footer setTitle:@"正在加载..." forState:MJRefreshStateRefreshing];
     //没有更多数据
     [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
+    footer.stateLabel.font = [UIFont systemFontOfSize:13];
+    footer.stateLabel.textColor = [UIColor lightGrayColor];
     // 设置footer
     self.tableView.footer = footer;
     
@@ -186,6 +194,9 @@
         detailVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:detailVC animated:YES];
         
+    }else if ([url isEqualToString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]){
+        
+        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]];
     }
     else
     {
@@ -210,8 +221,14 @@
         [self.bannerArr addObjectsFromArray:bannerModelArr];
         
         // 赛事页的数组
-        [self.tournamentArr removeAllObjects];
-        [self.tournamentArr addObjectsFromArray:tournamentModelArr];
+        if (tournamentModelArr.count > 1) {
+            NSLog(@"没有赛事");
+        }else{  // 有赛事
+            NSLog(@"有赛事");
+            [self.tournamentArr removeAllObjects];
+            [self.tournamentArr addObjectsFromArray:tournamentModelArr];
+        }
+        
         // 表格的数组
         [self.newslistArr removeAllObjects];
         [self.newslistArr addObjectsFromArray:listModelArr];
@@ -220,14 +237,13 @@
         [self.tableView reloadData];
     } failure:^(NSError * error) {
         
-         NSLog(@"错误信息%@", error);
+         NSLog(@"获取首页错误信息%@", error);
     }];
 
 }
 #pragma mark --- 添加轮播页
 - (void)addBannerView
 {
-    
     // 添加轮播页
     AdvertisementView * advertiseView = [[AdvertisementView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HeaderViewHeight * IPHONE6_H_SCALE)];
     //    advertiseView.backgroundColor = [UIColor redColor];
@@ -241,7 +257,7 @@
     self.tableView.tableHeaderView = advertiseView;
     
     // 添加一个表格的脚视图
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49 * IPHONE6_H_SCALE)];
 }
 
 #pragma mark --- 添加表格
@@ -317,8 +333,8 @@
 {
     NSUInteger tournaments = self.tournamentArr.count;
     
-    if (tournaments > 0) {
-        if (indexPath.row == 0) {
+    if (tournaments > 0) {  // 如果有赛事
+        if (indexPath.row == 0) {   // 赛事单元格
             tournamentCell * cell = [tournamentCell cellWithTableView:tableView];
             cell.tournamentModel = [self.tournamentArr objectAtIndex:0];
             return cell;
@@ -347,7 +363,7 @@
             return cell;
         }
 
-    } else
+    } else  // 没有赛事
     {
         NewsListModel * newslistModel = self.newslistArr[indexPath.row];
         // 需要判断是什么类型的单元格

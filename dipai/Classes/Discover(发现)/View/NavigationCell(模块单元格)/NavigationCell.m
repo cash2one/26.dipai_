@@ -74,15 +74,19 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
     // 俱乐部按钮
-    CGFloat clubX = 48/2* IPHONE6_W_SCALE;
+    CGFloat clubX = 24* IPHONE6_W_SCALE;
+    
     CGFloat clubY = Margin24 * IPHONE6_H_SCALE;
-    CGFloat clubW = 80 / 2 * IPHONE6_W_SCALE;
-    CGFloat clubH = 117 / 2 * IPHONE6_W_SCALE;
+    if (HEIGHT == 480.f) {  // 为了适配4
+        clubY = 8 * IPHONE6_H_SCALE;
+    }
+    CGFloat clubW = 40 * IPHONE6_W_SCALE;
+    CGFloat clubH = 117 * 0.5 * IPHONE6_W_SCALE;
     _clubBtn.frame = CGRectMake(clubX, clubY, clubW, clubH);
 //    [_clubBtn sizeToFit];
     
     // 赛事
-    CGFloat matchX = CGRectGetMaxX(_clubBtn.frame) + 110 / 2 * IPHONE6_W_SCALE;
+    CGFloat matchX = CGRectGetMaxX(_clubBtn.frame) + 110 * 0.5 * IPHONE6_W_SCALE;
     CGFloat matchY = clubY;
     CGFloat matchW = clubW;
     CGFloat matchH = clubH;
@@ -90,23 +94,23 @@
 //    [_matchBtn sizeToFit];
     
     // 扑克名人堂
-    CGFloat pokerX = CGRectGetMaxX(_matchBtn.frame) + (110-26.5) / 2 * IPHONE6_W_SCALE;
+    CGFloat pokerX = CGRectGetMaxX(_matchBtn.frame) + (110-26.5) * 0.5 * IPHONE6_W_SCALE;
     CGFloat pokerY = clubY;
-    CGFloat pokerW = 133 / 2 * IPHONE6_W_SCALE;
+    CGFloat pokerW = 133 * 0.5 * IPHONE6_W_SCALE;
     CGFloat pokerH = clubH;
     _pokerBtn.frame = CGRectMake(pokerX, pokerY, pokerW, pokerH);
 //    [_pokerBtn sizeToFit];
     
     
     // 专辑
-    CGFloat specialX = CGRectGetMaxX(_pokerBtn.frame) + (110-26.5) /2 * IPHONE6_W_SCALE;
+    CGFloat specialX = CGRectGetMaxX(_pokerBtn.frame) + (110-26.5) * 0.5 * IPHONE6_W_SCALE;
     CGFloat specialY = clubY;
     CGFloat specialW = clubW;
     CGFloat specialH = clubH;
     _specialBtn.frame = CGRectMake(specialX, specialY, specialW, specialH);
 //    [_specialBtn sizeToFit];
     
-    _separateView.frame = CGRectMake(0, 160/2*IPHONE6_H_SCALE, WIDTH, 20/2*IPHONE6_H_SCALE);
+    _separateView.frame = CGRectMake(0, 80*IPHONE6_H_SCALE, WIDTH, 10*IPHONE6_H_SCALE);
 }
 
 - (void)awakeFromNib {

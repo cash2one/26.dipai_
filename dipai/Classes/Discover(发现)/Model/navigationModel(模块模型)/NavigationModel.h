@@ -10,7 +10,7 @@
 
 @interface NavigationModel : NSObject
 /*
- "club":"http://dipaiapp.replays.netapp/club/list",
+ "club":"
  "match":"1",
  "poker":"1",
  "special":

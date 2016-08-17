@@ -14,7 +14,7 @@
  
              "username":"Nick",
  
-             "face":"http://dipaiadmin.replays.net",
+             "face":"
  
              "title":"NickNickNick",
  
@@ -22,7 +22,7 @@
  
              "relation":"0",
  
-             "userurl":"http://dipaiapp.replays.net/app/user_space/25"
+             "userurl":"
 
  */
 /**

@@ -136,7 +136,8 @@
 }
 - (void)dismissWithStr:(NSString *)str{
     // 给服务器发送code
-    NSString * url = @"http://dipaiapp.replays.net/Weixin/wx_code";
+//    NSString * url = @"http://app.dipai.tv/Weixin/wx_code";
+    NSString * url = @"http://dpapp.replays.net/Weixin/wx_code";
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"code"] = str;
     [DataTool sendCodeWithStr:url parameters:dic success:^(id responseObject) {

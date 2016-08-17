@@ -384,12 +384,10 @@
 }
 - (void)loadMoreData{
     
-//    NSLog(@"%@", self.wapurl);
-    // http://dipaiapp.replays.net/app/follow/list/1?userid=15
-    // http://dipaiapp.replays.net/app/follow/list/1/22?userid=15
     MorePokersModel * pokersModel = [self.dataSource lastObject];
 //    NSLog(@"%@", pokersModel.userid);
-    NSString * URL = [self.wapurl stringByReplacingOccurrencesOfString:@"?" withString:[NSString stringWithFormat:@"/%@?", pokersModel.userid]];
+//    NSString * URL = [self.wapurl stringByReplacingOccurrencesOfString:@"?" withString:[NSString stringWithFormat:@"/%@?", pokersModel.userid]];
+    NSString * URL = [self.wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@", pokersModel.userid]];
 //    NSLog(@"%@", URL);
     [DataTool getMorePokerDataWithStr:URL parameters:nil success:^(id responseObject) {
         [self.tableView.footer endRefreshing];

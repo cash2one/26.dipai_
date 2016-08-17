@@ -135,6 +135,11 @@
 // 相关视频视图
 @property (nonatomic, strong) UIView * associateView;
 
+// 返回按钮图片
+@property (nonatomic, strong) UIImageView * returnView;
+// 返回按钮
+@property (nonatomic, strong) UIButton * returnBtn;
+
 
 @end
 
@@ -197,7 +202,7 @@
 }
 -(void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:YES];
-    [_playerView stop];
+//    [_playerView stop];
 }
 #pragma mark --- 显示navigationBar
 - (void)viewWillDisappear:(BOOL)animated{
@@ -211,45 +216,45 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    // 设置状态栏
+//    // 设置状态栏
     [self setUpStatusBar];
-    
-    // 搭建界面
+//
+//    // 搭建界面
     [self setUpUI];
-    
+//
 //    NSLog(@"%@", self.url);
-    // 获取网络上的数据
+//    // 获取网络上的数据
     [self getVideoDataWithURL:self.url];
-    
-    // 在分享中添加自定义按钮
-    [self addCustomShareBtn];
-    
-    // 对键盘添加监听
+//    // 在分享中添加自定义按钮
+//    [self addCustomShareBtn]; // 可能造成了内存泄漏    分享功能暂时未开放
+//    // 对键盘添加监听
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardChanged:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    
 }
 
 #pragma mark --- 添加复制链接按钮
 - (void)addCustomShareBtn
 {
-    UMSocialSnsPlatform *snsPlatform = [[UMSocialSnsPlatform alloc] initWithPlatformName:@"CustomPlatform"];
-    // 设置自定义分享按钮的名称
-    snsPlatform.displayName = @"复制链接";
-    // 设置自定义分享按钮的图标
-    snsPlatform.bigImageName = @"fuzhilianjie";
-    //    __weak typeof(self) weakSelf = self;
-    // 监听自定义按钮的点击事件
-    snsPlatform.snsClickHandler = ^(UIViewController *presentingController, UMSocialControllerService * socialControllerService, BOOL isPresentInController){
-        UIPasteboard *pastboad = [UIPasteboard generalPasteboard];
-        pastboad.string = _wapurl;
-        NSLog(@"复制的链接：%@", _wapurl);
-        [SVProgressHUD showSuccessWithStatus:@"复制链接成功"];
-        
-    };
-    
-    // 添加自定义平台
-    [UMSocialConfig addSocialSnsPlatform:@[snsPlatform]];
-    // 设置你要在分享面板中出现的平台
-    [UMSocialConfig setSnsPlatformNames:@[UMShareToSina,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]];
+    NSLog(@"暂时不用此功能了");
+//    UMSocialSnsPlatform *snsPlatform = [[UMSocialSnsPlatform alloc] initWithPlatformName:@"CustomPlatform"];
+//    // 设置自定义分享按钮的名称
+//    snsPlatform.displayName = @"复制链接";
+//    // 设置自定义分享按钮的图标
+//    snsPlatform.bigImageName = @"fuzhilianjie";
+//    //    __weak typeof(self) weakSelf = self;
+//    // 监听自定义按钮的点击事件
+//    snsPlatform.snsClickHandler = ^(UIViewController *presentingController, UMSocialControllerService * socialControllerService, BOOL isPresentInController){
+//        UIPasteboard *pastboad = [UIPasteboard generalPasteboard];
+//        pastboad.string = _wapurl;
+//        NSLog(@"复制的链接：%@", _wapurl);
+//        [SVProgressHUD showSuccessWithStatus:@"复制链接成功"];
+//        
+//    };
+//    
+//    // 添加自定义平台
+//    [UMSocialConfig addSocialSnsPlatform:@[snsPlatform]];
+//    // 设置你要在分享面板中出现的平台
+//    [UMSocialConfig setSnsPlatformNames:@[UMShareToSina,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]];
 }
 
 // 键盘发生变化后通知
@@ -389,7 +394,7 @@
     // 缓存，下次播放有效
     _playerView.enableCache = YES;
     // 如果设为真，则清除本次播放过程中的Cache文件
-    _playerView.clearPlayCache = NO;
+    _playerView.clearPlayCache = YES;
     // 设置代理
     _playerView.playerDelegate = self;
     
@@ -402,6 +407,7 @@
     
     // 返回按钮
     UIImageView * returnView = [[UIImageView alloc] init];
+    returnView.userInteractionEnabled = YES;
     CGFloat x = Margin30 * IPHONE6_W_SCALE;
     CGFloat y = Margin25 * IPHONE6_H_SCALE;
     CGFloat w = Margin20 * IPHONE6_W_SCALE;
@@ -410,6 +416,7 @@
     returnView.image = [UIImage imageNamed:@"houtui_baise"];
     returnView.userInteractionEnabled = YES;
     [_playerView addSubview:returnView];
+    _returnView = returnView;
 //    [self.view addSubview:returnView];
     
     UIButton * returnBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -418,16 +425,17 @@
 //    CGFloat btnW = 50;
 //    CGFloat btnH = 40;
 //    returnBtn.frame = CGRectMake(btnX, btnY, btnW, btnH);
-    returnBtn.backgroundColor = [UIColor clearColor];
-    // returnBtn.backgroundColor = [UIColor redColor];
+//    returnBtn.backgroundColor = [UIColor clearColor];
+//     returnBtn.backgroundColor = [UIColor redColor];
     [returnBtn addTarget:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
     [_playerView addSubview:returnBtn];
     [returnBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(returnView.mas_left).offset(-10);
         make.top.equalTo(returnView.mas_top).offset(-10);
-        make.right.equalTo(returnView.mas_right).offset(10);
+        make.right.equalTo(returnView.mas_right).offset(20);
         make.bottom.equalTo(returnView.mas_bottom).offset(10);
     }];
+    _returnBtn = returnBtn;
     
     // 播放器下方的标题
     UIView * blackView = [[UIView alloc] init];
@@ -948,7 +956,7 @@
     [_playerView play:item];
     
     //  重新获取网络上的数据
-    [self getVideoDataWithURL:associateModel.video_url];
+    [self getVideoDataWithURL:associateModel.url];
 
 }
 
@@ -1001,9 +1009,19 @@
     [_playerView play:item];
     
 }
+
+
 #pragma mark --- 点击按钮返回
 - (void)returnBack{
-    [self.navigationController popViewControllerAnimated:YES];
+    NSLog(@"单击返回按钮...");
+    if ([_playerView isFullScreen]) {
+        NSLog(@"此时全屏...");
+        [_playerView changeToFullScreen:NO];
+        
+    }else{
+       [self.navigationController popViewControllerAnimated:YES];
+    }
+    
 }
 
 #pragma mark --- AlbumViewControllerDelegate

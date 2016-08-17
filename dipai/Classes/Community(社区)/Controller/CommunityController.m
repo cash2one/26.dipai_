@@ -52,8 +52,14 @@
 #import "StarVC.h"
 #import "SBModel.h"
 
+// 登录控制器
+#import "LoginViewController.h"
+
 // VM
 #import "GroupFrameModel.h"
+#import "Masonry.h"
+
+#import "AFNetworking.h"
 @interface CommunityController ()<UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate, HeaderViewInTalkingDelegate, GroupCellDelegate, PostCellDelegate>
 {
     UISegmentedControl *_segmented;
@@ -69,6 +75,8 @@
     
     // 圈子获取更多数据时发送的一个标识
     NSString * _page;
+    
+    NSString * _network;    // 有网络的标志
 }
 // 热门讨论数据源
 @property (nonatomic, strong) NSMutableArray * dataSource1;
@@ -79,6 +87,12 @@
 @property (nonatomic, strong) UITableView * tableView2;
 
 @property (nonatomic, strong) SBModel * sbModel;
+// 没登录的提示图
+@property (nonatomic, strong) UIImageView * imageV;
+// 登录按钮
+@property (nonatomic, strong) UIButton * loginBtn;
+// 没有关注的提示图
+@property (nonatomic, strong) UIImageView * noPayAttention;
 @end
 
 @implementation CommunityController
@@ -103,6 +117,15 @@
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+    
+    // 如果登录了而且有关注就不进行刷新了
+    
+    if (_imageV.hidden == YES && _noPayAttention.hidden == YES) {
+        NSLog(@"不进行刷新");
+    }else{
+        [self loadNewData2];
+    }
+    
     
 }
 
@@ -190,7 +213,7 @@
     self.tableView1.dataSource = self;
 //    _tableView1.showsVerticalScrollIndicator = NO;
     self.tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView1.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
+    self.tableView1.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49 * IPHONE6_H_SCALE)];
     
     [_sc addSubview:self.tableView1];
     
@@ -199,32 +222,94 @@
     self.tableView2.dataSource=self;
 //    _tableView2.showsVerticalScrollIndicator=NO;
     self.tableView2.separatorStyle=UITableViewCellSeparatorStyleNone;
-    self.tableView2.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
+    self.tableView2.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49 * IPHONE6_H_SCALE)];
     
     [_sc addSubview:self.tableView2];
+    
+    // 没有登录的提示图
+    UIImageView * imageV = [[UIImageView alloc] init];
+    imageV.image = [UIImage imageNamed:@"meiyoudenglu"];
+    [_sc addSubview:imageV];
+    [imageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(_tableView2.mas_centerX);
+        make.top.equalTo(_sc.mas_top).offset(270 * 0.5 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(215 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(181 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _imageV = imageV;
+    _imageV.hidden = YES;
+    
+    // 登录按钮
+    UIButton * loginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    loginBtn.layer.masksToBounds = YES;
+    loginBtn.layer.cornerRadius = 2 * IPHONE6_W_SCALE;
+    loginBtn.layer.borderWidth = 0.5;
+    loginBtn.layer.borderColor = [[UIColor colorWithRed:228 / 255.f green:0 / 255.f blue:0 / 255.f alpha:1] CGColor];
+//    loginBtn.titleLabel.text = @"去登录";
+    [loginBtn setTitle:@"去登录" forState:UIControlStateNormal];
+    [loginBtn setTitleColor:[UIColor colorWithRed:228 / 255.f green:0 / 255.f blue:0 / 255.f alpha:1]  forState:UIControlStateNormal];
+    loginBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+//    loginBtn.titleLabel.textColor = [UIColor colorWithRed:228 / 255.f green:0 / 255.f blue:0 / 255.f alpha:1];
+    loginBtn.titleLabel.font = Font17;
+    [_sc addSubview:loginBtn];
+    [loginBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(imageV.mas_centerX);
+        make.top.equalTo(imageV.mas_bottom).offset(18 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(270 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(68 * 0.5 * IPHONE6_H_SCALE));
+    }];
+    [loginBtn addTarget:self action:@selector(loginAction) forControlEvents:UIControlEventTouchUpInside];
+    _loginBtn = loginBtn;
+    _loginBtn.hidden = YES;
+    
+    
+    // 没有关注的提示图
+    UIImageView * noPayAttention = [[UIImageView alloc] init];
+    noPayAttention.image = [UIImage imageNamed:@"meiyouguanzhu"];
+    [_sc addSubview:noPayAttention];
+    [noPayAttention mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(imageV.mas_centerX);
+        make.top.equalTo(imageV.mas_top);
+        make.width.equalTo(@(215 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(187 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    _noPayAttention = noPayAttention;
+    _noPayAttention.hidden = YES;
 //    // 添加刷新和加载
-    
-    
-    MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData2)];
-    [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
-    header.stateLabel.font = [UIFont systemFontOfSize:14];
-    header.stateLabel.textColor = [UIColor lightGrayColor];
-    header.automaticallyChangeAlpha = YES;
-    header.lastUpdatedTimeLabel.hidden = YES;
-    _tableView2.header = header;
-    [header beginRefreshing];
-//    //往上拉加载数据.
-    MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData2)];
-    [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
-    [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
-    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
-    footer.stateLabel.font = [UIFont systemFontOfSize:13];
-    footer.stateLabel.textColor = [UIColor lightGrayColor];
-    _tableView2.footer = footer;
     
     [self addRefreshWith:_tableView1];
     _tableView1.scrollsToTop = NO;
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData2)];
+        [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
+        header.stateLabel.font = [UIFont systemFontOfSize:14];
+        header.stateLabel.textColor = [UIColor lightGrayColor];
+        header.automaticallyChangeAlpha = YES;
+        header.lastUpdatedTimeLabel.hidden = YES;
+        _tableView2.header = header;
+        [header beginRefreshing];
+        //    //往上拉加载数据.
+        MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData2)];
+        [footer setTitle:@"加载更多消息" forState:MJRefreshStateIdle];
+        [footer setTitle:@"正在加载" forState:MJRefreshStateRefreshing];
+        [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
+        footer.stateLabel.font = [UIFont systemFontOfSize:13];
+        footer.stateLabel.textColor = [UIColor lightGrayColor];
+        _tableView2.footer = footer;
+    });
+    
+   
 }
+
+#pragma mark --- 登录事件
+- (void)loginAction{
+    
+    LoginViewController * loginVC = [[LoginViewController alloc] init];
+    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    [self presentViewController:loginNav animated:YES completion:nil];
+}
+
 - (void)addRefreshWith:(UITableView *)tableView{
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
     [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
@@ -250,7 +335,7 @@
     NSInteger count = _forumModel.section.count;   // 版块的个数
     NSInteger rows =   count / 5 + 1;   // 版块的行数
 //    NSLog(@"%lu", rows);
-    CGFloat headerH = (74+18+24+24) * 0.5 * rows + (28+38+20+83) * 0.5 + (rows-1) * 10;
+    CGFloat headerH = 74 * 0.5 * IPHONE6_W_SCALE + (18 + 24) * 0.5 * IPHONE6_H_SCALE + (28 + 38 + 20 + 83) * 0.5 * IPHONE6_H_SCALE + (rows-1) * (74 * 0.5 * IPHONE6_W_SCALE + (18 + 24) * 0.5);
     HeaderViewInTalking * headerView = [[HeaderViewInTalking alloc] initWithFrame:CGRectMake(0, 0, WIDTH, headerH) WithModel:_forumModel];
     headerView.delegate = self;
     headerView.backgroundColor = [UIColor whiteColor];
@@ -259,66 +344,117 @@
 }
 #pragma mark--- 加载和刷新
 - (void)loadNewData{
-    
-    [DataTool getCommunityDataWithStr:ForumURL parameters:nil success:^(id responseObject) {
-        [_tableView1.header endRefreshing];
+    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+    //设置监听
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         
-        _forumModel = responseObject;
-        
-//        NSLog(@"%@", responseObject);
-        ForumModel * forumModel = [[ForumModel alloc] init];
-        forumModel = responseObject;
-//        NSLog(@"%@", forumModel);
-        NSArray * hotArr = forumModel.hot;
-        
-//        NSLog(@"%@", hotArr);
-        // 字典数组转模型数组
-        NSArray * hotModelArr = [PostsModel objectArrayWithKeyValuesArray:hotArr];
-        NSMutableArray * arr = [NSMutableArray array];
-        for (PostsModel * model in hotModelArr) {
-            PostFrameModel * frameModel = [[PostFrameModel alloc] init];
-            frameModel.postsModel = model;
-            [arr addObject:frameModel];
+        if (status == AFNetworkReachabilityStatusNotReachable) {
+            NSLog(@"没有网络");
+            [_tableView1.header endRefreshing];
+            [_tableView2.header endRefreshing];
+            [SVProgressHUD showErrorWithStatus:@"网络有问题"];
+            _network = nil;
+        }else{
+            NSLog(@"有网络");
+            _network = @"yes";
+            [DataTool getCommunityDataWithStr:ForumURL parameters:nil success:^(id responseObject) {
+                [_tableView1.header endRefreshing];
+                [_tableView1.footer endRefreshing];
+                [_tableView2.header endRefreshing];
+                _forumModel = responseObject;
+                
+                //        NSLog(@"%@", responseObject);
+                ForumModel * forumModel = [[ForumModel alloc] init];
+                forumModel = responseObject;
+                //        NSLog(@"%@", forumModel);
+                NSArray * hotArr = forumModel.hot;
+                
+                //        NSLog(@"%@", hotArr);
+                // 字典数组转模型数组
+                NSArray * hotModelArr = [PostsModel objectArrayWithKeyValuesArray:hotArr];
+                NSMutableArray * arr = [NSMutableArray array];
+                for (PostsModel * model in hotModelArr) {
+                    PostFrameModel * frameModel = [[PostFrameModel alloc] init];
+                    frameModel.postsModel = model;
+                    [arr addObject:frameModel];
+                }
+                self.dataSource1 = arr;
+                
+                //        NSLog(@"%@", self.dataSource1);
+                // 添加头视图
+                [self addTableViewHeader];
+                
+                [self.tableView1 reloadData];
+                
+            } failure:^(NSError * error) {
+                
+                NSLog(@"获取论坛首页数据出错:%@", error);
+                [self addTableViewHeader];
+            }];
         }
-        self.dataSource1 = arr;
-        
-//        NSLog(@"%@", self.dataSource1);
-        // 添加头视图
-        [self addTableViewHeader];
-        
-        [self.tableView1 reloadData];
-
-    } failure:^(NSError * error) {
-       
-        NSLog(@"获取论坛首页数据出错:%@", error);
-        [self addTableViewHeader];
     }];
+    //开始监听
+    [manager startMonitoring];
+
     
+}
+#pragma mark --- 刷新失败
+- (void)errorWithRefresh{
+    // 结束刷新
     
+    NSLog(@"datasource1:---%@", self.dataSource1);
+    if (!self.dataSource1.count >0  || !self.dataSource2.count > 0) {
+        [_tableView1.header endRefreshing];
+        [_tableView1.footer endRefreshing];
+        [_tableView2.header endRefreshing];
+        [_tableView2.footer endRefreshing];
+//        [SVProgressHUD showErrorWithStatus:@"网络有问题"];
+    }
     
 }
 #pragma mark --- 圈子获取数据
 - (void)loadNewData2{
+//    NSLog(@"加载关注数据...");
     
-    [DataTool getGroupDataWithStr:GroupURL parameters:nil success:^(id responseObject) {
-        [self.tableView2.header endRefreshing];
-        
-//        NSLog(@"获取圈子页数据：%@", responseObject);
-        CircleModel * cirModel = responseObject;
-        
-        _page = cirModel.page;
-        
-        self.dataSource2 = (NSMutableArray *)cirModel.modelArr;
-        NSLog(@"%lu", self.dataSource2.count);
-        [_tableView2 reloadData];
-    } failure:^(NSError * error) {
-        
-        NSLog(@"获取圈子页数据出错：%@", error);
-    }];
+//    NSLog(@"%@", _network);
+    if (_network &&  _network.length > 0) { // 有网络
+        [DataTool getGroupDataWithStr:GroupURL parameters:nil success:^(id responseObject) {
+            [self.tableView2.header endRefreshing];
+            [self.tableView2.footer endRefreshing];
+            
+            //        NSLog(@"获取圈子页数据：%@", responseObject);
+            if ([responseObject isKindOfClass:[NSString class]] && [responseObject isEqualToString:@"未登录"]) {
+                //            NSLog(@"没有登录...");
+                _imageV.hidden = NO;
+                _loginBtn.hidden = NO;
+            }else{
+                _imageV.hidden = YES;
+                _loginBtn.hidden = YES;
+                if ([responseObject isKindOfClass:[NSString class]] && [responseObject isEqualToString:@"没关注"]) {
+                    
+                    _noPayAttention.hidden = NO;
+                }else{
+                    _noPayAttention.hidden = YES;
+                    CircleModel * cirModel = responseObject;
+                    _page = cirModel.page;
+                    self.dataSource2 = (NSMutableArray *)cirModel.modelArr;
+                    //                NSLog(@"%lu", self.dataSource2.count);
+                }
+                
+            }
+            [_tableView2 reloadData];
+        } failure:^(NSError * error) {
+            
+            NSLog(@"获取圈子页数据出错：%@", error);
+        }];
+    }else{
+        [_tableView1.header endRefreshing];
+        [_tableView2.header endRefreshing];
+    }
+    
 }
 - (void)loadMoreData2{
     
-    // http://dipaiapp.replays.net/app/circle/list
     NSString * url = [GroupURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _page]];
     
 //    NSLog(@"%@", url);
@@ -327,11 +463,13 @@
         [self.tableView2.footer endRefreshing];
         
 //        NSLog(@"%@", responseObject);
-        CircleModel * cirModel = responseObject;
-        if ([cirModel.modelArr isKindOfClass:[NSNull class]]) {
+        
+        if ([responseObject isKindOfClass:[NSString class]]) {  // 没有数据
+            
             self.tableView2.footer.state = MJRefreshStateNoMoreData;
-//            [SVProgressHUD showSuccessWithStatus:@"没有更多内容了"];
         }else{
+            
+            CircleModel * cirModel = responseObject;
             for (GroupModel * model in cirModel.modelArr) {
                 [self.dataSource2 addObject:model];
                 
@@ -501,11 +639,8 @@
         DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
         VideoViewController * videoVC = [[VideoViewController alloc] init];
         // 页面跳转有两种情况：1.跳转到帖子详情页   2.跳转到一个网页详情或视频详情
-        // http://dipaiapp.replays.net/app/art/view/2/5099
 //        NSLog(@"wapurl---%@", model.wapurl);
 //        NSLog(@"type----%@", model.type);
-        
-
         if ([model.wapurl rangeOfString:@"art/view/2"].location != NSNotFound || [model.wapurl rangeOfString:@"art/view/4"].location != NSNotFound) {   // 跳到网页详情页
             NSLog(@"资讯");
             detailVC.hidesBottomBarWhenPushed = YES;

@@ -358,7 +358,7 @@
     // CZPhoto -> MJPhoto
     int i = 0;
     NSMutableArray *arrM = [NSMutableArray array];
-    NSString * faceStr = _sbModel.data[@"info"][@"face"];
+    NSString * faceStr = _sbModel.data[@"info"][@"max_face"];
     NSMutableArray * arr = [NSMutableArray array];
     [arr addObject:faceStr];
     for (NSString *photo in arr) {
@@ -482,7 +482,7 @@
 #pragma mark --- 添加登录的alertView
 - (void)addAlertView{
     LSAlertView * alertView = [[LSAlertView alloc] init];
-    alertView.messageLbl.text = @"先登录再关注";
+    alertView.messageLbl.text = @"请在登录后进行操作";
     alertView.delegate = self;
     CGFloat x = Margin105 * IPHONE6_W_SCALE;
     CGFloat y = Margin574 * IPHONE6_H_SCALE;
@@ -762,7 +762,10 @@
         
         // 改变高度
         NSString * str = _sbModel.data[@"certified"][@"brief"];
-        str = [str substringToIndex:100];
+        if (str.length > 100) {
+            str = [str substringToIndex:100];
+        }
+        
         _introduceLbl.text = str;
         CGFloat x = 15*IPHONE6_W_SCALE;
         CGFloat y = 59*IPHONE6_H_SCALE;
@@ -932,7 +935,10 @@
     } else{
        _certificateLbl.text = sbModel.data[@"certified"][@"title"];
         str = sbModel.data[@"certified"][@"brief"];
-        str = [str substringToIndex:100];
+        if (str.length > 100) {
+            str = [str substringToIndex:100];
+        }
+        
         _showBtn.userInteractionEnabled = YES;
     }
 
@@ -1067,13 +1073,13 @@
         PostFrameModel * frameModel = self.dataSource2[indexPath.row];
         cell.frameModel = frameModel;
         return cell;
-    }else if(tableView == self.tableView3){
+    }else if(tableView == self.tableView3){ // 回复
         
         MyReplyCell * cell = [MyReplyCell cellWithTableView:tableView];
         cell.myReplyFrameModel = self.dataSource3[indexPath.row];
         return cell;
 
-    } else{
+    } else{ // 主页
 
         if (![_sbModel.data[@"certified"] isKindOfClass:[NSNull class]]) {  // 如果是底牌认证
             NSArray * chroArr = _sbModel.data[@"certified"][@"chronology"];
@@ -1082,12 +1088,12 @@
             NSArray * scoreModelArr = [ScoreModel objectArrayWithKeyValuesArray:chroArr];
             NSInteger row = indexPath.row;
             
-            if (row!=scoreModelArr.count) {
+            if (row!=scoreModelArr.count) { // 显示成绩
                 ScoreModel * scoreModel = [scoreModelArr objectAtIndex:row];
                 ScoreCell * cell = [ScoreCell cellWithTableView:tableView];
                 cell.scoreModel = scoreModel;
                 return cell;
-            } else{ // 最后一个单元格
+            } else{ // 最后一个单元格(风采展示)
                 FooterCell * cell = [FooterCell cellWithTableView:tableView];
                 cell.atlasArr = atlasArr;
                 return cell;
@@ -1117,7 +1123,6 @@
         
         return myReFrameModel.cellHeight;
     } else{
-        //  如果是最后一个单元格
         CGFloat scoreX = 37*IPHONE6_W_SCALE;
         CGFloat scoreW = WIDTH - 2 * scoreX;
         NSMutableDictionary * scoreDic = [NSMutableDictionary dictionary];
@@ -1132,13 +1137,11 @@
             CGRect scoreRect = [scoreModel.Content boundingRectWithSize:CGSizeMake(scoreW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:scoreDic context:nil];
             CGFloat height = scoreRect.size.height;
             return height +51*IPHONE6_H_SCALE;
-        } else{
+        } else{ // 风采展示单元格的高度
             return 165 * IPHONE6_H_SCALE;
         }
         
         // 84 +18
-        
-        
     }
     
 }
@@ -1160,7 +1163,6 @@
         // 可以跳转到评论页面、赛事的评论页面、帖子的回复页面
         MyReplyFrameModel * frameModel =  self.dataSource3[indexPath.row];
         MyReplyModel * replyModel = frameModel.myreplyModel;
-        //  http://dipaiapp.replays.net/app/forum/view/52
         // 
         if ([replyModel.userurl rangeOfString:@"art/view/11"].location != NSNotFound) {
             

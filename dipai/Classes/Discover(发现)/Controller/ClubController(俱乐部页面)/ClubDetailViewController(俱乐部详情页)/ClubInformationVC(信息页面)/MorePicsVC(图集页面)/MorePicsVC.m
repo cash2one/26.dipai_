@@ -115,8 +115,6 @@
     _PageLabel.center = CGPointMake(self.view.center.x, HEIGHT - 30-64);
     _PageLabel.text = [NSString stringWithFormat:@"1/%lu" , (unsigned long)_images.count];
     
-     NSLog(@"%@", _PageLabel.text);
-    
     _PageLabel.textColor = [UIColor whiteColor];
     [_PageLabel sizeToFit];
     [self.view addSubview:_PageLabel];

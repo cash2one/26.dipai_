@@ -195,7 +195,7 @@
     [DataTool postWithStr:LoginURL parameters:dic success:^(id responseObject) {
         NSString * content = [responseObject objectForKey:@"content"];
         
-//        NSLog(@"登录获取的数据%@", responseObject);
+        NSLog(@"登录获取的数据%@", responseObject);
         
         NSLog(@"－－－%@", content);
         
