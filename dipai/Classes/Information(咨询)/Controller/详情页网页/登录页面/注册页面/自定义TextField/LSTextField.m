@@ -24,7 +24,7 @@
 - (void)setFont:(UIFont *)font
 {
     self.placeHolderLabel.font = font;
-    //    [self.placeHolderLabel sizeToFit];
+    [self.placeHolderLabel sizeToFit];
 }
 
 

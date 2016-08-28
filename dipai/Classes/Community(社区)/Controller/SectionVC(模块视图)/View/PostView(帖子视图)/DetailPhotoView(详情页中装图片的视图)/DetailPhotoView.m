@@ -15,7 +15,10 @@
 #import "UIImageView+getSize.h"
 #import "Masonry.h"
 @interface DetailPhotoView()
-
+{
+    
+//    CGSize size;
+}
 // 用来装imageView
 @property (nonatomic, strong) NSMutableArray * imagesArr;
 
@@ -126,12 +129,23 @@
             CGFloat h;    // 图片的高度
             CGFloat w; // 图片的宽度
 //            NSLog(@"%@", _picArr[i]);
-            
             CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_picArr[i]]];
+            if (size.width < 1.f) {
+                 UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_picArr[i]]]];
+                size = img.size;
+            }
+//            CGSize size;
+//            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//                UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_picArr[i]]]];
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    size = img.size;
+//                });
+//                
+//            });
             h = size.height * IPHONE6_W_SCALE;
             w = size.width * IPHONE6_W_SCALE;
-            
-//            NSLog(@"%f---%f", h, w);
+//            NSLog(@"%@", _picArr[i]);
+            NSLog(@"%f---%f", h, w);
             
             CGFloat scale = 1.0;
             if (w == 0) {   // 如果获取不到图片的大小

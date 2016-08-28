@@ -19,7 +19,9 @@
 
 #import "Masonry.h"
 @interface PostHeaderView()
-
+{
+//    CGSize size;
+}
 /**
  *  头像
  */
@@ -291,14 +293,20 @@
             CGSize size;
 //            NSLog(@"%f", size.height);
             size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_dataModel.imgs[i]]];
-                
+            if (size.width < 1.f) {
+                UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_dataModel.imgs[i]]]];
+                size = img.size;
+            }
+//            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//                UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_dataModel.imgs[i]]]];
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    size = img.size;
+//                });
+//                
+//            });
             h = size.height * IPHONE6_W_SCALE;
             w = size.width * IPHONE6_W_SCALE;
-                
-            
-            
-            
-            
+
             
 //            NSLog(@"宽和高：%f----%f", w, h);
             CGFloat scale = 1.0;

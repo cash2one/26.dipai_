@@ -72,6 +72,7 @@
     [commentsLbl setFont:Font9];
     commentsLbl.backgroundColor = [UIColor redColor];
     [self addSubview:commentsLbl];
+    commentsLbl.hidden = YES;
     _commentsLbl = commentsLbl;
     
     // 收藏按钮

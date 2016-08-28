@@ -293,7 +293,7 @@
         // 结束刷新
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
-        [SVProgressHUD showErrorWithStatus:@"网络有问题"];
+        [SVProgressHUD showErrorWithStatus:@"网络不通畅"];
     }
     
 }

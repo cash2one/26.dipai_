@@ -41,6 +41,9 @@
 
 #import "DataTool.h"
 @interface SectionVC ()<UITableViewDataSource, UITableViewDelegate, LSAlertViewDeleagte, PostCellDelegate>
+{
+    NSString * _pop;
+}
 /**
  *  表格
  */
@@ -66,7 +69,13 @@
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
     
-    [self loadNewData];
+    // 如果是POP回来的就不进行刷新   第一次进来的时候也不用刷新
+    if (_pop) {
+        
+        NSLog(@"不进行刷新");
+    }else{
+        [self.tableView.header beginRefreshing];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -119,6 +128,7 @@
         SendVC * sendVC = [[SendVC alloc] init];
         sendVC.sectionModel = self.sectionModel;
         UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:sendVC];
+        _pop = nil;
         [self presentViewController:nav animated:YES completion:nil];
     }else{
         [self addAlertView];
@@ -239,7 +249,7 @@
         NSLog(@"获取评论列表出错：%@", error);
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
-        [SVProgressHUD showWithStatus:@"网络有问题"];
+        [SVProgressHUD showWithStatus:@"网络不通畅"];
     }];
 }
 - (void)loadMoreData{
@@ -278,7 +288,7 @@
         NSLog(@"获取评论列表出错：%@", error);
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
-        [SVProgressHUD showErrorWithStatus:@"网络有问题"];
+        [SVProgressHUD showErrorWithStatus:@"网络不通畅"];
     }];
 }
 
@@ -334,7 +344,8 @@
 
 #pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSLog(@"%lu", indexPath.row);
+//    NSLog(@"%lu", indexPath.row);
+     _pop = @"pop";
     PostDetailVC * postDetailVC = [[PostDetailVC alloc] init];
     PostFrameModel * model = self.dataSource[indexPath.row];
     postDetailVC.wapurl = model.postsModel.wapurl;

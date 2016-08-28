@@ -155,11 +155,23 @@
 #warning 未正确处理
 - (void)loadMoreData{
     
-    [DataTool getClubNewsDataWithStr:_wapurl parameters:nil success:^(id responseObject) {
+//    NSLog(@"%@", _wapurl);
+    NewsModel * model = [self.dataSource lastObject];
+    NSString * url = [_wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@", model.iD]];
+//    NSLog(@"%@", url);
+    [DataTool getClubNewsDataWithStr:url parameters:nil success:^(id responseObject) {
         
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
-        self.dataSource = responseObject;
+        
+//        NSLog(@"%@", responseObject);
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
+        }else{
+        
+            [self.dataSource addObjectsFromArray:responseObject];
+        }
+        
         
         [self.tableView reloadData];
     } failure:^(NSError * error) {

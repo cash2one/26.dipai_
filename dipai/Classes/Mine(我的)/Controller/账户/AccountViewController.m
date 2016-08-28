@@ -27,7 +27,9 @@
 
 #import "WXApi.h"
 #import "AppDelegate.h"
-@interface AccountViewController ()<UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate,UINavigationControllerDelegate, AppDelegate>
+
+#import "UIImage+extend.h"
+@interface AccountViewController ()<UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate,UINavigationControllerDelegate, AppDelegate, WXApiDelegate>
 {
     NSString * _name;   // 用户名
     UIImage * _image;
@@ -265,6 +267,8 @@
                 req.state = @"123" ;
                 //第三方向微信终端发送一个SendAuthReq消息结构
                 [WXApi sendReq:req];
+                
+                [WXApi sendAuthReq:req viewController:self delegate:self];
                 // 成功利用了AppDelegate
             }
             
@@ -401,7 +405,8 @@
             
 //                NSData * data = UIImagePNGRepresentation(image);
 //            NSData * data = UIImageJPEGRepresentation(image, 0.5);
-            NSData * data = UIImagePNGRepresentation(image);
+            UIImage * image1 = [image rotateImage];
+            NSData * data = UIImagePNGRepresentation(image1);
             NSString * name = [NSString stringWithFormat:@"face"];
             NSString * fileName = [NSString stringWithFormat:@"image.jpeg"];
             NSString * mimeType = [NSString stringWithFormat:@"image/png"];

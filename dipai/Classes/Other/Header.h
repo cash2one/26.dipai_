@@ -36,7 +36,7 @@
 #define FindURL @"http://dpapp.replays.net/app/find"
 // 热门专辑中获取更多专辑的接口
 //#define MoreVideosURL @"http://app.dipai.tv/app/hot/album/list/1"
-#define MoreVideosURL @"http://dpapp.replays.net/app/hot/album/list"
+#define MoreVideosURL @"http://dpapp.replays.net/app/hot/album/list/1"
 // 专辑页面获取更多视频
 //#define AlbumURL @"http://app.dipai.tv/app/album/list"
 #define AlbumURL @"http://dpapp.replays.net/app/album/list"
@@ -81,58 +81,58 @@
 /********************社区页*********************/
 // 论坛首页
 // 论坛页接口
-//#define ForumURL @"http://app.dipai.tv/app/forum"
+//#define ForumURL @"http://dipaiapp.replays.net/app/forum"
 #define ForumURL @"http://dpapp.replays.net/app/forum"
 
 // 圈子页接口
-//#define GroupURL @"http://app.dipai.tv/app/circle/list"
+//#define GroupURL @"http://dipaiapp.replays.net/app/circle/list"
 #define GroupURL @"http://dpapp.replays.net/app/circle/list"
 
 // 发布帖子
-//#define SendPostsURL @"http://app.dipai.tv/app/add/forum/"
+//#define SendPostsURL @"http://dipaiapp.replays.net/app/add/forum/"
 #define SendPostsURL @"http://dpapp.replays.net/app/add/forum/"
 // 回帖即评论帖子
-//#define ReplyPostsURL @"http://app.dipai.tv/app/forum/add/comment"
+//#define ReplyPostsURL @"http://dipaiapp.replays.net/app/forum/add/comment"
 #define ReplyPostsURL @"http://dpapp.replays.net/app/forum/add/comment"
 // 帖子的回帖列表
-//#define ListOfReplyURL @"http://app.dipai.tv/app/forum/comment"
+//#define ListOfReplyURL @"http://dipaiapp.replays.net/app/forum/comment"
 #define ListOfReplyURL @"http://dpapp.replays.net/app/forum/comment"
 
 /*******************我的页****************/
-//#define PersonURL @"http://app.dipai.tv/app/my"
+//#define PersonURL @"http://dipaiapp.replays.net/app/my"
 #define PersonURL @"http://dpapp.replays.net/app/my"
 // 获取收藏的接口
-//#define MyCollectionURL @"http://app.dipai.tv/app/my/collection"
+//#define MyCollectionURL @"http://dipaiapp.replays.net/app/my/collection"
 #define MyCollectionURL @"http://dpapp.replays.net/app/my/collection"
 
 // 我的帖子的接口
-//#define MyPostsURL @"http://app.dipai.tv/app/my/forum/"
+//#define MyPostsURL @"http://dipaiapp.replays.net/app/my/forum/"
 #define MyPostsURL @"http://dpapp.replays.net/app/my/forum/"
 // 我的回复的接口
-//#define MyReplyURL @"http://app.dipai.tv/app/my/reply"
+//#define MyReplyURL @"http://dipaiapp.replays.net/app/my/reply"
 #define MyReplyURL @"http://dpapp.replays.net/app/my/reply"
 
 // 我收到的评论接口
-//#define MyReceiveURL @"http://app.dipai.tv/app/my/comment"
+//#define MyReceiveURL @"http://dipaiapp.replays.net/app/my/comment"
 #define MyReceiveURL @"http://dpapp.replays.net/app/my/comment"
 // 删除我的收藏
-//#define DeleteCollectURL @"http://app.dipai.tv/app/my/del/collection/"
+//#define DeleteCollectURL @"http://dipaiapp.replays.net/app/my/del/collection/"
 #define DeleteCollectURL @"http://dpapp.replays.net/app/my/del/collection/"
 
 // 获取个人账户接口
-//#define AccountURL @"http://app.dipai.tv/sign/app_istration"
+//#define AccountURL @"http://dipaiapp.replays.net/sign/app_istration"
 #define AccountURL @"http://dpapp.replays.net/sign/app_istration"
 // 修改用户信息接口
-//#define ChangeAccountURL @"http://app.dipai.tv/sign/update_userinfo"
+//#define ChangeAccountURL @"http://dipaiapp.replays.net/sign/update_userinfo"
 #define ChangeAccountURL @"http://dpapp.replays.net/sign/update_userinfo"
 //  手机注册获取验证码接口
-//#define SecurityCodeURL @"http://app.dipai.tv/sign/verification"
+//#define SecurityCodeURL @"http://dipaiapp.replays.net/sign/verification"
 #define SecurityCodeURL @"http://dpapp.replays.net/sign/verification"
 // 绑定手机接口
-//#define AddPhoURL @"http://app.dipai.tv/sign/binding_phone"
+//#define AddPhoURL @"http://dipaiapp.replays.net/sign/binding_phone"
 #define AddPhoURL @"http://dpapp.replays.net/sign/binding_phone"
 // 微信绑定
-//#define AddWeixin @"http://app.dipai.tv/Weixin/binding_weixin"
+//#define AddWeixin @"http://dipaiapp.replays.net/Weixin/binding_weixin"
 #define AddWeixin @"http://dpapp.replays.net/Weixin/binding_weixin"
 
 

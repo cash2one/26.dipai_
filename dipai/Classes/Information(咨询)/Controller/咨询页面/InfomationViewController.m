@@ -194,7 +194,7 @@
         detailVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:detailVC animated:YES];
         
-    }else if ([url isEqualToString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]){
+    }else if ([url isEqualToString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]){   // 跳转到AppStore中
         
         [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]];
     }
@@ -223,6 +223,8 @@
         // 赛事页的数组
         if (tournamentModelArr.count > 1) {
             NSLog(@"没有赛事");
+            [self.tournamentArr removeAllObjects];
+//            [self.tournamentArr addObjectsFromArray:tournamentModelArr];
         }else{  // 有赛事
             NSLog(@"有赛事");
             [self.tournamentArr removeAllObjects];
@@ -316,7 +318,7 @@
         // 结束刷新
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
-        [SVProgressHUD showErrorWithStatus:@"网络有问题"];
+        [SVProgressHUD showErrorWithStatus:@"网络不通畅"];
     }
 }
 

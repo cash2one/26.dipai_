@@ -331,20 +331,38 @@
 - (void)setData{
     
     // 设置评论数
-    NSLog(@"---发表评论数---%@", _model.commentNumber);
-    if ([_model.commentNumber integerValue] >= 100) {
-        _bottomView.commentsLbl.text = @"99+";
-    } else{
-        if ([_model.commentNumber integerValue] == 0) {
-            _bottomView.commentsLbl.hidden = YES;
-        }else{
-            _bottomView.commentsLbl.text = _model.commentNumber;
-        }
+//    NSLog(@"---发表评论数---%@", _model.commentNumber);
+    
+    NSInteger commentNum = _model.commentNumber.integerValue;
+//    NSLog(@"%lu", commentNum);
+    if (commentNum > 0) {
         
+        _bottomView.commentsLbl.hidden = NO;
+        if (commentNum >= 100) {
+             _bottomView.commentsLbl.text = @"99+";
+        }else{
+            
+             _bottomView.commentsLbl.text = _model.commentNumber;
+        }
+    }else{
+    
+        _bottomView.commentsLbl.hidden = YES;
     }
+//    if ([_model.commentNumber integerValue] >= 100) {
+//        _botomView.hidden = NO;
+//        _bottomView.commentsLbl.text = @"99+";
+//    } else{
+//        if ([_model.commentNumber integerValue] == 0) {
+//            _bottomView.commentsLbl.hidden = YES;
+//        }else{
+//            _botomView.hidden = NO;
+//            _bottomView.commentsLbl.text = _model.commentNumber;
+//        }
+//        
+//    }
     // 判断收藏按钮的状态
     
-    NSLog(@"---收藏的状态---%@", _model.is_collection);
+//    NSLog(@"---收藏的状态---%@", _model.is_collection);
     if ([_model.is_collection isEqualToString:@"1"]) {
         _bottomView.collectionBtn.selected = YES;
     } else{

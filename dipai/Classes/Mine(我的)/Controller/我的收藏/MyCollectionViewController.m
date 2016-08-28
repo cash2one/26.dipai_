@@ -361,7 +361,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         CGFloat h2 = rect2.size.height;
         // 帖子图片
         CGFloat h3 = 80.0*IPHONE6_H_SCALE;
-        if (collectModel.covers) {  // 有图片的情况下
+        if (collectModel.covers && collectModel.covers.count > 0) {  // 有图片的情况下
                         
             return h1 + h2 + 74*IPHONE6_H_SCALE + h3 + 13 * IPHONE6_H_SCALE;
         }else{  // 没有图片的情况下

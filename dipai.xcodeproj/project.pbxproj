@@ -260,6 +260,7 @@
 		C1DC61481D0E839D00217A38 /* MoreVideosCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DC61471D0E839D00217A38 /* MoreVideosCell.m */; };
 		C1DC614C1D0EA41E00217A38 /* AlbumVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DC614B1D0EA41E00217A38 /* AlbumVideoModel.m */; };
 		C1DE5E211D1BB4B700F4B984 /* LSPicturesView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DE5E201D1BB4B700F4B984 /* LSPicturesView.m */; };
+		C1DF8CC71D65A69400F99509 /* UIImage+extend.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DF8CC61D65A69400F99509 /* UIImage+extend.m */; };
 		C1DFC1281D18DB8C00DDBC94 /* HeaderViewInMatch.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DFC1271D18DB8C00DDBC94 /* HeaderViewInMatch.m */; };
 		C1DFC12C1D19121300DDBC94 /* MatchingHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DFC12B1D19121300DDBC94 /* MatchingHeader.m */; };
 		C1DFC1301D19255700DDBC94 /* MatchingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DFC12F1D19255700DDBC94 /* MatchingModel.m */; };
@@ -888,6 +889,8 @@
 		C1DC614B1D0EA41E00217A38 /* AlbumVideoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumVideoModel.m; sourceTree = "<group>"; };
 		C1DE5E1F1D1BB4B700F4B984 /* LSPicturesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSPicturesView.h; sourceTree = "<group>"; };
 		C1DE5E201D1BB4B700F4B984 /* LSPicturesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSPicturesView.m; sourceTree = "<group>"; };
+		C1DF8CC51D65A69400F99509 /* UIImage+extend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+extend.h"; sourceTree = "<group>"; };
+		C1DF8CC61D65A69400F99509 /* UIImage+extend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+extend.m"; sourceTree = "<group>"; };
 		C1DFC1261D18DB8C00DDBC94 /* HeaderViewInMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeaderViewInMatch.h; sourceTree = "<group>"; };
 		C1DFC1271D18DB8C00DDBC94 /* HeaderViewInMatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeaderViewInMatch.m; sourceTree = "<group>"; };
 		C1DFC12A1D19121300DDBC94 /* MatchingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchingHeader.h; sourceTree = "<group>"; };
@@ -1620,6 +1623,7 @@
 		C1212E381CCDAA6200F76D4E /* Lib */ = {
 			isa = PBXGroup;
 			children = (
+				C1DF8CC41D65A69400F99509 /* 大左给的image */,
 				C1C849D61D464E1900C88695 /* msyh.ttf */,
 				C1CC40781D3A278800C12B83 /* UMessage_Sdk_1.1.0 */,
 				C1AB7EF11D222C140029A987 /* 获取网络图片大小 */,
@@ -3158,6 +3162,16 @@
 			path = "View/LSPicturesView(相册视图)";
 			sourceTree = "<group>";
 		};
+		C1DF8CC41D65A69400F99509 /* 大左给的image */ = {
+			isa = PBXGroup;
+			children = (
+				C1DF8CC51D65A69400F99509 /* UIImage+extend.h */,
+				C1DF8CC61D65A69400F99509 /* UIImage+extend.m */,
+			);
+			name = "大左给的image";
+			path = "../../../../../../2.第三方库/大左给的image";
+			sourceTree = "<group>";
+		};
 		C1DFC1221D18D8BC00DDBC94 /* HeaderView(赛事详情的头视图) */ = {
 			isa = PBXGroup;
 			children = (
@@ -4157,6 +4171,7 @@
 				C125A4001D17EE220092AEA9 /* MatchModel.m in Sources */,
 				C1E5F7DC1CEC5503008A8A97 /* MJChiBaoZiHeader.m in Sources */,
 				C1EF66861CF70D6100F61A77 /* UIButton+CountDown.m in Sources */,
+				C1DF8CC71D65A69400F99509 /* UIImage+extend.m in Sources */,
 				C1E5F80E1CEC5667008A8A97 /* MJRefreshHeader.m in Sources */,
 				C19C7DCC1CFE74A3008F3ECF /* VideoViewController.m in Sources */,
 				C13365041CFD3D0100E2719C /* SettingCell.m in Sources */,
@@ -4532,7 +4547,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "2314c374-3fea-4dd0-b207-193a4360fa78";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -4554,8 +4569,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Haiyan Zhu (C4TH2R9E72)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Haiyan Zhu (C4TH2R9E72)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Beijing Youshiguang Culture Communication Co., Ltd. (XJL3Q5Y9Q6)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Beijing Youshiguang Culture Communication Co., Ltd. (XJL3Q5Y9Q6)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -4570,7 +4585,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "6bbbfbc2-741c-49fd-b721-1946a6a9fdb7";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -4605,7 +4620,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zw.youshiguang;
 				PRODUCT_NAME = Dipai;
-				PROVISIONING_PROFILE = "33e33cd3-9ccd-456a-aac3-1a92f8683e80";
+				PROVISIONING_PROFILE = "2314c374-3fea-4dd0-b207-193a4360fa78";
 			};
 			name = Debug;
 		};
@@ -4614,8 +4629,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Haiyan Zhu (C4TH2R9E72)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Haiyan Zhu (C4TH2R9E72)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Beijing Youshiguang Culture Communication Co., Ltd. (XJL3Q5Y9Q6)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Beijing Youshiguang Culture Communication Co., Ltd. (XJL3Q5Y9Q6)";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4638,7 +4653,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zw.youshiguang;
 				PRODUCT_NAME = Dipai;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "6bbbfbc2-741c-49fd-b721-1946a6a9fdb7";
 			};
 			name = Release;
 		};

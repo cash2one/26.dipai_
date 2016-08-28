@@ -1016,8 +1016,10 @@
 
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+//        NSLog(@"%@", responseObject);
         if (![responseObject[@"data"] isKindOfClass:[NSNull class]]) {
             NSArray * dataArr = responseObject[@"data"];
+//            NSLog(@"%@", dataArr);
             // 字典数组转模型数组
             NSArray * postModelArr = [PostsModel objectArrayWithKeyValuesArray:dataArr];
             if (success) {

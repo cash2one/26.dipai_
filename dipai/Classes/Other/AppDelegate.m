@@ -219,7 +219,7 @@
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-//    NSLog(@"%@", url);
+    NSLog(@"weixin:%@", url);
     // 微信登录
     if ([url.host isEqualToString:@"oauth"]) {
         
@@ -236,7 +236,11 @@
     }
     
 }
+
+// 如果第三方程序向微信发送了sendReq的请求，那么onResp会被回调。sendReq请求调用后，会切到微信终端程序界面。
 - (void)onResp: (BaseReq *) resp{
+    
+    NSLog(@"onResP:%s", __func__);
     if ([resp isKindOfClass:[SendAuthResp class]]) {
         
         SendAuthResp *aresp = (SendAuthResp *)resp;
@@ -251,6 +255,8 @@
         }
     }
 }
+
+
 
 
 #pragma mark --- 设置腾讯云播放器

@@ -14,6 +14,8 @@
 #import "UIButton+CountDown.h"
 // 修改密码页面
 #import "ResetPasswordViewController.h"
+#import "SVProgressHUD.h"
+#import "Masonry.h"
 @interface GetPasswordViewController ()
 {
     NSTimer * _timer;
@@ -93,7 +95,7 @@
     LSTextField * phoneNum = [[LSTextField alloc] initWithFrame:CGRectMake(numX, numY, numW, numH)];
     //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"手机号";
-    phoneNum.font = [UIFont systemFontOfSize:17];
+    phoneNum.font = Font17;
     [self.view addSubview:phoneNum];
     _phoneNum = phoneNum;
     
@@ -112,7 +114,7 @@
     CGFloat codeW = line1W;
     CGFloat codeH = numH;
     LSTextField * code = [[LSTextField alloc] initWithFrame:CGRectMake(codeX, codeY, codeW, codeH)];
-    code.font = [UIFont systemFontOfSize:17];
+    code.font = Font17;
     code.myPlaceholder = @"验证码";
     [self.view addSubview:code];
     _code = code;
@@ -128,21 +130,38 @@
     line.frame = CGRectMake(lineX, liney, lineW, lineH);
     [code addSubview:line];
     _line = line;
+    
+    UIView * btnView = [[UIView alloc] init];
+//    btnView.backgroundColor = [UIColor redColor];
+    [self.view addSubview:btnView];
+    [btnView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(line.mas_right);
+        make.top.equalTo(self.view.mas_top);
+        make.right.equalTo(self.view.mas_right);
+        make.bottom.equalTo(code.mas_bottom);
+    }];
+    
     // 获取验证码按钮
     UIButton * getCodeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    getCodeBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+    getCodeBtn.titleLabel.font = Font15;
     getCodeBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     //    getCodeBtn.backgroundColor = [UIColor blackColor];
     [getCodeBtn setTitle:@"获取验证码" forState:UIControlStateNormal];
     [getCodeBtn setTitleColor:[UIColor colorWithRed:228 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1] forState:UIControlStateNormal];
-    CGFloat getCodeX = CGRectGetMaxX(line.frame);
-    CGFloat getCodeY = 0;
-    CGFloat getCodeW = codeW - CGRectGetMaxX(line.frame);
-    CGFloat getCodeH = codeH;
-    getCodeBtn.frame = CGRectMake(getCodeX, getCodeY, getCodeW, getCodeH);
+//    CGFloat getCodeX = CGRectGetMaxX(line.frame);
+//    CGFloat getCodeY = 0;
+//    CGFloat getCodeW = codeW - CGRectGetMaxX(line.frame);
+//    CGFloat getCodeH = codeH;
+//    getCodeBtn.frame = CGRectMake(getCodeX, getCodeY, getCodeW, getCodeH);
     //    getCodeBtn.backgroundColor = [UIColor blackColor];
     [getCodeBtn addTarget:self action:@selector(getCodeAction) forControlEvents:UIControlEventTouchUpInside];
-    [code addSubview:getCodeBtn];
+    [btnView addSubview:getCodeBtn];
+    [getCodeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(btnView.mas_left);
+        make.top.equalTo(code.mas_top);
+        make.bottom.equalTo(code.mas_bottom);
+        make.right.equalTo(code.mas_right);
+    }];
     _getCodeBtn = getCodeBtn;
     
     // 下一步按钮
@@ -180,14 +199,19 @@
     _phone = _phoneNum.text;
     [DataTool postWithStr:SecurityCodeURL parameters:dic success:^(id responseObject) {
         
-        NSLog(@"获取验证码%@", responseObject);
-        NSLog(@"content:%@", responseObject[@"content"]);
+        if ([responseObject[@"content"] isEqualToString:@"success"]) {
+            NSLog(@"获取验证码成功...");
+            [SVProgressHUD showSuccessWithStatus:@"获取成功"];
+            [_getCodeBtn setTitleColor:Color153 forState:UIControlStateNormal];
+            [_getCodeBtn startWithTime:10 title:@"重新发送" countDownTitle:@"s" mainColor:[UIColor whiteColor] countColor:[UIColor whiteColor]];
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:responseObject[@"content"]];
+        }
     } failure:^(NSError * error) {
         NSLog(@"获取验证码出错%@", error);
     }];
 
-    [_getCodeBtn setTitleColor:Color153 forState:UIControlStateNormal];
-    [_getCodeBtn startWithTime:10 title:@"重新发送" countDownTitle:@"s" mainColor:[UIColor whiteColor] countColor:[UIColor whiteColor]];
     
 }
 

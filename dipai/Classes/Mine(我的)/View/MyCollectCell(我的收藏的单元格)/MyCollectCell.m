@@ -623,7 +623,16 @@
     CGFloat detailW = WIDTH - detailX - Margin20 * IPHONE6_W_SCALE;
     NSMutableDictionary * detailDic = [NSMutableDictionary dictionary];
     detailDic[NSFontAttributeName] = Font13;
-    NSString * detail = _collectionModel.descriptioN;
+    
+    NSString * detail;
+    if (_collectionModel.descriptioN.length > 30) {
+        
+        detail = [_collectionModel.descriptioN substringToIndex:30];
+    }else{
+        
+        detail = _collectionModel.descriptioN;
+    }
+    
     CGRect detailRect = [detail boundingRectWithSize:CGSizeMake(detailW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:detailDic context:nil];
     _detailLbl.frame = (CGRect){{detailX,detailY},detailRect.size};
     _detailLbl.text = detail;

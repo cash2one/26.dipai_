@@ -11,6 +11,15 @@
 #import "ReplyModel.h"
 
 #import "UIImageView+getSize.h"
+
+@interface ReplyFrameModel()
+
+{
+//    CGSize size;
+}
+
+@end
+
 @implementation ReplyFrameModel
 
 - (void)setReplyModel:(ReplyModel *)replyModel{
@@ -130,6 +139,17 @@
 //    CGFloat width = 0;
     for (int i = 0; i < count; i ++) {
         CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_replyModel.picname[i]]];
+        if (size.width < 1.f) {
+            UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_replyModel.picname[i]]]];
+            size = img.size;
+        }
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_replyModel.picname[i]]]];
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                size = img.size;
+//            });
+//            
+//        });
         CGFloat h;    // 图片的高度
         CGFloat w; // 图片的宽度
         w = size.width * IPHONE6_W_SCALE;

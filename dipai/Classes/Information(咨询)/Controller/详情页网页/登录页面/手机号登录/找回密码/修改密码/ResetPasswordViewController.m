@@ -82,9 +82,10 @@
     LSTextField * phoneNum = [[LSTextField alloc] initWithFrame:CGRectMake(numX, numY, numW, numH)];
     //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"新密码";
-    phoneNum.font = [UIFont systemFontOfSize:17];
+    phoneNum.font = Font17;
     [self.view addSubview:phoneNum];
     _phoneNum = phoneNum;
+    _phoneNum.secureTextEntry = YES;
     
     UILabel * newLength = [[UILabel alloc] init];
     newLength.text = @"密码长度为6-15位";
@@ -113,10 +114,11 @@
     CGFloat codeW = line1W;
     CGFloat codeH = numH;
     LSTextField * code = [[LSTextField alloc] initWithFrame:CGRectMake(codeX, codeY, codeW, codeH)];
-    code.font = [UIFont systemFontOfSize:17];
+    code.font = Font17;
     code.myPlaceholder = @"确认密码";
     [self.view addSubview:code];
     _code = code;
+    _code.secureTextEntry = YES;
     
     UILabel * sureLength = [[UILabel alloc] init];
     sureLength.text = @"密码长度为6-15位";

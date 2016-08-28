@@ -106,7 +106,7 @@
     phoneNum.delegate = self;
     //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"手机号";
-    phoneNum.font = [UIFont systemFontOfSize:17];
+    phoneNum.font = Font17;
     [self.view addSubview:phoneNum];
     _phoneNum = phoneNum;
     
@@ -126,7 +126,7 @@
     CGFloat codeH = numH;
     LSTextField * code = [[LSTextField alloc] initWithFrame:CGRectMake(codeX, codeY, codeW, codeH)];
     code.delegate = self;
-    code.font = [UIFont systemFontOfSize:17];
+    code.font = Font17;
     code.myPlaceholder = @"验证码";
     [self.view addSubview:code];
     _code = code;
@@ -144,7 +144,7 @@
     _line = line;
     // 获取验证码按钮
     UIButton * getCodeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    getCodeBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+    getCodeBtn.titleLabel.font = Font15;
     getCodeBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     //    getCodeBtn.backgroundColor = [UIColor blackColor];
     [getCodeBtn setTitle:@"获取验证码" forState:UIControlStateNormal];

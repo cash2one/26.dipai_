@@ -352,10 +352,11 @@
             NSLog(@"没有网络");
             [_tableView1.header endRefreshing];
             [_tableView2.header endRefreshing];
-            [SVProgressHUD showErrorWithStatus:@"网络有问题"];
+            [SVProgressHUD showErrorWithStatus:@"网络不通畅"];
             _network = nil;
         }else{
             NSLog(@"有网络");
+            
             _network = @"yes";
             [DataTool getCommunityDataWithStr:ForumURL parameters:nil success:^(id responseObject) {
                 [_tableView1.header endRefreshing];
@@ -427,6 +428,8 @@
                 //            NSLog(@"没有登录...");
                 _imageV.hidden = NO;
                 _loginBtn.hidden = NO;
+                [self.dataSource2 removeAllObjects];
+                
             }else{
                 _imageV.hidden = YES;
                 _loginBtn.hidden = YES;

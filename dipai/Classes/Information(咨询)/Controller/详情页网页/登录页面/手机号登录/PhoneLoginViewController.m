@@ -79,7 +79,7 @@
     phoneNum.delegate = self;
     //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"手机号";
-    phoneNum.font = [UIFont systemFontOfSize:17];
+    phoneNum.font = Font17;
     [self.view addSubview:phoneNum];
     _phoneNum = phoneNum;
     
@@ -99,7 +99,7 @@
     CGFloat codeH = numH;
     LSTextField * code = [[LSTextField alloc] initWithFrame:CGRectMake(codeX, codeY, codeW, codeH)];
     code.secureTextEntry = YES;
-    code.font = [UIFont systemFontOfSize:17];
+    code.font = Font17;
     code.myPlaceholder = @"密码";
     [self.view addSubview:code];
     _code = code;

@@ -311,7 +311,7 @@
 //    loginLbl.backgroundColor = [UIColor redColor];
     [headerView addSubview:loginLbl];
     loginLbl.textColor = Color178;
-    loginLbl.font = [UIFont systemFontOfSize:17];
+    loginLbl.font = Font17;
     loginLbl.textAlignment = NSTextAlignmentCenter;
     [loginLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view.mas_centerX);

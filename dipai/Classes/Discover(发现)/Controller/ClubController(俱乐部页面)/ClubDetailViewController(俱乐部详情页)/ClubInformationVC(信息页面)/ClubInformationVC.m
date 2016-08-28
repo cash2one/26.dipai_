@@ -103,7 +103,7 @@
 }
 #pragma mark --- addTableViewHeaderView
 - (void)addTableViewHeaderView{
-    UIImageView * headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 330*0.5*IPHONE6_H_SCALE)];
+    UIImageView * headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 330*0.5*IPHONE6_W_SCALE)];
     headerView.userInteractionEnabled = YES;
     UILabel * picLbl = [[UILabel alloc] init];
     picLbl.backgroundColor = [UIColor colorWithRed:0 / 255.f green:0 / 255.f blue:0 / 255.f alpha:0.7];

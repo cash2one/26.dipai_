@@ -30,6 +30,9 @@
 #import "SectionModel.h"
 
 #import "DataTool.h"
+
+
+#import "UIImage+extend.h"
 @interface ReplyPostVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte>
 
 @end
@@ -221,8 +224,9 @@
         
         for (int i = 0; i < self.imagesArr.count; i ++) {
             UIImage * image = self.imagesArr[i];
-//            NSData * data = UIImageJPEGRepresentation(image, 1.0);
-            NSData * data = UIImagePNGRepresentation(image);
+            UIImage * image1 = [image rotateImage];
+//            NSData * data = UIImageJPEGRepresentation(image, 0.5);
+            NSData * data = UIImagePNGRepresentation(image1);
             NSString * name = [NSString stringWithFormat:@"myfile%d", i];
             NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
             NSString * mimeType = [NSString stringWithFormat:@"image/png"];

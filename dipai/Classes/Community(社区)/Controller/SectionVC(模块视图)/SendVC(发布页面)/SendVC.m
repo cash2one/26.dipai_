@@ -29,6 +29,8 @@
 #import "SectionModel.h"
 
 #import "DataTool.h"
+
+#import "UIImage+extend.h"
 @interface SendVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte>
 
 {
@@ -310,7 +312,6 @@
     /*
      myfile（图片数组），title(标题),content(内容)
      */
-    
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"myfile"] = nil;
     dic[@"title"] = _field.text;
@@ -321,7 +322,7 @@
     NSLog(@"%@", sectionModel.iD);
     
     NSString * url = @"http://dpapp.replays.net/app/add/forum/";
-//    NSString * url = @"http://app.dipai.tv/app/add/forum/";
+//    NSString * url = @"http://dipaiapp.replays.net/app/add/forum/";
     url = [url stringByAppendingString:sectionModel.iD];
     
     [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
@@ -336,7 +337,8 @@
         for (int i = 0; i < self.imagesArr.count; i ++) {
             UIImage * image = self.imagesArr[i];
 //            NSData * data = UIImageJPEGRepresentation(image, 0.3);
-            NSData * data = UIImagePNGRepresentation(image);
+            UIImage * image1 = [image rotateImage];
+            NSData * data = UIImagePNGRepresentation(image1);
             NSString * name = [NSString stringWithFormat:@"myfile%d", i];
             NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
             NSString * mimeType = [NSString stringWithFormat:@"image/png"];
@@ -353,6 +355,20 @@
         
         NSLog(@"上传图片失败：%@", error);
     }];
+    
+    
+    /*
+     [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+     
+     [request setHTTPBody:body];
+     
+     NSHTTPURLResponse *urlResponese = nil;
+     NSError *error = [[NSError alloc]init];
+     NSData* resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponese error:&error];
+     
+     NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:resultData options:NSJSONReadingMutableLeaves error:nil];
+     */
+    
     
 }
 // 发送文字
@@ -510,7 +526,7 @@
     if (self.imagesArr.count <9) {
         _imagePicker = [[UIImagePickerController alloc] init];
         _imagePicker.delegate = self;
-//        _imagePicker.allowsEditing = YES;
+        _imagePicker.allowsEditing = NO;
         _imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
         [self presentViewController:_imagePicker animated:YES completion:nil];
     }else{

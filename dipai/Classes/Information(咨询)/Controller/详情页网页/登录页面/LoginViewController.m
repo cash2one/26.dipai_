@@ -18,7 +18,8 @@
 #import "AppDelegate.h"
 
 #import "DataTool.h"
-@interface LoginViewController ()<PhoneLoginViewControllerDelegate, RegisterViewControllerDelegate, AppDelegate>
+#import "SVProgressHUD.h"
+@interface LoginViewController ()<PhoneLoginViewControllerDelegate, RegisterViewControllerDelegate, AppDelegate, WXApiDelegate>
 
 @end
 
@@ -31,6 +32,8 @@
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:YES];
     self.navigationController.navigationBarHidden = NO;
+    
+    [SVProgressHUD dismiss];
 }
 
 - (void)viewDidLoad {
@@ -130,16 +133,23 @@
     //第三方向微信终端发送一个SendAuthReq消息结构
     [WXApi sendReq:req];
     
+    [WXApi sendAuthReq:req viewController:self delegate:self];
+    
     // 成功利用了AppDelegate
     AppDelegate * delegate = [[UIApplication sharedApplication] delegate];
     delegate.delegate = self;
 }
 - (void)dismissWithStr:(NSString *)str{
     // 给服务器发送code
-//    NSString * url = @"http://app.dipai.tv/Weixin/wx_code";
+    
+    NSLog(@"给自己的服务器发送code：%s", __func__);
+    
+//    NSString * url = @"http://dipaiapp.replays.net/Weixin/wx_code";
     NSString * url = @"http://dpapp.replays.net/Weixin/wx_code";
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"code"] = str;
+    
+    [SVProgressHUD showWithStatus:@"请稍候..."];
     [DataTool sendCodeWithStr:url parameters:dic success:^(id responseObject) {
         
         NSLog(@"发送code成功%@,", responseObject);
@@ -150,6 +160,7 @@
         NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
         [userDefaults setObject:data forKey:WXUser];
         [userDefaults synchronize];
+        [SVProgressHUD dismiss];
         [self dismissViewControllerAnimated:YES completion:nil];
     } failure:^(NSError * error) {
         

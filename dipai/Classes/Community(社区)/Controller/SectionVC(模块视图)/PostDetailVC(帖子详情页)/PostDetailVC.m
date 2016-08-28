@@ -46,6 +46,7 @@
 {
     
     CGFloat _h;
+    NSString * _noFirstIn;  // 是否第一次进入的标识
 }
 @property (nonatomic, strong) UITableView * tableView;
 /**
@@ -84,7 +85,13 @@
     [super viewWillAppear:YES];
     
 //    [self.tableView.header beginRefreshing];
-    [self loadNewData];
+    if (_noFirstIn && _noFirstIn.length > 0) {
+        //        [self loadNewData];
+        [self loadMoreData];
+    }else{
+        NSLog(@"这是第一次进入...");
+    }
+    _noFirstIn = @"noFirstIn";
 }
 
 - (void)viewDidLoad {

@@ -84,7 +84,7 @@
     //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.text = self.name;
 //    phoneNum.myPlaceholder = userModel.username;
-    phoneNum.font = [UIFont systemFontOfSize:17];
+    phoneNum.font = Font17;
     [self.view addSubview:phoneNum];
     _phoneNum = phoneNum;
     [phoneNum becomeFirstResponder];
