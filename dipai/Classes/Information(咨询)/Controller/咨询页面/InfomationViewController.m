@@ -100,14 +100,22 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
+    
+//    [MobClick beginLogPageView:@"InfomationViewController"];
+    
 //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
+    
+//    [MobClick endLogPageView:@"InfomationViewController"];
+    
 //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
     self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
@@ -125,6 +133,7 @@
 //            printf( "\tFont: %s \n", [fontName UTF8String] );
 //        }
 //    }
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
 
     AppDelegate * delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     delegate.delegate = self;
@@ -397,9 +406,12 @@
 {
     
     NSLog(@"点击行数%lu", indexPath.row);
-    if (self.tournamentArr.count > 0) {
-        if (indexPath.row == 0) {   // 如果有赛事
+    if (self.tournamentArr.count > 0) { // 如果有推荐赛事
+        
+        if (indexPath.row == 0) {   // 如果点击的是推荐赛事
             TournamentModel * model = self.tournamentArr[0];
+            
+            
             if ([model.lurl rangeOfString:@"club/view/5"].location != NSNotFound) {
                 // 赛事详情页分为两种情况：1.有直播  2.没有直播
                 MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
@@ -410,8 +422,9 @@
                 NSLog(@"%@", model.lurl);
                 NSLog(@"没有赛事");
             }
+            
 
-        } else
+        } else  // 如果点击的不是推荐赛事
         {
             NewsListModel * model = self.newslistArr[indexPath.row -1];
             if ([model.type isEqualToString:@"11"]) {
@@ -427,10 +440,12 @@
             
         }
         
-    } else  // 如果没有赛事
+    } else  // 如果没有推荐赛事
     {
+        NSLog(@"没有推荐赛事..");
         NewsListModel * model = self.newslistArr[indexPath.row];
-        [self turnPageToDetailView:model.url withNewsListModel:model];
+//        [self turnPageToDetailView:model.url withNewsListModel:model];
+        [self turnPageToDetailView:model.url];
     }
    
 }
@@ -469,16 +484,17 @@
 #pragma mark ------- 跳转到详情页网页
 - (void)turnPageToDetailView:(NSString *)url
 {
+    
+//    NSLog(@"%@", url);
     // 详情页：1:资讯页 2:图集页  3:视频页 4:赛事页  5:
     if ([url rangeOfString:@"art/view/11"].location != NSNotFound) {
-        
         // 跳转到视频专辑页
         VideoViewController * videoVC = [[VideoViewController alloc] init];
         videoVC.url = url;
         videoVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:videoVC animated:YES];
     }else if ([url rangeOfString:@"art/view/2"].location != NSNotFound || [url rangeOfString:@"art/view/4"].location != NSNotFound){
-        // 跳转到资讯页面
+        // 跳转到资讯页面或图集页面
         
         DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
         detailVC.url = url;
@@ -520,9 +536,7 @@
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     
-    NSLog(@"111");
     return UIStatusBarStyleLightContent;
-    NSLog(@"222");
 }
 
 @end

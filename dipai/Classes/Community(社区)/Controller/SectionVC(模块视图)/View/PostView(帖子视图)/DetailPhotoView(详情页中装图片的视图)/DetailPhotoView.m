@@ -61,7 +61,7 @@
 - (void)tapClick:(UITapGestureRecognizer *)tap
 {
     
-    NSLog(@"/.....");
+//    NSLog(@"/.....");
     
     UIImageView *tapView = (UIImageView *)tap.view;
     // CZPhoto -> MJPhoto
@@ -106,6 +106,9 @@
         if (i < _picArr.count) {
             // 显示
             imageView.hidden = NO;
+//            if (picArr.count > 0) {
+//                [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
+//            }
 
         }else
         {
@@ -130,22 +133,17 @@
             CGFloat w; // 图片的宽度
 //            NSLog(@"%@", _picArr[i]);
             CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_picArr[i]]];
-            if (size.width < 1.f) {
+            
+//            NSLog(@"宽：%f   %f", size.width, size.height);
+            
+            if (size.width <= 0.f || size.height <= 0.f) {
                  UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_picArr[i]]]];
                 size = img.size;
             }
-//            CGSize size;
-//            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//                UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_picArr[i]]]];
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    size = img.size;
-//                });
-//                
-//            });
             h = size.height * IPHONE6_W_SCALE;
             w = size.width * IPHONE6_W_SCALE;
 //            NSLog(@"%@", _picArr[i]);
-            NSLog(@"%f---%f", h, w);
+//            NSLog(@"%f---%f", h, w);
             
             CGFloat scale = 1.0;
             if (w == 0) {   // 如果获取不到图片的大小
@@ -172,7 +170,7 @@
 
             height = height + h + 8*IPHONE6_H_SCALE;
 //            imageV.backgroundColor = [UIColor redColor];
-            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
+            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"placeholder"]];
             
         }
     }

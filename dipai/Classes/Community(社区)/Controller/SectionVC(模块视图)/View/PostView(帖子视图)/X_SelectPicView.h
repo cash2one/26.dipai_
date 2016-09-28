@@ -19,6 +19,8 @@
 @property (nonatomic, strong) NSArray *dataSource;
 @property (nonatomic, copy) void(^Commplete)(void);
 
+@property (nonatomic, copy) void(^GetMyPoker)(void);
+
 + (X_SelectPicView *)shareSelectPicView;
 
 @end
@@ -27,5 +29,9 @@
 - (void)didSelectPicView:(X_SelectPicView *)view atIndex:(NSInteger)index;
 
 - (void)deletePicView:(X_SelectPicView *)view atIndex:(NSInteger)index;
+
+- (void)didSelectPoker:(X_SelectPicView *)view;
+// 图片位置发生变化的时候触发此方法
+- (void)indexOfPicsChanged:(NSMutableArray *)imageArr;
 
 @end

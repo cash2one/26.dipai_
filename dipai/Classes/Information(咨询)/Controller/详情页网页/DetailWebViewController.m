@@ -156,7 +156,9 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
-        
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+    
     // 每次进来的时候都要检测是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
@@ -193,6 +195,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+    
     NSLog(@"跳转到网页详情页的接口：%@", self.url);
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -641,17 +646,21 @@
 }
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     
-    if (scrollView.tag >0 == NO) {
+    NSLog(@"sc.tag:%lu", scrollView.tag);
+    
+//    if (scrollView.tag >0 == NO) {  // scrollView.tag = 0时
         NSInteger numOfPage = ABS(self.scrollView.contentOffset.x / scrollView.frame.size.width);
         
         if (numOfPage != self.currentPage-1) {
             
             UIScrollView *scro = [self.arr_scro objectAtIndex:self.currentPage-1];
             scro.contentSize = CGSizeMake( WIDTH , Height126 );
-            scro.zoomScale = 1;
+//            scro.zoomScale = 1;
         }
         self.currentPage = (int)(numOfPage + 1);
         _pageLbl.text = [NSString stringWithFormat:@"%d/%ld",_currentPage , self.picsArr.count];
+    
+    NSLog(@"currentPage:%d", self.currentPage);
         
         // 标题,标题内容在变，要不断地调用此方法
         NSArray * arr = [self.picsArr objectAtIndex:numOfPage];
@@ -677,7 +686,7 @@
         CGRect contentRect = [contentStr boundingRectWithSize:CGSizeMake(contentW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil];
         _contentLbl.frame = (CGRect){{contentX, contentY}, contentRect.size};
         _contentLbl.text = contentStr;
-    }
+//    }
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView{
@@ -721,10 +730,10 @@
 {
     
     UIImageView *imgView;
-//    NSLog(@"%lu---%d", scrollView.tag, self.currentPage);
-    if(scrollView.tag == self.currentPage){
+    NSLog(@"%lu---%d", scrollView.tag, _currentPage);
+    if(scrollView.tag == _currentPage){
         //取出 当前缩放图 的 未缩放的frame
-         imgView = [self.arr_viewImg objectAtIndex:self.currentPage-1];
+         imgView = [self.arr_viewImg objectAtIndex:_currentPage-1];
         
     }
     
@@ -737,6 +746,10 @@
     [_scBack removeFromSuperview];
     [_pageLbl removeFromSuperview];
     [_botomView removeFromSuperview];
+    
+    [self.arr_scro removeAllObjects];
+    [self.arr_imgF removeAllObjects];
+    [self.arr_viewImg removeAllObjects];
 
 }
 
@@ -764,9 +777,15 @@
     NSLog(@"加载完成...");
 
 }
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error{
-    [SVProgressHUD showErrorWithStatus:@"加载失败"];
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error{
+    
+     [SVProgressHUD showErrorWithStatus:@"加载失败"];
 }
+
+//- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error{
+//   
+//}
 // 设置状态栏的颜色为白色
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
@@ -988,11 +1007,14 @@
     UIImage *img = [UIImage imageWithData:data];
 //    NSLog(@"img:%@", img);
     if (!img) {
-        img = [UIImage imageNamed:@"40pt@2x"];
+        img = [UIImage imageNamed:@"shareLogo"];
     }
+    
+    [UMSocialData defaultData].extConfig.title = _model.title;
+    
     // 友盟分享代码，复制、粘贴
     [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"
-                                      shareText:[NSString stringWithFormat:@"%@ %@",_model.title,_model.descriptioN]
+                                      shareText:[NSString stringWithFormat:@"%@",_model.descriptioN]
                                      shareImage:img
                                 shareToSnsNames:@[UMShareToSina ,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]
                                        delegate:self]; // 分享到朋友圈、微信好友、QQ空间、QQ好友

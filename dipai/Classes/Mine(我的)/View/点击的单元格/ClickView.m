@@ -74,6 +74,11 @@
     _textLbl.text = message;
 }
 
+- (void)setW:(NSInteger)w{
+    
+    _w = w;
+    
+}
 
 - (void)layoutSubviews{
     [super layoutSubviews];
@@ -82,6 +87,11 @@
     CGFloat picY = Margin32 * IPHONE6_H_SCALE;
     CGFloat picW = Margin34 * IPHONE6_W_SCALE;
     CGFloat picH = picW;
+    if (_w > 0) {
+        picW = 16 * IPHONE6_W_SCALE;
+        picH = 17 * IPHONE6_H_SCALE;
+    }
+    
 #warning 发现Xcode的一个问题
 //    _pic.frame = CGRectMake(picX, picY, picW, picH);
     _pic.frame = CGRectMake(picX, 16*IPHONE6_H_SCALE, picW, picH);

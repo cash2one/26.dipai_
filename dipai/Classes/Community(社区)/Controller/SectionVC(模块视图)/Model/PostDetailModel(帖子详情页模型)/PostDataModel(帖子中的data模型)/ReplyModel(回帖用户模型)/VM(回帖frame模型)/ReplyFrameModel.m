@@ -139,7 +139,7 @@
 //    CGFloat width = 0;
     for (int i = 0; i < count; i ++) {
         CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_replyModel.picname[i]]];
-        if (size.width < 1.f) {
+        if (size.width <= 0.f || size.height <= 0.f) {
             UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_replyModel.picname[i]]]];
             size = img.size;
         }

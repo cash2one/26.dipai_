@@ -257,6 +257,9 @@
     _textView.numberOfLines = 0;
     
     // 调整行间距
+    
+//    NSLog(@"%@", _dataModel.content);
+    
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:_dataModel.content];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     [paragraphStyle setLineSpacing:6];
@@ -293,7 +296,7 @@
             CGSize size;
 //            NSLog(@"%f", size.height);
             size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_dataModel.imgs[i]]];
-            if (size.width < 1.f) {
+            if (size.width <= 0.f || size.height <= 0.f) {
                 UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_dataModel.imgs[i]]]];
                 size = img.size;
             }

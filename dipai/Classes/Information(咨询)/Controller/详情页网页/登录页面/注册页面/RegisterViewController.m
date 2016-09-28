@@ -67,6 +67,14 @@
 
 @implementation RegisterViewController
 
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -111,6 +119,7 @@
 //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"手机号";
     phoneNum.font = Font17;
+    phoneNum.keyboardType = UIKeyboardTypeNumberPad;
     [self.view addSubview:phoneNum];
     _phoneNum = phoneNum;
     
@@ -272,7 +281,7 @@
 
 #pragma mark --- 对TextField进行监听
 - (void)textFieldChanged{
-    NSLog(@"%@", _phoneNum.text);
+//    NSLog(@"%@", _phoneNum.text);
     // 手机号
     if (_phoneNum.text.length) {
         _phoneNum.hidePlaceHolder = YES;
@@ -330,52 +339,65 @@
 #pragma mark --- 注册事件
 - (void)registerAction{
     
+    // 验证手机号是否合法
     BOOL boo = [self verifyMobile:_phoneNum.text];
+    
     if (boo) {
-        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-        dic[@"phone"] = _phoneNum.text;
-        dic[@"username"] = _name.text;
-        dic[@"password"] = _password.text;
-        dic[@"verify"] = _code.text;
-        //    http://10.0.0.14:8080/app/register?&phone=18730602439&username=liangsen&password=hahh
-        [DataTool postWithStr:RegisterURL parameters:dic success:^(id responsObject) {
-            
-            NSLog(@"注册成功返回的数据%@", responsObject);
-            NSString * content = [responsObject objectForKey:@"content"];
-            NSString * state = [responsObject objectForKey:@"state"];
-            if ([state isEqualToString:@"1"]) {
-                [SVProgressHUD showSuccessWithStatus:@"注册成功"];
+        
+        // 判断昵称是否包含空格
+        NSRange _range = [_name.text rangeOfString:@" "];
+        if (_range.location != NSNotFound) {
+            //有空格
+            [SVProgressHUD showErrorWithStatus:@"昵称不能包含空格"];
+        }else {
+            //没有空格
+            NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+            dic[@"phone"] = _phoneNum.text;
+            dic[@"username"] = _name.text;
+            dic[@"password"] = _password.text;
+            dic[@"verify"] = _code.text;
+            //    http://10.0.0.14:8080/app/register?&phone=18730602439&username=liangsen&password=hahh
+            [DataTool postWithStr:RegisterURL parameters:dic success:^(id responsObject) {
                 
-                NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-                for (NSHTTPCookie * cookie in cookies) {
-                    NSString * name = [cookie name];
-                    NSLog(@"---name---%@", name);
-                    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-                    [defaults setObject:name forKey:Cookie];
-                    [defaults synchronize];
-                    NSString * phone = @"phone";
-                    [defaults setObject:phone forKey:Phone];
+                NSLog(@"注册成功返回的数据%@", responsObject);
+                NSString * content = [responsObject objectForKey:@"content"];
+                NSString * state = [responsObject objectForKey:@"state"];
+                if ([state isEqualToString:@"1"]) {
+                    [SVProgressHUD showSuccessWithStatus:@"注册成功"];
+                    
+                    NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+                    for (NSHTTPCookie * cookie in cookies) {
+                        NSString * name = [cookie name];
+                        NSLog(@"---name---%@", name);
+                        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+                        [defaults setObject:name forKey:Cookie];
+                        [defaults synchronize];
+                        NSString * phone = @"phone";
+                        [defaults setObject:phone forKey:Phone];
+                    }
+                    
+                    if ([self.delegate respondsToSelector:@selector(dismissAfterRegister)]) {
+                        [self.delegate dismissAfterRegister];
+                    } else{
+                        NSLog(@"RegisterViewController的代理没有响应...");
+                    }
+                    
+                    [NSThread sleepForTimeInterval:1.3];
+                    
+                    [self.navigationController popViewControllerAnimated:YES];
+                }else{
+                    
+                    [SVProgressHUD showErrorWithStatus:content];
                 }
                 
-                if ([self.delegate respondsToSelector:@selector(dismissAfterRegister)]) {
-                    [self.delegate dismissAfterRegister];
-                } else{
-                    NSLog(@"RegisterViewController的代理没有响应...");
-                }
                 
-                [NSThread sleepForTimeInterval:1.3];
+            } failure:^(NSError * error) {
                 
-                [self.navigationController popViewControllerAnimated:YES];
-            }else{
+                NSLog(@"注册的错误信息%@", error);
+            }];
             
-                [SVProgressHUD showErrorWithStatus:content];
-            }
-
-            
-        } failure:^(NSError * error) {
-            
-            NSLog(@"注册的错误信息%@", error);
-        }];
+        }
+        
     } else{
         UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"手机号不合法" message:nil preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {

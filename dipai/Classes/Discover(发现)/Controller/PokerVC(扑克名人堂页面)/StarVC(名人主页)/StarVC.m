@@ -128,6 +128,8 @@
 // 个人简介
 @property (nonatomic, strong) UILabel * introduceLbl;
 
+@property (nonatomic, strong) UITextView * introduceText;
+
 /**
  *  登录提示框
  */
@@ -152,6 +154,9 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
     self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
     self.navigationController.navigationBarHidden = YES;    // 隐藏navigationBar
     
@@ -739,49 +744,29 @@
         _showView.image = [UIImage imageNamed:@"shouqi_p"];
         
         
-        // 改变简介的高度
-        NSString * str = _sbModel.data[@"certified"][@"brief"];
-        _introduceLbl.text = str;
-        CGFloat x = 15*IPHONE6_W_SCALE;
-        CGFloat y = 59*IPHONE6_H_SCALE;
-        CGFloat w = WIDTH - 2 * x;
-        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-        dic[NSFontAttributeName] = Font13;
-        CGRect rect = [str boundingRectWithSize:CGSizeMake(w, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
-        _introduceLbl.frame =(CGRect){{x, y},rect.size};
-        
-        CGFloat separateY = CGRectGetMaxY(_introduceLbl.frame) + 19*IPHONE6_H_SCALE;
-        _separate.frame = CGRectMake(0, separateY, WIDTH, 20*IPHONE6_H_SCALE);
-        
-        CGFloat tableY = CGRectGetMaxY(_separate.frame);
-        _tableView1.frame = CGRectMake(0, tableY, WIDTH, HEIGHT-tableY);
+        [_introduceText sizeToFit];
+        CGFloat h = _introduceText.frame.size.height;
+        [UIView animateWithDuration:0.1 animations:^{
+           
+            _tableView1.transform = CGAffineTransformMakeTranslation(0, h-55 * IPHONE6_H_SCALE);
+            _separate.transform = CGAffineTransformMakeTranslation(0, h-55 * IPHONE6_H_SCALE);
+        }];
         
     }else{
         _showLbl.text = @"展开";
         _showView.image = [UIImage imageNamed:@"zhankai_p"];
         
-        // 改变高度
-        NSString * str = _sbModel.data[@"certified"][@"brief"];
-        if (str.length > 100) {
-            str = [str substringToIndex:100];
-        }
-        
-        _introduceLbl.text = str;
         CGFloat x = 15*IPHONE6_W_SCALE;
         CGFloat y = 59*IPHONE6_H_SCALE;
-        CGFloat w = WIDTH - 2 * x;
-        
-        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-        dic[NSFontAttributeName] = Font13;
-        CGRect rect = [str boundingRectWithSize:CGSizeMake(w, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
-        _introduceLbl.frame =(CGRect){{x, y},rect.size};
-        
-        CGFloat separateY = CGRectGetMaxY(_introduceLbl.frame) + 19*IPHONE6_H_SCALE;
-        _separate.frame = CGRectMake(0, separateY, WIDTH, 20*IPHONE6_H_SCALE);
-        CGFloat tableY = CGRectGetMaxY(_separate.frame);
-        _tableView1.frame = CGRectMake(0, tableY, WIDTH, HEIGHT-tableY);
+        _introduceText.frame = CGRectMake(x, y, WIDTH - 2 * x, 55 * IPHONE6_H_SCALE);
+        [UIView animateWithDuration:0.1 animations:^{
+            _separate.transform = CGAffineTransformIdentity;
+            _tableView1.transform = CGAffineTransformIdentity;
+        }];
     }
 }
+
+
 
 - (void)addRefreshWith:(UITableView *)tableView{
     //    // 添加刷新和加载
@@ -935,9 +920,9 @@
     } else{
        _certificateLbl.text = sbModel.data[@"certified"][@"title"];
         str = sbModel.data[@"certified"][@"brief"];
-        if (str.length > 100) {
-            str = [str substringToIndex:100];
-        }
+//        if (str.length > 100) {
+//            str = [str substringToIndex:100];
+//        }
         
         _showBtn.userInteractionEnabled = YES;
     }
@@ -945,13 +930,21 @@
     
     
     UILabel * introduceLbl = [[UILabel alloc] init];
+    UITextView * introduceText = [[UITextView alloc] init];
+    introduceText.userInteractionEnabled = NO;
+    introduceText.scrollEnabled = NO;
 //    introduceLbl.backgroundColor = [UIColor greenColor];
     introduceLbl.text = str;
-    introduceLbl.numberOfLines = 0;
+    introduceText.text = str;
+    introduceLbl.numberOfLines = 3;
     introduceLbl.font = Font13;
+    introduceText.font = Font13;
     introduceLbl.textColor = Color123;
-    [_sc addSubview:introduceLbl];
+    introduceText.textColor = Color123;
+//    [_sc addSubview:introduceLbl];
+    [_sc addSubview:introduceText];
     _introduceLbl = introduceLbl;
+    _introduceText = introduceText;
     CGFloat x = 15*IPHONE6_W_SCALE;
     CGFloat y = 59*IPHONE6_H_SCALE;
     CGFloat w = WIDTH - 2 * x;
@@ -960,11 +953,12 @@
     dic[NSFontAttributeName] = Font13;
     CGRect rect = [str boundingRectWithSize:CGSizeMake(w, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
     introduceLbl.frame =(CGRect){{x, y},rect.size};
+    introduceText.frame = CGRectMake(x, y, WIDTH - 2 * x, 55 * IPHONE6_H_SCALE);
     
     UIView * separate = [[UIView alloc] init];
     [_sc addSubview:separate];
     _separate = separate;
-    CGFloat separateY = CGRectGetMaxY(_introduceLbl.frame) + 19*IPHONE6_H_SCALE;
+    CGFloat separateY = CGRectGetMaxY(_introduceText.frame) + 19*IPHONE6_H_SCALE;
     separate.frame = CGRectMake(0, separateY, WIDTH, 20*IPHONE6_H_SCALE);
     separate.backgroundColor = SeparateColor;
     

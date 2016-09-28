@@ -114,7 +114,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
-    //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
     
@@ -132,6 +134,9 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
+    
+//    [MobClick endLogPageView:@"CommunityController"];
+    
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
     self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
@@ -139,6 +144,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
     self.view.backgroundColor = [UIColor blueColor];
     self.navigationItem.title = @"";
@@ -403,7 +410,7 @@
 - (void)errorWithRefresh{
     // 结束刷新
     
-    NSLog(@"datasource1:---%@", self.dataSource1);
+//    NSLog(@"datasource1:---%@", self.dataSource1);
     if (!self.dataSource1.count >0  || !self.dataSource2.count > 0) {
         [_tableView1.header endRefreshing];
         [_tableView1.footer endRefreshing];

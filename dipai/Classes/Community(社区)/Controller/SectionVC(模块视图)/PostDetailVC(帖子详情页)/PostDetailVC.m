@@ -84,6 +84,8 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+    
 //    [self.tableView.header beginRefreshing];
     if (_noFirstIn && _noFirstIn.length > 0) {
         //        [self loadNewData];
@@ -94,9 +96,17 @@
     _noFirstIn = @"noFirstIn";
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    
+    [super viewWillDisappear:YES];
+//    [MobClick endLogPageView:@"PostDetailVC"];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
     
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -218,16 +228,19 @@
 - (void)shareAction{
     
     PostDaraModel * dataModel = [PostDaraModel objectWithKeyValues:_detailModel.data];
-    NSString *st = dataModel.imgs[0];
-    NSURL *url = [NSURL URLWithString:st];
-    NSData *data = [NSData dataWithContentsOfURL:url];
-    UIImage *img = [UIImage imageWithData:data];
+//    NSString *st = dataModel.imgs[0];
+//    NSURL *url = [NSURL URLWithString:st];
+//    NSData *data = [NSData dataWithContentsOfURL:url];
+//    UIImage *img = [UIImage imageWithData:data];
+    
+    UIImage * img = [UIImage imageNamed:@"shareLogo"];
     
     NSString * wapurl = dataModel.wapurl;
     
+    [UMSocialData defaultData].extConfig.title = dataModel.title;
     // 友盟分享代码，复制、粘贴
     [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"
-                                      shareText:[NSString stringWithFormat:@"%@ %@",dataModel.title,dataModel.content]
+                                      shareText:[NSString stringWithFormat:@"%@",dataModel.content]
                                      shareImage:img
                                 shareToSnsNames:@[UMShareToSina ,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]
                                        delegate:self]; // 分享到朋友圈、微信好友、QQ空间、QQ好友
@@ -365,6 +378,9 @@
 }
 
 - (void)loadNewData{
+    
+//    NSLog(@"self.wapurl:%@", self.wapurl);
+    
     [DataTool getPostDetailDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];

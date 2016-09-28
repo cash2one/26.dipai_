@@ -152,6 +152,9 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
     self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
     self.navigationController.navigationBarHidden = YES;
     
@@ -164,6 +167,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     self.view.backgroundColor = [UIColor whiteColor];
     NSLog(@"%@", self.userURL);
     

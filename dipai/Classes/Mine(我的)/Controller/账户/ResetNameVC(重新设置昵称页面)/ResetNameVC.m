@@ -165,29 +165,37 @@
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     
     NSString * str = _phoneNum.text;
-    NSLog(@"str--%@", str);
+//    NSLog(@"str--%@", str);
     
     dic[@"username"] = str;
     
-    
-    [DataTool postWithStr:ChangeAccountURL parameters:dic success:^(id responseObject) {
+    NSRange _range = [str rangeOfString:@" "];
+    if (_range.location != NSNotFound) {
+        //有空格
         
-        NSLog(@"修改昵称成功:%@", responseObject);
-        NSString * state = responseObject[@"state"];
-        NSLog(@"content---%@", responseObject[@"content"]);
-        if ([state isEqualToString:@"97"]) {    // 说明昵称已存在
-            [SVProgressHUD showSuccessWithStatus:@"昵称已存在"];
-        }else{
-            [SVProgressHUD show];
-            [SVProgressHUD showSuccessWithStatus:@"修改成功"];
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-        
-    } failure:^(NSError * error) {
-        [SVProgressHUD showErrorWithStatus:@"修改失败"];
-        NSLog(@"修改昵称出错：%@", error);
-    }];
-    
+        NSLog(@"有空格");
+        [SVProgressHUD showErrorWithStatus:@"昵称不能包含空格"];
+    }else {
+        NSLog(@"没有空格");
+        //没有空格
+        [DataTool postWithStr:ChangeAccountURL parameters:dic success:^(id responseObject) {
+            
+            //        NSLog(@"修改昵称成功:%@", responseObject);
+            NSString * state = responseObject[@"state"];
+            //        NSLog(@"content---%@", responseObject[@"content"]);
+            if ([state isEqualToString:@"97"]) {    // 说明昵称已存在
+                [SVProgressHUD showSuccessWithStatus:@"昵称已存在"];
+            }else{
+                [SVProgressHUD show];
+                [SVProgressHUD showSuccessWithStatus:@"修改成功"];
+                [self.navigationController popViewControllerAnimated:YES];
+            }
+            
+        } failure:^(NSError * error) {
+            [SVProgressHUD showErrorWithStatus:@"修改失败"];
+            NSLog(@"修改昵称出错：%@", error);
+        }];
+    }
    
 }
 

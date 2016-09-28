@@ -13,7 +13,7 @@
 #import "X_SelectPicViewCell.h"
 #import "X_SelectPicHeaderView.h"
 
-@interface X_SelectPicView ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout>
+@interface X_SelectPicView ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout, X_SelectPicHeaderViewDelegate>
 
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) UIView *superView;
@@ -71,44 +71,52 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
 
 // 长按图片移动事件
 - (void)moveAction:(UISwipeGestureRecognizer *)gesture{
-    switch (gesture.state) {
-        case UIGestureRecognizerStateBegan: {
-            {
-                NSIndexPath *selectIndexPath = [self.collectionView indexPathForItemAtPoint:[_longPress locationInView:self.collectionView]];
-                if (_isShownPlus) {
-                    if (selectIndexPath.item != self.dataArr.count-1) {
-                        [self.collectionView beginInteractiveMovementForItemAtIndexPath:selectIndexPath];
-                    }else{
-                        break ;
+    
+    if (_dataArr.count < 1) {
+        NSLog(@"///");
+    }else{
+        
+        switch (gesture.state) {
+            case UIGestureRecognizerStateBegan: {
+                {
+                    NSIndexPath *selectIndexPath = [self.collectionView indexPathForItemAtPoint:[_longPress locationInView:self.collectionView]];
+                        if (_isShownPlus) {
+                            if (selectIndexPath.item != self.dataArr.count-1) {
+                                [self.collectionView beginInteractiveMovementForItemAtIndexPath:selectIndexPath];
+                            }else{
+                                break ;
+                            }
+                        }else{
+                            [self.collectionView beginInteractiveMovementForItemAtIndexPath:selectIndexPath];
+                        }
                     }
-                }else{
-                    [self.collectionView beginInteractiveMovementForItemAtIndexPath:selectIndexPath];
+                    break;
                 }
-            }
-            break;
-        }
-        case UIGestureRecognizerStateChanged: {
-            NSIndexPath *selectIndexPath = [self.collectionView indexPathForItemAtPoint:[_longPress locationInView:self.collectionView]];
-            if (_isShownPlus) {
-                if (selectIndexPath.item == self.dataArr.count-1) {
-                    break ;
-                }else{
-                    [self.collectionView updateInteractiveMovementTargetPosition:[_longPress locationInView:_longPress.view]];
+                case UIGestureRecognizerStateChanged: {
+                    NSIndexPath *selectIndexPath = [self.collectionView indexPathForItemAtPoint:[_longPress locationInView:self.collectionView]];
+                    if (_isShownPlus) {
+                        if (selectIndexPath.item == self.dataArr.count-1) {
+                            break ;
+                        }else{
+                            [self.collectionView updateInteractiveMovementTargetPosition:[_longPress locationInView:_longPress.view]];
+                        }
+                    }else{
+                        [self.collectionView updateInteractiveMovementTargetPosition:[_longPress locationInView:_longPress.view]];
+                    }
+        
+        
+                    break;
                 }
-            }else{
-                [self.collectionView updateInteractiveMovementTargetPosition:[_longPress locationInView:_longPress.view]];
+                case UIGestureRecognizerStateEnded: {
+                    [self.collectionView endInteractiveMovement];
+                    break;
+                }
+                default: [self.collectionView cancelInteractiveMovement];
+                    break;
             }
-            
-            
-            break;
-        }
-        case UIGestureRecognizerStateEnded: {
-            [self.collectionView endInteractiveMovement];
-            break;
-        }
-        default: [self.collectionView cancelInteractiveMovement];
-            break;
     }
+    
+
 }
 
 // 重写数据源
@@ -197,6 +205,22 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     
+//    NSLog(@"dataArr:%@", self.dataArr); // 图片的位置发生了变化
+    
+    if ([self.delegate respondsToSelector:@selector(indexOfPicsChanged:)]) {
+        
+        NSMutableArray * arr = [NSMutableArray array];
+        if (self.dataArr.count >= 1) {
+            [arr addObjectsFromArray:self.dataArr];
+            [arr removeLastObject];
+            [self.delegate indexOfPicsChanged:arr];
+        }
+        
+    }else{
+        
+        NSLog(@"代理没有响应");
+    }
+    
     X_SelectPicViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
     __block typeof(cell) weakCell = cell;
     cell.action = ^{
@@ -247,12 +271,14 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         X_SelectPicHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"header" forIndexPath:indexPath];
+        header.delegate = self;
         
             header.commplete = ^{
                 if (_Commplete) {
                     _Commplete();
                 }
             };
+        
         
         return header;
     }
@@ -272,6 +298,16 @@ NSUInteger colNumber = 4;                          //每行显示4张图片
     }
     [self.dataArr exchangeObjectAtIndex:sourceIndexPath.item withObjectAtIndex:destinationIndexPath.item];
     [collectionView reloadData];
+}
+
+- (void)didClickSelectPoker{
+    
+    NSLog(@"选择牌谱...");
+    if ([self.delegate respondsToSelector:@selector(didSelectPoker:)]) {
+        [self.delegate didSelectPoker:self];
+    }else{
+        NSLog(@"X_SelectPicView的代理没有响应...");
+    }
 }
 
 @end

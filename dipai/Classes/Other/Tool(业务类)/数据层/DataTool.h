@@ -131,4 +131,10 @@
 //  向服务器发送获取的微信code
 + (void)sendCodeWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
+// 获取我的牌谱
++ (void)getMyPokersWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+// 删除牌谱
++ (void)deletePokerWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
 @end

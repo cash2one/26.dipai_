@@ -96,6 +96,7 @@
     //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"手机号";
     phoneNum.font = Font17;
+    phoneNum.keyboardType = UIKeyboardTypeNumberPad;
     [self.view addSubview:phoneNum];
     _phoneNum = phoneNum;
     
@@ -249,8 +250,8 @@
 
 #pragma mark --- 下一步事件
 - (void)nextAction{
-//    NSString * url = @"http://dipaiapp.replays.net/sign/app_verify";
-    NSString * url = @"http://dpapp.replays.net/sign/app_verify";
+    NSString * url = verityURL;
+//    NSString * url = @"http://dpapp.replays.net/sign/app_verify";
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"verify"] = _code.text;
     [DataTool postWithStr:url parameters:dic success:^(id responseObject) {

@@ -23,7 +23,7 @@
 
 + (instancetype)cellWithTableView:(UITableView *)tableView
 {
-    static NSString * cellID = @"cellID";
+    static NSString * cellID = @"cellID1";
     id cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     if (!cell) {
         cell = [[self alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];

@@ -22,6 +22,18 @@
         // 为按钮添加选择发布图片的事件
         [picBtn addTarget:self action:@selector(selectPic) forControlEvents:UIControlEventTouchUpInside];
         
+        // 发牌谱按钮
+        UIButton * pokersBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [pokersBtn setImage:[UIImage imageNamed:@"fapaipu"] forState:UIControlStateNormal];
+        [selectPicView addSubview:pokersBtn];
+        [pokersBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(picBtn.mas_right).offset(25 * IPHONE6_W_SCALE);
+            make.top.equalTo(selectPicView.mas_top).offset(9 * IPHONE6_H_SCALE);
+            make.width.equalTo(@(19 * IPHONE6_W_SCALE));
+            make.height.equalTo(@(21 * IPHONE6_W_SCALE));
+        }];
+        [pokersBtn addTarget:self action:@selector(selectPoker) forControlEvents:UIControlEventTouchUpInside];
+        
         UIView * upLine = [[UIView alloc] init];
         upLine.backgroundColor = Color238;
         [selectPicView addSubview:upLine];
@@ -48,6 +60,14 @@
 - (void)selectPic{
     NSLog(@"添加图片...");
     _commplete();
+}
+- (void)selectPoker{
+    
+    if ([self.delegate respondsToSelector:@selector(didClickSelectPoker)]) {
+        [self.delegate didClickSelectPoker];
+    }else{
+        NSLog(@"Header View的代理没有响应");
+    }
 }
 
 @end

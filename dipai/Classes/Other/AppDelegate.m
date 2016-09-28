@@ -27,12 +27,15 @@
 #import "UMSocialWechatHandler.h"
 #import "UMSocialQQHandler.h"
 
+
 #import "SVProgressHUD.h"
 // 腾讯云播放器
 #import "TCPlayerBottomView.h"
 #import "TCCloudPlayerControlView.h"
 
 #import "DataTool.h"
+
+#import <JSPatchPlatform/JSPatch.h>
 #define UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 @interface AppDelegate ()<WXApiDelegate, UIAlertViewDelegate>
 {
@@ -46,8 +49,15 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
+    // 创建窗口
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
+    
+    // JSPatch
+    [JSPatch startWithAppKey:@"49f780b700069d72"];
+    [JSPatch sync];
+    
+    // 设置根控制器
     // 根视图控制器
     RootTabBarController * root = [[RootTabBarController alloc] init];
     self.window.rootViewController = root;
@@ -59,6 +69,10 @@
     // 设置友盟分享
     [self setUpUMShare];
     
+    
+    // 友盟SDK为了兼容Xcode3的工程，默认取的是Build号，如果需要取Xcode4及以上版本的Version，可以在StartWithAppkey之前调用下面的方法：
+    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    [MobClick setAppVersion:version];
     //友盟推送
     [UMessage startWithAppkey:@"55556bc8e0f55a56230001d8" launchOptions:launchOptions];
     
@@ -109,6 +123,7 @@
     NSDictionary* remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotification) { // 说明有通知
         NSLog(@"---userInfo---%@", remoteNotification);
+        _url = remoteNotification[@"1"];
         UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:remoteNotification[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
         [alertView show];
         
@@ -116,6 +131,14 @@
     {
         NSLog(@"没有通知...");
     }
+    
+    // 友盟统计
+    [MobClick setLogEnabled:YES];
+    UMConfigInstance.appKey = @"55556bc8e0f55a56230001d8";
+    UMConfigInstance.channelId = @"App Store";
+    [MobClick startWithConfigure:UMConfigInstance];
+    
+    
     [NSThread sleepForTimeInterval:2.0];
     [self.window makeKeyAndVisible];    // 让窗口可见
         

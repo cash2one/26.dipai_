@@ -32,6 +32,8 @@
  */
 @property (nonatomic, strong) UILabel * commentNum;
 
+@property (nonatomic, assign) NSInteger w;
+
 //@property (nonatomic, assign) id <ClickViewDelegate> delegate;
 
 @end

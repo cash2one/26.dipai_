@@ -20,6 +20,8 @@
  *  当前盲注
  */
 @property (nonatomic, strong) UILabel * blindLbl;
+
+
 /**
  *  平均记分牌
  */
@@ -28,6 +30,8 @@
  *  剩余选手
  */
 @property (nonatomic, strong) UILabel * playerLbl;
+
+
 
 // 两个竖直分割线
 @property (nonatomic, strong) UIView * line1;
@@ -84,6 +88,14 @@
     blindNum.textAlignment = NSTextAlignmentCenter;
     [self addSubview:blindNum];
     _blindNum = blindNum;
+    
+    // ante
+    UILabel * anteLbl = [[UILabel alloc] init];
+    anteLbl.textColor = [UIColor redColor];
+    anteLbl.textAlignment = NSTextAlignmentCenter;
+    [self addSubview:anteLbl];
+    _anteLbl = anteLbl;
+    
     UILabel * score = [[UILabel alloc] init];
 //    score.backgroundColor = [UIColor whiteColor];
     score.textColor = [UIColor redColor];
@@ -233,6 +245,14 @@
         make.width.equalTo(@(259*0.5 * IPHONE6_W_SCALE));
         make.height.equalTo(@(13* IPHONE6_H_SCALE));
     }];
+    
+    [_anteLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(_blindNum.mas_centerX);
+        make.top.equalTo(_blindNum.mas_bottom).offset(2);
+        make.width.equalTo(@(100 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(13 * IPHONE6_H_SCALE));
+    }];
+    
 //    [_blindNum sizeToFit];
     [_players mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(_playerLbl.mas_centerX);

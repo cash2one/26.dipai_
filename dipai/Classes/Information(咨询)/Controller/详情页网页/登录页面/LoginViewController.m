@@ -27,6 +27,9 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
     self.navigationController.navigationBarHidden = YES;
 }
 - (void)viewWillDisappear:(BOOL)animated{
@@ -144,8 +147,8 @@
     
     NSLog(@"给自己的服务器发送code：%s", __func__);
     
-//    NSString * url = @"http://dipaiapp.replays.net/Weixin/wx_code";
-    NSString * url = @"http://dpapp.replays.net/Weixin/wx_code";
+    NSString * url = wxCodeURL;
+//    NSString * url = @"http://dpapp.replays.net/Weixin/wx_code";
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"code"] = str;
     
@@ -164,7 +167,7 @@
         [self dismissViewControllerAnimated:YES completion:nil];
     } failure:^(NSError * error) {
         
-        NSLog(@"发送code出错：%@", error);
+        NSLog(@"发送code出错1：%@", error);
     }];
 }
 

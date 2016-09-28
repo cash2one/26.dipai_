@@ -19,7 +19,6 @@
 {
     if (_placeHolderLabel == nil) {
         _placeHolderLabel = [[UILabel alloc] init];
-        
         [self addSubview:_placeHolderLabel];
     }
     

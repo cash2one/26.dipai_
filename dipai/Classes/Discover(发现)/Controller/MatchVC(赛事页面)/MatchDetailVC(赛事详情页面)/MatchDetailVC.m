@@ -186,6 +186,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
@@ -305,7 +308,25 @@
     LiveModel * live = [liveModelArr firstObject];
     
     headerView.stateLbl.text = [NSString stringWithFormat:@"比赛状态:%@", live.match_state];
-    headerView.blindNum.text = live.blind;  // 盲注
+    
+    NSInteger index = [live.blind rangeOfString:@"/"].location;
+    NSString * str1 = [live.blind substringFromIndex:index+1];
+    
+    NSInteger index1 = [str1 rangeOfString:@"/"].location;
+    NSString * str2 = [live.blind substringToIndex:index1 + 1 + index + 1];
+    NSString * str3 = [live.blind substringFromIndex:index1 + 1 + index + 1];
+//    NSLog(@"str1:%@", str1);
+//    NSLog(@"str2:%@", str2);
+//    NSLog(@"str3:%@", str3);
+
+    if (index1 != NSNotFound) { // 有ante
+        headerView.blindNum.text = str2;
+        headerView.anteLbl.text = str3;
+    }else{
+        headerView.blindNum.text = live.blind;  // 盲注
+        headerView.anteLbl.text = @"";
+    }
+    
     //    NSLog(@"---blind---%@", live.blind);
     headerView.score.text = live.score; // 记分牌
     headerView.players.text = live.player;  // 剩余选手
@@ -1148,7 +1169,27 @@
     
     //    NSLog(@"%@", dic);
     _headerView.stateLbl.text = [NSString stringWithFormat:@"比赛状态:%@", dic[@"match_state"]];    // 赛事状态
-    _headerView.blindNum.text = dic[@"blind"];  // 盲注
+    
+    NSString * blind = dic[@"blind"];
+    NSInteger index = [blind rangeOfString:@"/"].location;
+    NSString * str1 = [blind substringFromIndex:index+1];
+    
+    NSInteger index1 = [str1 rangeOfString:@"/"].location;
+    NSString * str2 = [blind substringToIndex:index1 + 1 + index + 1];
+    NSString * str3 = [blind substringFromIndex:index1 + 1 + index + 1];
+    //    NSLog(@"str1:%@", str1);
+    //    NSLog(@"str2:%@", str2);
+    //    NSLog(@"str3:%@", str3);
+    
+    if (index1 != NSNotFound) { // 有ante
+        _headerView.blindNum.text = str2;
+        _headerView.anteLbl.text = str3;
+    }else{
+        _headerView.blindNum.text = blind;  // 盲注
+        _headerView.anteLbl.text = @"";
+    }
+    
+//    _headerView.blindNum.text = dic[@"blind"];  // 盲注
     _headerView.score.text = dic[@"score"]; // 记分
     _headerView.players.text = dic[@"player"];  //剩余选手
 }
@@ -1378,12 +1419,13 @@
         NSData *data = [NSData dataWithContentsOfURL:url];
         img = [UIImage imageWithData:data];
     }else{
-        img = [UIImage imageNamed:@"dipai_logo"];
+        img = [UIImage imageNamed:@"shareLogo"];
     }
     
+    [UMSocialData defaultData].extConfig.title = model.title;
     // 友盟分享代码，复制、粘贴
     [UMSocialSnsService presentSnsIconSheetView:self appKey:@"55556bc8e0f55a56230001d8"
-                                      shareText:[NSString stringWithFormat:@"%@ %@",model.title,model.body]
+                                      shareText:[NSString stringWithFormat:@"%@",model.body]
                                      shareImage:img
                                 shareToSnsNames:@[UMShareToSina ,UMShareToWechatSession,UMShareToWechatTimeline,UMShareToQQ,UMShareToQzone,@"CustomPlatform"]
                                        delegate:self]; // 分享到朋友圈、微信好友、QQ空间、QQ好友

@@ -9,9 +9,20 @@
 #import <UIKit/UIKit.h>
 
 typedef void (^Commplete)(void);
+typedef void (^GetMyPokers)(void);
+
+@protocol X_SelectPicHeaderViewDelegate <NSObject>
+
+- (void)didClickSelectPoker;
+
+@end
 
 @interface X_SelectPicHeaderView : UICollectionReusableView
 
 @property (nonatomic, copy) Commplete commplete;
+
+@property (nonatomic, copy) GetMyPokers getMyPokers;
+
+@property (nonatomic, assign) id <X_SelectPicHeaderViewDelegate> delegate;
 
 @end

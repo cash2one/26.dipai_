@@ -56,6 +56,13 @@
     return _dataSource;
 }
 
+
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -387,7 +394,8 @@
     MorePokersModel * pokersModel = [self.dataSource lastObject];
 //    NSLog(@"%@", pokersModel.userid);
 //    NSString * URL = [self.wapurl stringByReplacingOccurrencesOfString:@"?" withString:[NSString stringWithFormat:@"/%@?", pokersModel.userid]];
-    NSString * URL = [self.wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@", pokersModel.userid]];
+    // 拼接在list1之后
+    NSString * URL = [self.wapurl stringByReplacingOccurrencesOfString:@"?userid" withString:[NSString stringWithFormat:@"%@?userid", pokersModel.userid]];
 //    NSLog(@"%@", URL);
     [DataTool getMorePokerDataWithStr:URL parameters:nil success:^(id responseObject) {
         [self.tableView.footer endRefreshing];

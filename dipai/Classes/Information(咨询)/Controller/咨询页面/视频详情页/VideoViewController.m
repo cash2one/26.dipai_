@@ -175,6 +175,9 @@
     
     [super viewWillAppear:YES];
     self.navigationController.navigationBarHidden = YES;
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
     // 每次进来的时候都要检测是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
@@ -214,6 +217,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
     self.view.backgroundColor = [UIColor whiteColor];
 //    // 设置状态栏

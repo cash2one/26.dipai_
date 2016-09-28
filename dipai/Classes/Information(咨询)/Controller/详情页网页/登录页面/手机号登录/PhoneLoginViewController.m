@@ -37,6 +37,13 @@
 
 @implementation PhoneLoginViewController
 
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -80,6 +87,7 @@
     //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"手机号";
     phoneNum.font = Font17;
+    phoneNum.keyboardType = UIKeyboardTypeNumberPad;
     [self.view addSubview:phoneNum];
     _phoneNum = phoneNum;
     
@@ -197,7 +205,7 @@
         
         NSLog(@"登录获取的数据%@", responseObject);
         
-        NSLog(@"－－－%@", content);
+//        NSLog(@"－－－%@", content);
         
         if ([content isEqualToString:@"密码错误"]) {
             [SVProgressHUD showErrorWithStatus:@"密码错误"];
@@ -209,16 +217,19 @@
             [SVProgressHUD showSuccessWithStatus:@"登录成功"];
             
             NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+            
+//            NSLog(@"cookies:%@", cookies);
+            
             for (NSHTTPCookie * cookie in cookies) {
                 NSString * name = [cookie name];
-                NSLog(@"---name---%@", name);
+//                NSLog(@"---name---%@", name);
                 NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
                 [defaults setObject:name forKey:Cookie];
                 [defaults synchronize];
                                 
                 NSDictionary * dataDic = [responseObject objectForKey:@"data"];
                 
-                NSLog(@"登录成功后获取的数据:%@", dataDic);
+//                NSLog(@"登录成功后获取的数据:%@", dataDic);
                 
                 [defaults setObject:dataDic forKey:User];
                 [defaults setObject:@"phone" forKey:Phone];

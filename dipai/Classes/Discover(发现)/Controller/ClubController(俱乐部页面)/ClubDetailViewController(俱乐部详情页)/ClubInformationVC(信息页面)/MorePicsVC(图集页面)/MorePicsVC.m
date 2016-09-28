@@ -218,8 +218,27 @@
 }
 #pragma mark --- 双击放大图片
 - (void)makePicBigger:(UIGestureRecognizer *)gesture{
+    
+    
     NSLog(@"双击放大图片...");
     UIScrollView * sc = (UIScrollView *)gesture.view;
+//
+//    CGFloat zs = sc.zoomScale;
+//    zs = (zs == 1.0) ? 2.0 : 1.0;
+//    
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationDuration:0.3];
+//    sc.zoomScale = zs;
+//    [UIView commitAnimations];
+    
+    
+//    CGPoint touchPoint = [gesture locationInView:gesture.view];
+//    if (sc.zoomScale == sc.maximumZoomScale) {
+//        [sc setZoomScale:sc.minimumZoomScale animated:YES];
+//    } else {
+//        [sc zoomToRect:CGRectMake(touchPoint.x, touchPoint.y, 1, 1) animated:YES];
+//    }
+    
     CGFloat zoomScale = sc.zoomScale;
     
     NSLog(@"%f", zoomScale);

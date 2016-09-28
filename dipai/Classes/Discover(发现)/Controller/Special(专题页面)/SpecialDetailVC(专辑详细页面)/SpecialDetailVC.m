@@ -39,6 +39,13 @@
     return _dataSource;
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -112,7 +119,7 @@
         [self.tableView.footer endRefreshing];
         self.dataSource = responseObject;
         [self.tableView reloadData];
-        NSLog(@"%@", responseObject);
+//        NSLog(@"%@", responseObject);
     } failure:^(NSError * error) {
        
         NSLog(@"获取详情页数据出错：%@", error);
@@ -132,7 +139,7 @@
         }
         [self.dataSource addObjectsFromArray:responseObject];
         [self.tableView reloadData];
-        NSLog(@"%@", responseObject);
+//        NSLog(@"%@", responseObject);
     } failure:^(NSError * error) {
         
         NSLog(@"获取详情页数据出错：%@", error);

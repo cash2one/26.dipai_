@@ -20,6 +20,12 @@
 // 第三方用来播放视频的
 #import <TCPlayerSDK/TCPlayerSDK.h>
 #import "TCPlayItem.h"
+
+// 友盟统计
+#import "UMMobClick/MobClick.h"
+
+#import "UIViewController+load.h"
+
 // ...表示宏定义的可变参数
 // __VA_ARGS__:表示函数里面的可变参数
 #ifdef DEBUG // 调试

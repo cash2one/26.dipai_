@@ -85,6 +85,9 @@
 // 账户模型
 #import "AccountModel.h"
 
+// 牌谱模型
+#import "ModelOfPoker.h"
+#import "ModelInPoker.h"
 
 
 // 网页数据模型
@@ -202,7 +205,7 @@
 + (void)postWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool POST:URLString parameters:parameters success:^(id responseObject) {
         
-//        NSLog(@"%@", responseObject);
+        NSLog(@"登录获取数据：%@", responseObject);
 //        NSString * content = responseObject[@"content"];
         if (success) {
             success(responseObject);
@@ -961,21 +964,41 @@
 /***************************我的页*******************/
 // 获取个人中心的数据
 + (void)getPersonDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        
         NSLog(@"获取个人中心获取到的数据：%@", responseObject);
-        // 字典转模型
-        UserModel * userModel = [UserModel objectWithKeyValues:responseObject];
-        
-        if (success) {
-            success(userModel);
+        NSDictionary * dic = responseObject;
+        if (dic.count == 3) {
+            
+            if (success) {
+                success(@"未登录");
+            }
+        }else{
+            // 字典转模型
+            UserModel * userModel = [UserModel objectWithKeyValues:responseObject];
+            
+            if (success) {
+                success(userModel);
+            }
         }
-    } failure:^(NSError *error) {
         
+    } failure:^(NSError *error) {
+       
         if (failure) {
             failure(error);
         }
+    }];
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        
+       
+        
+        
+    } failure:^(NSError *error) {
+        
+        
     }];
 }
 // 获取收藏的数据
@@ -1166,6 +1189,74 @@
         }
     } failure:^(NSError *error) {
        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取我的牌谱
++ (void)getMyPokersWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+//        NSLog(@"%@", responseObject);
+        if ([responseObject[@"data"] isKindOfClass:[NSNull class]]) {
+            
+            NSLog(@"空");
+            if (success) {
+                success(@"空");
+            }
+            
+        }else{
+            
+            NSMutableArray * dataArr = responseObject[@"data"];
+//            NSLog(@"%@", dataArr);
+
+            
+//            for (int i = 0; i < dataArr.count ; i ++) {
+//                
+//                NSDictionary * dicI = dataArr[i];
+//                
+//                for (int j = i + 1; j < dataArr.count - i; j ++) {
+//                    
+//                    NSDictionary * dicJ = dataArr[j];
+//                    
+//                    
+//                }
+//                
+//            }
+//            
+            // 字典数组转模型数组
+            NSArray * modelArr = [ModelOfPoker objectArrayWithKeyValuesArray:dataArr];
+            
+            if (success) {
+                success(modelArr);
+            }
+        }
+        
+        
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 删除牌谱
++ (void)deletePokerWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+            
+        if (success) {
+            success(responseObject);
+        }
+        
+    } failure:^(NSError *error) {
+        
         if (failure) {
             failure(error);
         }

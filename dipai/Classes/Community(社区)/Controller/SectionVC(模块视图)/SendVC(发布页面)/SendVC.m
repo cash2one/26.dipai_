@@ -31,6 +31,12 @@
 #import "DataTool.h"
 
 #import "UIImage+extend.h"
+
+// 牌谱页面
+#import "MyPokersVC.h"
+
+// 相册选择器
+#import "ImgPickerViewController.h"
 @interface SendVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte>
 
 {
@@ -83,6 +89,11 @@
 
 @property (nonatomic, strong) UIImagePickerController * imagePicker;
 
+// 选择图片的张数
+@property (nonatomic, strong) NSArray *Originals;
+
+@property (nonatomic, strong) ImgPickerViewController* vc;
+
 @end
 
 @implementation SendVC
@@ -97,6 +108,9 @@
 - (void)viewWillAppear:(BOOL)animated{
     
     [super viewWillAppear:YES];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+    
     [SVProgressHUD dismiss];
 }
 - (void)viewDidLoad {
@@ -231,6 +245,9 @@
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    
+    NSLog(@"cookieName:%@", cookieName);
+    
     if (cookieName || wxData) {
         NSLog(@"已经登录。。。进行发表");
         // 有图片发送图片
@@ -321,8 +338,8 @@
     SectionModel * sectionModel = self.sectionModel;
     NSLog(@"%@", sectionModel.iD);
     
-    NSString * url = @"http://dpapp.replays.net/app/add/forum/";
-//    NSString * url = @"http://dipaiapp.replays.net/app/add/forum/";
+//    NSString * url = @"http://dpapp.replays.net/app/add/forum/";
+    NSString * url = formURL;
     url = [url stringByAppendingString:sectionModel.iD];
     
     [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
@@ -467,6 +484,7 @@
             
             _selectPicView.transform = CGAffineTransformIdentity;
 //            _selectPicView.frame = CGRectMake(0, HEIGHT, WIDTH, 40 * IPHONE6_H_SCALE);
+            
         }];
     } else
     {
@@ -482,6 +500,7 @@
 #pragma mark --- 添加选择发布图片的视图
 - (void)addSelectPicView{
     UIView * selectPicView = [[UIView alloc] initWithFrame:CGRectMake(0,HEIGHT-40 * IPHONE6_H_SCALE-64, WIDTH, 40 * IPHONE6_H_SCALE)];
+    selectPicView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:selectPicView];
     _selectPicView = selectPicView;
     
@@ -492,6 +511,18 @@
     // 为按钮添加选择发布图片的事件
     [picBtn addTarget:self action:@selector(selectPic) forControlEvents:UIControlEventTouchUpInside];
     _picBtn = picBtn;
+    
+    // 选取牌谱按钮
+    UIButton * pokersBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [pokersBtn setImage:[UIImage imageNamed:@"fapaipu"] forState:UIControlStateNormal];
+    [selectPicView addSubview:pokersBtn];
+    [pokersBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(picBtn.mas_right).offset(25 * IPHONE6_W_SCALE);
+        make.top.equalTo(selectPicView.mas_top).offset(9 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(19 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(21 * IPHONE6_W_SCALE));
+    }];
+    [pokersBtn addTarget:self action:@selector(selectPoker) forControlEvents:UIControlEventTouchUpInside];
     
     UIView * upLine = [[UIView alloc] init];
     upLine.backgroundColor = Color238;
@@ -510,35 +541,113 @@
     }];
     
     
-//    LSPicturesView * pictures = [[LSPicturesView alloc] initWithFrame:CGRectMake(0, HEIGHT, WIDTH, 0)];
-//    pictures.delegate = self;
-//    [self.view addSubview:pictures];
-//    _pictures = pictures;
-//    
-//    [pictures.selectBtn addTarget:self action:@selector(selectPic) forControlEvents:UIControlEventTouchUpInside];
 
 }
+
+- (void)selectPoker{
+    
+    NSLog(@"跳到牌谱页面");
+    if (self.imagesArr.count <9) {
+        
+        if (!_pictureView) {
+            _pictureView = [X_SelectPicView shareSelectPicView];
+            _pictureView.delegate = self;
+            
+            [self.view addSubview:_pictureView];
+            
+            __block typeof(self) weakSelf = self;
+            _pictureView.Commplete = ^{ //跳转到相册
+                if (self.imagesArr.count < 9) {
+                    
+                    NSLog(@"再次跳转到相册。。。");
+                    
+                    ImgPickerViewController* vc=[[ImgPickerViewController alloc]initWithSelectedPics:weakSelf.imagesArr.count];
+                    
+                    NSLog(@"0已选图片数：%lu", weakSelf.imagesArr.count);
+                    
+                    [weakSelf presentViewController:vc animated:YES completion:nil];
+                    [vc setSelectOriginals:^(NSArray * Originals) {
+                        [weakSelf.imagesArr addObjectsFromArray:Originals];
+                        _pictureView.dataSource = weakSelf.imagesArr;
+                    }];
+                }else{
+                    [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
+                }
+                
+            };
+        }
+
+        MyPokersVC * myPokerVC = [[MyPokersVC alloc] init];
+        [myPokerVC returnText:^(NSArray *imageArr) {
+            
+            NSLog(@"101010%@", imageArr);
+            [self.imagesArr addObjectsFromArray:imageArr];
+            _pictureView.dataSource = self.imagesArr;
+        }];
+        myPokerVC.selectedNumOfPic = self.imagesArr.count;
+        [self presentViewController:myPokerVC animated:YES completion:nil];
+        
+    }else{
+        [SVProgressHUD showErrorWithStatus:@"最多选九张图片"];
+    }
+
+}
+
 #pragma mark ---- 选择图片的事件
 - (void)selectPic{
     
     NSLog(@"跳转到相册....");
     
+    NSArray * origainals = [NSArray array];
+    _Originals = origainals;
     if (self.imagesArr.count <9) {
-        _imagePicker = [[UIImagePickerController alloc] init];
-        _imagePicker.delegate = self;
-        _imagePicker.allowsEditing = NO;
-        _imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-        [self presentViewController:_imagePicker animated:YES completion:nil];
+        
+        ImgPickerViewController* vc=[[ImgPickerViewController alloc]init];
+//        _vc = vc;
+        [self presentViewController:vc animated:YES completion:nil];
+        
+        [vc setSelectOriginals:^(NSArray *Originals) {
+            
+            
+            [self.imagesArr addObjectsFromArray:Originals];
+            if (!_pictureView) {
+                _pictureView = [X_SelectPicView shareSelectPicView];
+                _pictureView.delegate = self;
+                
+                __block typeof(self) weakSelf = self;
+                _pictureView.Commplete = ^{ //跳转到相册
+                    if (self.imagesArr.count < 9) {
+                        
+                        NSLog(@"再次跳转到相册。。。");
+                        
+                        ImgPickerViewController* vc=[[ImgPickerViewController alloc]initWithSelectedPics:weakSelf.imagesArr.count];
+                        
+                        NSLog(@"0已选图片数：%lu", weakSelf.imagesArr.count);
+                        
+                        [weakSelf presentViewController:vc animated:YES completion:nil];
+                        [vc setSelectOriginals:^(NSArray * Originals) {
+                            [weakSelf.imagesArr addObjectsFromArray:Originals];
+                            weakSelf.pictureView.dataSource = weakSelf.imagesArr;
+//                            _pictureView.dataSource = weakSelf.imagesArr;
+                        }];
+                    }else{
+                        [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
+                    }
+                    
+                };
+                
+                [self.view addSubview:_pictureView];
+            }
+            
+            _pictureView.dataSource = self.imagesArr;
+            
+            
+        }];
+
     }else{
-        [SVProgressHUD showWithStatus:@"最多选九张图片"];
+        [SVProgressHUD showErrorWithStatus:@"最多选九张图片"];
     }
     
-//    _photoLibaryController = [[LNPhotoLibaryController alloc] init];
-//    _selectPictures = _photoLibaryController.selectedPhotos;
-//    _photoLibaryController.maxSelectedCount = 9;
-//    UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:_photoLibaryController];
-////    NSLog(@"跳转到相册...");
-//    [self presentViewController:navigation animated:YES completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -593,7 +702,35 @@
     [self.imagesArr removeObjectAtIndex:index];
     view.dataSource = self.imagesArr;
 }
-
+// 选择牌谱
+- (void)didSelectPoker:(X_SelectPicView *)view{
+    
+    if (self.imagesArr.count <9) {
+        
+        MyPokersVC * myPokerVC = [[MyPokersVC alloc] init];
+        [myPokerVC returnText:^(NSArray *imageArr) {
+            
+//            NSLog(@"%@", imageArr);
+            
+            [self.imagesArr addObjectsFromArray:imageArr];
+            _pictureView.dataSource = self.imagesArr;
+        }];
+        
+        myPokerVC.selectedNumOfPic = self.imagesArr.count;
+        [self presentViewController:myPokerVC animated:YES completion:nil];
+        
+        
+        
+    }else{
+        [SVProgressHUD showErrorWithStatus:@"最多选九张图片"];
+    }
+}
+// 图片的位置发生变化
+- (void)indexOfPicsChanged:(NSMutableArray *)imageArr{
+    
+    self.imagesArr = imageArr;
+//    [self.imagesArr removeLastObject];
+}
 
 
 - (void)deletePicWithIndex:(NSInteger)index{
@@ -609,7 +746,8 @@
     
     [self.view addSubview:textView];
     CGFloat y = CGRectGetMaxY(_field.frame);
-    textView.frame = CGRectMake(0, y, WIDTH, HEIGHT - y);
+    textView.frame = CGRectMake(0, y, WIDTH, 250 * IPHONE6_H_SCALE);
+//    textView.backgroundColor = [UIColor greenColor];
     textView.delegate = self;
     // 允许textView垂直方向拖动
     textView.alwaysBounceVertical = YES;

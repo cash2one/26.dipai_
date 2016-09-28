@@ -26,6 +26,8 @@
 - (void)setUpChildControl{
     for (int i = 0; i < 3; i ++) {
         UIImageView * imageV = [[UIImageView alloc] init];
+        imageV.contentMode = UIViewContentModeScaleAspectFill;
+        imageV.clipsToBounds = YES;
         [self addSubview:imageV];
         imageV.tag = i;
         UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapClick:)];

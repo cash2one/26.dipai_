@@ -64,6 +64,7 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
     // 每次进入页面都要进行刷新，昵称、头像、密码随时可能被修改
     
     
@@ -143,42 +144,51 @@
     NSArray * array = @[@"头像", @"昵称", @"绑定微信", @"绑定手机"];
     self.dataSource = [NSMutableArray arrayWithArray:array];
     
-    UIButton * outBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGFloat btnX = Margin40 * IPHONE6_W_SCALE;
-    CGFloat btnY = CGRectGetMaxY(self.tableView.frame) + Margin70 * IPHONE6_H_SCALE;
-    CGFloat btnW = WIDTH - 2 * btnX;
-    CGFloat btnH = Margin100 * IPHONE6_H_SCALE;
-    outBtn.frame = CGRectMake(btnX, btnY, btnW, btnH);
+    
+    // 登录按钮被移动到了设置界面
+//    UIButton * outBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    CGFloat btnX = Margin40 * IPHONE6_W_SCALE;
+//    CGFloat btnY = CGRectGetMaxY(self.tableView.frame) + Margin70 * IPHONE6_H_SCALE;
+//    CGFloat btnW = WIDTH - 2 * btnX;
+//    CGFloat btnH = Margin100 * IPHONE6_H_SCALE;
+//    outBtn.frame = CGRectMake(btnX, btnY, btnW, btnH);
 //    [outBtn setImage:[UIImage imageNamed:@"tuichudenglu"] forState:UIControlStateNormal];
-    [outBtn setBackgroundImage:[UIImage imageNamed:@"tuichudenglu"] forState:UIControlStateNormal];
-    [outBtn addTarget:self action:@selector(outLogin) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:outBtn];
+//    [outBtn setBackgroundImage:[UIImage imageNamed:@"tuichudenglu"] forState:UIControlStateNormal];
+//    [outBtn setTitle:@"退出登录" forState:UIControlStateNormal];
+//    outBtn.layer.masksToBounds = YES;
+//    outBtn.layer.cornerRadius = 4;
+//    outBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+//    outBtn.backgroundColor = RGBA(225, 10, 24, 1);
+//    [outBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//    outBtn.titleLabel.font = Font17;
+//    [outBtn addTarget:self action:@selector(outLogin) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:outBtn];
 }
 
 #pragma mark --- 退出的点击事件
 - (void)outLogin{
 
-    [self deleteCookie];
-    
-    [self.navigationController popViewControllerAnimated:YES];
+//    [self deleteCookie];
+//    
+//    [self.navigationController popViewControllerAnimated:YES];
 }
 #pragma mark --- 删除cookie
 - (void)deleteCookie
 {
-    NSLog(@"============删除cookie===============");
-    NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-    
-    //删除cookie
-    for (NSHTTPCookie *tempCookie in cookies) {
-        [cookieStorage deleteCookie:tempCookie];
-    }
-    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    [defaults removeObjectForKey:Cookie];
-    [defaults removeObjectForKey:Phone];
-    [defaults removeObjectForKey:User];
-    [defaults removeObjectForKey:WXUser];
-    [SVProgressHUD showSuccessWithStatus:@"退出成功"];
+//    NSLog(@"============删除cookie===============");
+//    NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+//    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+//    
+//    //删除cookie
+//    for (NSHTTPCookie *tempCookie in cookies) {
+//        [cookieStorage deleteCookie:tempCookie];
+//    }
+//    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+//    [defaults removeObjectForKey:Cookie];
+//    [defaults removeObjectForKey:Phone];
+//    [defaults removeObjectForKey:User];
+//    [defaults removeObjectForKey:WXUser];
+//    [SVProgressHUD showSuccessWithStatus:@"退出成功"];
 }
 
 #pragma mark --- UITableViewDataSource

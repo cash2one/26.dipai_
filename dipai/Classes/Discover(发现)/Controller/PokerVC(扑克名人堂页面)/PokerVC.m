@@ -56,6 +56,8 @@
 {
     [super viewDidAppear:animated];
     
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
     // 禁用 iOS7 返回手势
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
@@ -65,6 +67,9 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
     self.navigationController.navigationBarHidden = NO;
     // 开启
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {

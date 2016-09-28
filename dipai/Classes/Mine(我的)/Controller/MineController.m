@@ -22,6 +22,9 @@
 // 粉丝列表和关注列表
 #import "MorePokersVC.h"
 
+// 我的牌谱页面
+#import "MyPokersVC.h"
+
 
 #import "ClickView.h"
 
@@ -44,6 +47,7 @@
     UIView * _alertBackView;
     LSAlertView * _alertView;
     NSString * _binding;    //  绑定的标识1：未绑定手机 2：未绑定微信 0：都绑定
+    NSString * _userName;   // 传到牌谱页面的用户名
 }
 /**
  *  表格
@@ -109,6 +113,10 @@
 {
     [super viewWillAppear:YES];
     
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
+//    [MobClick beginLogPageView:@"MineController"];
+    
     // 每次出现的时候都要重新获取数据
     [self getData];
     self.navigationController.navigationBarHidden = YES;
@@ -119,13 +127,15 @@
 {
     [super viewWillDisappear:YES];
     
+//    [MobClick endLogPageView:@"MineController"];
+    
     self.navigationController.navigationBarHidden = NO;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    self.view.backgroundColor = [UIColor blackColor];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
     self.navigationItem.title = @"";
     
@@ -157,15 +167,16 @@
     NSDictionary * dataDic = [defaults objectForKey:User];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     _wxData = wxData;
-    NSLog(@"持久性存储:%@", dataDic);
-    NSLog(@"微信登录数据：%@", wxData);    // face userid username
+//    NSLog(@"持久性存储:%@", dataDic);
+//    NSLog(@"微信登录数据：%@", wxData);    // face userid username
+    
     // 字典转模型
     UserModel * userModel = [UserModel objectWithKeyValues:dataDic];
     _name = name;
     if (name || wxData) {
         NSLog(@"已登录");
 //        _loginLbl.text = userModel.username;
-        [_loginLbl sizeToFit];
+//        [_loginLbl sizeToFit];
         _loginLbl.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
         _line.hidden = NO;
         _fansNum.hidden = NO;
@@ -187,41 +198,60 @@
         // 获取网络上的数据
         // 获取个人中心的数据
         [DataTool getPersonDataWithStr:PersonURL parameters:nil success:^(id responseObject) {
-            UserModel * model = [[UserModel alloc] init];
-            model = responseObject;
-            _model = responseObject;
-            // 设置数据
-            _binding = model.binding;
-            _fansNum.text = model.follow;
-            _attentionNum.text = model.row;
-            _loginLbl.text = model.username;
-//            NSLog(@"%@", model.face);
-            if (model.face && model.face.length > 0) {
-                NSURL * url = [NSURL URLWithString:model.face];
-                dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                    
-                    UIImage * img = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        [_picBtn setBackgroundImage:img forState:UIControlStateNormal];
-                    });
-                    
-                });
-            }else{
-                [_picBtn setBackgroundImage:[UIImage imageNamed:@"touxiang_moren"] forState:UIControlStateNormal];
-            }
             
-            if ([model.comment_num integerValue] > 99) {
-                _commentsView.commentNum.hidden = NO;
-                _commentsView.commentNum.text = @"...";
+            if ([responseObject isKindOfClass:[NSString class]]) {
+                
+                UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"可能异地登录，请本地退出重新登录" preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    
+                    SettingViewController * setVC = [[SettingViewController alloc] init];
+                    [self.navigationController pushViewController:setVC animated:YES];
+                    
+                }];
+                [alertC addAction:OK];
+                [self presentViewController:alertC animated:YES completion:nil];
+                
             }else{
-                if ([model.comment_num integerValue] == 0) {
-                    _commentsView.commentNum.hidden = YES;
+                
+                UserModel * model = [[UserModel alloc] init];
+                model = responseObject;
+                _model = responseObject;
+                // 设置数据
+                _binding = model.binding;
+                _fansNum.text = model.follow;
+                _attentionNum.text = model.row;
+                _loginLbl.text = model.username;
+                _userName = model.username;
+                //            NSLog(@"%@", model.face);
+                if (model.face && model.face.length > 0) {
+                    NSURL * url = [NSURL URLWithString:model.face];
+                    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                        
+                        UIImage * img = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            [_picBtn setBackgroundImage:img forState:UIControlStateNormal];
+                        });
+                        
+                    });
                 }else{
+                    [_picBtn setBackgroundImage:[UIImage imageNamed:@"touxiang_moren"] forState:UIControlStateNormal];
+                }
+                
+                if ([model.comment_num integerValue] > 99) {
                     _commentsView.commentNum.hidden = NO;
-                    _commentsView.commentNum.text = model.comment_num;
+                    _commentsView.commentNum.text = @"...";
+                }else{
+                    if ([model.comment_num integerValue] == 0) {
+                        _commentsView.commentNum.hidden = YES;
+                    }else{
+                        _commentsView.commentNum.hidden = NO;
+                        _commentsView.commentNum.text = model.comment_num;
+                    }
                 }
             }
+            
+            
             
         } failure:^(NSError * error) {
             
@@ -314,7 +344,7 @@
     loginLbl.font = Font17;
     loginLbl.textAlignment = NSTextAlignmentCenter;
     [loginLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(self.view.mas_centerX);
+        make.centerX.equalTo(headerView.mas_centerX);
         make.top.equalTo(iconBtn.mas_bottom).offset(5*IPHONE6_H_SCALE);
         make.width.equalTo(@(WIDTH));
         make.height.equalTo(@(18));
@@ -502,6 +532,20 @@
     commentsView.frame = CGRectMake(commentsX, commentsY, commentsW, commentsH);
     [self.view addSubview:commentsView];
     _commentsView = commentsView;
+    
+    // 我的牌谱
+    ClickView * pokersView = [[ClickView alloc] init];
+    pokersView.picName = @"wodepaipu";
+    pokersView.message = @"我的牌谱";
+    pokersView.w = 16 * IPHONE6_W_SCALE;
+    [pokersView.btn addTarget:self action:@selector(turePageToMyPokers) forControlEvents:UIControlEventTouchUpInside];
+    CGFloat pokersX = postX;
+    CGFloat pokersY = CGRectGetMaxY(commentsView.frame);
+    CGFloat pokersW = postW;
+    CGFloat pokersH = postH;
+    pokersView.frame = CGRectMake(pokersX, pokersY, pokersW, pokersH);
+    [self.view addSubview:pokersView];
+    
 }
 
 #pragma mark --- 显示大头像
@@ -646,6 +690,23 @@
     }
     
 }
+// 跳转到我的牌谱页面
+- (void)turePageToMyPokers{
+    
+    if (_name || _wxData) {
+        MyPokersVC * myPokersVC = [[MyPokersVC alloc] init];
+        myPokersVC.hidesBottomBarWhenPushed = YES;
+        myPokersVC.push = @"yes";
+        
+//        NSLog(@"%@", _userName);
+        
+        myPokersVC.userName = _userName;
+        [self.navigationController pushViewController:myPokersVC animated:YES];
+    }else{
+        [self addLSAlertView];
+    }
+}
+
 
 - (void)addLSAlertView{
     LSAlertView * alertView = [[LSAlertView alloc] init];

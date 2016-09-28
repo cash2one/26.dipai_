@@ -107,6 +107,7 @@
     //    phoneNum.backgroundColor = [UIColor whiteColor];
     phoneNum.myPlaceholder = @"手机号";
     phoneNum.font = Font17;
+    phoneNum.keyboardType = UIKeyboardTypeNumberPad;
     [self.view addSubview:phoneNum];
     _phoneNum = phoneNum;
     

@@ -26,6 +26,11 @@
  */
 @property (nonatomic, strong) UILabel * blindNum;
 /**
+ *  ante数
+ */
+@property (nonatomic, strong) UILabel * anteLbl;
+
+/**
  *  平均记分数
  */
 @property (nonatomic, strong) UILabel * score;
