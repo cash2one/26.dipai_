@@ -142,6 +142,20 @@
     UILabel * nameLbl = [[UILabel alloc] init];
     nameLbl.font = Font11;
     nameLbl.textColor = RGBA(181, 181, 181, 1);
+    
+    self.userName = [[NSUserDefaults standardUserDefaults] objectForKey:pokerMaker];
+    
+    NSDictionary * dataDic = [[NSUserDefaults standardUserDefaults] objectForKey:User];
+    NSString * username = dataDic[@"username"];
+    
+    if ([self.userName isKindOfClass:[NSNull class]] || self.userName == nil) {
+        self.userName = username;
+    }
+    NSDictionary * wxDic = [[NSUserDefaults standardUserDefaults] objectForKey:WXUser];
+    if (wxDic.count > 0) {
+        self.userName = wxDic[@"username"];
+    }
+    
     nameLbl.text = [NSString stringWithFormat:@"%@%@", @"牌谱制作：",self.userName];
     [pokerV addSubview:nameLbl];
     [nameLbl mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -459,6 +473,21 @@
     UILabel * nameLbl = [[UILabel alloc] init];
     nameLbl.font = Font11;
     nameLbl.textColor = RGBA(181, 181, 181, 1);
+    
+    self.userName = [[NSUserDefaults standardUserDefaults] objectForKey:pokerMaker];
+    
+    NSDictionary * dataDic = [[NSUserDefaults standardUserDefaults] objectForKey:User];
+    NSString * username = dataDic[@"username"];
+    
+    if ([self.userName isKindOfClass:[NSNull class]] || self.userName == nil) {
+        self.userName = username;
+    }
+    
+    NSDictionary * wxDic = [[NSUserDefaults standardUserDefaults] objectForKey:WXUser];
+    if (wxDic.count > 0) {
+        self.userName = wxDic[@"username"];
+    }
+    
     nameLbl.text = [NSString stringWithFormat:@"%@%@", @"牌谱制作：", self.userName];
     [pokerV addSubview:nameLbl];
     [nameLbl mas_makeConstraints:^(MASConstraintMaker *make) {

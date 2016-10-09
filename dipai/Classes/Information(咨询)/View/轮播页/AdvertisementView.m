@@ -84,7 +84,8 @@
         
         bannerModel * bannnerM = [[bannerModel alloc] init];
         bannnerM = _modelArr[i];
-        [picView sd_setImageWithURL:[NSURL URLWithString:bannnerM.cover] placeholderImage:[UIImage imageNamed:@"123"]];
+        SDWebImageOptions options = SDWebImageRetryFailed | SDWebImageLowPriority;
+        [picView sd_setImageWithURL:[NSURL URLWithString:bannnerM.cover] placeholderImage:[UIImage imageNamed:@"123"] options:options];
         
         
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -175,7 +176,8 @@
 
 - (void)startTimer
 {
-    self.timer = [NSTimer timerWithTimeInterval:5.0 target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
+    self.timer = [NSTimer timerWithTimeInterval:2.0 target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
+    
     // 添加到运行循环
     [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
 }

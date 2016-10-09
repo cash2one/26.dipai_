@@ -106,9 +106,10 @@
         if (i < _picArr.count) {
             // 显示
             imageView.hidden = NO;
-//            if (picArr.count > 0) {
-//                [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
-//            }
+            if (picArr.count > 0) {
+                SDWebImageOptions options = SDWebImageRetryFailed | SDWebImageLowPriority;
+                [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"placeholder"] options:options];
+            }
 
         }else
         {
@@ -170,7 +171,8 @@
 
             height = height + h + 8*IPHONE6_H_SCALE;
 //            imageV.backgroundColor = [UIColor redColor];
-            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"placeholder"]];
+//            SDWebImageOptions options = SDWebImageRetryFailed | SDWebImageLowPriority;
+//            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"placeholder"] options:options];
             
         }
     }

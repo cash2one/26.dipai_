@@ -146,7 +146,9 @@
 - (void)outLogin{
     
     [self deleteCookie];
-    
+    NSUserDefaults * userDefaults =  [NSUserDefaults standardUserDefaults];
+    [userDefaults removeObjectForKey:WXUser];
+    [userDefaults removeObjectForKey:User];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

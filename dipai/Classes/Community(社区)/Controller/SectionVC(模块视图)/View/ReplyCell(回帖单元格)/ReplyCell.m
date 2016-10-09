@@ -115,6 +115,15 @@
     
     // 获取到回复的frame模型
     _frameModel = frameModel;
+    
+    [_iconView sd_setImageWithURL:[NSURL URLWithString:_frameModel.replyModel.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+    _nameView.text = _frameModel.replyModel.username;
+    _timeView.text = _frameModel.replyModel.addtime;
+    _textView.text = _frameModel.replyModel.content;
+    _reNameView.text = _frameModel.replyModel.reply[@"username"];
+    _reContentView.text = _frameModel.replyModel.reply[@"content"];
+    NSArray * picArr = _frameModel.replyModel.picname;
+    _picView.picArr = picArr;
 }
 
 - (void)setUpChildView{
@@ -233,11 +242,11 @@
     
     // 头像
     _iconView.frame = _frameModel.faceFrame;
-    [_iconView sd_setImageWithURL:[NSURL URLWithString:_frameModel.replyModel.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+//    [_iconView sd_setImageWithURL:[NSURL URLWithString:_frameModel.replyModel.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
     
     // 昵称
     _nameView.frame = _frameModel.nameFrame;
-    _nameView.text = _frameModel.replyModel.username;
+//    _nameView.text = _frameModel.replyModel.username;
     
     CGFloat indexX = CGRectGetMaxX(_nameView.frame) + 14 * IPHONE6_W_SCALE;
     CGFloat indexY = 22 * IPHONE6_H_SCALE;
@@ -252,7 +261,7 @@
     timeDic[NSFontAttributeName] = Font11;
     CGSize timeSize = [_frameModel.replyModel.addtime sizeWithAttributes:timeDic];
     _timeView.frame = (CGRect){{timeX,timeY},timeSize};
-    _timeView.text = _frameModel.replyModel.addtime;
+//    _timeView.text = _frameModel.replyModel.addtime;
     
     // 楼层
 //    _indexLbl.frame = _frameModel.replyIndexFrame;
@@ -268,19 +277,19 @@
     
     // 回复内容
     _textView.frame = _frameModel.contentsFrame;
-    _textView.text = _frameModel.replyModel.content;
+//    _textView.text = _frameModel.replyModel.content;
     
     // 回帖图片
     _picView.frame = _frameModel.picsFrame;
-    NSArray * picArr = _frameModel.replyModel.picname;
-    _picView.picArr = picArr;
+//    NSArray * picArr = _frameModel.replyModel.picname;
+//    _picView.picArr = picArr;
 
     
     
     // 对回帖的回复
     _reReplyView.frame = _frameModel.ReReplyFrame;
-    _reNameView.text = _frameModel.replyModel.reply[@"username"];
-    _reContentView.text = _frameModel.replyModel.reply[@"content"];
+//    _reNameView.text = _frameModel.replyModel.reply[@"username"];
+//    _reContentView.text = _frameModel.replyModel.reply[@"content"];
     _reNameView.frame = _frameModel.ReNameFrame;
     _reContentView.frame = _frameModel.ReContentFrame;
     

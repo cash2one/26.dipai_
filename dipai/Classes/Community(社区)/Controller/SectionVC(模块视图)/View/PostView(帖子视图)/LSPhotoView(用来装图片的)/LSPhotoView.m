@@ -65,6 +65,14 @@
 - (void)setPicArr:(NSArray *)picArr{
     _picArr = picArr;
     
+    if (_picArr.count > 3) {
+        _numLbl.hidden = NO;
+        _numLbl.text = [NSString stringWithFormat:@"%lu图", _picArr.count];
+    }else{
+        
+        _numLbl.hidden = YES;
+    }
+    
 //    NSLog(@"传递过来图片的个数:%lu", _picArr.count);
     NSUInteger counts = self.subviews.count;
     for (int i = 0; i < counts; i ++) {
@@ -105,7 +113,7 @@
                 
 //                NSLog(@"图片个数%lu", _picArr.count);
                 
-                _numLbl.text = [NSString stringWithFormat:@"%lu图", _picArr.count];
+//                _numLbl.text = [NSString stringWithFormat:@"%lu图", _picArr.count];
             }
             
         }

@@ -176,6 +176,23 @@
     
     // 添加牌谱表格
     [self addTableView];
+    
+    // 新建牌谱的按钮
+    UIButton * addPokerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.view addSubview:addPokerBtn];
+    [addPokerBtn setBackgroundImage:[UIImage imageNamed:@"addPoker"] forState:UIControlStateNormal];
+    [addPokerBtn addTarget:self action:@selector(createPokers) forControlEvents:UIControlEventTouchUpInside];
+    [addPokerBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.view.mas_right).offset(-17 * IPHONE6_W_SCALE);
+        make.bottom.equalTo(self.view.mas_bottom).offset(-16 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(42 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(42 * IPHONE6_W_SCALE));
+    }];
+    if ([self.push isEqualToString:@"yes"]) {
+        addPokerBtn.hidden = YES;
+    }else{
+        addPokerBtn.hidden = NO;
+    }
 }
 
 - (void)getData{
@@ -301,6 +318,7 @@
     
     topV.leftStr = @"取消";
     topV.rightStr = @"完成";
+    
 }
 
 // dismiss

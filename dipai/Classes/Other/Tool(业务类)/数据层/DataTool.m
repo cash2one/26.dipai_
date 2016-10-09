@@ -205,7 +205,7 @@
 + (void)postWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool POST:URLString parameters:parameters success:^(id responseObject) {
         
-        NSLog(@"登录获取数据：%@", responseObject);
+//        NSLog(@"登录获取数据：%@", responseObject);
 //        NSString * content = responseObject[@"content"];
         if (success) {
             success(responseObject);
