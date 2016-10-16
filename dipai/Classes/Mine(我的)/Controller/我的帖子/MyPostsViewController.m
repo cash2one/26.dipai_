@@ -150,7 +150,7 @@
     postsLbl.text = @"我的发帖";
     postsLbl.textColor = Color102;
     [topView addSubview:postsLbl];
-    postsLbl.frame = CGRectMake(102 * IPHONE6_W_SCALE, 0, 61 * IPHONE6_W_SCALE, 81 * 0.5 * IPHONE6_H_SCALE);
+    postsLbl.frame = CGRectMake(102 * IPHONE6_W_SCALE, 0, 61 * IPHONE6_W_SCALE+2, 81 * 0.5 * IPHONE6_H_SCALE);
     _postsLbl = postsLbl;
     
     // 获取发帖按钮
@@ -167,7 +167,7 @@
     replyLbl.textColor = Color102;
     [topView addSubview:replyLbl];
     CGFloat replyX = CGRectGetMaxX(postsLbl.frame) + 49 * IPHONE6_W_SCALE;
-    replyLbl.frame = CGRectMake(replyX, 0, 61 * IPHONE6_W_SCALE, 81 * 0.5 * IPHONE6_W_SCALE);
+    replyLbl.frame = CGRectMake(replyX, 0, 61 * IPHONE6_W_SCALE+2, 81 * 0.5 * IPHONE6_W_SCALE);
     _replyLbl = replyLbl;
     
     // 获取回复按钮

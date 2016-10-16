@@ -258,7 +258,7 @@
         make.centerX.equalTo(footerView.mas_centerX);
         make.centerY.equalTo(footerView.mas_centerY);
         make.height.equalTo(@(13 * IPHONE6_H_SCALE));
-        make.width.equalTo(@(53*IPHONE6_W_SCALE));
+        make.width.equalTo(@(53*IPHONE6_W_SCALE+2));
     }];
     UIImageView * nextView = [[UIImageView alloc] init];
     [footerView addSubview:nextView];

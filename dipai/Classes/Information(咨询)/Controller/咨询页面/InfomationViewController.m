@@ -124,7 +124,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
+    NSLog(@"给老子打印...");
 //    NSArray *familyNames = [UIFont familyNames];
 //    for( NSString *familyName in familyNames ){
 //        printf( "Family: %s \n", [familyName UTF8String] );

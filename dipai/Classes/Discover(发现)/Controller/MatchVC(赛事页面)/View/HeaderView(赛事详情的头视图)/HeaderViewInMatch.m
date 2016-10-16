@@ -142,7 +142,7 @@
     [super layoutSubviews];
     
     // 背景图
-    _picView.frame = CGRectMake(0, 0, WIDTH, 290 * 0.5 * IPHONE6_H_SCALE);
+    _picView.frame = CGRectMake(-1, 0, WIDTH+1, 290 * 0.5 * IPHONE6_H_SCALE);
     
     // 标题
     [_titleLbl mas_makeConstraints:^(MASConstraintMaker *make) {

@@ -192,6 +192,8 @@
 - (void)setDataModel:(PostDaraModel *)dataModel{
     _dataModel = dataModel;
     
+    
+    _picView.picArr = _dataModel.imgs;
 //    NSLog(@"%s", __func__);
     [self layoutSubviews];
     
@@ -332,7 +334,7 @@
             _picView.frame = CGRectMake(15 * IPHONE6_W_SCALE, photosY , WIDTH - 30 * IPHONE6_W_SCALE,  height);
         }
 //        NSLog(@"%f", height);
-        _picView.picArr = _dataModel.imgs;
+        
     }
     
     

@@ -12,6 +12,9 @@
 #import "DiscoverController.h"
 #import "CommunityController.h"
 #import "MineController.h"
+
+// 会员中心和积分商城
+#import "MemberViewController.h"
 // 根导航栏控制器
 #import "RootNavigationController.h"
 @interface RootTabBarController ()<UITabBarControllerDelegate>
@@ -41,9 +44,9 @@
     // 设置tabBar的背景图片
      [self.tabBar setBackgroundImage:[UIImage imageNamed:@"biaoqianlan_beijingtu"]];
     
-    NSArray * selectImg = @[@"zixun_xuanzhong", @"faxian_xuanzhong", @"shequ_xuanzhong", @"wode_xuanzhong"];
-    NSArray * normarl = @[@"zixun_moren", @"faxian_moren", @"shequ_moren", @"wode_moren"];
-    NSArray * title = @[@"资讯", @"发现", @"社区", @"我的"];
+    NSArray * selectImg = @[@"zixun_xuanzhong", @"faxian_xuanzhong",@"faxian_xuanzhong", @"shequ_xuanzhong", @"wode_xuanzhong"];
+    NSArray * normarl = @[@"zixun_moren", @"faxian_moren",@"faxian_moren", @"shequ_moren", @"wode_moren"];
+    NSArray * title = @[@"资讯", @"发现",@"会员", @"社区", @"我的"];
     for (int i=0; i<self.tabBar.items.count; i++) {
         
         UITabBarItem *item = self.tabBar.items[i];
@@ -97,6 +100,10 @@
     discoverController.title = @"发现";
 //    [self setUPchildVC:discoverController withImage:[UIImage imageNamed:@"faxian_moren"] withSelectedImage:[UIImage imageWithOriginalName:@"faxian_xuanzhong"] withTitle:@"发现"];
     
+    //
+    MemberViewController * memberVC = [[MemberViewController alloc] init];
+    RootNavigationController * memberNav = [[RootNavigationController alloc] initWithRootViewController:memberVC];
+    
     CommunityController * communityController = [[CommunityController alloc] init];
     RootNavigationController * comNav = [[RootNavigationController alloc] initWithRootViewController:communityController];
 //    [self setUPchildVC:communityController withImage:[UIImage imageNamed:@"shequ_moren"] withSelectedImage:[UIImage imageWithOriginalName:@"shequ_xuanzhong"] withTitle:@"社区"];
@@ -108,6 +115,7 @@
     NSMutableArray * arr = [NSMutableArray array];
     [arr addObject:infoNav];
     [arr addObject:disNav];
+    [arr addObject:memberNav];
     [arr addObject:comNav];
     [arr addObject:mineNav];
     self.viewControllers = arr;

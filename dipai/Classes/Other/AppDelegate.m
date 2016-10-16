@@ -27,6 +27,7 @@
 #import "UMSocialWechatHandler.h"
 #import "UMSocialQQHandler.h"
 
+#import <UserNotifications/UserNotifications.h>
 
 #import "SVProgressHUD.h"
 // 腾讯云播放器
@@ -37,7 +38,7 @@
 
 #import <JSPatchPlatform/JSPatch.h>
 #define UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
-@interface AppDelegate ()<WXApiDelegate, UIAlertViewDelegate>
+@interface AppDelegate ()<WXApiDelegate, UIAlertViewDelegate, UNUserNotificationCenterDelegate>
 {
     NSString * _url;    // 推送的网址
 }
@@ -76,61 +77,47 @@
     //友盟推送
     [UMessage startWithAppkey:@"55556bc8e0f55a56230001d8" launchOptions:launchOptions];
     
-    // 注册通知
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= _IPHONE80_
-    //  如果友盟版本大于或等于8
-    if(UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0"))
-    {
-        //register remoteNotification types
-        UIMutableUserNotificationAction *action1 = [[UIMutableUserNotificationAction alloc] init];
-        action1.identifier = @"action1_identifier";
-        action1.title=@"Accept";
-        action1.activationMode = UIUserNotificationActivationModeForeground;//当点击的时候启动程序
-        
-        UIMutableUserNotificationAction *action2 = [[UIMutableUserNotificationAction alloc] init];  //第二按钮
-        action2.identifier = @"action2_identifier";
-        action2.title=@"Reject";
-        action2.activationMode = UIUserNotificationActivationModeBackground;//当点击的时候不启动程序，在后台处理
-        action2.authenticationRequired = YES;//需要解锁才能处理，如果action.activationMode = UIUserNotificationActivationModeForeground;则这个属性被忽略；
-        action2.destructive = YES;
-        
-        UIMutableUserNotificationCategory *categorys = [[UIMutableUserNotificationCategory alloc] init];
-        categorys.identifier = @"category1";//这组动作的唯一标示
-        [categorys setActions:@[action1,action2] forContext:(UIUserNotificationActionContextDefault)];
-        
-        UIUserNotificationSettings *userSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert
-                                                                                     categories:[NSSet setWithObject:categorys]];
-        [UMessage registerRemoteNotificationAndUserNotificationSettings:userSettings];
-        
-    } else{
-        //register remoteNotification types
-        [UMessage registerForRemoteNotificationTypes: UIRemoteNotificationTypeBadge
-         | UIRemoteNotificationTypeSound
-         | UIRemoteNotificationTypeAlert];
-    }
+    //注册通知，如果要使用category的自定义策略，可以参考demo中的代码。
+    [UMessage registerForRemoteNotifications];
     
-#else
-    
-    //register remoteNotification types
-    [UMessage registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge
-     |UIRemoteNotificationTypeSound
-     |UIRemoteNotificationTypeAlert];
-    
-#endif
+    //iOS10必须加下面这段代码。
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate=self;
+    UNAuthorizationOptions types10=UNAuthorizationOptionBadge|  UNAuthorizationOptionAlert|UNAuthorizationOptionSound;
+    [center requestAuthorizationWithOptions:types10     completionHandler:^(BOOL granted, NSError * _Nullable error) {
+        if (granted) {
+            //点击允许
+            //这里可以添加一些自己的逻辑
+            
+            NSLog(@"允许推送。。。");
+        } else {
+            //点击不允许
+            //这里可以添加一些自己的逻辑
+            NSLog(@"不允许推送...");
+        }
+    }];
     //for log
     [UMessage setLogEnabled:YES];
     
-    NSDictionary* remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (remoteNotification) { // 说明有通知
-        NSLog(@"---userInfo---%@", remoteNotification);
-        _url = remoteNotification[@"1"];
-        UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:remoteNotification[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
-        [alertView show];
+    if ([[[UIDevice currentDevice] systemVersion] intValue ] < 10) {
+        // 如果是iOS10以下
+        NSLog(@"版本小于10。。。");
+        NSDictionary* remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        if (remoteNotification) { // 说明有通知
+            NSLog(@"---userInfo---%@", remoteNotification);
+            _url = remoteNotification[@"1"];
+            UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:remoteNotification[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
+            [alertView show];
+            
+        } else
+        {
+            NSLog(@"没有通知...");
+        }
+    }else{
         
-    } else
-    {
-        NSLog(@"没有通知...");
+        NSLog(@"版本大于10.。。");
     }
+    
     
     // 友盟统计
     [MobClick setLogEnabled:YES];
@@ -186,12 +173,11 @@
     
 }
 
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-{
-    //如果注册不成功，打印错误信息，可以在网上找到对应的解决方案
-    //如果注册成功，可以删掉这个方法
-    NSLog(@"application:didFailToRegisterForRemoteNotificationsWithError: %@", error);
-}
+//iOS10以下使用这个方法接收通知
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+//{
+//    [UMessage didReceiveRemoteNotification:userInfo];
+//}
 
 // 接收到远程推送调用此方法（前提：程序在运行中）
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
@@ -201,18 +187,18 @@
     [UMessage setAutoAlert:NO];
     
     [UMessage didReceiveRemoteNotification:userInfo];
-//    NSLog(@"---userInfo---%@", userInfo);
+    //    NSLog(@"---userInfo---%@", userInfo);
     NSString * string1 = userInfo[@"1"];
-//    NSLog(@"---string---%@", string1);
+    //    NSLog(@"---string---%@", string1);
     _url = string1;
     // 应用在前台 或者后台开启状态下，不跳转页面，让用户选择。
     if (application.applicationState == UIApplicationStateActive || application.applicationState == UIApplicationStateBackground) {
-//        NSLog(@"acitve or background");
+        //        NSLog(@"acitve or background");
         UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:userInfo[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
         [alertView show];
         
     }
-    else//杀死状态下，直接跳转到跳转页面。
+    else//后台运行状态下，直接跳转到跳转页面。
     {
         NSLog(@"直接跳转...");
         if ([self.delegate respondsToSelector:@selector(pushToViewControllerWithURL:)]) {
@@ -221,8 +207,58 @@
             NSLog(@"跳转时，AppDelegate的代理没有响应...");
         }
     }
-
+    
 }
+
+
+// 处理前台收到通知的代理方法
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler{
+    
+    NSDictionary * userInfo = notification.request.content.userInfo;
+    if ([notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
+        
+        // 应用处于前台时的远程推送接受
+        // 必须添加这行代码
+        [UMessage didReceiveRemoteNotification:userInfo];
+        NSLog(@"前台。。。");
+        NSString * str = userInfo[@"1"];
+        _url = str;
+        UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:userInfo[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
+        [alertView show];
+    }else{
+        
+        // 应用处于前台时的本地推送接受
+    }
+}
+
+// 处理后台点击通知的代理方法
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
+    
+    NSDictionary * userInfo = response.notification.request.content.userInfo;
+    if ([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
+        
+        // 应用处于后台时的远程推送接受
+        // 必须添加这行代码
+        [UMessage didReceiveRemoteNotification:userInfo];
+        
+        NSString * str = userInfo[@"1"];
+        _url = str;
+        NSLog(@"后台");
+        UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:userInfo[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
+        [alertView show];
+    }else{
+        
+        // 应用处于后台时的本地推送接受
+    }
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    //如果注册不成功，打印错误信息，可以在网上找到对应的解决方案
+    //如果注册成功，可以删掉这个方法
+    NSLog(@"application:didFailToRegisterForRemoteNotificationsWithError: %@", error);
+}
+
 
 #pragma mark --- 设置友盟分享
 - (void)setUpUMShare{

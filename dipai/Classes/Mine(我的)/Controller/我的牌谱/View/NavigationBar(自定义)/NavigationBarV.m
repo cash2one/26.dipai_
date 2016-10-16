@@ -88,7 +88,7 @@
         make.right.equalTo(self.mas_right).offset(- 15 * IPHONE6_W_SCALE);
         make.top.equalTo(self.mas_top).offset(20);
         make.bottom.equalTo(self.mas_bottom);
-        make.width.equalTo(@(50 * IPHONE6_W_SCALE));
+        make.width.equalTo(@(100 * IPHONE6_W_SCALE));
     }];
     
     // 新建按钮

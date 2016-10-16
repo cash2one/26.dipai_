@@ -18,16 +18,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     // 设置导航栏
-    [self setUpNavigationBar];
-}
-#pragma mark --- 设置导航栏
-- (void)setUpNavigationBar{
-    
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-    
-}
-- (void)pop{
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

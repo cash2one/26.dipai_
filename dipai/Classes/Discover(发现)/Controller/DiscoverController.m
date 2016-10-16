@@ -173,12 +173,7 @@
     // 添加轮播页
     [self addBannerView];
      UIView *footerV = [[UIView alloc] init];
-    if (HEIGHT == 736.f) {  // 如果是6P的屏幕
-        footerV.frame = CGRectMake(0, 0, WIDTH, 49*IPHONE6_H_SCALE + 30);
-    }else{
-        footerV.frame = CGRectMake(0, 0, WIDTH, 49);
-    }
-   
+    footerV.frame = CGRectMake(0, 0, WIDTH, 49);
 //    footerV.backgroundColor = [UIColor redColor];
     self.tableView.tableFooterView = footerV;
     // 添加CollectionView
@@ -420,19 +415,18 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSLog(@"%lu", indexPath.row);
+//    NSLog(@"%lu", indexPath.row);
 }
 #pragma mark --- 单元格的高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
     if (self.videoModelArr.count > 0) {
         if (indexPath.row == 0) {   // navigation单元格
             return 90 * IPHONE6_H_SCALE;
-        } else if (indexPath.row == 1){ // 热门专辑单元格
+        } else if (indexPath.row == 1){ // 视频专辑单元格
             return 680 * 0.5 * IPHONE6_H_SCALE;
-        } else{
-            
-            NSLog(@"%lu", self.videoModelArr.count);
-            
+        } else{ // 热门视频
+//            NSLog(@"%lu", self.videoModelArr.count);
             WSOPModel * wsopModel = self.videoModelArr[indexPath.row - 2];
             NSInteger videoNum = wsopModel.data.count;
             // 获取data数组中的个数即专辑个数即能获得此单元格的高
@@ -443,13 +437,13 @@
             } else{
                 j = videoNum / 2 + 1;
             }
-            NSLog(@"专辑中视频个数：%lu", j);
-            return 30 + 291 * 0.5 * j;
+//            NSLog(@"专辑中视频个数：%lu", j);
+            return (30 + 291 * 0.5 * j)*IPHONE6_H_SCALE;
         }
     } else{
         if (indexPath.row == 0) {   // navigation单元格
             return 180 * 0.5 * IPHONE6_H_SCALE;
-        } else if (indexPath.row == 1){ // 热门专辑单元格
+        } else if (indexPath.row == 1){ // 视频专辑单元格
             return 680 * 0.5 * IPHONE6_H_SCALE;
         } else{
             return 100;
@@ -459,7 +453,7 @@
 
 #pragma WSOPTableViewCellDelegate
 - (void)turnPageToVideoDetailWith:(NSString *)wapurl{
-    NSLog(@"%@", wapurl);
+//    NSLog(@"%@", wapurl);
     VideoViewController * videoVC = [[VideoViewController alloc] init];
     videoVC.url = wapurl;
     videoVC.hidesBottomBarWhenPushed = YES;

@@ -775,6 +775,15 @@
     // 加载完成后消失
 //    [SVProgressHUD dismiss];
     NSLog(@"加载完成...");
+    
+    
+    // 用户判断登录后是否是同一个cookie
+//    NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+//    for (NSHTTPCookie * cookie in cookies) {
+//        NSString * name = [cookie name];
+//        NSLog(@"---name---%@", name);
+//        
+//    }
 
 }
 

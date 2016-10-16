@@ -193,7 +193,7 @@
     [cancelBtn addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
     
     // 发送按钮
-    UILabel * sendLbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 30*IPHONE6_W_SCALE, 44)];
+    UILabel * sendLbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 30*IPHONE6_W_SCALE+2, 44)];
     sendLbl.font = Font15;
     sendLbl.text = @"发布";
     sendLbl.textColor = Color178;

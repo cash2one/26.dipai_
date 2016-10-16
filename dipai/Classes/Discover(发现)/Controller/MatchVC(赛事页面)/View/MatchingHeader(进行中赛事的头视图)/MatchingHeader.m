@@ -160,7 +160,7 @@
     [super layoutSubviews];
     
     [_picView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.mas_left);
+        make.left.equalTo(self.mas_left).offset(-1);
         make.right.equalTo(self.mas_right);
         make.top.equalTo(self.mas_top);
         make.bottom.equalTo(self.mas_bottom);

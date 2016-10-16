@@ -98,6 +98,11 @@
 #import "HotVideoModel.h"
 // 视频专辑页面模型
 #import "AlbumVideoModel.h"
+
+/*****************会员中心*****************/
+// 用户数据模型
+#import "MemberDataModel.h"
+
 @implementation DataTool
 #pragma mark --- 首页下拉刷新
 + (void)getNewDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure
@@ -1262,6 +1267,41 @@
         }
     }];
 }
+
+/************************会员中心********************/
++ (void)getMemberCenterDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"1"]) { // 登录
+            
+            NSDictionary * dataDic = responseObject[@"data"];
+            
+            // 字典转模型
+            MemberDataModel * dataModel = [MemberDataModel objectWithKeyValues:dataDic];
+            
+            if (success) {
+                success(dataModel);
+            }
+            
+        }
+        if ([state isEqualToString:@"99"]) {    // 未登录
+            if (success) {
+                success(@"未登录");
+            }
+            
+        }
+        
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+        
+    }];
+}
+
 @end
 
 

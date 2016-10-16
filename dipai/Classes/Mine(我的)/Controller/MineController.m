@@ -21,6 +21,8 @@
 #import "AccountViewController.h"
 // 粉丝列表和关注列表
 #import "MorePokersVC.h"
+// 通知中心
+#import "NotificationVC.h"
 
 // 我的牌谱页面
 #import "MyPokersVC.h"
@@ -298,18 +300,41 @@
     CGFloat headerH = 235 * IPHONE6_H_SCALE;
     UIImageView * headerView = [[UIImageView alloc] initWithFrame:CGRectMake(headerX, headerY, headerW, headerH)];
     headerView.image = [UIImage imageNamed:@"weidenglu_beijing"];
+    [self.view addSubview:headerView];
     
     // 设置按钮
     UIButton * settingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    settingBtn.backgroundColor= [UIColor redColor];
+    UIImageView * btnimage = [[UIImageView alloc] init];
     CGFloat btnX = WIDTH - 15 - 21;
     CGFloat btnY = (40 + 23) / 2;
     CGFloat btnW = 21 * IPHONE6_W_SCALE;
     CGFloat btnH = 21 * IPHONE6_W_SCALE;
-    settingBtn.frame = CGRectMake(btnX, btnY, btnW, btnH);
-    [settingBtn setImage:[UIImage imageNamed:@"shezhi"] forState:UIControlStateNormal];
+    btnimage.frame = CGRectMake(btnX, btnY, btnW, btnH);
+    btnimage.image = [UIImage imageNamed:@"shezhi"];
     [settingBtn addTarget:self action:@selector(settings) forControlEvents:UIControlEventTouchUpInside];
     headerView.userInteractionEnabled = YES;
+    [headerView addSubview:btnimage];
     [headerView addSubview:settingBtn];
+    [settingBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(btnimage.mas_left).offset(-50);
+        make.top.equalTo(btnimage.mas_top).offset(-10);
+        make.bottom.equalTo(btnimage.mas_bottom).offset(20);
+        make.right.equalTo(btnimage.mas_right).offset(10);
+    }];
+    
+    // 左侧通知中心按钮
+    UIButton * notiBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [headerView addSubview:notiBtn];
+    [notiBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).offset(20);
+        make.left.equalTo(self.view.mas_left);
+        make.width.equalTo(@(50));
+        make.height.equalTo(@(50));
+    }];
+    notiBtn.backgroundColor = [UIColor redColor];
+    [notiBtn setTitle:@"通知中心" forState:UIControlStateNormal];
+    [notiBtn addTarget:self action:@selector(seeNotiCenter) forControlEvents:UIControlEventTouchUpInside];
     
     // 登录头像
     UIButton * iconBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -340,7 +365,6 @@
     [picBtn addTarget:self action:@selector(showBigFace) forControlEvents:UIControlEventTouchUpInside];
     _picBtn = picBtn;
     
-    [self.view addSubview:headerView];
     // 登录状态的label
     UILabel * loginLbl = [[UILabel alloc] init];
 //    loginLbl.backgroundColor = [UIColor redColor];
@@ -756,6 +780,15 @@
     SettingViewController * settingVC = [[SettingViewController alloc] init];
     settingVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:settingVC animated:YES];
+}
+
+// 跳转到通知中心页面
+- (void)seeNotiCenter{
+    
+    NotificationVC * notiVC = [[NotificationVC alloc] init];
+    notiVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:notiVC animated:YES];
+    
 }
 
 #pragma mark --- 登录事件

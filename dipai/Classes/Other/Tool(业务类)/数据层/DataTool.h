@@ -137,4 +137,9 @@
 // 删除牌谱
 + (void)deletePokerWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
+
+/************************会员中心********************/
+// 获取会员中心首页数据
++ (void)getMemberCenterDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
 @end
