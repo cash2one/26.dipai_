@@ -59,9 +59,11 @@
 
 - (void)setPlaceHolderX:(float)placeHolderX{
     _placeHolderX = placeHolderX;
+    self.placeHolderLabel.x = _placeHolderX;
 }
 - (void)setPlaceHolderY:(float)placeHolderY{
     _placeHolderY = placeHolderY;
+     self.placeHolderLabel.y = _placeHolderY;
 }
 
 - (void)setLeftViewX:(float)leftViewX{
@@ -72,11 +74,14 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    if (_placeHolderX) {
+    NSLog(@"%f", _placeHolderX);
+    if (_placeHolderX > 0.0) {
         self.placeHolderLabel.x = _placeHolderX;
         self.placeHolderLabel.y = _placeHolderY;
         
     } else{
+//        self.placeHolderLabel.x =0;
+//        self.placeHolderLabel.y = 0;
         self.placeHolderLabel.x = Margin22 * IPHONE6_W_SCALE;
         self.placeHolderLabel.y = Margin30 * IPHONE6_H_SCALE;
 

@@ -10,4 +10,6 @@
 
 @interface GoodsDetailVC : NavigationHiddenVC
 
+@property (nonatomic, copy) NSString * url;
+
 @end

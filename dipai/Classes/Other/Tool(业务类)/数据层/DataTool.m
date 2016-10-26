@@ -102,6 +102,24 @@
 /*****************会员中心*****************/
 // 用户数据模型
 #import "MemberDataModel.h"
+// 会员等级模型
+#import "MemberLevelModel.h"
+// 礼遇模型
+#import "BenifitModel.h"
+
+/*****************积分商城*****************/
+// 商城模型
+#import "ShopMallModel.h"
+// 商城banner模型
+#import "ShopBannerModel.h"
+// 商城列表模型
+#import "ShopListModel.h"
+// 商城商品模型
+#import "ShopGoodsModel.h"
+// 商品详情模型
+#import "GoodsDetailModel.h"
+// 地址模型
+#import "AddressModel.h"
 
 @implementation DataTool
 #pragma mark --- 首页下拉刷新
@@ -1273,25 +1291,37 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        NSString * state = responseObject[@"state"];
-        if ([state isEqualToString:@"1"]) { // 登录
-            
-            NSDictionary * dataDic = responseObject[@"data"];
-            
-            // 字典转模型
-            MemberDataModel * dataModel = [MemberDataModel objectWithKeyValues:dataDic];
-            
-            if (success) {
-                success(dataModel);
-            }
-            
+
+        NSDictionary * dataDic = responseObject[@"data"];
+        // 字典转模型
+        MemberDataModel * dataModel = [MemberDataModel objectWithKeyValues:dataDic];
+        dataModel.user_info = dataDic[@"user_info"];
+        dataModel.list = dataDic[@"list"];
+        
+        if (success) {
+            success(dataModel);
         }
-        if ([state isEqualToString:@"99"]) {    // 未登录
-            if (success) {
-                success(@"未登录");
-            }
-            
-        }
+        
+//        NSDictionary * dataDic = responseObject[@"data"];
+//        
+//        if (![dataDic[@"user_info"]  isKindOfClass:[NSNull class]]) { // 登录
+//            
+//            NSDictionary * dataDic = responseObject[@"data"];
+//            // 字典转模型
+//            MemberDataModel * dataModel = [MemberDataModel objectWithKeyValues:dataDic];
+//            dataModel.user_info = dataDic[@"user_info"];
+//            dataModel.list = dataDic[@"list"];
+//            
+//            if (success) {
+//                success(dataModel);
+//            }
+//            
+//        }else{
+//            
+//            if (success) {
+//                success(@"未登录");
+//            }
+//        }
         
     } failure:^(NSError *error) {
         
@@ -1302,6 +1332,236 @@
     }];
 }
 
+// 获取会员等级页面
++ (void)getMemberLevelDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSString * msg = responseObject[@"msg"];
+        if ([msg isEqualToString:@"success"]) { // 登录
+            
+            NSDictionary * dataDic = responseObject[@"data"];
+            // 用户等级信息
+            NSDictionary * user_infoDic = dataDic[@"user_info"];
+            // 字典转模型
+            MemberLevelModel * levelModel = [MemberLevelModel objectWithKeyValues:user_infoDic];
+            // 礼遇数组
+            NSArray * benifitArr = dataDic[@"grade"];
+            // 字典数组转模型数组
+            NSArray * beniModelArr = [BenifitModel objectArrayWithKeyValuesArray:benifitArr];
+            
+            NSMutableArray * dataArr = [NSMutableArray array];
+            [dataArr addObject:levelModel];
+            [dataArr addObject:beniModelArr];
+            if (success) {
+                success(dataArr);
+            }
+            
+        }else{
+            
+            if (success) {
+                success(@"获取失败");
+            }
+        }
+        
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取礼遇详情页
++ (void)getBenefitDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSString * msg = responseObject[@"msg"];
+        if ([msg isEqualToString:@"success"]) { // 登录
+            
+            NSDictionary * dataDic = responseObject[@"data"];
+            
+            if (success) {
+                success(dataDic);
+            }
+            
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取全部礼遇
++ (void)getAllBenefitsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+//        NSLog(@"%@", responseObject);
+        
+        NSString * msg = responseObject[@"msg"];
+        if ([msg isEqualToString:@"success"]) { // 登录
+            
+            NSDictionary * dataDic = responseObject[@"data"];
+            NSLog(@"%@", dataDic);
+            if (success) {
+                success(dataDic);
+            }
+            
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+
+/**************************积分商城**************************/
+// 获取商城首页数据
++ (void)getShoppingMallDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSDictionary * dataDic = responseObject[@"data"];
+        
+        // 字典数组转模型数组
+        NSArray * bannerArr = dataDic[@"banner"];
+        NSArray * bannerModelArr = [ShopBannerModel objectArrayWithKeyValuesArray:bannerArr];
+        NSArray * listArr = dataDic[@"list"];
+        NSArray * listModelArr = [ShopListModel objectArrayWithKeyValuesArray:listArr];
+        
+        ShopMallModel * mallModel = [[ShopMallModel alloc] init];
+        mallModel.banner = bannerModelArr;
+        mallModel.list = listModelArr;
+        if (success) {
+            success(mallModel);
+        }
+        
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取更多商品数据
++ (void)getMoreGoodsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSArray * dataArr = responseObject[@"data"];
+        // 字典数组转模型数组
+        NSArray * modelArr = [ShopGoodsModel objectArrayWithKeyValuesArray:dataArr];
+        
+        if (success) {
+            success(modelArr);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取商品详细数据
++ (void)getGoodsDetailMessageWIthStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSDictionary * dataDic = responseObject[@"data"];
+        // 字典转模型
+        GoodsDetailModel * model = [GoodsDetailModel objectWithKeyValues:dataDic];
+        if (success) {
+            success(model);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取订单确认数据
++ (void)getOrderSureDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+//        NSLog(@"%@", responseObject);
+        NSDictionary * dataDic = responseObject[@"data"];
+        if (success) {
+            success(dataDic);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 获取所有地址列表数据
++ (void)getAllAddressDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        NSArray * dataArr = responseObject[@"data"];
+//        NSLog(@"dataArr:%@", dataArr);
+        
+        if ([dataArr isKindOfClass:[NSNull class]] || dataArr.count == 0) {
+            if (success) {
+                success(dataArr);
+            }
+        }else{
+            // 字典数组转模型数据
+            NSArray * modelArr = [AddressModel objectArrayWithKeyValuesArray:dataArr];
+            if (success) {
+                success(modelArr);
+            }
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 提交地址
++ (void)postAddressWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool POST:URLString parameters:parameters success:^(id responseObject) {
+        
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+// 添加默认地址
++ (void)addDefaultAddWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+       
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
 @end
 
 

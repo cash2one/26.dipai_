@@ -141,5 +141,26 @@
 /************************会员中心********************/
 // 获取会员中心首页数据
 + (void)getMemberCenterDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取会员等级页面数据
++ (void)getMemberLevelDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取礼遇详情页
++ (void)getBenefitDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取全部礼遇
++ (void)getAllBenefitsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
+/************************积分商城********************/
+// 获取商城首页数据
++ (void)getShoppingMallDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取更多商品数据
++ (void)getMoreGoodsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取商品详细数据
++ (void)getGoodsDetailMessageWIthStr:(NSString * )URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取确认订单页面数据
++ (void)getOrderSureDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取所有地址列表数据
++ (void)getAllAddressDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 提交地址
++ (void)postAddressWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 添加默认地址
++ (void)addDefaultAddWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 @end

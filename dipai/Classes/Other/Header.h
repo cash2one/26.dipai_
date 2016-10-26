@@ -175,6 +175,21 @@
 #define BenifitsDetail @"http://dipaiapp.replays.net/app/view/courtesy/1/1 "
 //#define BenifitsDetail @"http://dpapp.replays.net/app/view/courtesy/1/1 "
 
+/*************************积分商城*************************/
+// 商城首页
+#define ShoppingMallURL @"http://dipaiapp.replays.net/app/home/goods"
+//#define ShoppingMallURL @"http://dpapp.replays.net/app/home/goods"
+// 确认订单
+#define OrderSureURL @"http://dipaiapp.replays.net/app/order/action"
+//#define OrderSureURL @"http://dpapp.replays.net/app/order/action"
+// 地址列表
+#define AddressListURL @"http://dipaiapp.replays.net/app/address/list"
+//#define AddressListURL @"http://dpapp.replays.net/app/address/list"
+// 提交地址
+#define AddAddressURL @"http://dipaiapp.replays.net/app/address/add"
+// 添加默认地址
+#define AddDefaAddressURL @"http://dipaiapp.replays.net/app/address/default"
+
 
 //#define UserName @"username"
 //#define PassWord @"password"

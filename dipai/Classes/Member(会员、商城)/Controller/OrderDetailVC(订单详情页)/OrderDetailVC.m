@@ -10,17 +10,118 @@
 
 // 选择收货地址
 #import "SelectAddressVC.h"
-@interface OrderDetailVC ()
 
+#import "Masonry.h"
+#import "DataTool.h"
+#import "UIImageView+WebCache.h"
+@interface OrderDetailVC ()
+// 添加地址提示
+@property (nonatomic, strong) UILabel * alertLbl;
+// 用户姓名
+@property (nonatomic, strong) UILabel * nameLbl;
+// 用户电话
+@property (nonatomic, strong) UILabel * numLbl ;
+// 用户地址
+@property (nonatomic, strong) UILabel * addressLbl;
+// 商品名称
+@property (nonatomic, strong) UILabel * goodNameL;
+// 商品图片
+@property (nonatomic, strong)  UIImageView * goodsImage;
+// 商品积分
+@property (nonatomic, strong) UILabel * goodsNumL;
+// 账户总积分
+@property (nonatomic, strong) UILabel * allNumLbl ;
+// 积分消耗
+@property (nonatomic, strong) UILabel * needNumLbl;
+// 提交订单按钮
+@property (nonatomic, strong) UIButton * submitBtn;
+
+// 数据字典
+@property (nonatomic, strong) NSDictionary * dataDic;
 @end
 
 @implementation OrderDetailVC
+
+- (NSDictionary *)dataDic{
+    
+    if (_dataDic == nil) {
+        _dataDic = [NSDictionary dictionary];
+    }
+    return _dataDic;
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    
+    // 每次进入此页面都要进行数据的刷新，因为当前用户积分随时可能发生变化
+    [self getData];
+}
+
+- (void)getData{
+    
+    NSString * url = [OrderSureURL stringByAppendingString:[NSString stringWithFormat:@"/%@",self.goodID]];
+    [DataTool getOrderSureDataWithStr:url parameters:nil success:^(id responseObject) {
+        
+//        NSLog(@"%@", responseObject);
+        self.dataDic = responseObject;
+        [self setData];
+    } failure:^(NSError * error) {
+        
+        NSLog(@"获取数据的错误信息：%@", error);
+    }];
+}
+
+- (void)setData{
+    
+    // 默认地址
+    NSDictionary * addressDic = self.dataDic[@"address"];
+    if ([addressDic isKindOfClass:[NSNull class]] || self.dataDic.count == 0) {    // 如果没有默认地址
+        
+        _alertLbl.hidden = NO;
+        
+        _nameLbl.hidden = YES;
+        _addressLbl.hidden = YES;
+    }else{
+        
+        _alertLbl.hidden = YES;
+        
+        _nameLbl.hidden = NO;
+        _addressLbl.hidden = NO;
+        _nameLbl.text = [NSString stringWithFormat:@"%@  %@", addressDic[@"address_name"], addressDic[@"mobile"]];
+        _addressLbl.text = [NSString stringWithFormat:@"%@%@", addressDic[@"district"], addressDic[@"address"]];
+    }
+    
+    // 商品信息
+    NSDictionary * goodsDic = self.dataDic[@"goods"];
+    [_goodsImage sd_setImageWithURL:[NSURL URLWithString:goodsDic[@"goods_img"]] placeholderImage:[UIImage imageNamed:@"123"]];
+    _goodNameL.text = goodsDic[@"goods_name"];
+    [_goodNameL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left).offset(274 * 0.5 * IPHONE6_W_SCALE);
+        make.top.equalTo(_goodsImage.mas_top).offset(3 * IPHONE6_H_SCALE);
+        make.right.equalTo(self.view.mas_right).offset(-15 * IPHONE6_W_SCALE);
+    }];
+    NSMutableAttributedString * goodsNumStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", goodsDic[@"shop_price"]]];
+    [goodsNumStr addAttribute:NSFontAttributeName value:Font12 range:NSMakeRange(0, 3)];
+    _goodsNumL.attributedText = goodsNumStr;
+    
+    NSMutableAttributedString * needNumStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分消耗：%@", goodsDic[@"shop_price"]]];
+    [needNumStr addAttribute:NSFontAttributeName value:Font12 range:NSMakeRange(0, 5)];
+    [needNumStr addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, 5)];
+    _needNumLbl.attributedText = needNumStr;
+    
+    // 积分总数和提交订单地址
+    NSDictionary * infoDic = self.dataDic[@"info"];
+    _allNumLbl.text = infoDic[@"sum_integral"];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self setNavigationBar];
+    [self setUpUI];
+    NSLog(@"goodID:%@", self.goodID);
 }
 
 - (void)setNavigationBar{
@@ -31,12 +132,303 @@
     
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+- (void)setUpUI{
+    
+    UIView * addressV = [[UIView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 75 * IPHONE6_H_SCALE)];
+    addressV.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:addressV];
+    
+    // 添加地址提示
+    UILabel * alertLbl = [[UILabel alloc] init];
+    alertLbl.font = Font14;
+    alertLbl.text = @"请添加收货地址";
+    [addressV addSubview:alertLbl];
+    [alertLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(addressV.mas_left).offset(13 * IPHONE6_W_SCALE);
+        make.top.equalTo(addressV.mas_top);
+        make.bottom.equalTo(addressV.mas_bottom);
+        make.width.equalTo(@(150 * IPHONE6_W_SCALE));
+    }];
+    _alertLbl = alertLbl;
+    
+    // 前进图标
+    UIImageView * accessV = [[UIImageView alloc] init];
+    accessV.userInteractionEnabled = YES;
+    accessV.image = [UIImage imageNamed:@"qianwangxinxi"];
+    [addressV addSubview:accessV];
+    [accessV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(addressV.mas_centerY);
+        make.right.equalTo(addressV.mas_right).offset(-15 * IPHONE6_W_SCALE);
+        make.width.equalTo(@(9 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(18 * IPHONE6_W_SCALE));
+    }];
+    // 添加地址按钮
+    UIButton * addressBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    addressBtn.backgroundColor = [UIColor clearColor];
+    [addressBtn addTarget:self action:@selector(addAddressAction) forControlEvents:UIControlEventTouchUpInside];
+    [addressV addSubview:addressBtn];
+    [addressBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(addressV.mas_left);
+        make.right.equalTo(addressV.mas_right);
+        make.top.equalTo(addressV.mas_top);
+        make.bottom.equalTo(addressV.mas_bottom);
+    }];
+    
+    // 默认地址信息
+    UILabel * nameLbl = [[UILabel alloc] init];
+    nameLbl.font = Font14;
+    [addressV addSubview:nameLbl];
+    [nameLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(addressV.mas_left).offset(15 * IPHONE6_W_SCALE);
+        make.top.equalTo(addressV.mas_top).offset(21 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 15 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(14 * IPHONE6_H_SCALE));
+    }];
+    _nameLbl = nameLbl;
+    
+    UILabel * numLbl = [[UILabel alloc] init];
+    [addressV addSubview:numLbl];
+    _numLbl = numLbl;
+    
+    UILabel * addressLbl = [[UILabel alloc] init];
+    addressLbl.font = Font12;
+    addressLbl.textColor = Color153;
+    [addressV addSubview:addressLbl];
+    [addressLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(nameLbl.mas_left);
+        make.top.equalTo(nameLbl.mas_bottom).offset(9 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 15 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(12 * IPHONE6_W_SCALE));
+    }];
+    _addressLbl = addressLbl;
+    
+    
+    // 分割线
+    UIView * sapareteV1 = [[UIView alloc] init];
+    sapareteV1.backgroundColor = SeparateColor;
+    [self.view addSubview:sapareteV1];
+    [sapareteV1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.top.equalTo(addressV.mas_bottom);
+        make.height.equalTo(@(10 * IPHONE6_H_SCALE));
+    }];
+    
+    // 购买商品
+    UIView * buyV = [[UIView alloc] init];
+    buyV.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:buyV];
+    [buyV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.top.equalTo(sapareteV1.mas_bottom);
+        make.height.equalTo(@(81 * IPHONE6_H_SCALE * 0.5));
+    }];
+    UILabel * buyLbl = [[UILabel alloc] init];
+    buyLbl.font = Font15;
+    buyLbl.text = @"购买商品";
+    [buyV addSubview:buyLbl];
+    [buyLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(buyV.mas_left).offset(15 * IPHONE6_W_SCALE);
+        make.top.equalTo(buyV.mas_top);
+        make.bottom.equalTo(buyV.mas_bottom).offset(-0.5 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 15 * IPHONE6_W_SCALE));
+    }];
+    //
+    UIView * line1 = [[UIView alloc] init];
+    line1.backgroundColor = Color229;
+    [buyV addSubview:line1];
+    [line1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(buyV.mas_left);
+        make.right.equalTo(buyV.mas_right);
+        make.bottom.equalTo(buyV.mas_bottom);
+        make.height.equalTo(@(0.5));
+    }];
+    
+    // 商品图片
+    UIImageView * goodsImage = [[UIImageView alloc] init];
+    goodsImage.backgroundColor = [UIColor redColor];
+    [self.view addSubview:goodsImage];
+    [goodsImage mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left).offset(15 * IPHONE6_W_SCALE);
+        make.top.equalTo(buyV.mas_bottom).offset(10 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(110 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(75 * IPHONE6_W_SCALE));
+    }];
+    _goodsImage = goodsImage;
+    
+    // 商品名称
+    UILabel * goodNameL = [[UILabel alloc] initWithFrame:CGRectZero];
+    goodNameL.font = Font12;
+    goodNameL.numberOfLines = 0;
+    goodNameL.preferredMaxLayoutWidth = WIDTH - 152 * IPHONE6_W_SCALE;
+    [goodNameL setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+    [self.view addSubview:goodNameL];
+    _goodNameL = goodNameL;
+    // 商品积分
+    UILabel * goodsNumL = [[UILabel alloc] init];
+    goodsNumL.textColor = [UIColor redColor];
+    [self.view addSubview:goodsNumL];
+    [goodsNumL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(goodsImage.mas_right).offset(12 * IPHONE6_W_SCALE);
+        make.bottom.equalTo(goodsImage.mas_bottom);
+        make.width.equalTo(@(WIDTH - 274 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+    }];
+    _goodsNumL = goodsNumL;
+    
+    UIView * line2 = [[UIView alloc] init];
+    line2.backgroundColor = SeparateColor;
+    [self.view addSubview:line2];
+    [line2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.top.equalTo(goodsImage.mas_bottom).offset(18 * IPHONE6_H_SCALE);
+        make.height.equalTo(@(0.5 * IPHONE6_H_SCALE));
+    }];
+    
+    UIView * allNumV = [[UIView alloc] init];
+    [self.view addSubview:allNumV];
+    [allNumV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.top.equalTo(line2.mas_bottom);
+        make.height.equalTo(@(40 * IPHONE6_H_SCALE));
+    }];
+    // 当前账户积分
+    UILabel * allNumL = [[UILabel alloc] init];
+    allNumL.text = @"账户当前积分";
+    allNumL.font = Font15;
+    [allNumV addSubview:allNumL];
+    [allNumL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(allNumV.mas_left).offset(15 * IPHONE6_W_SCALE);
+        make.top.equalTo(allNumV.mas_top);
+        make.bottom.equalTo(allNumV.mas_bottom);
+        make.width.equalTo(@(100 * IPHONE6_W_SCALE));
+    }];
+    
+    UILabel * allNumLbl = [[UILabel alloc] init];
+    allNumLbl.textAlignment = NSTextAlignmentRight;
+    allNumLbl.font = Font13;
+    [allNumV addSubview:allNumLbl];
+    [allNumLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(allNumV.mas_right).offset(-15 * IPHONE6_W_SCALE);
+        make.top.equalTo(allNumV.mas_top);
+        make.bottom.equalTo(allNumV.mas_bottom);
+        make.width.equalTo(@(WIDTH * 0.5));
+    }];
+    _allNumLbl = allNumLbl;
+    
+    UIView * separateV2 = [[UIView alloc] init];
+    separateV2.backgroundColor = SeparateColor;
+    [self.view addSubview:separateV2];
+    [separateV2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.top.equalTo(allNumV.mas_bottom);
+        make.height.equalTo(@(10 *IPHONE6_H_SCALE));
+    }];
+    
+    //
+    UILabel * messageLbl1 = [[UILabel alloc] init];
+    messageLbl1.text = @"提示：提交订单后，我们会在24小时之内为您发货，发货前会与您进";
+    messageLbl1.font = Font11;
+    messageLbl1.textColor = Color153;
+    [self.view addSubview:messageLbl1];
+    [messageLbl1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left).offset(15 * IPHONE6_W_SCALE);
+        make.right.equalTo(self.view.mas_right).offset(-15 * IPHONE6_W_SCALE);
+        make.top.equalTo(separateV2.mas_bottom).offset(30 * IPHONE6_H_SCALE);
+        make.height.equalTo(@(11 * IPHONE6_W_SCALE));
+    }];
+    UILabel * messageLbl2 = [[UILabel alloc] init];
+    messageLbl2.text = @"行电话确认订单信息，请确保所填写的电话号码准确无误。";
+    messageLbl2.font = Font11;
+    messageLbl2.textColor = Color153;
+    [self.view addSubview:messageLbl2];
+    [messageLbl2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left).offset(48 * IPHONE6_W_SCALE);
+        make.top.equalTo(messageLbl1.mas_bottom).offset(5 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(WIDTH - 48 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(11 * IPHONE6_W_SCALE));
+    }];
+    
+    UIView * backV = [[UIView alloc] init];
+    backV.backgroundColor = SeparateColor;
+    [self.view addSubview:backV];
+    [backV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.top.equalTo(messageLbl2.mas_bottom).offset(20 * IPHONE6_H_SCALE);
+        make.bottom.equalTo(self.view.mas_bottom);
+    }];
+    
+    
+    // 底部视图
+    UIView * bottomV = [[UIView alloc] init];
+    bottomV.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:bottomV];
+    [bottomV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.equalTo(self.view.mas_bottom);
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.height.equalTo(@(48 * IPHONE6_H_SCALE));
+    }];
+    
+    UIView * lineV = [[UIView alloc] init];
+    lineV.backgroundColor = Color216;
+    [bottomV addSubview:lineV];
+    [lineV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(bottomV.mas_left);
+        make.right.equalTo(bottomV.mas_right);
+        make.top.equalTo(bottomV.mas_top);
+        make.height.equalTo(@(0.5 * IPHONE6_H_SCALE));
+    }];
+    // 积分消耗
+    UILabel * needNumLbl = [[UILabel alloc] init];
+    needNumLbl.textColor = [UIColor redColor];
+    needNumLbl.textAlignment = NSTextAlignmentRight;
+    needNumLbl.font = Font14;
+    [bottomV addSubview:needNumLbl];
+    [needNumLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(bottomV.mas_top);
+        make.bottom.equalTo(bottomV.mas_bottom);
+        make.right.equalTo(bottomV.mas_right).offset(-157 * IPHONE6_W_SCALE);
+        make.width.equalTo(@(WIDTH - 157 * IPHONE6_W_SCALE));
+    }];
+    _needNumLbl = needNumLbl;
+    
+    // 提交订单按钮
+    UIButton * submitBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    submitBtn.backgroundColor = [UIColor redColor];
+    [submitBtn setTitle:@"提交订单" forState:UIControlStateNormal];
+    submitBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    submitBtn.titleLabel.textColor = [UIColor whiteColor];
+    [submitBtn addTarget:self action:@selector(submitAction) forControlEvents:UIControlEventTouchUpInside];
+    [bottomV addSubview:submitBtn];
+    [submitBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(bottomV.mas_right);
+        make.bottom.equalTo(bottomV.mas_bottom);
+        make.top.equalTo(bottomV.mas_top);
+        make.width.equalTo(@(140 * IPHONE6_H_SCALE));
+    }];
+    
+}
+// 提交订单事件
+- (void)submitAction{
+    
+    
+}
+
+// 添加地址事件
+- (void)addAddressAction{
     
     // 跳转到地址选择页面
     SelectAddressVC * selectAddressVC = [[SelectAddressVC alloc] init];
     [self.navigationController pushViewController:selectAddressVC animated:YES];
 }
+
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

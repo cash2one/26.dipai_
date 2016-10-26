@@ -9,5 +9,7 @@
 #import "NavigationHiddenVC.h"
 
 @interface OrderDetailVC : NavigationHiddenVC
+// 商品ID
+@property (nonatomic, copy) NSString * goodID;
 
 @end

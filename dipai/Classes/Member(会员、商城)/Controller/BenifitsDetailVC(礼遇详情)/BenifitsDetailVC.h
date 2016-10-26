@@ -9,5 +9,7 @@
 #import "NavigationHiddenVC.h"
 
 @interface BenifitsDetailVC : NavigationHiddenVC
+// 礼遇详情地址
+@property (nonatomic, copy) NSString * wapurl;
 
 @end
