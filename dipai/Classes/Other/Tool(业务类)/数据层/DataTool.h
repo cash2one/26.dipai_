@@ -143,10 +143,14 @@
 + (void)getMemberCenterDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 // 获取会员等级页面数据
 + (void)getMemberLevelDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取等级详情数据
++ (void)getDetailLevelDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 // 获取礼遇详情页
 + (void)getBenefitDetailDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 // 获取全部礼遇
 + (void)getAllBenefitsDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取积分支出／收入详情
++ (void)getDetailNumberDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
 /************************积分商城********************/
 // 获取商城首页数据
@@ -163,4 +167,8 @@
 + (void)postAddressWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 // 添加默认地址
 + (void)addDefaultAddWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 提交订单
++ (void)submitOrderWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+// 获取我的订单数据
++ (void)getMyOrdersWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 @end

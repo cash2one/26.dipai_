@@ -141,13 +141,13 @@
     
     // 详细内容
     UITextView * textV = [[UITextView alloc] init];
-    textV.backgroundColor = [UIColor redColor];
+//    textV.backgroundColor = [UIColor redColor];
     textV.userInteractionEnabled = NO;
     [self.view addSubview:textV];
     
     [textV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.view.mas_left).offset(15 * IPHONE6_W_SCALE);
-        make.top.equalTo(lineV.mas_bottom).offset(13 * IPHONE6_H_SCALE);
+        make.left.equalTo(self.view.mas_left).offset(15 * IPHONE6_W_SCALE-6.5);
+        make.top.equalTo(lineV.mas_bottom).offset(13 * IPHONE6_H_SCALE-10);
         make.width.equalTo(@(WIDTH - 30 * IPHONE6_W_SCALE));
         make.bottom.equalTo(self.view.mas_bottom);
     }];

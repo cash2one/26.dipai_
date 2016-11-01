@@ -168,12 +168,17 @@
 // 会员等级
 #define MemberLevel @"http://dipaiapp.replays.net/app/member/grade"
 //#define MemberLevel @"http://dpapp.replays.net/app/member/grade"
+// 等级详情
+#define DetailLevelURL @"http://dipaiapp.replays.net/app/member/grade/view"
+//#define DetailLevelURL @"http://dpapp.replays.net/app/member/grade/view"
 // 礼遇列表
 #define BenifitsList @"http://dipaiapp.replays.net/app/all/courtesy"
 //#define BenifitsList @"http://dpapp.replays.net/app/all/courtesy"
 // 礼遇详情
 #define BenifitsDetail @"http://dipaiapp.replays.net/app/view/courtesy/1/1 "
 //#define BenifitsDetail @"http://dpapp.replays.net/app/view/courtesy/1/1 "
+// 积分详情
+#define NumberDtailURL @"http://dipaiapp.replays.net/app/member/integra/view"
 
 /*************************积分商城*************************/
 // 商城首页
@@ -189,6 +194,10 @@
 #define AddAddressURL @"http://dipaiapp.replays.net/app/address/add"
 // 添加默认地址
 #define AddDefaAddressURL @"http://dipaiapp.replays.net/app/address/default"
+// 提交订单接口
+#define submitOrderURL @"http://dipaiapp.replays.net/app/order/confirm"
+// 我的订单列表
+#define MyOrderURL @"http://dipaiapp.replays.net/app/order/list"
 
 
 //#define UserName @"username"

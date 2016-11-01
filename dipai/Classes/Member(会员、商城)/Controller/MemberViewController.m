@@ -19,6 +19,8 @@
 #import "LoginViewController.h"
 // 更多商品页面
 #import "MoreGoodsVC.h"
+// 客服中心页面
+#import "ServerVC.h"
 // 活动控制器
 #import "SVProgressHUD.h"
 
@@ -137,13 +139,14 @@
 - (void)setUpNaviBar{
     
     UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    rightBtn.backgroundColor = [UIColor redColor];
     [rightBtn setImage:[UIImage imageNamed:@"wenti"] forState:UIControlStateNormal];
     [rightBtn addTarget:self action:@selector(problemAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:rightBtn];
     [rightBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.view.mas_right);
         make.bottom.equalTo(self.view.mas_top).offset(64);
-        make.width.equalTo(@(44 * IPHONE6_W_SCALE));
+        make.width.equalTo(@(44 * IPHONE6_W_SCALE + 10));
         make.height.equalTo(@(44 * IPHONE6_W_SCALE));
     }];
     [self addSegmentControl];
@@ -584,7 +587,10 @@
 // 问题按钮点击事件
 - (void)problemAction{
     
-    NSLog(@"问题...");
+//    NSLog(@"问题...");
+    ServerVC * serverVC = [[ServerVC alloc] init];
+    serverVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:serverVC animated:YES];
 }
 #pragma mark --- ShopCellDelegate
 // 跳转到更多商品页面

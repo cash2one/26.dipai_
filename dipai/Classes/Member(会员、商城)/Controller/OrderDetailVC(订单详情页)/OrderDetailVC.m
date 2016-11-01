@@ -14,6 +14,7 @@
 #import "Masonry.h"
 #import "DataTool.h"
 #import "UIImageView+WebCache.h"
+#import "SVProgressHUD.h"
 @interface OrderDetailVC ()
 // 添加地址提示
 @property (nonatomic, strong) UILabel * alertLbl;
@@ -61,9 +62,9 @@
 - (void)getData{
     
     NSString * url = [OrderSureURL stringByAppendingString:[NSString stringWithFormat:@"/%@",self.goodID]];
+    [NSThread sleepForTimeInterval:0.05];
     [DataTool getOrderSureDataWithStr:url parameters:nil success:^(id responseObject) {
         
-//        NSLog(@"%@", responseObject);
         self.dataDic = responseObject;
         [self setData];
     } failure:^(NSError * error) {
@@ -79,17 +80,15 @@
     if ([addressDic isKindOfClass:[NSNull class]] || self.dataDic.count == 0) {    // 如果没有默认地址
         
         _alertLbl.hidden = NO;
-        
         _nameLbl.hidden = YES;
         _addressLbl.hidden = YES;
     }else{
-        
-        _alertLbl.hidden = YES;
-        
-        _nameLbl.hidden = NO;
-        _addressLbl.hidden = NO;
+        NSLog(@"%@", addressDic[@"address_name"]);
         _nameLbl.text = [NSString stringWithFormat:@"%@  %@", addressDic[@"address_name"], addressDic[@"mobile"]];
         _addressLbl.text = [NSString stringWithFormat:@"%@%@", addressDic[@"district"], addressDic[@"address"]];
+        _alertLbl.hidden = YES;
+        _nameLbl.hidden = NO;
+        _addressLbl.hidden = NO;
     }
     
     // 商品信息
@@ -113,6 +112,21 @@
     // 积分总数和提交订单地址
     NSDictionary * infoDic = self.dataDic[@"info"];
     _allNumLbl.text = infoDic[@"sum_integral"];
+    
+    NSString * allNum = _allNumLbl.text;
+    NSString * goods_price = goodsDic[@"shop_price"];
+    int all = [allNum intValue];
+    int price = [goods_price intValue];
+    
+    if (all < price) {
+        [_submitBtn setTitle:@"积分不足" forState:UIControlStateNormal];
+        [_submitBtn setBackgroundColor:RGBA(255, 150, 150, 1)];
+        _submitBtn.userInteractionEnabled = NO;
+    }else{
+        [_submitBtn setTitle:@"提交订单" forState:UIControlStateNormal];
+        [_submitBtn setBackgroundColor:[UIColor redColor]];
+        _submitBtn.userInteractionEnabled = YES;
+    }
 }
 
 - (void)viewDidLoad {
@@ -182,7 +196,7 @@
         make.left.equalTo(addressV.mas_left).offset(15 * IPHONE6_W_SCALE);
         make.top.equalTo(addressV.mas_top).offset(21 * IPHONE6_H_SCALE);
         make.width.equalTo(@(WIDTH - 15 * IPHONE6_W_SCALE));
-        make.height.equalTo(@(14 * IPHONE6_H_SCALE));
+        make.height.equalTo(@(14 * IPHONE6_H_SCALE +2));
     }];
     _nameLbl = nameLbl;
     
@@ -191,6 +205,7 @@
     _numLbl = numLbl;
     
     UILabel * addressLbl = [[UILabel alloc] init];
+//    addressLbl.backgroundColor = [UIColor redColor];
     addressLbl.font = Font12;
     addressLbl.textColor = Color153;
     [addressV addSubview:addressLbl];
@@ -198,7 +213,7 @@
         make.left.equalTo(nameLbl.mas_left);
         make.top.equalTo(nameLbl.mas_bottom).offset(9 * IPHONE6_H_SCALE);
         make.width.equalTo(@(WIDTH - 15 * IPHONE6_W_SCALE));
-        make.height.equalTo(@(12 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(12 * IPHONE6_W_SCALE+2));
     }];
     _addressLbl = addressLbl;
     
@@ -247,7 +262,7 @@
     
     // 商品图片
     UIImageView * goodsImage = [[UIImageView alloc] init];
-    goodsImage.backgroundColor = [UIColor redColor];
+//    goodsImage.backgroundColor = [UIColor redColor];
     [self.view addSubview:goodsImage];
     [goodsImage mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.view.mas_left).offset(15 * IPHONE6_W_SCALE);
@@ -412,12 +427,26 @@
         make.top.equalTo(bottomV.mas_top);
         make.width.equalTo(@(140 * IPHONE6_H_SCALE));
     }];
-    
+    _submitBtn = submitBtn;
 }
 // 提交订单事件
 - (void)submitAction{
     
-    
+    NSLog(@"提交订单...");
+    NSDictionary * addressDic = self.dataDic[@"address"];
+    NSDictionary * goodsDic = self.dataDic[@"goods"];
+    NSMutableDictionary * parameters = [NSMutableDictionary dictionary];
+    parameters[@"goods_id"] =goodsDic[@"goods_id"]; // 商品ID
+    parameters[@"address_id"] = addressDic[@"address_id"];  // 地址ID
+    [DataTool submitOrderWithStr:submitOrderURL parameters:parameters success:^(id responseObject) {
+        
+        if ([responseObject[@"msg"] isEqualToString:@"success"]) {
+            [SVProgressHUD showSuccessWithStatus:@"提交成功"];
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+    } failure:^(NSError * error) {
+        NSLog(@"提交订单出错：%@", error);
+    }];
 }
 
 // 添加地址事件

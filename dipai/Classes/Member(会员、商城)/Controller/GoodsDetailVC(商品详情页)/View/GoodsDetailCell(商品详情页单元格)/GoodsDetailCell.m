@@ -56,7 +56,7 @@
     
     // 上方的banner图
     UIScrollView * scrollV = [[UIScrollView alloc] initWithFrame: CGRectMake(0, 0, WIDTH, 375 * IPHONE6_W_SCALE)];
-    scrollV.backgroundColor = [UIColor redColor];
+//    scrollV.backgroundColor = [UIColor redColor];
     scrollV.pagingEnabled = YES;
     scrollV.delegate = self;
     [self addSubview:scrollV];

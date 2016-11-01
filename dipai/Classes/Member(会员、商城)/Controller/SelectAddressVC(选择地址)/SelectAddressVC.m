@@ -20,10 +20,18 @@
 #import "DataTool.h"
 #import "SVProgressHUD.h"
 @interface SelectAddressVC ()<UITableViewDelegate, UITableViewDataSource>
+
+{
+    NSInteger _cellTag; //
+}
+
+
 // 表格
 @property (nonatomic, strong) UITableView * tableView;
 // 数据源
 @property (nonatomic, strong) NSMutableArray * dataSource;
+
+@property (nonatomic, strong) NSMutableArray * cellArr;
 
 @end
 
@@ -35,6 +43,14 @@
         _dataSource = [NSMutableArray array];
     }
     return _dataSource;
+}
+
+- (NSMutableArray *)cellArr{
+    
+    if (_cellArr == nil) {
+        _cellArr = [NSMutableArray array];
+    }
+    return _cellArr;
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -59,6 +75,8 @@
     [super viewDidLoad];
     self.view.backgroundColor = RGBA(240, 238, 245, 1);
     [self setNavigationBar];
+    
+    _cellTag = -1;
 }
 
 - (void)setNavigationBar{
@@ -124,7 +142,7 @@
 
 - (void) addTableView{
     
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 53 * IPHONE6_H_SCALE) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 53 * IPHONE6_H_SCALE-64) style:UITableViewStylePlain];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -142,6 +160,16 @@
     
     AddressCell * cell =  [AddressCell cellWithTableView:tableView];
     cell.addressModel = [self.dataSource objectAtIndex:indexPath.row];
+    cell.tag = indexPath.row;
+    if (_cellTag >= 0) {    // 如果重选了默认地址
+        if (cell.tag == _cellTag) {
+            cell.flagV.hidden = NO;
+        }else{
+            cell.flagV.hidden = YES;
+        }
+    }
+   
+    [self.cellArr addObject:cell];
     return cell;
 }
 
@@ -156,8 +184,16 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
+    for (AddressCell * cell in self.cellArr) {
+        cell.flagV.hidden = YES;
+    }
+    
     AddressCell * cell  =  [tableView cellForRowAtIndexPath:indexPath];
     cell.flagV.hidden = NO;
+    
+    NSLog(@"didTag--->%lu", cell.tag);
+    
+    _cellTag = cell.tag;
     AddressModel * model = [self.dataSource objectAtIndex:indexPath.row];
     // 选择默认地址
     NSString * url = [AddDefaAddressURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.address_id]];
@@ -165,13 +201,13 @@
         
         if ([responseObject[@"msg"] isEqualToString:@"success"]) {
             NSLog(@"选择默认地址成功..");
+//             [self.navigationController popViewControllerAnimated:YES];
         }
     } failure:^(NSError * error) {
        
         NSLog(@"选择默认地址出错：%@", error);
     }];
     // 返回
-    [self.navigationController popViewControllerAnimated:YES];
 }
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
     

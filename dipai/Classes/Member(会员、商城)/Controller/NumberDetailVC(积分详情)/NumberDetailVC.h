@@ -9,5 +9,9 @@
 #import "NavigationHiddenVC.h"
 
 @interface NumberDetailVC : NavigationHiddenVC
-
+/*
+ *
+ 可用积分
+ */
+@property (nonatomic, copy) NSString * count_integral;
 @end

@@ -23,6 +23,8 @@
 #import "MorePokersVC.h"
 // 通知中心
 #import "NotificationVC.h"
+// 我的订单页面
+#import "MyOrderVC.h"
 
 // 我的牌谱页面
 #import "MyPokersVC.h"
@@ -325,15 +327,15 @@
     
     // 左侧通知中心按钮
     UIButton * notiBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [notiBtn setImage:[UIImage imageNamed:@"icon_xiaoxi"] forState:UIControlStateNormal];
     [headerView addSubview:notiBtn];
     [notiBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view.mas_top).offset(20);
-        make.left.equalTo(self.view.mas_left);
-        make.width.equalTo(@(50));
-        make.height.equalTo(@(50));
+        make.top.equalTo(btnimage.mas_top).offset(-23 * 0.5 * IPHONE6_W_SCALE);
+        make.right.equalTo(btnimage.mas_left).offset(-23 * 0.5 * IPHONE6_W_SCALE);
+        make.width.equalTo(@(44 * IPHONE6_W_SCALE ));
+        make.height.equalTo(@(44 * IPHONE6_W_SCALE ));
     }];
-    notiBtn.backgroundColor = [UIColor redColor];
-    [notiBtn setTitle:@"通知中心" forState:UIControlStateNormal];
+//    notiBtn.backgroundColor = [UIColor redColor];
     [notiBtn addTarget:self action:@selector(seeNotiCenter) forControlEvents:UIControlEventTouchUpInside];
     
     // 登录头像
@@ -562,6 +564,12 @@
     [self.view addSubview:commentsView];
     _commentsView = commentsView;
     
+    UIView * separateV2 = [[UIView alloc] init];
+    separateV2.backgroundColor = SeparateColor;
+    CGFloat separateV2H = CGRectGetMaxY(commentsView.frame);
+    separateV2.frame = CGRectMake(0, separateV2H, WIDTH, 10 * IPHONE6_H_SCALE);
+    [self.view addSubview:separateV2];
+    
     // 我的牌谱
     ClickView * pokersView = [[ClickView alloc] init];
     pokersView.picName = @"wodepaipu";
@@ -569,12 +577,21 @@
     pokersView.w = 16 * IPHONE6_W_SCALE;
     [pokersView.btn addTarget:self action:@selector(turePageToMyPokers) forControlEvents:UIControlEventTouchUpInside];
     CGFloat pokersX = postX;
-    CGFloat pokersY = CGRectGetMaxY(commentsView.frame);
+    CGFloat pokersY = CGRectGetMaxY(separateV2.frame);
     CGFloat pokersW = postW;
     CGFloat pokersH = postH;
     pokersView.frame = CGRectMake(pokersX, pokersY, pokersW, pokersH);
     [self.view addSubview:pokersView];
     
+    // 我的订单
+    ClickView * orderView = [[ClickView alloc] init];
+    orderView.picName = @"wodedingdan";
+    orderView.message = @"我的订单";
+    orderView.w = 16 * IPHONE6_W_SCALE;
+    [orderView.btn addTarget:self action:@selector(turnPageToMyOrder) forControlEvents:UIControlEventTouchUpInside];
+    CGFloat orderH = CGRectGetMaxY(pokersView.frame);
+    orderView.frame = CGRectMake(0, orderH, WIDTH, pokersH);
+    [self.view addSubview:orderView];
 }
 
 #pragma mark --- 显示大头像
@@ -731,6 +748,18 @@
         
         myPokersVC.userName = _userName;
         [self.navigationController pushViewController:myPokersVC animated:YES];
+    }else{
+        [self addLSAlertView];
+    }
+}
+
+// 跳转到我的订单页面
+- (void)turnPageToMyOrder{
+    
+    if (_name || _wxData) {
+        MyOrderVC * myOrderVC = [[MyOrderVC alloc] init];
+        myOrderVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:myOrderVC animated:YES];
     }else{
         [self addLSAlertView];
     }

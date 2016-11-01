@@ -23,9 +23,9 @@
 
 - (void)setUpChildControl{
     
-    self.backgroundColor = [UIColor greenColor];
+    self.backgroundColor = [UIColor whiteColor];
     UIImageView * picV = [[UIImageView alloc] init];
-    picV.backgroundColor = [UIColor blueColor];
+//    picV.backgroundColor = [UIColor blueColor];
     [self addSubview:picV];
     
     [picV mas_makeConstraints:^(MASConstraintMaker *make) {

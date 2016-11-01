@@ -13,11 +13,14 @@
 #import "DataTool.h"
 
 #import "SVProgressHUD.h"
-@interface AddAddressVC ()
+@interface AddAddressVC ()<UITextFieldDelegate>
 {
     
     NSString * _manStr;  // 男性按钮被选中的标记
     NSString * _femanStr;    // 女性按钮被选中的标记
+    
+    NSString * _previousTextFieldContent;
+    UITextRange * _previousSelection;
 }
 // 确定按钮
 @property (nonatomic, strong) UIButton * sureBtn;
@@ -64,6 +67,10 @@
         _phoneLbl.placeHolderLabel.hidden = YES;
     }else{
         _phoneLbl.placeHolderLabel.hidden = NO;
+    }
+    if (_phoneLbl.text.length > 11) {
+        [_phoneLbl setText:_previousTextFieldContent];
+        _phoneLbl.selectedTextRange = _previousSelection;
     }
     
     if (_addressLbl.text.length > 0) {
@@ -215,6 +222,8 @@
     LSTextField * phoneLbl = [[LSTextField alloc] init];
     phoneLbl.font = Font15;
     [backV addSubview:phoneLbl];
+    phoneLbl.delegate = self;
+    phoneLbl.keyboardType = UIKeyboardTypeNumberPad;
     phoneLbl.myPlaceholder = @"你的手机号";
     phoneLbl.placeHolderX = 10 * IPHONE6_W_SCALE;
     phoneLbl.placeHolderY = 0.01;
@@ -331,7 +340,7 @@
 // 确定按钮点击事件
 - (void)sureAction{
     
-    NSLog(@"确认添加按钮...");
+//    NSLog(@"确认添加按钮...");
     NSMutableDictionary * parameters = [NSMutableDictionary dictionary];
     parameters[@"address_name"] = _nameLbl.text;
     if (_manBtn.selected == YES) {
@@ -355,8 +364,13 @@
         NSLog(@"获取数据出错：%@", error);
     }];
 }
-
-
+#pragma mark ---UITextFieldDelegate
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    
+    _previousSelection = textField.selectedTextRange;
+    _previousTextFieldContent = textField.text;
+    return YES;
+}
 - (void)dismissAction{
     
     [self dismissViewControllerAnimated:YES completion:nil];

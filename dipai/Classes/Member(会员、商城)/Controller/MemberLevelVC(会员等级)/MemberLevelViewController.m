@@ -24,7 +24,7 @@
 #import "PICircularProgressView.h"
 
 #import "DataTool.h"
-
+#import "SVProgressHUD.h"
 #define Rect(X, Y, W, H) CGRectMake((X), (Y), (W), (H))
 
 
@@ -49,6 +49,8 @@
 // 礼遇模型数组
 @property (nonatomic, strong) NSMutableArray * beniModelArr;
 
+// 等级详情字典
+@property (nonatomic, strong) NSDictionary * dataDic;
 @end
 
 @implementation MemberLevelViewController
@@ -58,7 +60,8 @@
     [super viewWillAppear:YES];
     
     // 页面每次出现都要进行数据刷新，因为积分随时可能变
-    [self getData];
+    // 其实不用，因为当返回此页面的时候积分并不会发生变化（之后的页面没有积分的消耗或获取）
+//    [self getData];
 }
 
 - (NSMutableArray *)beniModelArr{
@@ -67,6 +70,14 @@
         _beniModelArr = [NSMutableArray array];
     }
     return _beniModelArr;
+}
+
+- (NSDictionary *)dataDic{
+    
+    if (_dataDic == nil) {
+        _dataDic = [NSDictionary dictionary];
+    }
+    return _dataDic;
 }
 
 - (void)getData{
@@ -86,19 +97,32 @@
             // 设置数据
             [self setData];
         }
-        
     } failure:^(NSError * error) {
         
     }];
+    
+    
+    [DataTool getDetailLevelDataWithStr:DetailLevelURL parameters:nil success:^(id responseObject) {
+        self.dataDic = responseObject;
+        [self setDataAgain];
+    } failure:^(NSError * error) {
+        NSLog(@"获取等级详情出错：%@", error);
+    }];
+    
+    // 获取积分等级
 }
 - ( void)setData{
     
     // 当前等级
     NSString * count_integral = _levelModel.count_integral;
     NSString * score_end = _levelModel.score_end;
-    int integral = [count_integral intValue];
-    int allScore = [score_end intValue];
-    int progress = (CGFloat)(integral / allScore);
+    CGFloat integral = [count_integral floatValue];
+    CGFloat allScore = [score_end floatValue];
+    
+//    NSLog(@"%f   %f", integral, allScore);
+    CGFloat progress = (integral / allScore);
+    
+//    NSLog(@"%f", progress);
     if (progress == 0) {
         
         self.progressView.progressTopGradientColor =[UIColor blackColor];
@@ -113,9 +137,6 @@
     _levelLbl.text = _levelModel.rolename;
     
     _numLbl.text = [NSString stringWithFormat:@"%@/%@", count_integral, score_end];
-    
-    _requestLbl.text = @"";
-    
     // 礼遇内容
     for (int i = 0; i < self.beniModelArr.count ; i ++) {
         int j = i / 3;
@@ -155,6 +176,12 @@
     }
 }
 
+- (void)setDataAgain{
+    
+    NSString * text = self.dataDic[@"content"];
+    _requestLbl.text = text;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -164,6 +191,7 @@
     
     [self setUpUI];
     
+    [self getData];
 }
 
 - (void)setNavigationBar{
@@ -178,8 +206,14 @@
 // 跳转到积分详情页面
 - (void)seeNumDetail{
     
-    NumberDetailVC * numDetailVC = [[NumberDetailVC alloc] init];
-    [self.navigationController pushViewController:numDetailVC animated:YES];
+    if ([_levelModel.count_integral isEqualToString:@"0"]) {
+        [SVProgressHUD showErrorWithStatus:@"暂无数据"];
+    }else{
+        NumberDetailVC * numDetailVC = [[NumberDetailVC alloc] init];
+        numDetailVC.count_integral =  _levelModel.count_integral;
+        [self.navigationController pushViewController:numDetailVC animated:YES];
+    }
+    
 }
 
 - (void)setUpUI{
@@ -205,9 +239,11 @@
     self.progressView.touchview.hidden = YES;
     self.progressView.triangleImageView.hidden = YES;
     // 开始颜色
-    self.progressView.progressTopGradientColor =[UIColor greenColor];
-    self.progressView.progressTopGradientColor = [UIColor colorWithRed:187 / 255.f  green:89 / 255.f blue:255 / 255.f alpha:1];
-    self.progressView.progressBottomGradientColor = [UIColor colorWithRed:68 / 252.f green:220 / 252.f blue:252 / 255.f alpha:1];
+    self.progressView.progressTopGradientColor =[UIColor blackColor];
+    self.progressView.progressBottomGradientColor = [UIColor blackColor];
+//    self.progressView.progressTopGradientColor =[UIColor greenColor];
+//    self.progressView.progressTopGradientColor = [UIColor colorWithRed:187 / 255.f  green:89 / 255.f blue:255 / 255.f alpha:1];
+//    self.progressView.progressBottomGradientColor = [UIColor colorWithRed:68 / 252.f green:220 / 252.f blue:252 / 255.f alpha:1];
     // 结束颜色
     [self.view addSubview:self.progressView];
     
@@ -245,7 +281,7 @@
     requestLbl.font = Font11;
     requestLbl.textAlignment = NSTextAlignmentCenter;
     requestLbl.textColor = Color178;
-    requestLbl.text = @"需要1000积分精神值V1等级";
+    requestLbl.text = @"累计获取1000积分到达V1等级";
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[NSFontAttributeName] = Font11;
     CGSize size = [requestLbl.text sizeWithAttributes:dic];
@@ -258,7 +294,8 @@
         make.width.equalTo(@(w + 10));
         make.height.equalTo(@(11 * IPHONE6_W_SCALE));
     }];
-    [requestLbl sizeToFit];
+//    [requestLbl sizeToFit];
+    _requestLbl = requestLbl;
     
     // 显示等级详细信息的按钮
     UIButton * showBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -407,7 +444,14 @@
     UIImageView * showV = [[UIImageView alloc] init];
     showV.userInteractionEnabled = YES;
     [showBackV addSubview:showV];
-    if ([_levelLbl.text isEqualToString:@"V0"]) {
+    
+    // 当前等级
+    UILabel * textL = [[UILabel alloc] init];
+    textL.text = @"当前等级";
+    textL.textColor = RGBA(202, 156, 91, 1);
+    textL.textAlignment = NSTextAlignmentCenter;
+    [showV addSubview:textL];
+    if ([_levelLbl.text isEqualToString:@"V1"]) {
         showV.image = [UIImage imageNamed:@"tanchuang1"];
         
         [showV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -417,13 +461,7 @@
             make.height.equalTo(@(590 * 0.5 * IPHONE6_W_SCALE));
         }];
         
-        // 当前等级
-        UILabel * textL = [[UILabel alloc] init];
         textL.font = [UIFont boldSystemFontOfSize:18 * IPHONE6_W_SCALE];
-        textL.text = @"当前等级";
-        textL.textColor = RGBA(202, 156, 91, 1);
-        textL.textAlignment = NSTextAlignmentCenter;
-        [showV addSubview:textL];
         [textL mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(showV.mas_centerX);
             make.top.equalTo(showV.mas_top).offset(113 * IPHONE6_W_SCALE);
@@ -447,7 +485,7 @@
             make.height.equalTo(@(11 * IPHONE6_W_SCALE));
         }];
         
-    }else{
+    }else{  // V0以上
         
         showV.image =[UIImage imageNamed:@"tanchuang2"];
         [showV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -456,6 +494,104 @@
             make.width.equalTo(@(233 * IPHONE6_W_SCALE));
             make.height.equalTo(@(350* IPHONE6_W_SCALE));
         }];
+        // 当前等级
+        textL.font = [UIFont boldSystemFontOfSize:14 * IPHONE6_W_SCALE];
+        [textL mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(showV.mas_centerX);
+            make.top.equalTo(showV.mas_top).offset(215 * 0.5 * IPHONE6_H_SCALE);
+            make.width.equalTo(showV.mas_width);
+            make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+        }];
+        // 有效期
+        UILabel * dateLbl = [[UILabel alloc] init];
+        dateLbl.text = [NSString stringWithFormat:@"有效期至%@", self.dataDic[@"date"]];
+#warning 假的数据
+        dateLbl.text = [NSString stringWithFormat:@"有效期"];
+        dateLbl.font = Font14;
+        dateLbl.textColor = RGBA(202, 156, 91, 1);
+        dateLbl.textAlignment = NSTextAlignmentCenter;
+        [showV addSubview:dateLbl];
+        [dateLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(showV.mas_centerX);
+            make.top.equalTo(textL.mas_bottom).offset(7 * IPHONE6_H_SCALE);
+            make.width.equalTo(showV.mas_width);
+            make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+        }];
+        UILabel * firstLbl = [[UILabel alloc] init];
+        firstLbl.text = @"1.";
+        firstLbl.textColor = Color178;
+        firstLbl.font = Font10;
+        [showV addSubview:firstLbl];
+        [firstLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(showV.mas_left).offset(27 * IPHONE6_W_SCALE);
+            make.top.equalTo(showV.mas_top).offset(356 * 0.5 * IPHONE6_H_SCALE);
+            make.width.equalTo(@(30));
+            make.height.equalTo(@(10 * IPHONE6_H_SCALE));
+        }];
+        
+        UILabel * firstContent = [[UILabel alloc] init];
+        firstContent.numberOfLines = 0;
+//        firstContent.backgroundColor = [UIColor redColor];
+        firstContent.textColor = RGBA(202, 156, 91, 1);
+        firstContent.font = Font10;
+        [showV addSubview:firstContent];
+//        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
+#warning 假数据
+        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
+        [content1 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
+        firstContent.attributedText = content1;
+        NSMutableDictionary * firstDic = [NSMutableDictionary dictionary];
+        firstDic[NSFontAttributeName] = Font10;
+        CGRect firstRect = [content1 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+        firstContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, 356 * 0.5 * IPHONE6_H_SCALE - 3 * IPHONE6_H_SCALE}, firstRect.size};
+        
+        UILabel * secondLbl = [[UILabel alloc] init];
+        CGFloat secondY = CGRectGetMaxY(firstContent.frame) + 12 * IPHONE6_H_SCALE;
+        secondLbl.frame = CGRectMake(27 * IPHONE6_W_SCALE, secondY, 30, 10 * IPHONE6_H_SCALE);
+        secondLbl.text = @"2.";
+        secondLbl.textColor = Color178;
+        secondLbl.font = Font10;
+//        secondLbl.backgroundColor = [UIColor yellowColor];
+        [showV addSubview:secondLbl];
+        UILabel * secondContent = [[UILabel alloc] init];
+        secondContent.numberOfLines = 0;
+//        secondContent.backgroundColor = [UIColor redColor];
+        secondContent.textColor =RGBA(202, 156, 91, 1);
+        secondContent.font = Font10;
+        [showV addSubview:secondContent];
+        //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
+#warning 假数据
+        NSMutableAttributedString * content2 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
+        [content2 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
+        secondContent.attributedText = content2;
+        NSMutableDictionary * secondDic = [NSMutableDictionary dictionary];
+        secondDic[NSFontAttributeName] = Font10;
+        CGRect secondRect = [content2 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+        secondContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, secondY - 3 * IPHONE6_H_SCALE}, secondRect.size};
+        
+        UILabel * thirdLbl = [[UILabel alloc] init];
+        CGFloat thirdY = CGRectGetMaxY(secondContent.frame) + 12 * IPHONE6_H_SCALE;
+        thirdLbl.frame = CGRectMake(27 * IPHONE6_W_SCALE, thirdY, 30, 10 * IPHONE6_H_SCALE);
+        thirdLbl.text = @"3.";
+        thirdLbl.textColor = Color178;
+        thirdLbl.font = Font10;
+        [showV addSubview:thirdLbl];
+        UILabel * thirdContent = [[UILabel alloc] init];
+        thirdContent.numberOfLines = 0;
+//        thirdContent.backgroundColor = [UIColor redColor];
+        thirdContent.textColor = RGBA(202, 156, 91, 1);
+        thirdContent.font = Font10;
+        [showV addSubview:thirdContent];
+        //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
+#warning 假数据
+        NSMutableAttributedString * content3 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
+         [content3 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
+        thirdContent.attributedText = content3;
+        NSMutableDictionary * thirdDic = [NSMutableDictionary dictionary];
+        thirdDic[NSFontAttributeName] = Font10;
+        CGRect thirdRect = [content3 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+        thirdContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, thirdY - 3 * IPHONE6_H_SCALE}, thirdRect.size};
+        
     }
     
     // 等级

@@ -44,12 +44,16 @@
     // 设置tabBar的背景图片
      [self.tabBar setBackgroundImage:[UIImage imageNamed:@"biaoqianlan_beijingtu"]];
     
-    NSArray * selectImg = @[@"zixun_xuanzhong", @"faxian_xuanzhong",@"faxian_xuanzhong", @"shequ_xuanzhong", @"wode_xuanzhong"];
-    NSArray * normarl = @[@"zixun_moren", @"faxian_moren",@"faxian_moren", @"shequ_moren", @"wode_moren"];
-    NSArray * title = @[@"资讯", @"发现",@"会员", @"社区", @"我的"];
+    NSArray * selectImg = @[@"zixun_xuanzhong", @"faxian_xuanzhong",@"datubiao_xuanzhong", @"shequ_xuanzhong", @"wode_xuanzhong"];
+    NSArray * normarl = @[@"zixun_moren", @"faxian_moren",@"datubiao_moren", @"shequ_moren", @"wode_moren"];
+    NSArray * title = @[@"资讯", @"发现",@"", @"社区", @"我的"];
     for (int i=0; i<self.tabBar.items.count; i++) {
         
         UITabBarItem *item = self.tabBar.items[i];
+        if (i == 2) {
+            
+            item.imageInsets = UIEdgeInsetsMake(5, 0, -5, 0);
+        }
         
         // item上选中的图片和未被选中的图片
         UIImage *selectImage = [UIImage imageNamed:selectImg[i]];

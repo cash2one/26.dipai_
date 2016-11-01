@@ -123,7 +123,7 @@
             NSDictionary * dic = [_levelArr objectAtIndex:i];
             NSString * picName = dic[@"picname"];
             
-            [imgV sd_setImageWithURL:[NSURL URLWithString:picName] placeholderImage:[UIImage imageNamed:@"123"]];
+            [imgV sd_setImageWithURL:[NSURL URLWithString:picName] placeholderImage:[UIImage imageNamed:@"placeholder"]];
             
             UILabel * titleLbl = [[UILabel alloc] init];
             titleLbl.textColor = [UIColor blackColor];
