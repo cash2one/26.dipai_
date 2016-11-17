@@ -21,6 +21,8 @@
 #import "MoreGoodsVC.h"
 // 客服中心页面
 #import "ServerVC.h"
+// 更多信息页面
+#import "MoreInfoOfPlatformVC.h"
 // 活动控制器
 #import "SVProgressHUD.h"
 
@@ -55,7 +57,7 @@
 #import "AFNetworking.h"
 // 加载图片第三方
 #import "UIImageView+WebCache.h"
-@interface MemberViewController ()<UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, ShopCellDelegate>
+@interface MemberViewController ()<UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, ShopCellDelegate, CustomCollectionCellDelegate>
 {
     UISegmentedControl *_segmented;
     // 滚动视图
@@ -350,6 +352,7 @@
     collectionView.backgroundColor = [UIColor whiteColor];
     collectionView.delegate = self;
     collectionView.dataSource = self;
+    collectionView.showsHorizontalScrollIndicator = NO;
     [collectionView registerClass:[CustomCollectionCell class] forCellWithReuseIdentifier:@"cellId"];
     self.collectionView = collectionView;
     
@@ -369,13 +372,15 @@
 //    self.tableView2.backgroundColor = [UIColor yellowColor];
     [_sc addSubview:self.tableView2];
     
-    UIScrollView * headerV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 110 * IPHONE6_H_SCALE)];
+    UIView * tableHeaderV = [[UIView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 110* IPHONE6_H_SCALE)];
+    UIScrollView * headerV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 100 * IPHONE6_H_SCALE)];
     UIView * bottomV = [[UIView alloc] initWithFrame:CGRectMake(0, 100 * IPHONE6_H_SCALE, WIDTH, 10 *IPHONE6_H_SCALE)];
     bottomV.tag = 100;
-    [headerV addSubview:bottomV];
+    [tableHeaderV addSubview:headerV];
+    [tableHeaderV addSubview:bottomV];
     bottomV.backgroundColor = SeparateColor;
-    headerV.backgroundColor = [UIColor whiteColor];
-    self.tableView2.tableHeaderView = headerV;
+    tableHeaderV.backgroundColor = [UIColor whiteColor];
+    self.tableView2.tableHeaderView = tableHeaderV;
     _headerV = headerV;
     
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
@@ -496,12 +501,13 @@
     NSInteger count = listModel.data.count;
     NSInteger hNum;   // 纵向个数
     if (count % 2 == 0) {
-        hNum = (count % 2) + 1;
+        hNum = count / 2;
     }else{
         
         hNum = (count / 2) + 1;
     }
-    return 189 * IPHONE6_H_SCALE * hNum + 55 * IPHONE6_H_SCALE;
+    return (189 * IPHONE6_H_SCALE)* hNum + 55 * IPHONE6_H_SCALE;
+//     return (189 * IPHONE6_H_SCALE  + 63 * IPHONE6_W_SCALE)* hNum + 55 * IPHONE6_H_SCALE;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -525,10 +531,21 @@
     
     static NSString * cellId = @"cellId";
     CustomCollectionCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
-    [cell.moreBtn addTarget:self action:@selector(seeMoreInfo) forControlEvents:UIControlEventTouchUpInside];
+    cell.delegate = self;
     PlatformModel * platModel = [self.dataArray objectAtIndex:indexPath.row];
+    cell.model = platModel;
     [cell.picV sd_setImageWithURL:[NSURL URLWithString:platModel.picname]];
     return cell;
+}
+
+#pragma mark --- CustomCollectionCellDelegate
+- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url{
+    
+    NSLog(@"查看更多信息：");
+    MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
+    moreVC.url = url;
+    moreVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:moreVC animated:YES];
 }
 
 -(NSMutableArray *)dataArray
@@ -582,6 +599,9 @@
 - (void)seeMoreInfo{
     
     NSLog(@"查看更多信息：");
+    MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
+    moreVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:moreVC animated:YES];
 }
 
 // 问题按钮点击事件

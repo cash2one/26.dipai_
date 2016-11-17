@@ -13,7 +13,8 @@
 #import "MoreBenifitsVC.h"
 // 礼遇详情
 #import "BenifitsDetailVC.h"
-
+// 礼遇条款页面
+#import "BenifitsArticleVC.h"
 
 // 会员等级模型
 #import "MemberLevelModel.h"
@@ -441,6 +442,10 @@
     [window addSubview:showBackV];
     _showBackV = showBackV;
     
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeAction)];
+    tap.numberOfTouchesRequired = 1;
+    [showBackV addGestureRecognizer:tap];
+    
     UIImageView * showV = [[UIImageView alloc] init];
     showV.userInteractionEnabled = YES;
     [showBackV addSubview:showV];
@@ -633,6 +638,8 @@
 - (void)seeBenifitsClause{
     
     NSLog(@"跳转到条款页面..");
+    BenifitsArticleVC * articleVC = [[BenifitsArticleVC alloc] init];
+    [self presentViewController:articleVC animated:YES completion:nil];
 }
 
 // 跳转到礼遇详情页

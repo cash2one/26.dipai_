@@ -146,8 +146,9 @@
     // 设置导航栏上按钮
     [self setUpNavigationBarItem];
     [self getData];
-    
+
 }
+
 
 #pragma mark --- 获取数据
 - (void)getData{

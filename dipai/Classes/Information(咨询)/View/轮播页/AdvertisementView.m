@@ -73,8 +73,6 @@
     [_modelArr addObject:[bannerModelArray firstObject]];
     
     _count = counts;
-    
-//    _scroll.contentSize = CGSizeMake(counts * WIDTH, 0);
     _scroll.contentSize = CGSizeMake((counts + 2) * WIDTH, 0);
     // 往滚动视图上添加imageView
     for (int i = 0; i < _modelArr.count; i ++) {
@@ -87,14 +85,12 @@
         SDWebImageOptions options = SDWebImageRetryFailed | SDWebImageLowPriority;
         [picView sd_setImageWithURL:[NSURL URLWithString:bannnerM.cover] placeholderImage:[UIImage imageNamed:@"123"] options:options];
         
-        
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
         btn.frame = _scroll.bounds;
         btn.backgroundColor = [UIColor clearColor];
         [picView addSubview:btn];
         btn.tag = ButtonTag + i;
         [btn addTarget:self action:@selector(ClickBtn:) forControlEvents:UIControlEventTouchUpInside];
-        
         
         // 往imageView上添加label
         UILabel * label = [[UILabel alloc] init];
@@ -176,7 +172,7 @@
 
 - (void)startTimer
 {
-    self.timer = [NSTimer timerWithTimeInterval:2.0 target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
+    self.timer = [NSTimer timerWithTimeInterval:5.0 target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
     
     // 添加到运行循环
     [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
@@ -186,7 +182,6 @@
 {
     // 页号发生变化
     // (当前的页数 + 1) % 总页数
-    
     // 加了循环滚动后分页控件的变化是正确的
     int page = (self.pageControl.currentPage + 1) % _count;
     self.pageControl.currentPage = page;
@@ -208,7 +203,6 @@
 {
     // 停下来的当前页数
     // 计算页数
-    
     if(scrollView.contentOffset.x == 0)
     {
         scrollView.contentOffset = CGPointMake(_count * WIDTH, 0);

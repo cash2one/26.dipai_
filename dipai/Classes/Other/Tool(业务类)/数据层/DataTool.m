@@ -1509,12 +1509,20 @@
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
         NSArray * dataArr = responseObject[@"data"];
-        // 字典数组转模型数组
-        NSArray * modelArr = [ShopGoodsModel objectArrayWithKeyValuesArray:dataArr];
-        
-        if (success) {
-            success(modelArr);
+        if (![dataArr isKindOfClass:[NSNull class]] && dataArr.count > 0) { // 如果有数据
+            // 字典数组转模型数组
+            NSArray * modelArr = [ShopGoodsModel objectArrayWithKeyValuesArray:dataArr];
+            
+            if (success) {
+                success(modelArr);
+            }
+        }else{
+            
+            if (success) {
+                success(@"没有更多数据");
+            }
         }
+        
     } failure:^(NSError *error) {
        
         if (failure) {
@@ -1547,7 +1555,8 @@
         
 //        NSLog(@"%@", responseObject);
         NSDictionary * dataDic = responseObject[@"data"];
-        
+//        NSLog(@"---dataDic%@", dataDic);
+//        [dataDic writeToFile:@"/Users/liangseb/Desktop/plist/1.plist" atomically:YES];
         if (success) {
             success(dataDic);
         }

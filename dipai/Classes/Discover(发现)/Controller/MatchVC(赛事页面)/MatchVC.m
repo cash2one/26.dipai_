@@ -232,6 +232,7 @@
     NSString * url1 = [MatchURL stringByAppendingString:[NSString stringWithFormat:@"/0"]];
      NSString * url2 = [MatchURL stringByAppendingString:[NSString stringWithFormat:@"/1"]];
      NSString * url3 = [MatchURL stringByAppendingString:[NSString stringWithFormat:@"/2"]];
+    NSLog(@"%@---%@---%@", url1, url2, url3);
     // 获取第一个列表的数据
     [DataTool getMatchDataWithStr:url1 parameters:nil success:^(id responseObject) {
         [_tableView1.header endRefreshing];

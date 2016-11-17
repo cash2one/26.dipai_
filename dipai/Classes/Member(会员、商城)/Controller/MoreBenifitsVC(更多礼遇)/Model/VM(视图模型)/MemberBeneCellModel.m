@@ -19,8 +19,13 @@
 
 - (void)setUpCellHeight{
     
-    int j = (int)_benefitsArr.count / 3;
-    _cellHeight =( j+1) * 112 * IPHONE6_H_SCALE;
+    NSInteger j;
+    if (_benefitsArr.count % 3 == 0) {
+        j = _benefitsArr.count / 3;
+    }else{
+        j = (_benefitsArr.count / 3 )+ 1;
+    }
+    _cellHeight =j * 112 * IPHONE6_H_SCALE;
 }
 
 @end

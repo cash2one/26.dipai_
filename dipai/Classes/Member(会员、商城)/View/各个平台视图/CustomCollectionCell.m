@@ -9,6 +9,7 @@
 #import "CustomCollectionCell.h"
 
 #import "Masonry.h"
+#import "PlatformModel.h"
 @implementation CustomCollectionCell
 
 - (instancetype)initWithFrame:(CGRect)frame{
@@ -39,6 +40,7 @@
     UIButton * moreBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [moreBtn setImage:[UIImage imageNamed:@"gengduoxinxi"] forState:UIControlStateNormal];
 //    [moreBtn setBackgroundImage:[UIImage imageNamed:@"gengduoxinxi"] forState:UIControlStateNormal];
+    [moreBtn addTarget:self action:@selector(moreInfoAction) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:moreBtn];
     
     [moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -51,5 +53,17 @@
     moreBtn.layer.masksToBounds = YES;
     _moreBtn = moreBtn;
 }
+
+- (void)setModel:(PlatformModel *)model{
+    
+    _model = model;
+}
+- (void)moreInfoAction{
+    
+    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickWithURL:)]) {
+        [self.delegate tableViewCell:self didClickWithURL:_model.weburl];
+    }
+}
+
 
 @end

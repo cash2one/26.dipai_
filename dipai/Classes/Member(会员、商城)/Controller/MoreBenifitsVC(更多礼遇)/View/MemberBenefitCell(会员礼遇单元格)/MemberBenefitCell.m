@@ -13,14 +13,19 @@
 
 @interface MemberBenefitCell ()
 
-{
-    
-    NSString * _firstIn;    // 第一次传值的标识
-}
+@property (nonatomic, strong) NSMutableArray * imageArr;
 
 @end
 
 @implementation MemberBenefitCell
+
+- (NSMutableArray *)imageArr{
+    
+    if (_imageArr == nil) {
+        _imageArr = [NSMutableArray array];
+    }
+    return _imageArr;
+}
 
 + (instancetype)cellWithTableView:(UITableView *)tableView
 {
@@ -28,6 +33,7 @@
     id cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     if (!cell) {
         cell = [[self alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
+        NSLog(@"创建单元格");
     }
     
     return cell;
@@ -45,8 +51,6 @@
 }
 
 - (void)setUpChildControl{
-    
-    NSLog(@"创建。。。");
     
     // 会员等级名称
     UILabel * levelName = [[UILabel alloc] init];
@@ -92,23 +96,28 @@
     // 暂时实现功能，但并不完美，每次都会创建新的视图
     // 调用此方法只创建一次子控件就好
     _levelArr = levelArr;
+//    NSLog(@"%@", _levelArr);
+    //
     
-    if (_firstIn != nil && _firstIn.length > 0) {
-        NSLog(@"不是第一次进来不再创建");
-    }else{
-    
+    if (self.imageArr.count > 0) {
+        for (UIImageView * image in self.imageArr) {
+            [image removeFromSuperview];
+        }
+    }
         // 礼遇内容
         for (int i = 0; i < _levelArr.count ; i ++) {
+            NSLog(@"%lu", _levelArr.count);
             int j = i / 3;
             int k = i % 3;
             UIImageView * imgBackV = [[UIImageView alloc] initWithFrame:CGRectMake(0 + WIDTH / 3 * k, 87 * 0.5 * IPHONE6_H_SCALE + 112 * IPHONE6_H_SCALE *j , WIDTH / 3, 112 * IPHONE6_H_SCALE)];
             imgBackV.userInteractionEnabled = YES;
-            imgBackV.backgroundColor = [UIColor whiteColor];
+//            imgBackV.backgroundColor = [UIColor redColor];
             imgBackV.tag = i;
             UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(seeBeneDetail:)];
             [imgBackV addGestureRecognizer:tap];
             tap.numberOfTouchesRequired = 1;
             [self addSubview:imgBackV];
+            [self.imageArr addObject:imgBackV];
             
             UIImageView * imgV = [[UIImageView alloc] init];
             imgV.layer.cornerRadius = 35 * IPHONE6_W_SCALE;
@@ -137,33 +146,20 @@
                 make.height.equalTo(@(17 * IPHONE6_W_SCALE));
             }];
         }
-
-    }
-    
-    _firstIn = @"first";
-    
-//    for (UIImageView * imageV in self.subviews ) {
-//        if (imageV.tag == 1000 || imageV.tag == 1001 || imageV.tag == 1002) {
-//           
-//        }else{
-//            
-//             [imageV removeFromSuperview];
-//        }
-//        
-//    }
+        
 }
 
 - (void)setLevel:(NSString *)level{
-    
     _level = level;
     _levelName.text = [NSString stringWithFormat:@"V%@会员", _level];
-    
+
 }
 
 
 - (void)layoutSubviews{
     
     [super layoutSubviews];
+
 }
 
 - (void)seeBeneDetail:(UIGestureRecognizer *)tap{

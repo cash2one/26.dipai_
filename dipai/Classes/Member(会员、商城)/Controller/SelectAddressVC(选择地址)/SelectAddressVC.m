@@ -138,6 +138,17 @@
         make.width.equalTo(@(53 * IPHONE6_W_SCALE));
         make.height.equalTo(@(53 * IPHONE6_W_SCALE));
     }];
+    addBtn.userInteractionEnabled = YES;
+    
+    UIButton * addAddressBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [bottomV addSubview:addAddressBtn];
+    [addAddressBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(bottomV.mas_left);
+        make.right.equalTo(bottomV.mas_right);
+        make.bottom.equalTo(bottomV.mas_bottom);
+        make.top.equalTo(bottomV.mas_top);
+    }];
+    [addAddressBtn addTarget:self action:@selector(addAddressAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void) addTableView{

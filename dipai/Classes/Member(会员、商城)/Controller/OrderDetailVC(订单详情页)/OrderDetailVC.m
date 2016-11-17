@@ -62,6 +62,7 @@
 - (void)getData{
     
     NSString * url = [OrderSureURL stringByAppendingString:[NSString stringWithFormat:@"/%@",self.goodID]];
+    NSLog(@"--->%@", url);
     [NSThread sleepForTimeInterval:0.05];
     [DataTool getOrderSureDataWithStr:url parameters:nil success:^(id responseObject) {
         
@@ -83,7 +84,7 @@
         _nameLbl.hidden = YES;
         _addressLbl.hidden = YES;
     }else{
-        NSLog(@"%@", addressDic[@"address_name"]);
+//        NSLog(@"%@", addressDic[@"address_name"]);
         _nameLbl.text = [NSString stringWithFormat:@"%@  %@", addressDic[@"address_name"], addressDic[@"mobile"]];
         _addressLbl.text = [NSString stringWithFormat:@"%@%@", addressDic[@"district"], addressDic[@"address"]];
         _alertLbl.hidden = YES;
@@ -111,13 +112,20 @@
     
     // 积分总数和提交订单地址
     NSDictionary * infoDic = self.dataDic[@"info"];
-    _allNumLbl.text = infoDic[@"sum_integral"];
+    if ([infoDic[@"sum_integral"] isKindOfClass:[NSString class]]) {
+        NSLog(@"sum_integral是字符串类型...");
+        _allNumLbl.text = infoDic[@"sum_integral"];
+    }else{
+        NSLog(@"sum_integral不是字符串类型...");
+        _allNumLbl.text = [infoDic[@"sum_integral"] stringValue];
+    }
+    
     
     NSString * allNum = _allNumLbl.text;
     NSString * goods_price = goodsDic[@"shop_price"];
     int all = [allNum intValue];
     int price = [goods_price intValue];
-    
+    NSLog(@"%d   %d", all, price);
     if (all < price) {
         [_submitBtn setTitle:@"积分不足" forState:UIControlStateNormal];
         [_submitBtn setBackgroundColor:RGBA(255, 150, 150, 1)];
@@ -135,7 +143,7 @@
     
     [self setNavigationBar];
     [self setUpUI];
-    NSLog(@"goodID:%@", self.goodID);
+//    NSLog(@"goodID:%@", self.goodID);
 }
 
 - (void)setNavigationBar{
@@ -267,13 +275,14 @@
     [goodsImage mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.view.mas_left).offset(15 * IPHONE6_W_SCALE);
         make.top.equalTo(buyV.mas_bottom).offset(10 * IPHONE6_H_SCALE);
-        make.width.equalTo(@(110 * IPHONE6_W_SCALE));
+        make.width.equalTo(@(113 * IPHONE6_W_SCALE));
         make.height.equalTo(@(75 * IPHONE6_W_SCALE));
     }];
     _goodsImage = goodsImage;
     
     // 商品名称
     UILabel * goodNameL = [[UILabel alloc] initWithFrame:CGRectZero];
+//    goodNameL.backgroundColor = [UIColor redColor];
     goodNameL.font = Font12;
     goodNameL.numberOfLines = 0;
     goodNameL.preferredMaxLayoutWidth = WIDTH - 152 * IPHONE6_W_SCALE;
@@ -433,20 +442,26 @@
 - (void)submitAction{
     
     NSLog(@"提交订单...");
-    NSDictionary * addressDic = self.dataDic[@"address"];
-    NSDictionary * goodsDic = self.dataDic[@"goods"];
-    NSMutableDictionary * parameters = [NSMutableDictionary dictionary];
-    parameters[@"goods_id"] =goodsDic[@"goods_id"]; // 商品ID
-    parameters[@"address_id"] = addressDic[@"address_id"];  // 地址ID
-    [DataTool submitOrderWithStr:submitOrderURL parameters:parameters success:^(id responseObject) {
+    if (_alertLbl.hidden == NO) {   // 如果没有收货地址
+        [SVProgressHUD showErrorWithStatus:@"请填写收货地址"];
+    }else{
+        NSDictionary * addressDic = self.dataDic[@"address"];
+        NSDictionary * goodsDic = self.dataDic[@"goods"];
+        NSMutableDictionary * parameters = [NSMutableDictionary dictionary];
+        parameters[@"goods_id"] =goodsDic[@"goods_id"]; // 商品ID
+        parameters[@"address_id"] = addressDic[@"address_id"];  // 地址ID
+        [DataTool submitOrderWithStr:submitOrderURL parameters:parameters success:^(id responseObject) {
+            
+            if ([responseObject[@"msg"] isEqualToString:@"success"]) {
+                [SVProgressHUD showSuccessWithStatus:@"提交成功"];
+                [self.navigationController popViewControllerAnimated:YES];
+            }
+        } failure:^(NSError * error) {
+            NSLog(@"提交订单出错：%@", error);
+        }];
         
-        if ([responseObject[@"msg"] isEqualToString:@"success"]) {
-            [SVProgressHUD showSuccessWithStatus:@"提交成功"];
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-    } failure:^(NSError * error) {
-        NSLog(@"提交订单出错：%@", error);
-    }];
+    }
+   
 }
 
 // 添加地址事件

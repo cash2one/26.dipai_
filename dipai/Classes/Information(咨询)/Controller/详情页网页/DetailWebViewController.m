@@ -382,6 +382,7 @@
     webView.delegate = self;
     webView.scalesPageToFit = YES;
     [self.view addSubview:webView];
+    [webView setScalesPageToFit:YES];
     _webView = webView;
     
     NSURL * URL = [NSURL URLWithString:url];
@@ -391,7 +392,7 @@
     
     JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
     
-    context[@"image_add_i"] = ^() {
+    context[@"image_add_i"] = ^() { // 通过block回调获得h5传来的数据
     
         NSArray *args = [JSContext currentArguments];
 //        NSLog(@"%@", args);
@@ -472,7 +473,7 @@
         CGFloat titleW = WIDTH - 2 * titleX;
         NSMutableDictionary * titleDic = [NSMutableDictionary dictionary];
         titleDic[NSFontAttributeName] = Font14;
-        // 图片秒速
+        // 图片描述
         UILabel * contentLbl = [[UILabel alloc] init];
         contentLbl.text = contentStr;
         contentLbl.textColor = [UIColor whiteColor];
@@ -629,10 +630,7 @@
     CGFloat zoomScale = sc.zoomScale;
     
     zoomScale = (zoomScale == 1.0) ? 3.0 : 1.0;
-    
     CGRect zoomRect = [self zoomRectForScale:zoomScale withCenter:[gesture locationInView:gesture.view]];
-    
-    
     [sc zoomToRect:zoomRect animated:YES];
 }
 - (CGRect)zoomRectForScale:(float)scale withCenter:(CGPoint)center
@@ -775,6 +773,8 @@
     // 加载完成后消失
 //    [SVProgressHUD dismiss];
     NSLog(@"加载完成...");
+// 能够缩小、放大网页
+//     [webView stringByEvaluatingJavaScriptFromString:@"var element = document.createElement('meta');  element.name = \"viewport\";  element.content = \"width=device-width,initial-scale=1.0,minimum-scale=0.5,maximum-scale=3,user-scalable=1\"; var head = document.getElementsByTagName('head')[0]; head.appendChild(element);"];
     
     
     // 用户判断登录后是否是同一个cookie

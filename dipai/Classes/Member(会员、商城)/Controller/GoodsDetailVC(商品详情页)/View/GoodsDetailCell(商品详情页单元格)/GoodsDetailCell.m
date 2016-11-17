@@ -28,6 +28,12 @@
 @property (nonatomic, strong) UIView * topV;
 @property (nonatomic, strong) UIView * line;
 
+/**
+ *  时间定时器
+ */
+@property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, assign) CGPoint offset;
+
 @end
 
 @implementation GoodsDetailCell
@@ -48,6 +54,7 @@
     if (self == [super initWithStyle: style reuseIdentifier:reuseIdentifier]) {
         
         [self setUpChildControl];
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     return self;
 }
@@ -55,17 +62,20 @@
 - (void)setUpChildControl{
     
     // 上方的banner图
-    UIScrollView * scrollV = [[UIScrollView alloc] initWithFrame: CGRectMake(0, 0, WIDTH, 375 * IPHONE6_W_SCALE)];
+    UIScrollView * scrollV = [[UIScrollView alloc] initWithFrame: CGRectMake(0, 0, WIDTH, 496*0.5 * IPHONE6_W_SCALE)];
 //    scrollV.backgroundColor = [UIColor redColor];
     scrollV.pagingEnabled = YES;
     scrollV.delegate = self;
+    scrollV.showsVerticalScrollIndicator = NO;
+    scrollV.showsHorizontalScrollIndicator = NO;
     [self addSubview:scrollV];
     _scrollV = scrollV;
     // 标志符号
     UILabel * tagLbl = [[UILabel alloc] init];
     tagLbl.text = @"1/2";
-    tagLbl.backgroundColor = [UIColor blackColor];
-    tagLbl.alpha = 0.38;
+    tagLbl.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.38];
+//    tagLbl.backgroundColor = [UIColor blackColor];
+//    tagLbl.alpha = 0.38;
     tagLbl.textColor = [UIColor whiteColor];
     tagLbl.font = Font11;
     tagLbl.textAlignment = NSTextAlignmentCenter;
@@ -143,10 +153,13 @@
         make.height.equalTo(@(0.5));
     }];
     _line = line;
+    
     UILabel * detailLbl = [[UILabel alloc] init];
     detailLbl.font = Font13;
     detailLbl.textColor = RGBA(51, 51, 51, 1);
     detailLbl.numberOfLines = 0;
+    detailLbl.preferredMaxLayoutWidth = WIDTH - 30 * IPHONE6_W_SCALE;
+    [detailLbl setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
     [self addSubview:detailLbl];
     _detailLbl = detailLbl;
 
@@ -156,17 +169,29 @@
     
     _detailModel = detailModel;
     
-    _scrollV.contentSize = CGSizeMake(WIDTH * _detailModel.atlas.count, 0);
-    for (int i = 0; i < _detailModel.atlas.count; i ++) {
-        UIImageView * imgV = [[UIImageView alloc] initWithFrame:CGRectMake(0+ i * WIDTH, 0 , WIDTH, 375 * IPHONE6_W_SCALE)];
-        imgV.backgroundColor = [UIColor greenColor];
-        [_scrollV addSubview:imgV];
-       
-        imgV.userInteractionEnabled = YES;
-        [imgV sd_setImageWithURL:[NSURL URLWithString:_detailModel.atlas[i]] placeholderImage:[UIImage imageNamed:@"placeholder"]];
-        
+    _scrollV.contentSize = CGSizeMake(WIDTH * (_detailModel.atlas.count+2), 0);
+    NSMutableArray * arr = [NSMutableArray array];
+    if (_detailModel.atlas.count > 0) {
+        [arr addObject:[_detailModel.atlas lastObject]];
+        [arr addObjectsFromArray:_detailModel.atlas];
+        [arr addObject:[_detailModel.atlas firstObject]];
+        for (int i = 0; i < arr.count; i ++) {
+            UIImageView * imgV = [[UIImageView alloc] initWithFrame:CGRectMake(0+ i * WIDTH, 0 , WIDTH, 496*0.5 * IPHONE6_W_SCALE)];
+            imgV.backgroundColor = [UIColor greenColor];
+            [_scrollV addSubview:imgV];
+            
+            imgV.userInteractionEnabled = YES;
+            [imgV sd_setImageWithURL:[NSURL URLWithString:arr[i]] placeholderImage:[UIImage imageNamed:@"placeholder"]];
+            imgV.tag = i;
+            
+            UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showPics:)];
+            tap.numberOfTouchesRequired = 1;
+            [imgV addGestureRecognizer:tap];
+        }
     }
     
+   
+    _scrollV.contentOffset = CGPointMake(WIDTH, 0);
     NSMutableAttributedString * attributeStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"1/%lu", _detailModel.atlas.count]];
     [attributeStr addAttribute:NSFontAttributeName value:Font16 range:NSMakeRange(0, 1)];
     _tagLbl.attributedText = attributeStr;
@@ -185,26 +210,95 @@
     _numLbl.attributedText = numText;
     
     // 商品详情
-    _detailLbl.text = _detailModel.goods_desc;
+//    _detailLbl.text = _detailModel.goods_desc;
+    NSString * str = _detailModel.goods_desc;
+//    NSLog(@"---str---%@", str);
+    if (str!=nil) {
+//          NSMutableAttributedString * desStr = [[NSMutableAttributedString alloc] initWithData:[str dataUsingEncoding:NSUnicodeStringEncoding] options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType} documentAttributes:nil error:nil];
+        NSMutableAttributedString * desStr = [[NSMutableAttributedString alloc] initWithData:[str dataUsingEncoding:NSUnicodeStringEncoding] options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType} documentAttributes:NULL error:nil];
+//        NSMutableAttributedString * desStr = [[NSMutableAttributedString alloc] initWithString:str];
+        _detailLbl.attributedText =desStr;
+    }
+    
     [_detailLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.mas_left).offset(15 * IPHONE6_W_SCALE);
         make.right.equalTo(self.mas_right).offset(-15 * IPHONE6_W_SCALE);
         make.top.equalTo(_line.mas_bottom);
     }];
+    
+    // 启动时钟
+//    [self startTimer];
+}
+- (void)startTimer
+{
+    self.timer = [NSTimer timerWithTimeInterval:5.0 target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
+    
+    // 添加到运行循环
+    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+}
+- (void)updateTimer
+{
+    CGFloat x = _scrollV.contentOffset.x;
+    x += WIDTH;
+    
+    if (x == (_detailModel.atlas.count + 1) * WIDTH) {
+        [UIView animateWithDuration:0.25 animations:^{
+            _scrollV.contentOffset = CGPointMake(WIDTH, 0);
+        }];
+    }else{
+        [UIView animateWithDuration:0.25 animations:^{
+            _scrollV.contentOffset = CGPointMake(x, 0);
+        }];
+    }
+}
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    //    NSLog(@"%s", __func__);
+    // 停止时钟，停止之后就不能再使用，如果要启用时钟，需要重新实例化
+    [self.timer invalidate];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+//    [self startTimer];
 }
 #pragma mark --- UIScrollViewDelegate
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
     
-    NSLog(@"---%f", scrollView.contentOffset.x);
 }
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     
-    NSLog(@"///---%f", scrollView.contentOffset.x);
-    int x = scrollView.contentOffset.x / WIDTH + 1;
+    if(scrollView.contentOffset.x == 0)
+    {
+        scrollView.contentOffset = CGPointMake(_detailModel.atlas.count * WIDTH, 0);
+        // 最后一个
+        
+    }
+    else if (scrollView.contentOffset.x == (_detailModel.atlas.count + 1) * WIDTH)
+    {
+        scrollView.contentOffset = CGPointMake(WIDTH, 0);
+        // 第一个
+    }else{
+        
+    }
+    
+    int x = scrollView.contentOffset.x / WIDTH;
     NSMutableAttributedString * attributeStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d/%lu",x, _detailModel.atlas.count]];
     [attributeStr addAttribute:NSFontAttributeName value:Font16 range:NSMakeRange(0, 1)];
     _tagLbl.attributedText = attributeStr;
 }
+
+- (void)showPics:(UITapGestureRecognizer *)tap{
+    
+    UIImageView * imageV = (UIImageView *)tap.view;
+    if ([self.delegate respondsToSelector:@selector(didClickPicWithTag:)]) {
+        [self.delegate didClickPicWithTag:imageV.tag];
+    }else{
+        NSLog(@"代理没有响应..");
+        
+    }
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code

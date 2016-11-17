@@ -150,7 +150,7 @@
     [_picV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.mas_left).offset(15 * IPHONE6_W_SCALE);
         make.top.equalTo(_lineV.mas_bottom).offset(10 * IPHONE6_H_SCALE);
-        make.width.equalTo(@(110 * IPHONE6_W_SCALE));
+        make.width.equalTo(@(113 * IPHONE6_W_SCALE));
         make.height.equalTo(@(75 * IPHONE6_W_SCALE));
     }];
     // 商品名称

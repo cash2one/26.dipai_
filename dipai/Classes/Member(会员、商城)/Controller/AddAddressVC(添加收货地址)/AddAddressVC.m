@@ -126,6 +126,7 @@
     for (int i = 0; i < 4; i ++) {
         UIView * lineV = [[UIView alloc] initWithFrame:CGRectMake(15 * IPHONE6_W_SCALE, 44 * IPHONE6_H_SCALE + i * 44 * IPHONE6_H_SCALE, WIDTH - 15 * IPHONE6_W_SCALE, 0.5 * IPHONE6_H_SCALE)];
         lineV.backgroundColor = RGBA(15, 15, 15, 1);
+        lineV.backgroundColor = SeparateColor;
         lineV.tag = 0;
         [backV addSubview:lineV];
         [lineArr addObject:lineV];

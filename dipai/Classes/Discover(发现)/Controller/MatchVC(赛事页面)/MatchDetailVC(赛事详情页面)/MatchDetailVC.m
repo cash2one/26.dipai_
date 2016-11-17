@@ -308,7 +308,7 @@
     LiveModel * live = [liveModelArr firstObject];
     
     headerView.stateLbl.text = [NSString stringWithFormat:@"比赛状态:%@", live.match_state];
-    
+    NSLog(@"%@", live.blind);
     NSInteger index = [live.blind rangeOfString:@"/"].location;
     NSString * str1 = [live.blind substringFromIndex:index+1];
     
@@ -1522,8 +1522,9 @@
     
     // http://dipaiapp.replays.net/app/club/view/5/4917
     
-    //    NSLog(@"%@", self.wapurl);
+//        NSLog(@"%@", self.wapurl);
     // http://dipaiapp.replays.net/app/club/view/5/5110
+    
     [DataTool getMatchDataInDetailWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         
         _matchingModel= [[MatchingModel alloc] init];

@@ -19,11 +19,13 @@
 #import "GoodsDetailCell.h"
 
 #import "LSAlertView.h"
+// 图片浏览器
+#import "ImageBrowserView.h"
 
 #import "Masonry.h"
 #import "DataTool.h"
 #import "UIImageView+WebCache.h"
-@interface GoodsDetailVC ()<UITableViewDelegate, UITableViewDataSource, LSAlertViewDeleagte>
+@interface GoodsDetailVC ()<UITableViewDelegate, UITableViewDataSource, LSAlertViewDeleagte, GoodsDetailCellDelegate>
 
 @property (nonatomic, strong) UITableView * tableView;
 
@@ -32,6 +34,11 @@
 @property (nonatomic, strong)  LSAlertView * alertView;
 
 @property (nonatomic, strong) UIView * alertBackView;
+
+//  滚动视图的背景图
+@property (nonatomic, strong) UIView * scBack;
+
+@property (nonatomic, strong) UIScrollView * scrollView;
 
 @end
 
@@ -123,7 +130,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     GoodsDetailCell * cell = [GoodsDetailCell cellWithTableView:tableView];
-    
+    cell.delegate = self;
 //    NSLog(@"%@", _goodsModel);
     cell.detailModel = _goodsModel;
     return cell;
@@ -133,9 +140,14 @@
     
     NSMutableDictionary * attentionDic = [NSMutableDictionary dictionary];
     attentionDic[NSFontAttributeName] = [UIFont systemFontOfSize:13*IPHONE6_W_SCALE];
-    CGSize attentionSize = [_goodsModel.goods_name sizeWithAttributes:attentionDic];
-    CGFloat h = attentionSize.height;
-    return 528.5 * IPHONE6_H_SCALE + h + 13 * IPHONE6_H_SCALE;
+    NSString * str = _goodsModel.goods_desc;
+    NSMutableAttributedString * desStr = [[NSMutableAttributedString alloc] initWithData:[str dataUsingEncoding:NSUnicodeStringEncoding] options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType} documentAttributes:nil error:nil];
+    CGRect desRect = [desStr boundingRectWithSize:CGSizeMake(WIDTH - 30 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+//    CGRect rect = [desStr boundingRectWithSize:CGSizeMake(WIDTH - 30 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:attentionDic context:nil];
+//    CGSize attentionSize = [_goodsModel.goods_desc sizeWithAttributes:attentionDic];
+    CGFloat h = desRect.size.height;
+    NSLog(@"%f", h);
+    return 528.5 * IPHONE6_H_SCALE + h + 13 * IPHONE6_H_SCALE-(750-496)*0.5*IPHONE6_W_SCALE;
 }
 
 // 跳转到购买页面
@@ -207,6 +219,15 @@
     [self presentViewController:loginNav animated:YES completion:nil];
 }
 
+
+#pragma mark --- GoodsDetailCellDelegate
+- (void)didClickPicWithTag:(NSInteger)tag{
+    NSLog(@"...%lu", tag);
+    ImageBrowserView * imageBrowser = [[ImageBrowserView alloc] initWithImageArr:_goodsModel.atlas andTag:tag];
+    imageBrowser.frame = CGRectMake(0, 0, WIDTH, HEIGHT);
+    [imageBrowser show];
+    
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

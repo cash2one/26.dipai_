@@ -21,10 +21,18 @@
 // 标题
 @property (nonatomic, strong) UILabel * titleLbl;
 
+@property (nonatomic, strong) NSMutableArray * imageArr;
+
 @end
 
 @implementation ShopCell
-
+- (NSMutableArray *)imageArr{
+    
+    if (_imageArr == nil) {
+        _imageArr = [NSMutableArray array];
+    }
+    return _imageArr;
+}
 + (instancetype)cellWithTableView:(UITableView *)tableView
 {
     static NSString * cellID = @"cellID";
@@ -128,10 +136,15 @@
     
     _listModel = listModel;
     // 如果是第一次进入就加载
-    if ( _firstIn != nil && _firstIn.length > 0) {
-        NSLog(@"不是第一次进入");
-    }else{
-        
+//    if ( _firstIn != nil && _firstIn.length > 0) {
+//        NSLog(@"不是第一次进入");
+//    }else{
+    
+    if (self.imageArr.count > 0) {
+        for (UIView * view in self.imageArr) {
+            [view removeFromSuperview];
+        }
+    }
         _titleLbl.text = listModel.name;
         for (int i = 0; i < _listModel.data.count; i ++) {
             
@@ -139,9 +152,11 @@
             
             int j = i / 2;
             int k = i % 2;
-            UIView * backV = [[UIView alloc] initWithFrame:CGRectMake(0 + (WIDTH / 2 + 1.5 * IPHONE6_W_SCALE) * k, 83 * 0.5 * IPHONE6_H_SCALE + (192 * IPHONE6_H_SCALE)*j, WIDTH / 2 - 1.5 * IPHONE6_W_SCALE, 189 * IPHONE6_H_SCALE)];
+            UIView * backV = [[UIView alloc] initWithFrame:CGRectMake(0 + (WIDTH / 2 + 1.5 * IPHONE6_W_SCALE) * k, 83 * 0.5 * IPHONE6_H_SCALE + (192 * IPHONE6_H_SCALE )*j, WIDTH / 2 - 1.5 * IPHONE6_W_SCALE, 189 * IPHONE6_H_SCALE )];
+//            UIView * backV = [[UIView alloc] initWithFrame:CGRectMake(0 + (WIDTH / 2 + 1.5 * IPHONE6_W_SCALE) * k, 83 * 0.5 * IPHONE6_H_SCALE + (192 * IPHONE6_H_SCALE + 63 * IPHONE6_W_SCALE)*j, WIDTH / 2 - 1.5 * IPHONE6_W_SCALE, 189 * IPHONE6_H_SCALE + 63 * IPHONE6_W_SCALE)];
             backV.backgroundColor = [UIColor whiteColor];
             backV.tag = i;
+            [self.imageArr addObject:backV];
             
             UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(seeGoodsDetail:)];
             tap.numberOfTouchesRequired = 1;
@@ -151,11 +166,13 @@
             UIImageView * imageV = [[UIImageView alloc] init];
             [backV addSubview:imageV];
             imageV.frame = CGRectMake(0, 0, 372 * 0.5 * IPHONE6_W_SCALE, 246 * 0.5 * IPHONE6_W_SCALE);
+//            imageV.frame = CGRectMake(0, 0, 372 * 0.5 * IPHONE6_W_SCALE, 246 * 0.5 * IPHONE6_W_SCALE + 63 * IPHONE6_W_SCALE);
             [imageV sd_setImageWithURL:[NSURL URLWithString:goodsModel.goods_img] placeholderImage:[UIImage imageNamed:@"123"]];
             
             // 文字
             CGFloat nameX = 9 * IPHONE6_W_SCALE;
             CGFloat nameY = 133 * IPHONE6_H_SCALE;
+//            CGFloat nameY = 133 * IPHONE6_H_SCALE + 63 * IPHONE6_W_SCALE;
             CGFloat nameW = WIDTH / 2 - 1.5 * IPHONE6_W_SCALE - 18 * IPHONE6_W_SCALE;
             NSMutableDictionary * contentsDic = [NSMutableDictionary dictionary];
             contentsDic[NSFontAttributeName] = Font12;
@@ -184,7 +201,7 @@
             [self addSubview:backV];
         }
         
-    }
+//    }
     _firstIn = @"firstIn";
 }
 

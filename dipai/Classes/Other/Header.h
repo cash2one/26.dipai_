@@ -63,7 +63,7 @@
 // 关注
 #define AttentionsURL @"http://dipaiapp.replays.net/app/follow/list/1?userid="
 //#define AttentionsURL @"http://dpapp.replays.net/app/follow/list/1?userid="
-#define FansURL @"http://app.dipai.tv/app/follow/list?userid="  // 分子
+#define FansURL @"http://app.dipai.tv/app/follow/list?userid=" // 分子
 //#define FansURL @"http://dpapp.replays.net/app/follow/list?userid="
 
 
@@ -179,6 +179,7 @@
 //#define BenifitsDetail @"http://dpapp.replays.net/app/view/courtesy/1/1 "
 // 积分详情
 #define NumberDtailURL @"http://dipaiapp.replays.net/app/member/integra/view"
+//#define NumberDtailURL @"http://dpapp.replays.net/app/member/integra/view"
 
 /*************************积分商城*************************/
 // 商城首页
@@ -192,12 +193,16 @@
 //#define AddressListURL @"http://dpapp.replays.net/app/address/list"
 // 提交地址
 #define AddAddressURL @"http://dipaiapp.replays.net/app/address/add"
+//#define AddAddressURL @"http://dpapp.replays.net/app/address/add"
 // 添加默认地址
 #define AddDefaAddressURL @"http://dipaiapp.replays.net/app/address/default"
+//#define AddDefaAddressURL @"http://dpapp.replays.net/app/address/default"
 // 提交订单接口
 #define submitOrderURL @"http://dipaiapp.replays.net/app/order/confirm"
+//#define submitOrderURL @"http://dpapp.replays.net/app/order/confirm"
 // 我的订单列表
 #define MyOrderURL @"http://dipaiapp.replays.net/app/order/list"
+//#define MyOrderURL @"http://dpapp.replays.net/app/order/list"
 
 
 //#define UserName @"username"

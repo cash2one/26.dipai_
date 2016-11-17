@@ -169,7 +169,6 @@
     
     
     
-    
 //    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
 }
 #pragma mark --- 有通知的时候进行跳转
@@ -216,6 +215,7 @@
 #pragma mark ------ 下拉刷新，加载新的数据
 - (void)loadNewData
 {
+    if (self.tableView.footer.state == MJRefreshStateRefreshing) return;    // 如果正在加载就不刷新
     // 如果网络有问题结束刷新状态
     [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
     
@@ -297,6 +297,12 @@
 #pragma mark --------- 上拉加载数据
 - (void)loadMoreData
 {
+    
+    if (self.tableView.header.state == MJRefreshStateRefreshing){
+        [self.tableView.header endRefreshing];
+        [self.tableView.footer endRefreshing];
+    }   // 如果正在刷新就不加载
+    if (self.tableView.header.state == MJRefreshStateRefreshing) return;
     NewsListModel * model = [self.newslistArr lastObject];
     NSString * replaceStr = [NSString stringWithFormat:@"index/%@", model.iD];
     // http://192.168.1.102:8080/app/index/0/0/0
@@ -307,7 +313,6 @@
         id str = array[0];
         if ([str isEqualToString:@"0"]) {
             self.tableView.footer.state = MJRefreshStateNoMoreData;
-            
         } else
         {
             [self.newslistArr addObjectsFromArray:array[1]];

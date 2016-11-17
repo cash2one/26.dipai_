@@ -8,8 +8,16 @@
 
 #import <UIKit/UIKit.h>
 @class GoodsDetailModel;
+
+@protocol GoodsDetailCellDelegate <NSObject>
+
+- (void)didClickPicWithTag:(NSInteger)tag;
+
+@end
+
 @interface GoodsDetailCell : UITableViewCell
 
+@property (nonatomic, assign) id <GoodsDetailCellDelegate> delegate;
 @property (nonatomic, strong) GoodsDetailModel * detailModel;
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 @end
