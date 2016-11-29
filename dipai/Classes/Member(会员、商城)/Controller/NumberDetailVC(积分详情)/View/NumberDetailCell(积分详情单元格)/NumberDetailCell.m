@@ -130,7 +130,8 @@
     _detailV = detailV;
     
     UILabel * detailLbl = [[UILabel alloc] init];
-    detailLbl.backgroundColor = [UIColor greenColor];
+    detailLbl.numberOfLines = 0;
+//    detailLbl.backgroundColor = [UIColor greenColor];
     detailLbl.font = Font12;
     detailLbl.textColor = Color153;
     [detailV addSubview:detailLbl];
@@ -152,7 +153,7 @@
     
     _typeLbl.text = _detailModel.type;
     _inOrOutLbl.text = _detailModel.extcredits1;
-    _balanceLbl.text = _detailModel.extcredits2;
+    _balanceLbl.text = [NSString stringWithFormat:@"余额：%@", _detailModel.extcredits2];
     _dateLbl.text = _detailModel.datetime;
     
     float inOrtOut = [_inOrOutLbl.text floatValue];
@@ -160,6 +161,12 @@
         _flagLbl.text = @"积分来源：";
     }else{
         _flagLbl.text = @"支出详情：";
+    }
+//    NSLog(@"%@", _detailModel.type);
+    if ([_detailModel.type isEqualToString:@"商城支出"]) {
+        _flagLbl.text = @"支出详情：";
+    }else{
+        _flagLbl.text = @"积分来源：";
     }
 }
 

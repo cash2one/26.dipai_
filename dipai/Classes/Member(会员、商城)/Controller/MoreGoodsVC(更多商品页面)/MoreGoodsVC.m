@@ -19,6 +19,7 @@
 
 #import "MJChiBaoZiFooter2.h"
 #import "DataTool.h"
+#import "SVProgressHUD.h"
 @interface MoreGoodsVC ()<UITableViewDelegate ,UITableViewDataSource>
 // 表格
 @property (nonatomic, strong) UITableView * tableView;
@@ -46,9 +47,13 @@
     
 //    NSLog(@"self.url--->%@", self.url);
     [DataTool  getMoreGoodsDataWithStr:self.url parameters:nil success:^(id responseObject) {
-        
-        NSArray * modelArr = responseObject;
-        self.dataSource = (NSMutableArray *) modelArr;
+        NSLog(@"---%@", responseObject);
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            [SVProgressHUD showErrorWithStatus:@"没有数据"];
+        }else{
+            NSArray * modelArr = responseObject;
+            self.dataSource = (NSMutableArray *) modelArr;
+        }
         
         [self.tableView reloadData];
     } failure:^(NSError * error) {
@@ -89,15 +94,16 @@
     NSString * iD = model.goods_id;
     NSString * url = [self.url stringByAppendingString:[NSString stringWithFormat:@"/%@", iD]];
     NSLog(@"url--->%@", url);
+     [self.tableView.footer endRefreshing];
     [DataTool getMoreGoodsDataWithStr:url parameters:nil success:^(id responseObject) {
-        [self.tableView.footer endRefreshing];
+        NSLog(@"%@", responseObject);
         if ([responseObject isKindOfClass:[NSString class]]) {  // 如果没有更多数据
             self.tableView.footer.state = MJRefreshStateNoMoreData;
         }else{
             
             [self.dataSource addObjectsFromArray:responseObject];
         }
-        
+        [self.tableView reloadData];
     } failure:^(NSError * error) {
         NSLog(@"获取更多数据出错%@", error);
     }];

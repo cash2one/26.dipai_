@@ -25,8 +25,12 @@
 // 商品详情
 @property (nonatomic, strong) UILabel * detailLbl;
 
+@property (nonatomic, strong) UILabel * deTitleLbl;
+
 @property (nonatomic, strong) UIView * topV;
 @property (nonatomic, strong) UIView * line;
+
+@property (nonatomic, strong)  UIView * lineV1;
 
 /**
  *  时间定时器
@@ -132,7 +136,7 @@
         make.top.equalTo(topV.mas_bottom);
         make.height.equalTo(@(20 * IPHONE6_H_SCALE));
     }];
-    
+    _lineV1.hidden = YES;
     // 商品详情
     UILabel * deTitleLbl = [[UILabel alloc] init];
     deTitleLbl.text = @"商品详情";
@@ -144,7 +148,9 @@
         make.top.equalTo(lineV1.mas_bottom);
         make.height.equalTo(@(83 * 0.5 * IPHONE6_W_SCALE));
     }];
+    _deTitleLbl = deTitleLbl;
     UIView * line = [[UIView alloc] init];
+    line.backgroundColor = Color229;
     [self addSubview:line];
     [line mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.mas_left);
@@ -153,6 +159,8 @@
         make.height.equalTo(@(0.5));
     }];
     _line = line;
+    _line.hidden = YES;
+    _deTitleLbl.hidden = YES;
     
     UILabel * detailLbl = [[UILabel alloc] init];
     detailLbl.font = Font13;
@@ -205,9 +213,11 @@
     }];
     
     // 商品积分
-    NSMutableAttributedString * numText = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", _detailModel.shop_price]];
-    [numText addAttribute:NSFontAttributeName value:Font15 range:NSMakeRange(0, 3)];
-    _numLbl.attributedText = numText;
+    if (_detailModel.shop_price.length > 0) {
+        NSMutableAttributedString * numText = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", _detailModel.shop_price]];
+        [numText addAttribute:NSFontAttributeName value:Font15 range:NSMakeRange(0, 3)];
+        _numLbl.attributedText = numText;
+    }
     
     // 商品详情
 //    _detailLbl.text = _detailModel.goods_desc;
@@ -218,12 +228,15 @@
         NSMutableAttributedString * desStr = [[NSMutableAttributedString alloc] initWithData:[str dataUsingEncoding:NSUnicodeStringEncoding] options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType} documentAttributes:NULL error:nil];
 //        NSMutableAttributedString * desStr = [[NSMutableAttributedString alloc] initWithString:str];
         _detailLbl.attributedText =desStr;
+        _deTitleLbl.hidden = NO;
+        _line.hidden = NO;
+        _lineV1.hidden = NO;
     }
     
     [_detailLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.mas_left).offset(15 * IPHONE6_W_SCALE);
         make.right.equalTo(self.mas_right).offset(-15 * IPHONE6_W_SCALE);
-        make.top.equalTo(_line.mas_bottom);
+        make.top.equalTo(_line.mas_bottom).offset(13 * IPHONE6_W_SCALE);
     }];
     
     // 启动时钟

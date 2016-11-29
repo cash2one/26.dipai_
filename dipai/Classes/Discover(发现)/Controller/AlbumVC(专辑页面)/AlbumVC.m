@@ -72,7 +72,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+     self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
     
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -80,6 +80,11 @@
     [self getData];
     
 }
+
+- (void)pop{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 
 #pragma mark --- 设置UI
 - (void)setUpUI{

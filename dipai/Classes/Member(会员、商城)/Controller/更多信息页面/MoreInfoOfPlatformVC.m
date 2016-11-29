@@ -55,7 +55,27 @@
         }];
         webView.UIDelegate = self;
         webView.navigationDelegate = self;
-        [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
+    NSString * url = @"";
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSDictionary * xcDic = [defaults objectForKey:WXUser];
+    NSDictionary * phoneDic = [defaults objectForKey:User];
+//    if (xcDic == nil) {
+//        NSLog(@"xcnil");
+//    }
+//    if (phoneDic == nil) {
+//        NSLog(@"phonenil");
+//    }
+    if (xcDic != nil) {
+        url = xcDic[@"userid"];
+        self.url =  [self.url stringByAppendingString:[NSString stringWithFormat:@"?userid=%@", url]];
+    }else if(phoneDic != nil){
+        url = phoneDic[@"userid"];
+         self.url = [self.url stringByAppendingString:[NSString stringWithFormat:@"?userid=%@", url]];
+    }else{
+        self.url = [self.url stringByAppendingString:url];
+    }
+    NSLog(@"%@", self.url);
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
     
     [webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     self.webView = webView;

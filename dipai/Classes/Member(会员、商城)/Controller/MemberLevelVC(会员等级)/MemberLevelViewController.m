@@ -159,9 +159,11 @@
             make.height.equalTo(@(70 * IPHONE6_W_SCALE));
         }];
         BenifitModel * model = [self.beniModelArr objectAtIndex:i];
-        [imgV sd_setImageWithURL:[NSURL URLWithString:model.picname] placeholderImage:[UIImage imageNamed:@"123"]];
+        [imgV sd_setImageWithURL:[NSURL URLWithString:model.picname] placeholderImage:[UIImage imageNamed:@"placeholder"]];
         
         UILabel * titleLbl = [[UILabel alloc] init];
+//        titleLbl.backgroundColor = [UIColor redColor];
+        titleLbl.font = Font15;
         titleLbl.textColor = [UIColor blackColor];
         titleLbl.text = model.name;
         titleLbl.textAlignment = NSTextAlignmentCenter;
@@ -180,6 +182,7 @@
 - (void)setDataAgain{
     
     NSString * text = self.dataDic[@"content"];
+    NSLog(@"%@", text);
     _requestLbl.text = text;
 }
 
@@ -207,13 +210,17 @@
 // 跳转到积分详情页面
 - (void)seeNumDetail{
     
-    if ([_levelModel.count_integral isEqualToString:@"0"]) {
-        [SVProgressHUD showErrorWithStatus:@"暂无数据"];
-    }else{
-        NumberDetailVC * numDetailVC = [[NumberDetailVC alloc] init];
-        numDetailVC.count_integral =  _levelModel.count_integral;
-        [self.navigationController pushViewController:numDetailVC animated:YES];
-    }
+    NumberDetailVC * numDetailVC = [[NumberDetailVC alloc] init];
+    
+    numDetailVC.count_integral =  _levelModel.count_integral;
+    [self.navigationController pushViewController:numDetailVC animated:YES];
+//    if ([_levelModel.count_integral isEqualToString:@"0"]) {
+//        [SVProgressHUD showErrorWithStatus:@"暂无数据"];
+//    }else{
+//        NumberDetailVC * numDetailVC = [[NumberDetailVC alloc] init];
+//        numDetailVC.count_integral =  _levelModel.count_integral;
+//        [self.navigationController pushViewController:numDetailVC animated:YES];
+//    }
     
 }
 
@@ -438,7 +445,8 @@
     
     UIWindow * window = [UIApplication sharedApplication].keyWindow;
     UIView * showBackV = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
-    showBackV.backgroundColor = RGBA(255, 255, 255, 0.5);
+//    showBackV.backgroundColor = RGBA(255, 255, 255, 0.5);
+    showBackV.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.5];;
     [window addSubview:showBackV];
     _showBackV = showBackV;
     
@@ -456,7 +464,7 @@
     textL.textColor = RGBA(202, 156, 91, 1);
     textL.textAlignment = NSTextAlignmentCenter;
     [showV addSubview:textL];
-    if ([_levelLbl.text isEqualToString:@"V1"]) {
+    if ([_levelLbl.text isEqualToString:@"V0"]) {
         showV.image = [UIImage imageNamed:@"tanchuang1"];
         
         [showV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -479,7 +487,7 @@
         requestLbl.font = Font11;
         requestLbl.textAlignment = NSTextAlignmentCenter;
         requestLbl.textColor = Color178;
-        NSMutableAttributedString * text =[[NSMutableAttributedString alloc] initWithString:@"累积获得1000积分达到V1等级"];
+        NSMutableAttributedString * text =[[NSMutableAttributedString alloc] initWithString:@"累积获得1000经验达到V1等级"];
         [text addAttribute:NSForegroundColorAttributeName value:RGBA(202, 156, 91, 1) range:NSMakeRange(12, 4)];
         requestLbl.attributedText = text;
         [showV addSubview:requestLbl];

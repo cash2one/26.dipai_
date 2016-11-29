@@ -110,6 +110,16 @@
         make.bottom.equalTo(moreLbl.mas_bottom).offset(15 * IPHONE6_H_SCALE);
     }];
     
+    UIView * lineV = [[UIView alloc] init];
+    lineV.backgroundColor = SeparateColor;
+    [self addSubview:lineV];
+    [lineV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.left.equalTo(self.mas_left);
+        make.right.equalTo(self.mas_right);
+        make.bottom.equalTo(topV.mas_bottom);
+        make.height.equalTo(@(1));
+    }];
+    
     // 底部分隔线
     UIView * separeV = [[UIView alloc] init];
     separeV.backgroundColor = SeparateColor;
@@ -176,28 +186,43 @@
             CGFloat nameW = WIDTH / 2 - 1.5 * IPHONE6_W_SCALE - 18 * IPHONE6_W_SCALE;
             NSMutableDictionary * contentsDic = [NSMutableDictionary dictionary];
             contentsDic[NSFontAttributeName] = Font12;
+//            NSString * str = @"阿里放假啊阿了；放假啊铯阿了；快放假啊铯了；啊放假阿斯利康积分丽萨；福建撒";
+            // goodsModel.goods_name
             CGRect contentsRect = [goodsModel.goods_name boundingRectWithSize:CGSizeMake(nameW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentsDic context:nil];
             UILabel * nameLbl = [[UILabel alloc] init];
+//            nameLbl.backgroundColor = [UIColor redColor];
             nameLbl.font = Font12;
             nameLbl.numberOfLines = 0;
-            nameLbl.frame = (CGRect){{nameX, nameY}, contentsRect.size};
-//            nameLbl.backgroundColor = [UIColor redColor];
             nameLbl.textColor = [UIColor blackColor];
             nameLbl.text = goodsModel.goods_name;
+            nameLbl.lineBreakMode = UILineBreakModeWordWrap;
+//            nameLbl.text = str;
+            nameLbl.frame = (CGRect){{nameX, nameY}, contentsRect.size};
+            NSLog(@"%f", contentsRect.size.height);
+            if (contentsRect.size.height > 42) {
+                nameLbl.numberOfLines = 2;
+                nameLbl.frame = (CGRect){{nameX, nameY}, {nameW, 28.640625*IPHONE6_W_SCALE}};
+            }
             [backV addSubview:nameLbl];
             
             // 积分
             UILabel * numLbl = [[UILabel alloc] init];
             numLbl.textColor = [UIColor redColor];
-            numLbl.font = Font12;
+//            numLbl.backgroundColor = [UIColor greenColor];
+            numLbl.font = Font14;
             [backV addSubview:numLbl];
             [numLbl mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.left.equalTo(backV.mas_left).offset(9 * IPHONE6_W_SCALE);
                 make.bottom.equalTo(backV.mas_bottom).offset(-10 * IPHONE6_H_SCALE);
                 make.width.equalTo(@(backV.frame.size.width - 18 * IPHONE6_W_SCALE));
-                make.height.equalTo(@(12 * IPHONE6_H_SCALE));
+                make.height.equalTo(@(14 * IPHONE6_H_SCALE));
             }];
-            numLbl.text = [NSString stringWithFormat:@"积分：%@", goodsModel.shop_price];
+            [numLbl sizeToFit];
+            
+            NSMutableAttributedString * numText = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", goodsModel.shop_price]];
+            [numText addAttribute:NSFontAttributeName value:Font11 range:NSMakeRange(0, 3)];
+//             [numText addAttribute:NSFontAttributeName value:Font8 range:NSMakeRange(0, 3)];
+            numLbl.attributedText = numText;
             [self addSubview:backV];
         }
         

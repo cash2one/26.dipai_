@@ -44,8 +44,8 @@
     // 设置tabBar的背景图片
      [self.tabBar setBackgroundImage:[UIImage imageNamed:@"biaoqianlan_beijingtu"]];
     
-    NSArray * selectImg = @[@"zixun_xuanzhong", @"faxian_xuanzhong",@"datubiao_xuanzhong", @"shequ_xuanzhong", @"wode_xuanzhong"];
-    NSArray * normarl = @[@"zixun_moren", @"faxian_moren",@"datubiao_moren", @"shequ_moren", @"wode_moren"];
+    NSArray * selectImg = @[@"zixun_xuanzhong", @"faxian_xuanzhong",@"shuiditubiao_xuanzhong", @"shequ_xuanzhong", @"wode_xuanzhong"];
+    NSArray * normarl = @[@"zixun_moren", @"faxian_moren",@"shuiditubiao_moren", @"shequ_moren", @"wode_moren"];
     NSArray * title = @[@"资讯", @"发现",@"", @"社区", @"我的"];
     for (int i=0; i<self.tabBar.items.count; i++) {
         

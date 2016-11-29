@@ -19,6 +19,8 @@
 
 #import "DataTool.h"
 #import "SVProgressHUD.h"
+// 友盟推送
+#import "UMessage.h"
 @interface LoginViewController ()<PhoneLoginViewControllerDelegate, RegisterViewControllerDelegate, AppDelegate, WXApiDelegate>
 
 @end
@@ -160,6 +162,12 @@
             NSLog(@"注册成功...");
         }
         NSDictionary * data = responseObject[@"data"];
+        NSString * userid = data[@"userid"];
+        [UMessage addAlias:userid type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+            //        NSLog(@"---responseObject---%@", responseObject);
+            //        NSLog(@"---error----%@", error);
+        }];
+        NSLog(@"---data---:%@", data);
         NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
         [userDefaults setObject:data forKey:WXUser];
         [userDefaults synchronize];

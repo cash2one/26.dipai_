@@ -52,11 +52,14 @@
 - (void)getData{
     
     [DataTool getDetailNumberDataWithStr:NumberDtailURL parameters:nil success:^(id responseObject) {
-        NSMutableArray * arr = responseObject;
-        self.dataSource = [arr objectAtIndex:0];
-        _page = [arr objectAtIndex:1];
-        
-         [self setData];
+        if ([responseObject isKindOfClass:[NSString class]]) {
+            self.tableView.footer.state = MJRefreshStateNoMoreData;
+        }else{
+            NSMutableArray * arr = responseObject;
+            self.dataSource = [arr objectAtIndex:0];
+            _page = [arr objectAtIndex:1];
+        }
+       [self setData];
         [self.tableView reloadData];
     } failure:^(NSError * error) {
        
@@ -67,6 +70,7 @@
 - (void)setData{
     
     _currentNumLbl.text = self. count_integral;
+    NSLog(@"%@", _currentNumLbl.text);
 }
 
 - (void)setNavigationBar{

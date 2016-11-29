@@ -161,6 +161,12 @@
 #define MyPokers @"http://dipaiapp.replays.net/app/list/brand"
 //#define MyPokers @"http://dpapp.replays.net/app/list/brand"
 
+
+
+// 通知中心接口
+#define MessageCenterURL @"http://dipaiapp.replays.net/member/app_message"
+//#define MessageCenterURL @"http://dpapp.replays.net/app/member/app_message"
+
 /*************************会员中心*************************/
 // 会员中心首页
 #define MemberCenter @"http://dipaiapp.replays.net/app/member/center"
@@ -203,6 +209,7 @@
 // 我的订单列表
 #define MyOrderURL @"http://dipaiapp.replays.net/app/order/list"
 //#define MyOrderURL @"http://dpapp.replays.net/app/order/list"
+
 
 
 //#define UserName @"username"

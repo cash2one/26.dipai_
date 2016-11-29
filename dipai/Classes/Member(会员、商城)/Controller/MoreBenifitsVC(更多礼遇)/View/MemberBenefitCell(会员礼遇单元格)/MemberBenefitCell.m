@@ -135,6 +135,7 @@
             [imgV sd_setImageWithURL:[NSURL URLWithString:picName] placeholderImage:[UIImage imageNamed:@"placeholder"]];
             
             UILabel * titleLbl = [[UILabel alloc] init];
+            titleLbl.font = Font15;
             titleLbl.textColor = [UIColor blackColor];
             titleLbl.text = dic[@"name"];
             titleLbl.textAlignment = NSTextAlignmentCenter;

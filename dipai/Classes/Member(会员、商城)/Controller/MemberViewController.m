@@ -123,7 +123,7 @@
 - (void)viewWillAppear:(BOOL)animated{
     NSLog(@"%s", __func__);
     [super viewWillAppear:YES];
-    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     // 为何此页面每次出现的时候都要获取数据？ 因为头像和积分可能发生变化
     [self getData];
 }
@@ -353,6 +353,7 @@
     collectionView.delegate = self;
     collectionView.dataSource = self;
     collectionView.showsHorizontalScrollIndicator = NO;
+    collectionView.scrollsToTop = NO;
     [collectionView registerClass:[CustomCollectionCell class] forCellWithReuseIdentifier:@"cellId"];
     self.collectionView = collectionView;
     
@@ -376,6 +377,7 @@
     UIScrollView * headerV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 100 * IPHONE6_H_SCALE)];
     UIView * bottomV = [[UIView alloc] initWithFrame:CGRectMake(0, 100 * IPHONE6_H_SCALE, WIDTH, 10 *IPHONE6_H_SCALE)];
     bottomV.tag = 100;
+    headerV.scrollsToTop = NO;
     [tableHeaderV addSubview:headerV];
     [tableHeaderV addSubview:bottomV];
     bottomV.backgroundColor = SeparateColor;
@@ -452,8 +454,8 @@
                         _face = memberInfoModel.face;
                     }
                     // 积分
-                    if (_num == [NSNull class] || _num == nil || ![_num isEqualToString:memberInfoModel.count_integral]) {
-                        _num = memberInfoModel.count_integral;
+                    if (_num == [NSNull class] || _num == nil || ![_num isEqualToString:memberInfoModel.sum_integral]) {
+                        _num = memberInfoModel.sum_integral;
                     }
                     // 设置头视图
                     [self setUpTopView];
@@ -592,6 +594,7 @@
 - (void)setUpTopView{
     
     [_faceV sd_setImageWithURL:[NSURL URLWithString:_face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+    NSLog(@"%@", _num);
     _numLbl.text = _num;
 }
 

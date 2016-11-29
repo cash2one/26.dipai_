@@ -21,6 +21,24 @@
 #import "MatchDetailVC.h"
 //
 #import "PostDetailVC.h"
+// 扑克名人堂页面
+#import "PokerVC.h"
+// 名人堂列表
+#import "MorePokersVC.h"
+// 视频专辑页面
+#import "AlbumVC.h"
+// 俱乐部详情页
+#import "ClubDetailViewController.h"
+// 专题列表
+#import "SpecialViewController.h"
+// 专题详情页
+#import "SpecialDetailVC.h"
+// 全部视频专辑
+#import "MoreVideosVC.h"
+// 名人主页
+#import "StarVC.h"
+// 普通用户主页
+#import "AnyBodyVC.h"
 // 单元格
 #import "tournamentCell.h"
 #import "InformationCell.h"
@@ -43,11 +61,52 @@
 #import "MJChiBaoZiFooter2.h"
 #import "MJChiBaoZiHeader.h"
 
+// 发现页面
+#import "DiscoverController.h"
+
 // 活动控制器
 #import "SVProgressHUD.h"
-
 #import "AppDelegate.h"
+#import "AFHTTPSessionManager.h"
+#import "HttpTool.h"
 @interface InfomationViewController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate, AppDelegate>
+
+typedef NS_ENUM(NSUInteger, LSType) {
+    /** 资讯 */
+    LSTypeInfo = 2,
+    /** 图集 */
+    LSTypePictures = 4,
+    /** 赛事 */
+    LSTypeMatch = 5,
+    /** 赛事 详情页*/
+    LSTypeMatchDetail = 51,
+    /** 直播 */
+    LSTypeLive = 6,
+    /** 视频 */
+    LSTypeVideo = 11,
+    /** 帖子详情 */
+    LSTypePostDetail = 172,
+    
+     /** 视频专辑 */
+    LSTypeVideoList = 101,
+    /** 全部视频专辑 */
+    LSTypeAllVideo = 10,
+    /** 帖子列表 */
+    LSTypePostList = 171,
+    /** 名人堂*/
+    LSTypePokerStar = 151,
+    /** 名人主页*/
+    LSTypeStar = 153,
+    /** 名人堂列表 */
+    LSTypePokerStarList = 152,
+    /** 俱乐部详细页面 */
+    LSTypeClubDetail = 81,
+    /** 专题 */
+    LSTypeSpecial = 9,
+    /** 专题列表 */
+    LSTypeSpecialList = 18
+};
+
 /**
  *  表格
  */
@@ -173,43 +232,131 @@
 }
 #pragma mark --- 有通知的时候进行跳转
 - (void)pushToViewControllerWithURL:(NSString *)url{
-    if ([url rangeOfString:@"art/view/11"].location != NSNotFound) {
-        // 跳转到视频专辑页
-        VideoViewController * videoVC = [[VideoViewController alloc] init];
-        videoVC.url = url;
-        videoVC.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:videoVC animated:YES];
-    }else if ([url rangeOfString:@"art/view/2"].location != NSNotFound || [url rangeOfString:@"art/view/4"].location != NSNotFound){
-        // 跳转到资讯页面
+    
+    NSLog(@"%@", url);
+    [HttpTool GET:url parameters:nil success:^(id responseObject) {
         
-        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
-        detailVC.url = url;
-        detailVC.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:detailVC animated:YES];
+        NSString * type = responseObject[@"type"];
+        NSInteger num = [type integerValue];
+        if (num == LSTypeInfo || num == LSTypePictures) {
+            // 跳转到资讯页面或图集页面
+            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+            detailVC.url = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        } else if (num == LSTypeVideo){ // 如果是视频
+            // 跳转到视频专辑页
+            VideoViewController * videoVC = [[VideoViewController alloc] init];
+            videoVC.url = url;
+            videoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:videoVC animated:YES];
+        } else if (num == LSTypeMatchDetail){  // 如果是赛事详情页
+            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+            detailVC.wapurl = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        }else if (num == LSTypePostDetail){ // 如果是帖子详情页
+            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+            postDetail.wapurl = url;
+            postDetail.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:postDetail animated:YES];
+        }else if (num == LSTypePokerStar){  // 扑克名人堂页面
+            PokerVC * pokerVC = [[PokerVC alloc] init];
+            pokerVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:pokerVC animated:YES];
+        }else if (num == LSTypePokerStarList){  // 扑克名人堂列表
+            MorePokersVC * morePokers = [[MorePokersVC alloc] init];
+            morePokers.wapurl = MorePokersURL;
+            morePokers.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:morePokers animated:YES];
+        }else if (num == LSTypePostList){   // 帖子列表
+            
+        }else if (num == LSTypeVideoList){  // 视频专辑
+            AlbumVC * albumVC = [[AlbumVC alloc] init];
+            albumVC.hidesBottomBarWhenPushed = YES;
+            albumVC.wapurl = url;
+            [self.navigationController pushViewController:albumVC animated:YES];
+        }else if (num == LSTypeClubDetail){ // 俱乐部详情页
+            NSString * title = responseObject[@"data"][@"title"];
+            ClubDetailViewController * clubDetaiVC = [[ClubDetailViewController alloc] init];
+            clubDetaiVC.wapurl = url;
+            clubDetaiVC.title = title;
+            clubDetaiVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:clubDetaiVC animated:YES];
+        }else if (num == LSTypeSpecial){    // 专题
+            SpecialViewController * specialVC = [[SpecialViewController alloc] init];
+            specialVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:specialVC animated:YES];
+        }else if (num == LSTypeSpecialList){    // 专题列表
+            SpecialDetailVC * specialVC = [[SpecialDetailVC alloc] init];
+            specialVC.wapurl = url;
+            specialVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:specialVC animated:YES];
+        }else if (num == LSTypeAllVideo){   // 全部视频专辑
+            MoreVideosVC * moreVideoVC = [[MoreVideosVC alloc] init];
+            moreVideoVC.moreURL = url;
+            moreVideoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:moreVideoVC animated:YES];
+        }else if (num == LSTypeStar){   // 名人主页
+            if ([responseObject[@"data"][@"certified"] isKindOfClass:[NSNull class]]) {
+                AnyBodyVC * anyBodyVC = [[AnyBodyVC alloc] init];
+                anyBodyVC.userURL = url;
+                anyBodyVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:anyBodyVC animated:YES];
+            }else{
+                StarVC * starVC = [[StarVC alloc] init];
+                starVC.userURL = url;
+                starVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:starVC animated:YES];
+            }
+            
+        }else{
+            
+            NSLog(@"%@", url);
+        }
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
         
-    } else if ([url rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
-        
-        PostDetailVC * postDetail =[[PostDetailVC alloc] init];
-        postDetail.wapurl = url;
-        postDetail.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:postDetail animated:YES];
-        
-    }else if ([url rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
-        
-        // 赛事详情页分为两种情况：1.有直播  2.没有直播
-        MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-        detailVC.wapurl = url;
-        detailVC.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:detailVC animated:YES];
-        
-    }else if ([url isEqualToString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]){   // 跳转到AppStore中
-        
-        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]];
-    }
-    else
-    {
-        NSLog(@"%@", url);
-    }
+        NSLog(@"出错：%@",error);
+    }];
+    
+//    if ([url rangeOfString:@"art/view/11"].location != NSNotFound) {
+//        // 跳转到视频专辑页
+//        VideoViewController * videoVC = [[VideoViewController alloc] init];
+//        videoVC.url = url;
+//        videoVC.hidesBottomBarWhenPushed = YES;
+//        [self.navigationController pushViewController:videoVC animated:YES];
+//    }else if ([url rangeOfString:@"art/view/2"].location != NSNotFound || [url rangeOfString:@"art/view/4"].location != NSNotFound){
+//        // 跳转到资讯页面
+//        
+//        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+//        detailVC.url = url;
+//        detailVC.hidesBottomBarWhenPushed = YES;
+//        [self.navigationController pushViewController:detailVC animated:YES];
+//        
+//    } else if ([url rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
+//        
+//        PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+//        postDetail.wapurl = url;
+//        postDetail.hidesBottomBarWhenPushed = YES;
+//        [self.navigationController pushViewController:postDetail animated:YES];
+//        
+//    }else if ([url rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
+//        
+//        // 赛事详情页分为两种情况：1.有直播  2.没有直播
+//        MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+//        detailVC.wapurl = url;
+//        detailVC.hidesBottomBarWhenPushed = YES;
+//        [self.navigationController pushViewController:detailVC animated:YES];
+//        
+//    }else if ([url isEqualToString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]){   // 跳转到AppStore中
+//        
+//        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]];
+//    }
+//    else
+//    {
+//        NSLog(@"%@", url);
+//    }
 }
 
 #pragma mark ------ 下拉刷新，加载新的数据
@@ -427,7 +574,6 @@
                 NSLog(@"%@", model.lurl);
                 NSLog(@"没有赛事");
             }
-            
 
         } else  // 如果点击的不是推荐赛事
         {
@@ -490,43 +636,130 @@
 - (void)turnPageToDetailView:(NSString *)url
 {
     
-//    NSLog(@"%@", url);
     // 详情页：1:资讯页 2:图集页  3:视频页 4:赛事页  5:
-    if ([url rangeOfString:@"art/view/11"].location != NSNotFound) {
-        // 跳转到视频专辑页
-        VideoViewController * videoVC = [[VideoViewController alloc] init];
-        videoVC.url = url;
-        videoVC.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:videoVC animated:YES];
-    }else if ([url rangeOfString:@"art/view/2"].location != NSNotFound || [url rangeOfString:@"art/view/4"].location != NSNotFound){
-        // 跳转到资讯页面或图集页面
+//    [SVProgressHUD show];
+    // 视频
+//    url = @"http://dipaiapp.replays.net/app/art/view/11/7914";
+//    // 帖子
+//    url = @"http://dipaiapp.replays.net/app/forum/view/6";
+//   
+//    // http://dpapp.replays.net/app/poker/list  名人堂列表
+//    url = @"http://dpapp.replays.net/app/poker/list";
+//    // http://dpapp.replays.net/app/user/poker 扑克名人堂
+//    url = @"http://dpapp.replays.net/app/user/poker";
+//    // 帖子列表
+//    url = @"http://dpapp.replays.net/app/forum/list/2";
+//    // 视频专辑
+//    url = @"http://dpapp.replays.net/app/album/list/7913";
+//    // 俱乐部详情页
+//    url = @"http://dpapp.replays.net/app/club/view/8/1981";
+//    // 专题列表
+//    url = @"http://dpapp.replays.net/app/special/9";
+//    // 专题详细列表
+//    url = @"http://dpapp.replays.net/article/special_list/10098330";
+//    // 赛事
+//    url = @"http://dpapp.replays.net/app/club/view/5/8576";
+//    // 全部视频专辑
+//    url = @"http://dpapp.replays.net/app/hot/album/list/1";
+//    // 名人主页
+//    url = @"http://dpapp.replays.net/app/user_space/259";
+//    // 普通用户主页
+//    url = @"http://dpapp.replays.net/app/user_space/856";
+    
+    NSLog(@"%@", url);
+    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+    //设置监听
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (status == AFNetworkReachabilityStatusNotReachable) {
+            NSLog(@"没有网络");
+            [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+        }else{
+        }
+    }];
+    [manager startMonitoring];
+    [HttpTool GET:url parameters:nil success:^(id responseObject) {
         
-        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
-        detailVC.url = url;
-        detailVC.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:detailVC animated:YES];
+        NSString * type = responseObject[@"type"];
+        NSInteger num = [type integerValue];
+        if (num == LSTypeInfo || num == LSTypePictures) {
+            // 跳转到资讯页面或图集页面
+            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+            detailVC.url = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        } else if (num == LSTypeVideo){ // 如果是视频
+            // 跳转到视频专辑页
+            VideoViewController * videoVC = [[VideoViewController alloc] init];
+            videoVC.url = url;
+            videoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:videoVC animated:YES];
+        } else if (num == LSTypeMatchDetail){  // 如果是赛事详情页
+            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+            detailVC.wapurl = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        }else if (num == LSTypePostDetail){ // 如果是帖子详情页
+            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+            postDetail.wapurl = url;
+            postDetail.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:postDetail animated:YES];
+        }else if (num == LSTypePokerStar){  // 扑克名人堂页面
+            PokerVC * pokerVC = [[PokerVC alloc] init];
+            pokerVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:pokerVC animated:YES];
+        }else if (num == LSTypePokerStarList){  // 扑克名人堂列表
+            MorePokersVC * morePokers = [[MorePokersVC alloc] init];
+            morePokers.wapurl = MorePokersURL;
+            morePokers.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:morePokers animated:YES];
+        }else if (num == LSTypePostList){   // 帖子列表
+            
+        }else if (num == LSTypeVideoList){  // 视频专辑
+            AlbumVC * albumVC = [[AlbumVC alloc] init];
+            albumVC.hidesBottomBarWhenPushed = YES;
+            albumVC.wapurl = url;
+            [self.navigationController pushViewController:albumVC animated:YES];
+        }else if (num == LSTypeClubDetail){ // 俱乐部详情页
+            NSString * title = responseObject[@"data"][@"title"];
+            ClubDetailViewController * clubDetaiVC = [[ClubDetailViewController alloc] init];
+            clubDetaiVC.wapurl = url;
+            clubDetaiVC.title = title;
+            clubDetaiVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:clubDetaiVC animated:YES];
+        }else if (num == LSTypeSpecial){    // 专题
+            SpecialViewController * specialVC = [[SpecialViewController alloc] init];
+            specialVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:specialVC animated:YES];
+        }else if (num == LSTypeSpecialList){    // 专题列表
+            SpecialDetailVC * specialVC = [[SpecialDetailVC alloc] init];
+            specialVC.wapurl = url;
+            specialVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:specialVC animated:YES];
+        }else if (num == LSTypeAllVideo){   // 全部视频专辑
+            MoreVideosVC * moreVideoVC = [[MoreVideosVC alloc] init];
+            moreVideoVC.moreURL = url;
+            moreVideoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:moreVideoVC animated:YES];
+        }else if (num == LSTypeStar){   // 名人主页
+            if ([responseObject[@"data"][@"certified"] isKindOfClass:[NSNull class]]) {
+                AnyBodyVC * anyBodyVC = [[AnyBodyVC alloc] init];
+                anyBodyVC.userURL = url;
+                anyBodyVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:anyBodyVC animated:YES];
+            }else{
+                StarVC * starVC = [[StarVC alloc] init];
+                starVC.userURL = url;
+                starVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:starVC animated:YES];
+            }
+           
+        }
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
         
-    } else if ([url rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
-        
-        PostDetailVC * postDetail =[[PostDetailVC alloc] init];
-        postDetail.wapurl = url;
-        postDetail.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:postDetail animated:YES];
-        
-    }else if ([url rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
-        
-        // 赛事详情页分为两种情况：1.有直播  2.没有直播
-        MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-        detailVC.wapurl = url;
-        detailVC.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:detailVC animated:YES];
-        
-    }
-    else
-    {
-        NSLog(@"%@", url);
-    }
-
+        NSLog(@"出错：%@",error);
+    }];
+    
 }
 
 - (void)turnPageToDetailView:(NSString *)url withNewsListModel:(NewsListModel *)newsListModel

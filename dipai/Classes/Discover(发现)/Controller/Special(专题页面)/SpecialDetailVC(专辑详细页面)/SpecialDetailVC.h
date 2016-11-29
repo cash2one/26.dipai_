@@ -11,6 +11,6 @@
 #import "SpecialModel.h"
 @interface SpecialDetailVC : UIViewController
 
-
+@property (nonatomic, copy) NSString * wapurl;
 @property (nonatomic, strong) SpecialModel * specialModel;
 @end

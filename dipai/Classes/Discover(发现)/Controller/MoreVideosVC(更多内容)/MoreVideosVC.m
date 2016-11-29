@@ -40,7 +40,6 @@
 - (void)viewWillAppear:(BOOL)animated{
     
     [super viewWillAppear:YES];
-    
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
 }
 
@@ -49,14 +48,19 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
     
-//    NSLog(@"传递过来的接口%@", self.moreURL);
-    
+    //    NSLog(@"传递过来的接口%@", self.moreURL);
+     self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
     [self createCollectionView];
     // 添加刷新和记载的效果
     [self addRefreshing];
     
-
+    
 }
+
+- (void)pop{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark --- 创建collectionView
 - (void)createCollectionView{
     
@@ -111,7 +115,7 @@
             // 结束刷新
             [self.collection.header endRefreshing];
             [self.collection.footer endRefreshing];
-//            NSLog(@"更多页面返回的数据%@", responseObject);
+            //            NSLog(@"更多页面返回的数据%@", responseObject);
             NSArray * arr = responseObject;
             // 传过来的是模型数组
             self.dataArray = (NSMutableArray *)arr;
@@ -136,7 +140,7 @@
     NSLog(@"%@", url);
     [DataTool getMoreVideosWithStr:url parameters:nil success:^(id responseObject) {
         // 传过来的是一个数组
-//        NSLog(@"获取更多专辑返回数据:%@", responseObject);
+        //        NSLog(@"获取更多专辑返回数据:%@", responseObject);
         [self.collection.footer endRefreshing];
         [self.collection.header endRefreshing];
         if ([responseObject isKindOfClass:[NSString class]]) {
@@ -152,7 +156,7 @@
         NSLog(@"获取更多专辑出错；%@", error);
         [self.collection.footer endRefreshing];
     }];
-
+    
 }
 
 // 单元格的个数
@@ -166,11 +170,11 @@
     CGFloat width = 334 / 2 * IPHONE6_W_SCALE;
     CGFloat height = 267 / 2 * IPHONE6_H_SCALE;
     return CGSizeMake(width, height);
-//    return CGSizeMake(SPWidth * 11.3 , SPWidth * 19.8 );
+    //    return CGSizeMake(SPWidth * 11.3 , SPWidth * 19.8 );
 }
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
     
-//    return UIEdgeInsetsMake( SPWidth , SPWidth , 0 , SPWidth * 0.8 );
+    //    return UIEdgeInsetsMake( SPWidth , SPWidth , 0 , SPWidth * 0.8 );
     // 上、左、下、右
     CGFloat top = 28 / 2 * IPHONE6_H_SCALE;
     CGFloat left = Margin30 * IPHONE6_W_SCALE;
@@ -181,11 +185,11 @@
 
 // 单元格的内容
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-  
+    
     MoreVideosCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MoreCollection" forIndexPath:indexPath];
     HotVideoModel * model = self.dataArray[indexPath.row];
     cell.hotVideoModel = model;
-//    [cell cellForViedoInfoShowCollectionCell:model];
+    //    [cell cellForViedoInfoShowCollectionCell:model];
     return cell;
 }
 // 单元格的点击事件

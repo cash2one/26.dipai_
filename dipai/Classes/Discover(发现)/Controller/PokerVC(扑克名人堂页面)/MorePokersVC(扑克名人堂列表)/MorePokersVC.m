@@ -101,7 +101,7 @@
 
 #pragma mark --- 添加表格
 - (void)addTableView{
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT-64) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.showsVerticalScrollIndicator = NO;
@@ -395,8 +395,22 @@
 //    NSLog(@"%@", pokersModel.userid);
 //    NSString * URL = [self.wapurl stringByReplacingOccurrencesOfString:@"?" withString:[NSString stringWithFormat:@"/%@?", pokersModel.userid]];
     // 拼接在list1之后
-    NSString * URL = [self.wapurl stringByReplacingOccurrencesOfString:@"?userid" withString:[NSString stringWithFormat:@"%@?userid", pokersModel.userid]];
-//    NSLog(@"%@", URL);
+    NSLog(@"%@", self.wapurl);
+    NSString * URL = nil;
+    // http://dpapp.replays.net/app/follow/list?userid=259
+    // http://dpapp.replays.net/app/follow/list/1?userid=250
+    if ([self.wapurl containsString:@"userid"]) {
+        if ([self.wapurl containsString:@"list/1"]) {  // 关注列表
+            URL = [self.wapurl stringByReplacingOccurrencesOfString:@"list/1" withString:[NSString stringWithFormat:@"list/1%@", pokersModel.userid]];
+        }else{  // 被关注列表
+            URL = [self.wapurl stringByReplacingOccurrencesOfString:@"list" withString:[NSString stringWithFormat:@"list/0/%@", pokersModel.userid]];
+        }
+       
+        NSLog(@"%@", URL);
+    }else{
+        URL  = [NSString stringWithFormat:@"%@/%@", self.wapurl, pokersModel.userid];
+    }
+    NSLog(@"%@", URL);
     [DataTool getMorePokerDataWithStr:URL parameters:nil success:^(id responseObject) {
         [self.tableView.footer endRefreshing];
         NSLog(@"%@", responseObject);

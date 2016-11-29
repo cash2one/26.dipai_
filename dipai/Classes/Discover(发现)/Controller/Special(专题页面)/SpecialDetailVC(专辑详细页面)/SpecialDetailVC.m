@@ -112,8 +112,12 @@
 
 - (void)loadNewData{
     
-//    NSLog(@"%@", self.specialModel.url);
-    [DataTool getSpecialDetailDataWithStr:self.specialModel.url parameters:nil success:^(id responseObject) {
+    NSLog(@"%@", self.specialModel.url);
+    NSString * url = self.specialModel.url;
+    if (self.wapurl.length>0) {
+        url = self.wapurl;
+    }
+    [DataTool getSpecialDetailDataWithStr:url parameters:nil success:^(id responseObject) {
         
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
@@ -129,7 +133,11 @@
 - (void)loadMoreData{
     
     SpecialDetailModel * model = [self.dataSource lastObject];
-    NSString * url = [self.specialModel.url stringByAppendingString:[NSString stringWithFormat:@"/%@", model.iD]];
+    NSString * wapurl = self.specialModel.url;
+    if (self.wapurl.length > 0) {
+        wapurl = self.wapurl;
+    }
+    NSString * url = [wapurl stringByAppendingString:[NSString stringWithFormat:@"/%@", model.iD]];
     [DataTool getSpecialDetailDataWithStr:url parameters:nil success:^(id responseObject) {
         
         [self.tableView.footer endRefreshing];

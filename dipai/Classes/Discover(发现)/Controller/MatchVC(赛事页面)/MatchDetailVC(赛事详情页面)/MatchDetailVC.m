@@ -207,7 +207,7 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    //    NSLog(@"%@", self.wapurl);
+    NSLog(@"%@", self.wapurl);
     
     // 设置导航栏
     [self setUpNavigationBar];

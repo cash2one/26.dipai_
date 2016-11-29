@@ -814,11 +814,13 @@
 
 // 跳转到通知中心页面
 - (void)seeNotiCenter{
-    
-    NotificationVC * notiVC = [[NotificationVC alloc] init];
-    notiVC.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:notiVC animated:YES];
-    
+    if (_name || _wxData) {
+        NotificationVC * notiVC = [[NotificationVC alloc] init];
+        notiVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:notiVC animated:YES];
+    }else{
+        [self addLSAlertView];
+    }
 }
 
 #pragma mark --- 登录事件

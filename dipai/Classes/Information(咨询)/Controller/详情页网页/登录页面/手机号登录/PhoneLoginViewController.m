@@ -16,6 +16,8 @@
 
 #import "DataTool.h"
 #import "SVProgressHUD.h"
+// 友盟推送
+#import "UMessage.h"
 @interface PhoneLoginViewController ()<UITextFieldDelegate>
 {
     NSString * _previousTextFieldContent;
@@ -200,14 +202,14 @@
      */
     dic[@"phone"] = _phoneNum.text;
     dic[@"password"] = _code.text;
+//    NSLog(@"dic:%@", dic);
     [DataTool postWithStr:LoginURL parameters:dic success:^(id responseObject) {
         NSString * content = [responseObject objectForKey:@"content"];
         
         
         NSLog(@"登录获取的数据%@", responseObject);
         
-//        NSLog(@"－－－%@", content);
-        
+        [SVProgressHUD showErrorWithStatus:content];
         if ([content isEqualToString:@"密码错误"]) {
             [SVProgressHUD showErrorWithStatus:@"密码错误"];
         }
@@ -231,6 +233,12 @@
                 NSDictionary * dataDic = [responseObject objectForKey:@"data"];
                 
 //                NSLog(@"登录成功后获取的数据:%@", dataDic);
+                NSString * userid = dataDic[@"userid"];
+                [UMessage addAlias:userid type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+                    NSLog(@"添加别名...");
+                    NSLog(@"---responseObject---%@", responseObject);
+                    NSLog(@"---error----%@", error);
+                }];
                 
                 [defaults setObject:dataDic forKey:User];
                 [defaults setObject:@"phone" forKey:Phone];

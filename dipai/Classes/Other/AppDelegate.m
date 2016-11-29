@@ -15,6 +15,7 @@
 // 资讯详情页
 #import "DetailWebViewController.h"
 #import "InfomationViewController.h"
+#import "NotificationVC.h"
 
 // 友盟分享
 #import "UMSocial.h"
@@ -35,7 +36,7 @@
 #import "TCCloudPlayerControlView.h"
 
 #import "DataTool.h"
-
+#import "AFNetworking.h"
 #import <JSPatchPlatform/JSPatch.h>
 #define UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 @interface AppDelegate ()<WXApiDelegate, UIAlertViewDelegate, UNUserNotificationCenterDelegate>
@@ -127,6 +128,9 @@
     
     
     [NSThread sleepForTimeInterval:2.0];
+    
+    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+    [manager startMonitoring];   // 程序启动后开始进行网络的监听
     [self.window makeKeyAndVisible];    // 让窗口可见
         
     return YES;
@@ -137,24 +141,28 @@
     if(buttonIndex == 0){
         NSLog(@",,,");
     }else{
-        RootTabBarController * root = (RootTabBarController *)self.window.rootViewController;
-        if(root.selectedIndex != 0){    // 如果当前页面不是首页转换到首页，在首页中进行跳转
-            root.selectedIndex = 0;
-            if([self.delegate respondsToSelector:@selector(pushToViewControllerWithURL:)]){
-                
-                [self.delegate pushToViewControllerWithURL:_url];
+        if(_url.length > 0 ){
+            RootTabBarController * root = (RootTabBarController *)self.window.rootViewController;
+            if(root.selectedIndex != 0){    // 如果当前页面不是首页转换到首页，在首页中进行跳转
+                root.selectedIndex = 0;
+                if([self.delegate respondsToSelector:@selector(pushToViewControllerWithURL:)]){
+                    
+                    [self.delegate pushToViewControllerWithURL:_url];
+                }else{
+                    NSLog(@"跳转时，AppDelegate的代理没有响应...");
+                }
             }else{
-                NSLog(@"跳转时，AppDelegate的代理没有响应...");
+                if([self.delegate respondsToSelector:@selector(pushToViewControllerWithURL:)]){
+                    
+                    [self.delegate pushToViewControllerWithURL:_url];
+                }else{
+                    NSLog(@"跳转时，AppDelegate的代理没有响应...");
+                }
             }
         }else{
-            if([self.delegate respondsToSelector:@selector(pushToViewControllerWithURL:)]){
-                
-                [self.delegate pushToViewControllerWithURL:_url];
-            }else{
-                NSLog(@"跳转时，AppDelegate的代理没有响应...");
-            }
+            // 跳转到通知中心
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"pushNoti" object:nil];
         }
-        
     }
 }
 
@@ -189,7 +197,7 @@
     [UMessage didReceiveRemoteNotification:userInfo];
     //    NSLog(@"---userInfo---%@", userInfo);
     NSString * string1 = userInfo[@"1"];
-    //    NSLog(@"---string---%@", string1);
+        NSLog(@"---string---%@", string1);
     _url = string1;
     // 应用在前台 或者后台开启状态下，不跳转页面，让用户选择。
     if (application.applicationState == UIApplicationStateActive || application.applicationState == UIApplicationStateBackground) {
@@ -200,11 +208,17 @@
     }
     else//后台运行状态下，直接跳转到跳转页面。
     {
-        NSLog(@"直接跳转...");
-        if ([self.delegate respondsToSelector:@selector(pushToViewControllerWithURL:)]) {
-            [self.delegate pushToViewControllerWithURL:_url];
+        // 跳转到通知中心
+        
+        if (_url.length > 0) {
+            if ([self.delegate respondsToSelector:@selector(pushToViewControllerWithURL:)]) {
+                [self.delegate pushToViewControllerWithURL:_url];
+            }else{
+                NSLog(@"跳转时，AppDelegate的代理没有响应...");
+            }
         }else{
-            NSLog(@"跳转时，AppDelegate的代理没有响应...");
+            // 跳转到通知中心
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"pushNoti" object:nil];
         }
     }
     

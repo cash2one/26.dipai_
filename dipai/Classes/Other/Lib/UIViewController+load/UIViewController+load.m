@@ -9,6 +9,8 @@
 #import "UIViewController+load.h"
 #import <objc/objc.h>
 #import <objc/runtime.h>
+
+#import "NotificationVC.h"
 @implementation UIViewController (load)
 
 + (void)load
@@ -37,6 +39,8 @@
     
 //    NSLog(@"%s", __func__);
     [MobClick beginLogPageView:NSStringFromClass([self class])];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(push) name:@"pushNoti" object:nil];
 }
 
 -(void) statisticsViewWillDisappear:(BOOL)animated
@@ -45,6 +49,15 @@
     
 //    NSLog(@"%s", __func__);
     [MobClick endLogPageView:NSStringFromClass([self class])];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"pushNoti" object:nil];
+}
+
+- (void)push{
+    
+    NotificationVC * notiVC = [[NotificationVC alloc] init];
+    notiVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:notiVC animated:YES];
 }
 
 @end

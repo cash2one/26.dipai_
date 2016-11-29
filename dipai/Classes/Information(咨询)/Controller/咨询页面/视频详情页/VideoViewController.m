@@ -226,7 +226,6 @@
 //
 //    // 搭建界面
     [self setUpUI];
-//
 //    NSLog(@"%@", self.url);
 //    // 获取网络上的数据
     [self getVideoDataWithURL:self.url];

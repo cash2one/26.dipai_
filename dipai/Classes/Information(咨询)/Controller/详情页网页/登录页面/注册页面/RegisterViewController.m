@@ -268,7 +268,7 @@
             NSLog(@"获取验证码成功");
             [SVProgressHUD showSuccessWithStatus:@"获取成功"];
             [_getCodeBtn setTitleColor:Color153 forState:UIControlStateNormal];
-            [_getCodeBtn startWithTime:60 title:@"重新发送" countDownTitle:@"s" mainColor:[UIColor whiteColor] countColor:[UIColor whiteColor]];
+            [_getCodeBtn startWithTime:59 title:@"重新发送" countDownTitle:@"s" mainColor:[UIColor whiteColor] countColor:[UIColor whiteColor]];
         }else{
             [SVProgressHUD showErrorWithStatus:responseObject[@"content"]];
         }

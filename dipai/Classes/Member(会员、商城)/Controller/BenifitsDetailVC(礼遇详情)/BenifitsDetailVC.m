@@ -58,10 +58,17 @@
     NSString * picStr = self.dataDic[@"picname"];
     NSString * nameStr = self.dataDic[@"name"];
     NSString * contentStr = self.dataDic[@"content"];
+//    contentStr = @"；啊结束的；了啊撒放假；啊山东积分撒酒疯了；撒娇垃圾分类；数据的了；积分；啊算风；了解啊疯了似的啊；加夫里什分了结束了咖啡机辣椒放假啊疯了快撒的两件事；拉夫啊积分；撒啊看积分；啊算✈️；啊健身房；连卡时光疯了就；刘嘉玲卡积分；就啊康师傅✈️家啊发；连卡精神发啊；两放假阿斯利康积分巨轮啊；积分；立刻睡觉啊理发店发送；两放假啊算了； ；啊康师傅啊结束的；了啊撒放假；啊山东积分撒酒疯了；撒娇垃圾分类；数据的了；积分；啊算风；了解啊疯了似的啊；加夫里什分了结束了咖啡机辣椒放假啊疯了快撒的两件事；拉夫啊积分；撒啊看积分；啊算✈️；啊健身房；连卡时光疯了就；刘嘉玲卡积分；就啊康师傅✈️家啊发；连卡精神发啊；两放假阿斯利康积分巨轮啊；积分；立刻睡觉啊理发店发送；两放假啊算了； ；啊康师傅✈️；啊健身房；连卡时光疯了就；刘嘉玲卡积分；就啊康师傅✈️家啊发；连卡精神发啊；两放假阿斯利康积分巨轮啊；积分；立刻睡觉啊理发店发送；两放假啊算了； ；啊康师傅啊结束的；了啊撒放假；啊山东积分撒酒疯了；撒娇垃圾分类；数据的了；积分；啊算风；了解啊疯了似的啊；加夫里什分了结束了咖啡机辣椒放假啊疯了快撒的两件事；拉夫啊积分；撒啊看积分；啊算✈️";
 //    NSLog(@"%@----%@---%@", picStr, nameStr, contentStr);
     [_picV sd_setImageWithURL:[NSURL URLWithString:picStr] placeholderImage:[UIImage imageNamed:@"123"]];
     _nameLbl.text = nameStr;
-    _textV.text = contentStr;
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.lineSpacing = 3.5*IPHONE6_W_SCALE;// 字体的行间距
+    NSDictionary *attributes = @{
+                                 NSFontAttributeName:[UIFont systemFontOfSize:15*IPHONE6_W_SCALE],
+                                 NSParagraphStyleAttributeName:paragraphStyle
+                                 };
+    _textV.attributedText = [[NSAttributedString alloc] initWithString:contentStr attributes:attributes];
 }
 
 - (void)viewDidLoad {
@@ -142,17 +149,19 @@
     // 详细内容
     UITextView * textV = [[UITextView alloc] init];
 //    textV.backgroundColor = [UIColor redColor];
-    textV.userInteractionEnabled = NO;
+    textV.font = Font14;
+//    textV.selectable = NO;
+    [textV setEditable:NO];
     [self.view addSubview:textV];
     
     [textV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.view.mas_left).offset(15 * IPHONE6_W_SCALE-6.5*IPHONE6_W_SCALE);
+        make.left.equalTo(self.view.mas_left).offset(15 * IPHONE6_W_SCALE-6.5*IPHONE6_W_SCALE+5*IPHONE6_W_SCALE);
         make.top.equalTo(lineV.mas_bottom).offset(13 * IPHONE6_H_SCALE-10);
         make.width.equalTo(@(WIDTH - 30 * IPHONE6_W_SCALE+13*IPHONE6_W_SCALE));
         make.bottom.equalTo(self.view.mas_bottom);
     }];
 //    textV.text = @";ajfjsa;jfkajlfj;sajfljsdklfjklajsklfjd";
-    [textV sizeToFit];
+//    [textV sizeToFit];
     _textV = textV;
 }
 

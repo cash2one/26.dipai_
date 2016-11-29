@@ -1383,6 +1383,7 @@
         
 //        NSLog(@"%@",responseObject);
         NSDictionary * dataDic = responseObject[@"data"];
+//        NSLog(@"%@", dataDic[@"content"]);
         if (success) {
             success(dataDic);
         }
@@ -1661,6 +1662,20 @@
             }
         }
        
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+// 获取通知中心数据
++ (void)getMessageCenterWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
+    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
+        
+        if (success) {
+            success(responseObject);
+        }
     } failure:^(NSError *error) {
         if (failure) {
             failure(error);

@@ -20,5 +20,5 @@
 
 @property (nonatomic, copy) NSString * face;
 
-@property (nonatomic, copy) NSString * count_integral;
+@property (nonatomic, copy) NSString * sum_integral;
 @end

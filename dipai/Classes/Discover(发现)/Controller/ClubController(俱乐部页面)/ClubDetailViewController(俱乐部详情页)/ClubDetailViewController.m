@@ -73,7 +73,7 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    
+    NSLog(@"%@", self.wapurl);
     [DataTool getClubInfoWithStr:self.wapurl parameters:nil success:^(id responseObject) {
         
         InfoModel * infoModel = [[InfoModel alloc] init];

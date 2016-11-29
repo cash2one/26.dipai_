@@ -50,7 +50,7 @@
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
-     [self getData];
+//     [self getData];
 }
 
 - (void)viewDidLoad {
@@ -64,6 +64,7 @@
     [self setNavigationBar];
     
     [self setUpUI];
+    [self getData];
     
 }
 // 获取数据

@@ -125,7 +125,6 @@
     NSString * goods_price = goodsDic[@"shop_price"];
     int all = [allNum intValue];
     int price = [goods_price intValue];
-    NSLog(@"%d   %d", all, price);
     if (all < price) {
         [_submitBtn setTitle:@"积分不足" forState:UIControlStateNormal];
         [_submitBtn setBackgroundColor:RGBA(255, 150, 150, 1)];
@@ -451,7 +450,7 @@
         parameters[@"goods_id"] =goodsDic[@"goods_id"]; // 商品ID
         parameters[@"address_id"] = addressDic[@"address_id"];  // 地址ID
         [DataTool submitOrderWithStr:submitOrderURL parameters:parameters success:^(id responseObject) {
-            
+//            NSLog(@"提交订单返回数据：%@", responseObject);
             if ([responseObject[@"msg"] isEqualToString:@"success"]) {
                 [SVProgressHUD showSuccessWithStatus:@"提交成功"];
                 [self.navigationController popViewControllerAnimated:YES];

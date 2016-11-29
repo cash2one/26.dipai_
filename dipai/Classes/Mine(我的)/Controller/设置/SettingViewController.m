@@ -14,6 +14,7 @@
 #import "AbountDiPai.h"
 
 #import "SVProgressHUD.h"
+#import "UMessage.h"
 @interface SettingViewController ()
 // 退出按钮
 @property (nonatomic, strong) UIButton * outBtn;
@@ -108,7 +109,7 @@
     versionCell.titleLbl.text = @"当前版本";
     versionCell.titleLbl.font = Font16;
     versionCell.accessView.hidden = YES;
-    versionCell.versionLbl.text = @"2.1";
+    versionCell.versionLbl.text = @"2.2";
     versionCell.versionLbl.font = Font14;
     CGFloat versionX = 0;
     CGFloat versionY = CGRectGetMaxY(AppStoreCell.frame);
@@ -147,9 +148,11 @@
     
     [self deleteCookie];
     NSUserDefaults * userDefaults =  [NSUserDefaults standardUserDefaults];
+    
     [userDefaults removeObjectForKey:WXUser];
     [userDefaults removeObjectForKey:User];
     [self.navigationController popViewControllerAnimated:YES];
+    
 }
 
 #pragma mark --- 删除cookie
@@ -164,6 +167,25 @@
         [cookieStorage deleteCookie:tempCookie];
     }
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    
+    // 删除别名
+    NSDictionary * xcDic =  [defaults objectForKey:WXUser];
+    NSString * userid1 = xcDic[@"userid"];
+    NSDictionary * phoneDic = [defaults objectForKey:User];
+    NSString * userid2 = phoneDic[@"userid"];
+//    NSLog(@"xcDic:%@", xcDic);
+//    NSLog(@"phoneDic:%@", phoneDic);
+//    NSLog(@"userid1:%@", userid1);
+//    NSLog(@"userid2:%@", userid2);
+    [UMessage removeAlias:userid1 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+        NSLog(@"删除userid1成功:%@", responseObject);
+        NSLog(@"删除userid1失败:%@", responseObject);
+    }];
+    [UMessage removeAlias:userid2 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+        NSLog(@"删除userid2成功:%@", responseObject);
+        NSLog(@"删除userid1失败:%@", responseObject);
+    }];
+    
     [defaults removeObjectForKey:Cookie];
     [defaults removeObjectForKey:Phone];
     [defaults removeObjectForKey:User];

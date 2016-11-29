@@ -209,7 +209,7 @@
         NSLog(@"获取验证码出错%@", error);
     }];
     [_getCodeBtn setTitleColor:Color153 forState:UIControlStateNormal];
-    [_getCodeBtn startWithTime:60 title:@"重新发送" countDownTitle:@"s" mainColor:[UIColor whiteColor] countColor:[UIColor whiteColor]];
+    [_getCodeBtn startWithTime:59 title:@"重新发送" countDownTitle:@"s" mainColor:[UIColor whiteColor] countColor:[UIColor whiteColor]];
     
 }
 

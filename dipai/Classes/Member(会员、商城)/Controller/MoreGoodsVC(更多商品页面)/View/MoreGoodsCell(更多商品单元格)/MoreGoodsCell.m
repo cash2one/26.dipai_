@@ -124,7 +124,8 @@
     [_lineV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.mas_right);
         make.bottom.equalTo(self.mas_bottom);
-        make.width.equalTo(@(456 * IPHONE6_W_SCALE * 0.5));
+//        make.width.equalTo(@(456 * IPHONE6_W_SCALE * 0.5));
+        make.left.equalTo(self.mas_left);
         make.height.equalTo(@(0.5));
     }];
     

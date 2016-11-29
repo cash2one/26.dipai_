@@ -78,7 +78,13 @@
 - (void)setDic:(NSDictionary *)dic{
     
     _dic = dic;
+    [self setData];
+}
+
+- (void)setData{
     
+    _timeLbl.text = _dic[@"addtime"];
+    _contentLbl.text = _dic[@"content"];
 }
 
 // 内容视图的高度需要获取到数据之后才能确定
@@ -86,7 +92,7 @@
     
     [super layoutSubviews];
 #warning 假数据
-    NSString * timeStr = @"2016-9-10";
+    NSString * timeStr = _dic[@"addtime"];
     NSMutableDictionary * timeDic = [NSMutableDictionary dictionary];
     timeDic[NSFontAttributeName] = Font11;
     CGSize timeSize = [timeStr sizeWithAttributes:timeDic];
@@ -101,7 +107,7 @@
     NSMutableDictionary * contentDic = [NSMutableDictionary dictionary];
     contentDic[NSFontAttributeName] = Font14;
 #warning 假数据
-    NSString * content = @"就拉舒服；啊积分；卡萨飞机卡拉斯京地方；看电视剧；阿娇；佛拉舒服卡拉斯科的风景；阿斯顿发；啊算看得见发生的； ";
+    NSString * content = _dic[@"content"];
     CGFloat contentW = 690 * 0.5 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE;
     CGRect rect = [content boundingRectWithSize:CGSizeMake(contentW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil];
     _contentLbl.frame = (CGRect){{20 * IPHONE6_W_SCALE, 21 * IPHONE6_H_SCALE}, rect.size};

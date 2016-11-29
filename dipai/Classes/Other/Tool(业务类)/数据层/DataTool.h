@@ -171,4 +171,7 @@
 + (void)submitOrderWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 // 获取我的订单数据
 + (void)getMyOrdersWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
+
+// 获取通知中心
++ (void)getMessageCenterWithStr:(NSString *)URLString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 @end

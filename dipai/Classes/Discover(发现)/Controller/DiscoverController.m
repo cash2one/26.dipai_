@@ -132,7 +132,7 @@
     [super viewWillAppear:YES];
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
     
-//    [MobClick beginLogPageView:@"DiscoverController"];
+    //    [MobClick beginLogPageView:@"DiscoverController"];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
@@ -145,7 +145,7 @@
 {
     [super viewWillDisappear:YES];
     
-//    [MobClick endLogPageView:@"DiscoverController"];
+    //    [MobClick endLogPageView:@"DiscoverController"];
     
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
     self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
@@ -219,6 +219,7 @@
     advertiseView.delegate = self;
     _advertiseView = advertiseView;
     self.tableView.tableHeaderView = advertiseView;
+    
 }
 
 #pragma mark --- AdvertisementViewDelegate
