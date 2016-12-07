@@ -52,6 +52,8 @@
 
 // 等级详情字典
 @property (nonatomic, strong) NSDictionary * dataDic;
+
+@property (nonatomic, strong) UIView * lineV;
 @end
 
 @implementation MemberLevelViewController
@@ -139,9 +141,32 @@
     
     _numLbl.text = [NSString stringWithFormat:@"%@/%@", count_integral, score_end];
     // 礼遇内容
+//    UIScrollView * scrollV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 542*0.5*IPHONE6_H_SCALE, WIDTH, 320*IPHONE6_H_SCALE)];
+    UIScrollView * scrollV = [[UIScrollView alloc] init];
+//    scrollV.backgroundColor = [UIColor redColor];
+    [self.view addSubview:scrollV];
+    [scrollV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.top.equalTo(self.lineV.mas_bottom);
+        make.height.equalTo(@(320 * IPHONE6_H_SCALE));
+    }];
+    
     for (int i = 0; i < self.beniModelArr.count ; i ++) {
         int j = i / 3;
-        UIView * imgBackV = [[UIView alloc] initWithFrame:CGRectMake(0 + WIDTH / 3 * i, 542 * 0.5 * IPHONE6_H_SCALE + 110 * IPHONE6_H_SCALE *j , WIDTH / 3, 110 * IPHONE6_H_SCALE)];
+        // 如果返回多少图片就显示多少图片那么开启下面的代码
+        int k = i % 3;
+        // 行数
+        int row;
+        if (self.beniModelArr.count % 3 == 0) {
+            row = (int)self.beniModelArr.count / 3;
+        }else{
+            row = ((int)self.beniModelArr.count / 3 )+ 1;
+        }
+       
+        scrollV.contentSize = CGSizeMake(WIDTH, 110 * IPHONE6_H_SCALE * row);
+//        UIView * imgBackV = [[UIView alloc] initWithFrame:CGRectMake(0 + WIDTH / 3 * i, 542 * 0.5 * IPHONE6_H_SCALE + 110 * IPHONE6_H_SCALE *j , WIDTH / 3, 110 * IPHONE6_H_SCALE)];
+        UIView * imgBackV = [[UIView alloc] initWithFrame:CGRectMake(0 + WIDTH / 3 * k, 0 + 110 * IPHONE6_H_SCALE *j , WIDTH / 3, 110 * IPHONE6_H_SCALE)];
 //        imgBackV.backgroundColor = [UIColor redColor];
         imgBackV.tag = i;
         UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(seeBeneDetail:)];
@@ -163,7 +188,7 @@
         
         UILabel * titleLbl = [[UILabel alloc] init];
 //        titleLbl.backgroundColor = [UIColor redColor];
-        titleLbl.font = Font15;
+        titleLbl.font = Font14;
         titleLbl.textColor = [UIColor blackColor];
         titleLbl.text = model.name;
         titleLbl.textAlignment = NSTextAlignmentCenter;
@@ -175,7 +200,7 @@
             make.height.equalTo(@(17 * IPHONE6_W_SCALE));
         }];
         
-        [self.view addSubview:imgBackV];
+        [scrollV addSubview:imgBackV];
     }
 }
 
@@ -388,6 +413,7 @@
         make.top.equalTo(benifitsLbl.mas_bottom).offset(12 * IPHONE6_H_SCALE);
         make.height.equalTo(@(0.5));
     }];
+    self.lineV = lineV;
     
     // 条款
     UILabel * aboutBeniLbl = [[UILabel alloc] init];
@@ -415,7 +441,8 @@
     [self.view addSubview:aboutBeniLbl];
     [aboutBeniLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view.mas_centerX);
-        make.top.equalTo(lineV.mas_bottom).offset(224 * IPHONE6_H_SCALE);
+//        make.top.equalTo(lineV.mas_bottom).offset(224 * IPHONE6_H_SCALE);
+        make.bottom.equalTo(self.view.mas_bottom).offset(-25 * IPHONE6_H_SCALE);
         make.width.equalTo(@(WIDTH));
         make.height.equalTo(@(12 * IPHONE6_W_SCALE));
     }];

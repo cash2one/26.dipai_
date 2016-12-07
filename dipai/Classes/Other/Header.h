@@ -226,6 +226,9 @@
 // 牌谱制作人
 #define pokerMaker @"userName"
 
+// 判断App是否启动
+#define appStart @"appStart"
+
 #define UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 // 判断设备型号

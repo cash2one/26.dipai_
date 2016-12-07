@@ -144,6 +144,10 @@
     [self setUpUI];
 //    NSLog(@"goodID:%@", self.goodID);
 }
+//- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+//    
+//    [self addSuccessView];
+//}
 
 - (void)setNavigationBar{
     
@@ -452,8 +456,10 @@
         [DataTool submitOrderWithStr:submitOrderURL parameters:parameters success:^(id responseObject) {
 //            NSLog(@"提交订单返回数据：%@", responseObject);
             if ([responseObject[@"msg"] isEqualToString:@"success"]) {
+                
                 [SVProgressHUD showSuccessWithStatus:@"提交成功"];
-                [self.navigationController popViewControllerAnimated:YES];
+                [self addSuccessView];
+//                [self.navigationController popViewControllerAnimated:YES];
             }
         } failure:^(NSError * error) {
             NSLog(@"提交订单出错：%@", error);
@@ -461,6 +467,36 @@
         
     }
    
+}
+// 提交订单成功后的提示框
+- (void)addSuccessView{
+    UIView * backView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    backView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    UIImageView * imageV = [[UIImageView alloc] init];
+    [backView addSubview:imageV];
+    [self.view addSubview:backView];
+    imageV.image = [UIImage imageNamed:@"tijiaochenggong"];
+    [imageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.centerY.equalTo(self.view.mas_centerY);
+        make.width.equalTo(@(242 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(634*0.5*IPHONE6_W_SCALE));
+    }];
+    UIButton * returnView = [UIButton buttonWithType:UIButtonTypeCustom];
+    [returnView setImage:[UIImage imageNamed:@"fanhuixiangqing"] forState:UIControlStateNormal];
+    [backView addSubview:returnView];
+    [returnView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(imageV.mas_centerX);
+        make.bottom.equalTo(imageV.mas_bottom).offset(-51 *0.5* IPHONE6_W_SCALE);
+        make.width.equalTo(@(286 * 0.5*IPHONE6_W_SCALE));
+        make.height.equalTo(@(29 * IPHONE6_W_SCALE));
+    }];
+    [returnView addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
+}
+// 返回详情页
+- (void)popAction{
+    
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 // 添加地址事件

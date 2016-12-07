@@ -183,15 +183,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSLog(@"给老子打印...");
-//    NSArray *familyNames = [UIFont familyNames];
-//    for( NSString *familyName in familyNames ){
-//        printf( "Family: %s \n", [familyName UTF8String] );
-//        NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
-//        for( NSString *fontName in fontNames ){
-//            printf( "\tFont: %s \n", [fontName UTF8String] );
-//        }
-//    }
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
 
     AppDelegate * delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
@@ -226,7 +217,12 @@ typedef NS_ENUM(NSUInteger, LSType) {
     // 设置footer
     self.tableView.footer = footer;
     
-    
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * first = [defaults objectForKey:appStart];
+    if (first.length > 0) {
+        NSLog(@"App启动");
+    }
+    [defaults removeObjectForKey:appStart];
     
 //    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
 }

@@ -42,10 +42,14 @@
  *  密码长度
  */
 @property (nonatomic, strong) UILabel * lengthLbl;
+// 如无邀请码可不填提示
+@property (nonatomic, strong) UILabel * noInvitedLbl;
 /**
  *  昵称
  */
 @property (nonatomic, strong) LSTextField * name;
+// 邀请码
+@property (nonatomic, strong) LSTextField * inviteCode;
 /**
  *  注册按钮
  */
@@ -207,7 +211,7 @@
     lengthLbl.font = Font16;
     lengthLbl.text = @"(密码长度为6-15位)";
     lengthLbl.textColor = Color183;
-    CGFloat lengthX = 45*IPHONE6_W_SCALE;
+    CGFloat lengthX = 60*IPHONE6_W_SCALE;
     CGFloat lengthY = 0;
     CGFloat lengthW = WIDTH-lengthX;
     CGFloat lengthH = passwordH;
@@ -229,10 +233,35 @@
     [self.view addSubview:name];
     _name = name;
     
+    // 邀请码
+    LSTextField * inviteCode = [[LSTextField alloc] init];
+    inviteCode.delegate = self;
+    CGFloat inviteX = nameX;
+    CGFloat inviteY = CGRectGetMaxY(name.frame);
+    CGFloat inviteW = nameW;
+    CGFloat inviteH = nameH;
+    inviteCode.frame = CGRectMake(inviteX, inviteY, inviteW, inviteH);
+    inviteCode.font = Font17;
+    inviteCode.myPlaceholder = @"邀请码 ";
+    [self.view addSubview:inviteCode];
+    _inviteCode = inviteCode;
+    // 如无可不填
+    UILabel * noInvitedLbl = [[UILabel alloc] init];
+    noInvitedLbl.font = Font16;
+    noInvitedLbl.text = @"(如无可不填)";
+    noInvitedLbl.textColor = Color183;
+    CGFloat noInvitedX = 75*IPHONE6_W_SCALE;
+    CGFloat noInvitedY = 0;
+    CGFloat noInvitedW = WIDTH-lengthX;
+    CGFloat noInvitedH = passwordH;
+    noInvitedLbl.frame = CGRectMake(noInvitedX, noInvitedY, noInvitedW, noInvitedH);
+    [inviteCode addSubview:noInvitedLbl];
+    _noInvitedLbl = noInvitedLbl;
+    
     // 注册按钮
     UIButton * registerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGFloat registerX = nameX;
-    CGFloat registerY = CGRectGetMaxY(name.frame) + Margin42 * IPHONE6_H_SCALE;
+    CGFloat registerY = CGRectGetMaxY(inviteCode.frame) + Margin42 * IPHONE6_H_SCALE;
     CGFloat registerW = nameW;
     CGFloat registerH = nameH;
     registerBtn.frame = CGRectMake(registerX, registerY, registerW, registerH);
@@ -324,7 +353,17 @@
     {
         _name.hidePlaceHolder = NO;
     }
+    // 邀请码
+    if (_inviteCode.text.length) {
+        _inviteCode.hidePlaceHolder = YES;
+        _noInvitedLbl.hidden = YES;
+    } else
+    {
+        _inviteCode.hidePlaceHolder = NO;
+        _noInvitedLbl.hidden = NO;
+    }
     
+    // 即使没有邀请码也能点击注册  因为如果没有邀请码可不填
     if (_phoneNum.text.length == 11 && _code.text.length && _password.text.length >= 6 && _name.text.length>2) {
         [_registerBtn setImage:[UIImage imageNamed:@"wanchengzhuce_xuanzhong"] forState:UIControlStateNormal];
         _registerBtn.userInteractionEnabled = YES;
@@ -356,6 +395,9 @@
             dic[@"username"] = _name.text;
             dic[@"password"] = _password.text;
             dic[@"verify"] = _code.text;
+            if (_inviteCode.text.length > 0) {
+                dic[@"istration_id"] = _inviteCode.text;
+            }
             //    http://10.0.0.14:8080/app/register?&phone=18730602439&username=liangsen&password=hahh
             [DataTool postWithStr:RegisterURL parameters:dic success:^(id responsObject) {
                 
@@ -422,7 +464,7 @@
     [_code resignFirstResponder];
     [_password resignFirstResponder];
     [_name resignFirstResponder];
-    
+    [_inviteCode resignFirstResponder];
 }
 
 #pragma mark --- UITextFieldDelegate

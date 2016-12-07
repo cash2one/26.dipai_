@@ -5576,7 +5576,7 @@
 				CODE_SIGN_ENTITLEMENTS = dipai/Dipai.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Haiyan Zhu (C4TH2R9E72)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = XJL3Q5Y9Q6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5615,7 +5615,7 @@
 				CODE_SIGN_ENTITLEMENTS = dipai/Dipai.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Haiyan Zhu (C4TH2R9E72)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = XJL3Q5Y9Q6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

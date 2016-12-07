@@ -33,14 +33,15 @@
     self.naviBar.titleStr = @"平台详情";
     self.naviBar.popV.hidden = NO;
     [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
-    
+     [self showView];
     UIProgressView * progressV = [[UIProgressView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 8)];
+    progressV.backgroundColor = [UIColor blueColor];
     progressV.tintColor = [UIColor redColor];
     CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 1.5f);
     progressV.transform = transform;//设定宽高
     [self.view addSubview:progressV];
     self.progressV = progressV;
-    [self showView];
+   
 }
 
 - (void)showView{
@@ -50,7 +51,7 @@
         [webView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.equalTo(self.view);
             make.right.equalTo(self.view);
-            make.top.equalTo(self.progressV.mas_bottom);
+            make.top.equalTo(self.naviBar.mas_bottom);
             make.bottom.equalTo(self.view);
         }];
         webView.UIDelegate = self;

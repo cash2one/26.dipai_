@@ -132,7 +132,9 @@
     AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
     [manager startMonitoring];   // 程序启动后开始进行网络的监听
     [self.window makeKeyAndVisible];    // 让窗口可见
-        
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    // 说明App已启动
+    [defaults setObject:@"first" forKey:appStart];
     return YES;
 }
 

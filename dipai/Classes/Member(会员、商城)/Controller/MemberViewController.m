@@ -25,6 +25,7 @@
 #import "MoreInfoOfPlatformVC.h"
 // 活动控制器
 #import "SVProgressHUD.h"
+#import "LSAlertView.h"
 
 // 获取数据的工具类
 #import "DataTool.h"
@@ -57,7 +58,7 @@
 #import "AFNetworking.h"
 // 加载图片第三方
 #import "UIImageView+WebCache.h"
-@interface MemberViewController ()<UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, ShopCellDelegate, CustomCollectionCellDelegate>
+@interface MemberViewController ()<UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, ShopCellDelegate, CustomCollectionCellDelegate, LSAlertViewDeleagte>
 {
     UISegmentedControl *_segmented;
     // 滚动视图
@@ -102,6 +103,11 @@
 @property (nonatomic, strong) NSMutableArray * goodsArray;
 // banner数组
 @property (nonatomic, strong) NSMutableArray * bannerArr;
+
+// 登录提示框
+@property (nonatomic, strong) LSAlertView * alertView;
+// 提示框的背景图
+@property (nonatomic, strong) UIView * alertBackView;
 @end
 
 @implementation MemberViewController
@@ -317,10 +323,22 @@
     [accessV sizeToFit];
     _accessV = accessV;
     
+    // 背景色
+    UIImageView * backImage = [[UIImageView alloc] init];
+//    backImage.backgroundColor = [UIColor redColor];
+    backImage.image = [UIImage imageNamed:@"pingtaituijianbeijing"];
+    [memberV addSubview:backImage];
+    [backImage mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.bottom.equalTo(self.view.mas_bottom).offset(-49);
+        make.top.equalTo(backV.mas_bottom);
+    }];
+    
     // 分割线
     UIView * seperateV = [[UIView alloc] initWithFrame:CGRectMake(0, 130 * IPHONE6_H_SCALE, WIDTH, 10 * IPHONE6_H_SCALE)];
     [memberV addSubview:seperateV];
-    seperateV.backgroundColor = RGBA(240, 239, 245, 1);
+//    seperateV.backgroundColor = RGBA(240, 239, 245, 1);
     
     // 平台推荐文字
     UIView * redV = [[UIView alloc] init];
@@ -347,22 +365,24 @@
     // 各个平台视图
     CGRect rect = CGRectMake(0, 364 * 0.5 * IPHONE6_H_SCALE, self.view.frame.size.width, 718 * 0.5 * IPHONE6_H_SCALE);
     LineLayout *flowLayout = [[LineLayout alloc]init];
+    
     UICollectionView *collectionView = [[UICollectionView alloc]initWithFrame:rect collectionViewLayout:flowLayout];
     [_sc addSubview:collectionView];
-    collectionView.backgroundColor = [UIColor whiteColor];
+    collectionView.backgroundColor = [UIColor clearColor];
     collectionView.delegate = self;
     collectionView.dataSource = self;
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.scrollsToTop = NO;
     [collectionView registerClass:[CustomCollectionCell class] forCellWithReuseIdentifier:@"cellId"];
+    collectionView.contentInset = UIEdgeInsetsMake(0, -232.5*IPHONE6_W_SCALE, 0, 0);
     self.collectionView = collectionView;
-    
+//    NSIndexPath  * indexpath = [NSIndexPath indexPathWithIndex:0];
+//    [self.collectionView scrollToItemAtIndexPath:indexpath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
     // 没有加载到数据的时候隐藏
     memberV.hidden = YES;
     _memberV = memberV;
     // 获取网络数据
 //    [self getData];
-    
     
     self.tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT -64) style:UITableViewStylePlain];
     self.tableView2.delegate=self;
@@ -395,6 +415,16 @@
     [header beginRefreshing];
     
 }
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+//    NSLog(@"width:%f", self.collectionView.frame.size.width);
+//     NSLog(@"%f----%f", self.collectionView.contentOffset.x, self.collectionView.contentOffset.y);
+//    NSLog(@"%f---%f---%f---%f", self.collectionView.contentInset.top, self.collectionView.contentInset.left, self.collectionView.contentInset.bottom, self.collectionView.contentInset.right);
+}
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+}
+
 #pragma mark --- 分段控件的点击事件
 -(void)segmentedClick:(UISegmentedControl*)seg{
     
@@ -524,7 +554,7 @@
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    NSLog(@"%lu", self.dataArray.count);
+    NSLog(@"collection的数据源:%lu", self.dataArray.count);
     return self.dataArray.count;
 }
 
@@ -536,19 +566,73 @@
     cell.delegate = self;
     PlatformModel * platModel = [self.dataArray objectAtIndex:indexPath.row];
     cell.model = platModel;
+//    cell.row = indexPath.row;
     [cell.picV sd_setImageWithURL:[NSURL URLWithString:platModel.picname]];
     return cell;
 }
 
+
 #pragma mark --- CustomCollectionCellDelegate
-- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url{
+- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url andRow:(NSInteger)row{
     
     NSLog(@"查看更多信息：");
-    MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
-    moreVC.url = url;
-    moreVC.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:moreVC animated:YES];
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * cookieName = [defaults objectForKey:Cookie];
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName  || wxData) {    // 如果已经登录
+
+        MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
+        moreVC.url = url;
+        moreVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:moreVC animated:YES];
+    }else{
+        [self addAlertView];
+    }
+
 }
+#pragma mark --- 添加登录的alertView
+- (void)addAlertView{
+    LSAlertView * alertView = [[LSAlertView alloc] init];
+    alertView.delegate = self;
+    CGFloat x = Margin105 * IPHONE6_W_SCALE;
+    CGFloat y = Margin574 * IPHONE6_H_SCALE;
+    CGFloat w = Margin540 * IPHONE6_W_SCALE;
+    CGFloat h = Margin208 * IPHONE6_H_SCALE;
+    alertView.frame = CGRectMake(x, y, w, h);
+    UIView * alertBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    alertBackView.backgroundColor = ColorBlack30;
+    // 当前顶层窗口
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    // 添加到灰色的背景图
+    [window addSubview:alertBackView];
+    [window addSubview:alertView];
+    _alertBackView = alertBackView;
+    _alertView = alertView;
+}
+#pragma mark --- LSAlertViewDeleagte
+// 取消按钮
+- (void)lsAlertView:(LSAlertView *)alertView cancel:(NSString *)cancel
+{
+    [self removeAlerView];
+}
+
+- (void)removeAlerView
+{
+    // 移除提示框的背景图
+    [_alertBackView removeFromSuperview];
+    // 移除提示框
+    [_alertView removeFromSuperview];
+}
+// 登录按钮
+- (void)lsAlertView:(LSAlertView *)alertView sure:(NSString *)sure
+{
+    // 移除提示框
+    [self removeAlerView];    
+    LoginViewController * loginVC = [[LoginViewController alloc] init];
+    UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    [self presentViewController:loginNav animated:YES completion:nil];
+}
+
 
 -(NSMutableArray *)dataArray
 {

@@ -1295,13 +1295,12 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-
+        NSLog(@"%@", responseObject);
         NSDictionary * dataDic = responseObject[@"data"];
         // 字典转模型
         MemberDataModel * dataModel = [MemberDataModel objectWithKeyValues:dataDic];
         dataModel.user_info = dataDic[@"user_info"];
         dataModel.list = dataDic[@"list"];
-        
         if (success) {
             success(dataModel);
         }
@@ -1341,6 +1340,7 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+//        NSLog(@"%@", responseObject);
         NSString * msg = responseObject[@"msg"];
         if ([msg isEqualToString:@"success"]) { // 登录
             

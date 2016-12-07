@@ -11,7 +11,7 @@
 @class PlatformModel;
 @protocol CustomCollectionCellDelegate <NSObject>
 
-- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url;
+- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url andRow:(NSInteger)row;
 
 @end
 

@@ -18,7 +18,6 @@ static const CGFloat ItemHW = 100;
 {
     if (self = [super init]) {
  //        UICollectionViewLayoutAttributes
-    
         
     }
     return self;
@@ -36,9 +35,9 @@ static const CGFloat ItemHW = 100;
      self.itemSize = CGSizeMake(121.5*IPHONE6_W_SCALE, 179.5*IPHONE6_W_SCALE);
     //     self.itemSize = CGSizeMake(100, 100);
     self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    self.minimumLineSpacing = 100;
+    self.minimumLineSpacing = 100*IPHONE6_W_SCALE;
         
-    CGFloat inset = (self.collectionView.frame.size.width - ItemHW) / 2;
+    CGFloat inset = (self.collectionView.frame.size.width - ItemHW*IPHONE6_W_SCALE) / 2;
     self.sectionInset = UIEdgeInsetsMake(0, inset, 0, inset);
 }
 

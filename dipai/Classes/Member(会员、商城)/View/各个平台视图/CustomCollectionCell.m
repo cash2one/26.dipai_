@@ -24,11 +24,14 @@
 
 - (void)setUpChildControl{
     
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = [UIColor clearColor];
     UIImageView * picV = [[UIImageView alloc] init];
 //    picV.backgroundColor = [UIColor blueColor];
     [self addSubview:picV];
-    
+    picV.userInteractionEnabled = YES;
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(moreInfoAction)];
+    tap.numberOfTapsRequired = 1;
+    [picV addGestureRecognizer:tap];
     [picV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.mas_centerX);
         make.top.equalTo(self.mas_top);
@@ -38,7 +41,7 @@
     _picV = picV;
     
     UIButton * moreBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [moreBtn setImage:[UIImage imageNamed:@"gengduoxinxi"] forState:UIControlStateNormal];
+    [moreBtn setImage:[UIImage imageNamed:@"bangding"] forState:UIControlStateNormal];
 //    [moreBtn setBackgroundImage:[UIImage imageNamed:@"gengduoxinxi"] forState:UIControlStateNormal];
     [moreBtn addTarget:self action:@selector(moreInfoAction) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:moreBtn];
@@ -58,10 +61,14 @@
     
     _model = model;
 }
+- (void)setRow:(NSInteger *)row{
+    
+    _row = row;
+}
 - (void)moreInfoAction{
     
-    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickWithURL:)]) {
-        [self.delegate tableViewCell:self didClickWithURL:_model.weburl];
+    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickWithURL:andRow:)]) {
+        [self.delegate tableViewCell:self didClickWithURL:_model.weburl andRow:0];
     }
 }
 

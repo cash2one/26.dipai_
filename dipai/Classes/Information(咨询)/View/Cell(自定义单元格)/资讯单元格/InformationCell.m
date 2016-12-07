@@ -90,6 +90,7 @@
     /***********资讯**************/
     // 图片
     UIImageView * picView = [[UIImageView alloc] init];
+    picView.contentMode = UIViewContentModeScaleToFill;
     [self addSubview:picView];
 //    picView.backgroundColor = [UIColor redColor];
     _picView = picView;

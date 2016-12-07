@@ -121,7 +121,14 @@
     
     _orderNumLbl.text = [NSString stringWithFormat:@"订单编号:%@", _orderModel.discount];
     
-    _orderStateLbl.text = _orderModel.shipping_status;
+    NSString * status =  _orderModel.shipping_status;
+    if ([status isEqualToString:@"0"]) {
+        _orderStateLbl.text = @"未发货";
+    }else if ([status isEqualToString:@"1"]){
+        _orderStateLbl.text = @"已发货";
+    }else{
+        _orderStateLbl.text = @"确认完成";
+    }
     
     [_picV sd_setImageWithURL:[NSURL URLWithString:_orderModel.goods_img] placeholderImage:[UIImage imageNamed:@"123"]];
     
