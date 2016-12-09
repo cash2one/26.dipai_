@@ -209,6 +209,12 @@
 // 我的订单列表
 #define MyOrderURL @"http://dipaiapp.replays.net/app/order/list"
 //#define MyOrderURL @"http://dpapp.replays.net/app/order/list"
+// 客服接口
+#define ServiceURL @"http://dipaiapp.replays.net/html/list.html"
+//#define ServiceURL @"http://dpapp.replays.net/html/list.html"
+// 弹窗接口
+#define PopViewURL @"http://dipaiapp.replays.net/app/add/popup"
+//#define PopViewURL @"http://dpapp.replays.net/app/add/popup"
 
 
 

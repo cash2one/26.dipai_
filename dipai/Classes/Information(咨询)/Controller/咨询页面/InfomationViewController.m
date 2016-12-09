@@ -60,6 +60,8 @@
 // 刷新
 #import "MJChiBaoZiFooter2.h"
 #import "MJChiBaoZiHeader.h"
+#import "Masonry.h"
+#import "UIImageView+WebCache.h"
 
 // 发现页面
 #import "DiscoverController.h"
@@ -70,7 +72,9 @@
 #import "AFHTTPSessionManager.h"
 #import "HttpTool.h"
 @interface InfomationViewController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate, AppDelegate>
-
+{
+    NSString * _name;   // 跳转页面接口地址
+}
 typedef NS_ENUM(NSUInteger, LSType) {
     /** 资讯 */
     LSTypeInfo = 2,
@@ -107,6 +111,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
     LSTypeSpecialList = 18
 };
 
+
 /**
  *  表格
  */
@@ -123,6 +128,10 @@ typedef NS_ENUM(NSUInteger, LSType) {
  *  赛事数据源
  */
 @property (nonatomic, strong) NSMutableArray * tournamentArr;
+// 弹窗
+@property (nonatomic, strong) UIView * popView;
+// 弹窗的背景图
+@property (nonatomic, strong)  UIView * backView;
 @end
 
 @implementation InfomationViewController
@@ -217,15 +226,10 @@ typedef NS_ENUM(NSUInteger, LSType) {
     // 设置footer
     self.tableView.footer = footer;
     
-    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    NSString * first = [defaults objectForKey:appStart];
-    if (first.length > 0) {
-        NSLog(@"App启动");
-    }
-    [defaults removeObjectForKey:appStart];
-    
 //    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
 }
+
+
 #pragma mark --- 有通知的时候进行跳转
 - (void)pushToViewControllerWithURL:(NSString *)url{
     
@@ -389,11 +393,104 @@ typedef NS_ENUM(NSUInteger, LSType) {
         // 添加轮播页
         [self addBannerView];
         [self.tableView reloadData];
+        
+        [self addPopView];
     } failure:^(NSError * error) {
         
          NSLog(@"获取首页错误信息%@", error);
     }];
 
+}
+
+- (void)addPopView{
+    
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * first = [defaults objectForKey:appStart];
+    if (first.length > 0) {
+        NSLog(@"App第一次启动");
+        [HttpTool GET:PopViewURL parameters:nil success:^(id responseObject) {
+            NSDictionary * dataDic = responseObject[@"data"];
+            NSString * picName = dataDic[@"picname"];
+            _name = dataDic[@"name"];
+            if (dataDic.count > 0) {    // 如果有数据
+                // 如果App第一次启动，有弹窗
+                UIWindow * window = [UIApplication sharedApplication].keyWindow;
+                UIView * popView = [[UIView alloc] init];
+                UIView * backView = [[UIView alloc] init];
+                backView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+                backView.userInteractionEnabled = YES;
+                UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeAction)];
+                tap.numberOfTapsRequired = 1;
+                [backView addGestureRecognizer:tap];
+                [window addSubview:backView];
+                [backView mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.left.equalTo(self.view.mas_left);
+                    make.right.equalTo(self.view.mas_right);
+                    make.bottom.equalTo(self.view.mas_bottom);
+                    make.top.equalTo(window.mas_top);
+                }];
+                [backView addSubview:popView];
+//                popView.backgroundColor = [UIColor redColor];
+                [popView mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.centerX.equalTo(self.view.mas_centerX);
+                    make.top.equalTo(backView.mas_top).offset(131 * IPHONE6_H_SCALE);
+                    make.width.equalTo(@(280 * IPHONE6_W_SCALE));
+                    make.height.equalTo(@(778 * 0.5 * IPHONE6_W_SCALE));
+                }];
+                
+                
+                // 图片
+                UIImageView * picV = [[UIImageView alloc] init];
+                picV.userInteractionEnabled = YES;
+                UITapGestureRecognizer * picTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(turnAction)];
+                picTap.numberOfTapsRequired = 1;
+                
+                [picV addGestureRecognizer:picTap];
+                [popView addSubview:picV];
+                [picV mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.left.equalTo(popView.mas_left);
+                    make.right.equalTo(popView.mas_right);
+                    make.bottom.equalTo(popView.mas_bottom);
+                    make.height.equalTo(@(748 * 0.5 * IPHONE6_W_SCALE));
+                }];
+                NSLog(@"%@", picName);
+                [picV sd_setImageWithURL:[NSURL URLWithString:picName] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                    NSLog(@"%@",image);
+                }];
+                
+                // 移除按钮
+                UIButton * removeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+                [removeBtn setImage:[UIImage imageNamed:@"guanbitanchuang"] forState:UIControlStateNormal];
+                [removeBtn addTarget:self action:@selector(removeAction) forControlEvents:UIControlEventTouchUpInside];
+                [popView addSubview:removeBtn];
+                [removeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.top.equalTo(popView.mas_top);
+                    make.right.equalTo(popView.mas_right).offset(29 * 0.5 * IPHONE6_W_SCALE);
+                    make.width.equalTo(@(29 * IPHONE6_W_SCALE));
+                    make.height.equalTo(@(29 * IPHONE6_W_SCALE));
+                }];
+                _popView = popView;
+                _backView = backView;
+
+            }
+        } failure:^(NSError *error) {
+            
+            NSLog(@"获取数据出错：%@", error);
+        }];
+        
+        }
+    [defaults removeObjectForKey:appStart];
+}
+// 跳转事件
+- (void)turnAction{
+    NSLog(@"进行跳转....");
+    [self turnPageToDetailView:_name];
+}
+
+// 移除背景图
+- (void)removeAction{
+    
+    [_backView removeFromSuperview];
 }
 #pragma mark --- 添加轮播页
 - (void)addBannerView
@@ -662,7 +759,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
 //    // 普通用户主页
 //    url = @"http://dpapp.replays.net/app/user_space/856";
     
-    NSLog(@"%@", url);
     AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
     //设置监听
     [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
@@ -749,6 +845,8 @@ typedef NS_ENUM(NSUInteger, LSType) {
                 [self.navigationController pushViewController:starVC animated:YES];
             }
            
+        }else{
+            NSLog(@"---%@",url);
         }
         [SVProgressHUD dismiss];
     } failure:^(NSError *error) {

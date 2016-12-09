@@ -56,7 +56,6 @@
 		C1212E071CCDA7DA00F76D4E /* dipaiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E061CCDA7DA00F76D4E /* dipaiTests.m */; };
 		C1212E121CCDA7DA00F76D4E /* dipaiUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E111CCDA7DA00F76D4E /* dipaiUITests.m */; };
 		C1212E3C1CCDAA6200F76D4E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E361CCDAA6200F76D4E /* AppDelegate.m */; };
-		C1212E3D1CCDAA6200F76D4E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E3B1CCDAA6200F76D4E /* ViewController.m */; };
 		C1212E461CCDABDE00F76D4E /* DiscoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E451CCDABDE00F76D4E /* DiscoverController.m */; };
 		C1212E491CCDABED00F76D4E /* CommunityController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E481CCDABED00F76D4E /* CommunityController.m */; };
 		C1212E4F1CCDADC100F76D4E /* UIImage+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = C1212E4E1CCDADC100F76D4E /* UIImage+Image.m */; };
@@ -568,8 +567,6 @@
 		C1212E131CCDA7DA00F76D4E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C1212E351CCDAA6200F76D4E /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		C1212E361CCDAA6200F76D4E /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		C1212E3A1CCDAA6200F76D4E /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		C1212E3B1CCDAA6200F76D4E /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		C1212E441CCDABDE00F76D4E /* DiscoverController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoverController.h; sourceTree = "<group>"; };
 		C1212E451CCDABDE00F76D4E /* DiscoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoverController.m; sourceTree = "<group>"; };
 		C1212E471CCDABED00F76D4E /* CommunityController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommunityController.h; sourceTree = "<group>"; };
@@ -2143,8 +2140,6 @@
 				C1212E371CCDAA6200F76D4E /* Category */,
 				C1212E381CCDAA6200F76D4E /* Lib */,
 				C1212E391CCDAA6200F76D4E /* Tool(业务类) */,
-				C1212E3B1CCDAA6200F76D4E /* ViewController.m */,
-				C1212E3A1CCDAA6200F76D4E /* ViewController.h */,
 				C1212E501CCDAE4200F76D4E /* PrefixHeader.pch */,
 				C1EE42AB1CCEF89000623E3C /* Header.h */,
 			);
@@ -5394,7 +5389,6 @@
 				C13CB1251DB9F12600A51B82 /* ShopListModel.m in Sources */,
 				C1E5F7D51CEC0834008A8A97 /* tournamentCell.m in Sources */,
 				C1EE42C31CCF463600623E3C /* RootNavigationController.m in Sources */,
-				C1212E3D1CCDAA6200F76D4E /* ViewController.m in Sources */,
 				C1EFBA6C1CEF14790066C4FF /* NSAttributeDescription+MagicalDataImport.m in Sources */,
 				C1E6BDD51D1A75CD0065DF9C /* SectionModel.m in Sources */,
 				C125A4091D17F6ED0092AEA9 /* EndMatchCell.m in Sources */,

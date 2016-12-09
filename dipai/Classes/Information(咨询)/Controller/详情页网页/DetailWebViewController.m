@@ -391,7 +391,7 @@
     [webView loadRequest:request];
     
     JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
-    
+    NSLog(@"%@", context);
     context[@"image_add_i"] = ^() { // 通过block回调获得h5传来的数据
     
         NSArray *args = [JSContext currentArguments];
@@ -784,6 +784,8 @@
 //        NSLog(@"---name---%@", name);
 //        
 //    }
+    
+
 
 }
 
