@@ -17,6 +17,8 @@
 #import "GoodsDetailModel.h"
 // 商品详情页单元格
 #import "GoodsDetailCell.h"
+// 积分商城的脚视图
+#import "FooterViewInShop.h"
 
 #import "LSAlertView.h"
 // 图片浏览器
@@ -78,6 +80,15 @@
         
         [self.tableView reloadData];
         [self setData];
+        if (self.tableView.contentSize.height > HEIGHT - 64) {
+            // 脚视图
+            FooterViewInShop * tableFooterV = [[FooterViewInShop alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 35 * IPHONE6_H_SCALE)];
+            self.tableView.tableFooterView = tableFooterV;
+        }else{
+            FooterViewInShop * footerV = [[FooterViewInShop alloc] initWithFrame:CGRectMake(0, HEIGHT-49*IPHONE6_H_SCALE -64-35*IPHONE6_H_SCALE, WIDTH, 35*IPHONE6_H_SCALE)];
+            [self.tableView addSubview:footerV];
+            
+        }
     } failure:^(NSError * error) {
         NSLog(@"获取数据错误信息：%@", error);
     }];
@@ -121,6 +132,7 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
 }
 #pragma mark -- UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{

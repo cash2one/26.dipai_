@@ -13,6 +13,8 @@
 
 // 更多商品单元格
 #import "MoreGoodsCell.h"
+// 积分商城脚视图
+#import "FooterViewInShop.h"
 
 // 商品模型
 #import "ShopGoodsModel.h"
@@ -20,6 +22,7 @@
 #import "MJChiBaoZiFooter2.h"
 #import "DataTool.h"
 #import "SVProgressHUD.h"
+#import "Masonry.h"
 @interface MoreGoodsVC ()<UITableViewDelegate ,UITableViewDataSource>
 // 表格
 @property (nonatomic, strong) UITableView * tableView;
@@ -56,6 +59,15 @@
         }
         
         [self.tableView reloadData];
+        if (self.tableView.contentSize.height > HEIGHT - 64) {
+            // 脚视图
+            FooterViewInShop * tableFooterV = [[FooterViewInShop alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 35 * IPHONE6_H_SCALE)];
+            self.tableView.tableFooterView = tableFooterV;
+        }else{
+            FooterViewInShop * footerV = [[FooterViewInShop alloc] initWithFrame:CGRectMake(0, HEIGHT - 64-35*IPHONE6_H_SCALE, WIDTH, 35*IPHONE6_H_SCALE)];
+            [self.tableView addSubview:footerV];
+            
+        }
     } failure:^(NSError * error) {
         
         NSLog(@"获取数据错误：%@", error);
@@ -104,6 +116,7 @@
             [self.dataSource addObjectsFromArray:responseObject];
         }
         [self.tableView reloadData];
+        
     } failure:^(NSError * error) {
         NSLog(@"获取更多数据出错%@", error);
     }];

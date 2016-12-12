@@ -11,6 +11,7 @@
 // 选择收货地址
 #import "SelectAddressVC.h"
 
+
 #import "Masonry.h"
 #import "DataTool.h"
 #import "UIImageView+WebCache.h"
@@ -134,6 +135,8 @@
         [_submitBtn setBackgroundColor:[UIColor redColor]];
         _submitBtn.userInteractionEnabled = YES;
     }
+    
+    
 }
 
 - (void)viewDidLoad {
@@ -440,6 +443,7 @@
         make.width.equalTo(@(140 * IPHONE6_H_SCALE));
     }];
     _submitBtn = submitBtn;
+
 }
 // 提交订单事件
 - (void)submitAction{

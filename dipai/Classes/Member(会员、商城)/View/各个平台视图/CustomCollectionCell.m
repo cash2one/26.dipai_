@@ -60,6 +60,7 @@
 - (void)setModel:(PlatformModel *)model{
     
     _model = model;
+    self.userInteractionEnabled = NO;
 }
 - (void)setRow:(NSInteger *)row{
     

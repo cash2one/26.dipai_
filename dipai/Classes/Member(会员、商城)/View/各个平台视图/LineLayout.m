@@ -134,7 +134,7 @@ static const CGFloat ItemHW = 100;
 //            attrs.transform3D = transform;
 //            attrs.zIndex = 1;
             attrs.alpha = precent;
-            
+//            NSLog(@"----%f", attrs.alpha);
         }
 
         

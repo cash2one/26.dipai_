@@ -50,6 +50,8 @@
 #import "CustomCollectionCell.h"
 // 商城单元格
 #import "ShopCell.h"
+// 积分商城的脚视图
+#import "FooterViewInShop.h"
 // 刷新控件
 #import "MJChiBaoZiFooter2.h"
 #import "MJChiBaoZiHeader.h"
@@ -393,6 +395,7 @@
 //    self.tableView2.backgroundColor = [UIColor yellowColor];
     [_sc addSubview:self.tableView2];
     
+    // 头视图
     UIView * tableHeaderV = [[UIView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 110* IPHONE6_H_SCALE)];
     UIScrollView * headerV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 100 * IPHONE6_H_SCALE)];
     UIView * bottomV = [[UIView alloc] initWithFrame:CGRectMake(0, 100 * IPHONE6_H_SCALE, WIDTH, 10 *IPHONE6_H_SCALE)];
@@ -404,6 +407,11 @@
     tableHeaderV.backgroundColor = [UIColor whiteColor];
     self.tableView2.tableHeaderView = tableHeaderV;
     _headerV = headerV;
+    
+    // 脚视图
+    FooterViewInShop * tableFooterV = [[FooterViewInShop alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 35 * IPHONE6_H_SCALE)];
+    self.tableView2.tableFooterView = tableFooterV;
+    self.tableView2.contentInset = UIEdgeInsetsMake(0, 0, 49, 0);
     
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
     [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
@@ -448,61 +456,59 @@
 - (void)getData{
     
     // 检测是否联网
-    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
-    //设置监听
-    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        if (status == AFNetworkReachabilityStatusNotReachable) {
-            NSLog(@"没有网络");
-            
-            [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-            _memberV.hidden = YES;
-        }else{  // 有网络的情况
-            
-            [DataTool getMemberCenterDataWithStr:MemberCenter parameters:nil success:^(id responseObject) {
-                
-                MemberDataModel * dataModel = responseObject;
-                //            NSLog(@"会员数据模型：%@", dataModel);
-                // 字典转模型
-                MemberInfoModel * memberInfoModel = [MemberInfoModel objectWithKeyValues:dataModel.user_info];
-                // 字典数组转模型
-                NSArray * platmodelArr = [PlatformModel objectArrayWithKeyValuesArray:dataModel.list];
-                [self.collectionView reloadData];
-                
-                self.dataArray  = (NSMutableArray *)platmodelArr;
-                if ([dataModel.user_info isKindOfClass:[NSNull class]]) {
-//                    [SVProgressHUD showErrorWithStatus:@"未登录"];
-                    
-                    [self showNoLoginMessage];
-                    
-                }else{
-                    
-                    [self showLoginMessage];
-                    [SVProgressHUD dismiss];
-                    
-                    // 头像
-                    if (_face == [NSNull class] || _face == nil || ![_face isEqualToString:memberInfoModel.face]) { // 如果首次进入此页面需要设置头像，如果头像发生变化需要重新设置头像
-                        _face = memberInfoModel.face;
-                    }
-                    // 积分
-                    if (_num == [NSNull class] || _num == nil || ![_num isEqualToString:memberInfoModel.sum_integral]) {
-                        _num = memberInfoModel.sum_integral;
-                    }
-                    // 设置头视图
-                    [self setUpTopView];
-                    
-                }
-                // 显示
-                _memberV.hidden = NO;
-            } failure:^(NSError * error) {
-                [SVProgressHUD dismiss];
-                [SVProgressHUD showErrorWithStatus:@"加载失败"];
-            }];
-
-        }
-    }];
-    [manager startMonitoring];
+        AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+        //设置监听
+        [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+            if (status == AFNetworkReachabilityStatusNotReachable) {
+                NSLog(@"没有网络");
     
-  }
+                [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+//                _memberV.hidden = YES;
+            }else{  // 有网络的情况
+                [DataTool getMemberCenterDataWithStr:MemberCenter parameters:nil success:^(id responseObject) {
+                    
+                    MemberDataModel * dataModel = responseObject;
+                    //            NSLog(@"会员数据模型：%@", dataModel);
+                    // 字典转模型
+                    MemberInfoModel * memberInfoModel = [MemberInfoModel objectWithKeyValues:dataModel.user_info];
+                    // 字典数组转模型
+                    NSArray * platmodelArr = [PlatformModel objectArrayWithKeyValuesArray:dataModel.list];
+                    [self.collectionView reloadData];
+                    
+                    self.dataArray  = (NSMutableArray *)platmodelArr;
+                    NSLog(@"%@", dataModel.user_info);
+                    if ([dataModel.user_info isKindOfClass:[NSNull class]]) {
+                        
+                        [self showNoLoginMessage];
+                        
+                    }else{
+                        
+                        [self showLoginMessage];
+                        [SVProgressHUD dismiss];
+                        
+                        // 头像
+                        if (_face == [NSNull class] || _face == nil || ![_face isEqualToString:memberInfoModel.face]) { // 如果首次进入此页面需要设置头像，如果头像发生变化需要重新设置头像
+                            _face = memberInfoModel.face;
+                        }
+                        // 积分
+                        if (_num == [NSNull class] || _num == nil || ![_num isEqualToString:memberInfoModel.sum_integral]) {
+                            _num = memberInfoModel.sum_integral;
+                        }
+                        // 设置头视图
+                        [self setUpTopView];
+                        
+                    }
+                    // 显示
+                    _memberV.hidden = NO;
+                } failure:^(NSError * error) {
+                    [SVProgressHUD dismiss];
+                    [SVProgressHUD showErrorWithStatus:@"加载失败"];
+                }];
+    
+            }
+        }];
+        [manager startMonitoring];
+}
 
 
 #pragma mark --- UITableViewDelegate
