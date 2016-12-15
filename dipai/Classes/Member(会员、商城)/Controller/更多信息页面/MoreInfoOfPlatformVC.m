@@ -79,6 +79,7 @@
     NSDictionary * xcDic = [defaults objectForKey:WXUser];
     NSDictionary * phoneDic = [defaults objectForKey:User];
 
+    NSLog(@"%@", self.url);
     if (xcDic != nil) {
         url = xcDic[@"userid"];
         self.url =  [self.url stringByAppendingString:[NSString stringWithFormat:@"?userid=%@", url]];

@@ -19,7 +19,7 @@
  parameters:(id)parameters
     success:(void (^)(id responseObject))success
     failure:(void (^)(NSError *error))failure;
-
-
+// 停止请求
++(void)endRequest;
 
 @end

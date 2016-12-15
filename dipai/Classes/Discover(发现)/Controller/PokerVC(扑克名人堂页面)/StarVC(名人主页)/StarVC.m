@@ -1234,6 +1234,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
             }else if (num == LSTypePostDetail){ // 如果是帖子详情页
                 PostDetailVC * postDetail =[[PostDetailVC alloc] init];
                 postDetail.wapurl = url;
+                postDetail.heightStr = @"64";
                 postDetail.hidesBottomBarWhenPushed = YES;
                 [self.navigationController pushViewController:postDetail animated:YES];
             }else if (num == LSTypePokerStar){  // 扑克名人堂页面

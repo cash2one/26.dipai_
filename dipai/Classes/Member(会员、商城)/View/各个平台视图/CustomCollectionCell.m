@@ -75,8 +75,8 @@
 }
 - (void)moreInfoAction{
     
-    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickWithURL:andRow:)]) {
-        [self.delegate tableViewCell:self didClickWithURL:_model.weburl andRow:0];
+    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickWithURL:andRow: andPlatformID:)]) {
+        [self.delegate tableViewCell:self didClickWithURL:_model.weburl andRow:0 andPlatformID:_model.platform_id];
     }
 }
 

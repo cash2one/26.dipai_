@@ -46,5 +46,12 @@
     }];
 }
 
++ (void)endRequest{
+    
+    AFHTTPRequestOperationManager *mgr = [AFHTTPRequestOperationManager manager];
+    mgr.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
+    [mgr.operationQueue cancelAllOperations];
+}
+
 
 @end

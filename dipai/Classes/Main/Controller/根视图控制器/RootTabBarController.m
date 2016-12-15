@@ -159,6 +159,9 @@
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
 {
     NSLog(@"%lu", self.selectedIndex);  // 各个tabBar的点击事件
+    if (self.selectedIndex == 2) {
+        [MobClick event:@"centralTabBarBtnClick"];
+    }
 }
 
 

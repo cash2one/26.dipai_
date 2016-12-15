@@ -265,8 +265,9 @@
     CGFloat registerW = nameW;
     CGFloat registerH = nameH;
     registerBtn.frame = CGRectMake(registerX, registerY, registerW, registerH);
-    [registerBtn setImage:[UIImage imageNamed:@"wanchengzhuce_moren"] forState:UIControlStateNormal];
-    registerBtn.userInteractionEnabled = NO;
+    [registerBtn setImage:[UIImage imageNamed:@"wanchengzhuce_xuanzhong"] forState:UIControlStateNormal];
+    [registerBtn addTarget:self action:@selector(registerAction) forControlEvents:UIControlEventTouchUpInside];
+//    registerBtn.userInteractionEnabled = NO;
     [self.view addSubview:registerBtn];
     _registerBtn = registerBtn;
 }
@@ -364,15 +365,15 @@
     }
     
     // 即使没有邀请码也能点击注册  因为如果没有邀请码可不填
-    if (_phoneNum.text.length == 11 && _code.text.length && _password.text.length >= 6 && _name.text.length>2) {
-        [_registerBtn setImage:[UIImage imageNamed:@"wanchengzhuce_xuanzhong"] forState:UIControlStateNormal];
-        _registerBtn.userInteractionEnabled = YES;
-        [_registerBtn addTarget:self action:@selector(registerAction) forControlEvents:UIControlEventTouchUpInside];
-    } else
-    {
-        [_registerBtn setImage:[UIImage imageNamed:@"wanchengzhuce_moren"] forState:UIControlStateNormal];
-        _registerBtn.userInteractionEnabled = NO;
-    }
+//    if (_phoneNum.text.length == 11 && _code.text.length && _password.text.length >= 6 && _name.text.length>2) {
+//        [_registerBtn setImage:[UIImage imageNamed:@"wanchengzhuce_xuanzhong"] forState:UIControlStateNormal];
+//        _registerBtn.userInteractionEnabled = YES;
+//        [_registerBtn addTarget:self action:@selector(registerAction) forControlEvents:UIControlEventTouchUpInside];
+//    } else
+//    {
+//        [_registerBtn setImage:[UIImage imageNamed:@"wanchengzhuce_moren"] forState:UIControlStateNormal];
+//        _registerBtn.userInteractionEnabled = NO;
+//    }
 }
 
 #pragma mark --- 注册事件
@@ -381,63 +382,78 @@
     // 验证手机号是否合法
     BOOL boo = [self verifyMobile:_phoneNum.text];
     
-    if (boo) {
-        
+    if (boo) {  // 手机号合法
         // 判断昵称是否包含空格
         NSRange _range = [_name.text rangeOfString:@" "];
         if (_range.location != NSNotFound) {
             //有空格
             [SVProgressHUD showErrorWithStatus:@"昵称不能包含空格"];
         }else {
-            //没有空格
-            NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-            dic[@"phone"] = _phoneNum.text;
-            dic[@"username"] = _name.text;
-            dic[@"password"] = _password.text;
-            dic[@"verify"] = _code.text;
-            if (_inviteCode.text.length > 0) {
-                dic[@"istration_id"] = _inviteCode.text;
-            }
-            //    http://10.0.0.14:8080/app/register?&phone=18730602439&username=liangsen&password=hahh
-            [DataTool postWithStr:RegisterURL parameters:dic success:^(id responsObject) {
-                
-                NSLog(@"注册成功返回的数据%@", responsObject);
-                NSString * content = [responsObject objectForKey:@"content"];
-                NSString * state = [responsObject objectForKey:@"state"];
-                if ([state isEqualToString:@"1"]) {
-                    [SVProgressHUD showSuccessWithStatus:@"注册成功"];
-                    
-                    NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-                    for (NSHTTPCookie * cookie in cookies) {
-                        NSString * name = [cookie name];
-                        NSLog(@"---name---%@", name);
-                        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-                        [defaults setObject:name forKey:Cookie];
-                        [defaults synchronize];
-                        NSString * phone = @"phone";
-                        [defaults setObject:phone forKey:Phone];
-                    }
-                    
-                    if ([self.delegate respondsToSelector:@selector(dismissAfterRegister)]) {
-                        [self.delegate dismissAfterRegister];
-                    } else{
-                        NSLog(@"RegisterViewController的代理没有响应...");
-                    }
-                    
-                    [NSThread sleepForTimeInterval:1.3];
-                    
-                    [self.navigationController popViewControllerAnimated:YES];
-                }else{
-                    
-                    [SVProgressHUD showErrorWithStatus:content];
-                }
-                
-                
-            } failure:^(NSError * error) {
-                
-                NSLog(@"注册的错误信息%@", error);
-            }];
             
+
+            if (_code.text.length >0) { // 验证码不为空
+                if (_password.text.length >=6 && _password.text.length <= 15) { // 密码长度合法
+                    if (_name.text.length <3) {
+                        [SVProgressHUD showErrorWithStatus:@"昵称最少3个字符"];
+                    }else{  // 昵称长度合法
+                        
+                        // 完全合法之后发送数据请求
+                        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+                        dic[@"phone"] = _phoneNum.text;
+                        dic[@"username"] = _name.text;
+                        dic[@"password"] = _password.text;
+                        dic[@"verify"] = _code.text;
+                        if (_inviteCode.text.length > 0) {
+                            dic[@"istration_id"] = _inviteCode.text;
+                        }
+                        //    http://10.0.0.14:8080/app/register?&phone=18730602439&username=liangsen&password=hahh
+                        [DataTool postWithStr:RegisterURL parameters:dic success:^(id responsObject) {
+                            
+                            NSLog(@"注册成功返回的数据%@", responsObject);
+                            NSString * content = [responsObject objectForKey:@"content"];
+                            NSString * state = [responsObject objectForKey:@"state"];
+                            if ([state isEqualToString:@"1"]) {
+                                [SVProgressHUD showSuccessWithStatus:@"注册成功"];
+                                
+                                NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+                                for (NSHTTPCookie * cookie in cookies) {
+                                    NSString * name = [cookie name];
+                                    NSLog(@"---name---%@", name);
+                                    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+                                    [defaults setObject:name forKey:Cookie];
+                                    [defaults synchronize];
+                                    NSString * phone = @"phone";
+                                    [defaults setObject:phone forKey:Phone];
+                                }
+                                
+                                if ([self.delegate respondsToSelector:@selector(dismissAfterRegister)]) {
+                                    [self.delegate dismissAfterRegister];
+                                } else{
+                                    NSLog(@"RegisterViewController的代理没有响应...");
+                                }
+                                
+                                [NSThread sleepForTimeInterval:1.3];
+                                
+                                [self.navigationController popViewControllerAnimated:YES];
+                            }else{
+                                
+                                [SVProgressHUD showErrorWithStatus:content];
+                            }
+                            
+                            
+                        } failure:^(NSError * error) {
+                            
+                            NSLog(@"注册的错误信息%@", error);
+                        }];
+
+                    }
+                }else{
+                    [SVProgressHUD showErrorWithStatus:@"密码无效"];
+                }
+            }else{
+                [SVProgressHUD showErrorWithStatus:@"验证码无效"];
+            }
+ 
         }
         
     } else{
@@ -448,6 +464,8 @@
         [alertController addAction:OK];
         [self presentViewController:alertController animated:YES completion:nil];
     }
+    
+    
     
 }
 #pragma mark --- 验证手机号是否合法

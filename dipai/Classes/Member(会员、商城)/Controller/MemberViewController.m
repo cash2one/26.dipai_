@@ -581,7 +581,7 @@
 
 
 #pragma mark --- CustomCollectionCellDelegate
-- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url andRow:(NSInteger)row{
+- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url andRow:(NSInteger)row andPlatformID:(NSString *)platformID{
     
     NSLog(@"查看更多信息：");
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
@@ -589,6 +589,9 @@
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName  || wxData) {    // 如果已经登录
 
+        NSString * platformStr = [NSString stringWithFormat:@"bangding%@", platformID];
+        NSLog(@"%@", platformStr);
+        [MobClick event:platformStr];
         MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
         moreVC.url = url;
         moreVC.hidesBottomBarWhenPushed = YES;

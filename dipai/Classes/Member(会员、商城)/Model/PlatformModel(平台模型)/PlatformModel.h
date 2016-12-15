@@ -15,6 +15,8 @@
  "weburl": "http://dipaiapp.replays.net/member/platform_address/1"	//绑定地址
  */
 
+
+@property (nonatomic, copy) NSString * platform_id; // 平台ID
 @property (nonatomic, copy) NSString * name;
 
 @property (nonatomic, copy) NSString * picname;

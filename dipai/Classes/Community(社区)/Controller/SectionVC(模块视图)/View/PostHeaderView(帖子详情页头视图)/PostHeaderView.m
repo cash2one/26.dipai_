@@ -192,11 +192,15 @@
 - (void)setDataModel:(PostDaraModel *)dataModel{
     _dataModel = dataModel;
     
-    
     _picView.picArr = _dataModel.imgs;
-//    NSLog(@"%s", __func__);
-    [self layoutSubviews];
+
+     [_iconView sd_setImageWithURL:[NSURL URLWithString:_dataModel.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+     _nameView.text = _dataModel.username;
+     _timeView.text = _dataModel.addtime;
+      _titleView.text = _dataModel.title;
+    _textView.text = _dataModel.content;
     
+    [self layoutSubviews];
 }
 
 - (void)layoutSubviews{
@@ -211,7 +215,7 @@
     CGFloat faceH = faceW;
     _iconView.frame = CGRectMake(faceX, faceY, faceW, faceH);
     // 这个方法容易报错 <Error>: CGContextDrawImage: invalid context 0x0. If you want to see the backtrace, please set CG_CONTEXT_SHOW_BACKTRACE environmental variable.
-    [_iconView sd_setImageWithURL:[NSURL URLWithString:_dataModel.face] placeholderImage:[UIImage imageNamed:@"touxiang_moren"]];
+   
     
     // 昵称
     CGFloat nameX = CGRectGetMaxX(_iconView.frame) + Margin22 * IPHONE6_W_SCALE;
@@ -222,7 +226,6 @@
     _nameView.frame = (CGRect){{nameX, nameY}, nameSize};
 //    NSLog(@"username:%@", _dataModel.username);
     
-    _nameView.text = _dataModel.username;
     
     // 时间
     CGFloat timeX = _nameView.frame.origin.x;
@@ -231,7 +234,6 @@
     timeDic[NSFontAttributeName] = Font11;
     CGSize timeSize = [_dataModel.addtime sizeWithAttributes:timeDic];
     _timeView.frame = (CGRect){{timeX,timeY},timeSize};
-    _timeView.text = _dataModel.addtime;
     
     // 标题
     CGFloat titleX = Margin30 * IPHONE6_W_SCALE;
@@ -241,7 +243,6 @@
     titleDic[NSFontAttributeName] = Font18;
     CGRect titleRect = [_dataModel.title boundingRectWithSize:CGSizeMake(titleW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:titleDic context:nil];
     _titleView.frame = (CGRect){{titleX, titleY}, titleRect.size};
-    _titleView.text = _dataModel.title;
     
     // 简介
     CGFloat contentsX = titleX;
@@ -253,7 +254,7 @@
     CGSize textSize = [_dataModel.content sizeWithFont:textFont
                           constrainedToSize:CGSizeMake(contentsW, MAXFLOAT)];;
     _textView.frame = CGRectMake(contentsX, contentsY, textSize.width, textSize.height);
-    _textView.text = _dataModel.content;
+    
 //    _textView.backgroundColor = [UIColor greenColor];
     _textView.font = Font16;
     _textView.numberOfLines = 0;

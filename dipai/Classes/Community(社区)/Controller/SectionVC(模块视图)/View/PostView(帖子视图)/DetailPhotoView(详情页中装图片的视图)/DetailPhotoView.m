@@ -109,6 +109,7 @@
             if (picArr.count > 0) {
                 SDWebImageOptions options = SDWebImageRetryFailed | SDWebImageLowPriority;
                 [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"placeholder"] options:options];
+//                 [imageView sd_setImageWithURL:[NSURL URLWithString:@""] placeholderImage:[UIImage imageNamed:@"placeholder"] options:options];
             }
 
         }else

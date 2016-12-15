@@ -42,6 +42,7 @@
 #import "LSAlertView.h"
 #import "Masonry.h"
 #import "SVProgressHUD.h"
+#import "HttpTool.h"
 @interface PostDetailVC ()<UITableViewDataSource, UITableViewDelegate, ReplyCellDelegate, LSAlertViewDeleagte, UMSocialUIDelegate, PostHeaderViewDelegate>
 {
     
@@ -110,7 +111,6 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-//    NSLog(@"%@", self.wapurl);
     
     // 设置导航栏
     [self setUpNavigationBar];
@@ -170,11 +170,17 @@
     UIView * bottomView = [[UIView alloc] init];
     bottomView.backgroundColor = [UIColor whiteColor];  // 不给颜色就会有透明效果
     [self.view addSubview:bottomView];
-    bottomView.frame = CGRectMake(0, HEIGHT - 64 -92 * 0.5 * IPHONE6_H_SCALE, WIDTH, 92 * 0.5* IPHONE6_H_SCALE);
+    [bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.bottom.equalTo(self.view.mas_bottom);
+        make.height.equalTo(@(88 * 0.5* IPHONE6_H_SCALE));
+    }];
     UIView * line = [[UIView alloc] init];
     [bottomView addSubview:line];
     line.frame = CGRectMake(0, 0, WIDTH, 0.5);
     line.backgroundColor = Color216;
+    
     
     // 评论按钮
     UIButton * commentBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -346,11 +352,12 @@
 
 #pragma mark --- 添加标题
 - (void)addTableView{
-    if (self.height) {
-        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 92 *0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
+    if (self.heightStr.length>0) {
+         self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
     }else{
-        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 92 *0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
+        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
     }
+    
     
     self.tableView.delegate = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -377,38 +384,76 @@
     self.tableView.footer = footer;
 }
 
+- (void)viewDidLayoutSubviews{
+    
+    NSLog(@"contentInset.top:------%f", self.tableView.contentInset.top);
+    NSLog(@"%d", self.height);
+    if (self.heightStr.length  > 0) {
+        
+        self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+    }else{
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+    }
+     NSLog(@"contentInset.top:------%f", self.tableView.contentInset.top);
+    
+}
+
 - (void)loadNewData{
     
-//    NSLog(@"self.wapurl:%@", self.wapurl);
+    if (self.tableView.footer.state == MJRefreshStateRefreshing) return;
+    NSLog(@"开始请求数据....");
     
-    [DataTool getPostDetailDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
+//    [self.tableView.header endRefreshing];
+//    [HttpTool endRequest];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        [DataTool getPostDetailDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
+            NSLog(@"请求数据完成..");
+            [self.tableView.header endRefreshing];
+            //        NSLog(@"responseObject:%@", responseObject);
+            PostDetailModel * detailModel = responseObject;
+            _detailModel = detailModel;
+            // 字典转模型
+            PostDaraModel * dataModel = [PostDaraModel objectWithKeyValues:_detailModel.data];
+            
+            NSArray * commentArr = dataModel.comment;
+            NSMutableArray * arr = [NSMutableArray array];
+            for (ReplyModel * model in commentArr) {
+                ReplyFrameModel * frameModel = [[ReplyFrameModel alloc] init];
+                frameModel.replyModel = model;
+                [arr addObject:frameModel];
+            }
+            self.dataSource = arr;
+            NSLog(@"数据个数：%lu", self.dataSource.count);
+            // 设置数据
+            [self setData];
+             [self.tableView reloadData];
+        } failure:^(NSError * error) {
+            
+            NSLog(@"获取帖子详情页时出错：%@", error);
+            [self.tableView.header endRefreshing];
+            [self.tableView.footer endRefreshing];
+        }];
+
+       dispatch_async(dispatch_get_main_queue(), ^{
+           [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
+           NSLog(@"／／／／");
+           
+          
+       });
+    });
+    
+}
+
+- (void)errorWithRefresh{
+    NSLog(@"请求数据====%lu", self.dataSource.count);
+    if (!self.dataSource.count) {
+        NSLog(@"有数据...");
+    }else{
+        NSLog(@"网络不通畅...");
         [self.tableView.header endRefreshing];
-        [self.tableView.footer endRefreshing];
-//        NSLog(@"%@", self.wapurl);
-        
-        PostDetailModel * detailModel = responseObject;
-        _detailModel = detailModel;
-        // 字典转模型
-        PostDaraModel * dataModel = [PostDaraModel objectWithKeyValues:_detailModel.data];
-        
-        NSArray * commentArr = dataModel.comment;
-        NSMutableArray * arr = [NSMutableArray array];
-        for (ReplyModel * model in commentArr) {
-            ReplyFrameModel * frameModel = [[ReplyFrameModel alloc] init];
-            frameModel.replyModel = model;
-            [arr addObject:frameModel];
-        }
-        self.dataSource = arr;
-        
-        // 设置数据
-        [self setData];
-        [self.tableView reloadData];
-    } failure:^(NSError * error) {
-        
-        NSLog(@"获取帖子详情页时出错：%@", error);
-        [self.tableView.header endRefreshing];
-        [self.tableView.footer endRefreshing];
-    }];
+//        [SVProgressHUD showErrorWithStatus:@"网络不通畅"];
+    }
 }
 - (void)loadMoreData{
     
