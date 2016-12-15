@@ -126,6 +126,7 @@
     
     UIView * detailV = [[UIView alloc] init];
     detailV.backgroundColor = [UIColor whiteColor];
+//    detailV.backgroundColor = [UIColor redColor];
     [self addSubview:detailV];
     _detailV = detailV;
     
@@ -180,12 +181,15 @@
     CGFloat detailH = detailRect.size.height;
     _detailLbl.frame = CGRectMake(75 * IPHONE6_W_SCALE, 10 * IPHONE6_H_SCALE, WIDTH - 90 * IPHONE6_W_SCALE, detailH);
     
-    [_detailV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.mas_left);
-        make.right.equalTo(self.mas_right);
-        make.top.equalTo(_topV.mas_bottom);
-        make.height.equalTo(@(47 * 0.5 * IPHONE6_H_SCALE + detailH));
-    }];
+    CGFloat detailVY = CGRectGetMaxY(_topV.frame);
+    CGFloat detailVH = 47 * 0.5 * IPHONE6_H_SCALE + detailH;
+    _detailV.frame = CGRectMake(0, detailVY, WIDTH, detailVH);
+//    [_detailV mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.equalTo(self.mas_left);
+//        make.right.equalTo(self.mas_right);
+//        make.top.equalTo(_topV.mas_bottom);
+//        make.height.equalTo(@(47 * 0.5 * IPHONE6_H_SCALE + detailH));
+//    }];
     
     [_flagLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.mas_left).offset(15 * IPHONE6_W_SCALE);

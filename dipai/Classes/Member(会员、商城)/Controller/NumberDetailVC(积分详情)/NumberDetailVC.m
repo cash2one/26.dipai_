@@ -202,11 +202,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     NumberDetailModel * model = [self.dataSource objectAtIndex:indexPath.row];
-    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-    dic[NSFontAttributeName] = Font12;
-    CGRect detailRect = [model.content boundingRectWithSize:CGSizeMake(WIDTH - 90 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
-    CGFloat detailH = detailRect.size.height;
-    return 55 * IPHONE6_H_SCALE + 0.5 + 47 * 0.5 * IPHONE6_H_SCALE + detailH + 7 * IPHONE6_H_SCALE;
+    return model.cellHeight;
 }
 
 - (void)didReceiveMemoryWarning {

@@ -20,4 +20,6 @@
 @property (nonatomic, copy) NSString * picname;
 
 @property (nonatomic, copy) NSString * weburl;
+// 0:不可以绑定  1:可以绑定
+@property (nonatomic, copy) NSString * state;
 @end

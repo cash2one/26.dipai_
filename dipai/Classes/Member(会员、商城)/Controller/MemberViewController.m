@@ -376,7 +376,9 @@
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.scrollsToTop = NO;
     [collectionView registerClass:[CustomCollectionCell class] forCellWithReuseIdentifier:@"cellId"];
-    collectionView.contentInset = UIEdgeInsetsMake(0, -232.5*IPHONE6_W_SCALE, 0, 0);
+    
+    // 为了在显示该页面的时候显示第二张图片
+//    collectionView.contentInset = UIEdgeInsetsMake(0, -232.5*IPHONE6_W_SCALE, 0, 0);
     self.collectionView = collectionView;
 //    NSIndexPath  * indexpath = [NSIndexPath indexPathWithIndex:0];
 //    [self.collectionView scrollToItemAtIndexPath:indexpath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
@@ -429,9 +431,9 @@
 //     NSLog(@"%f----%f", self.collectionView.contentOffset.x, self.collectionView.contentOffset.y);
 //    NSLog(@"%f---%f---%f---%f", self.collectionView.contentInset.top, self.collectionView.contentInset.left, self.collectionView.contentInset.bottom, self.collectionView.contentInset.right);
 }
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-}
+//- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+//    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+//}
 
 #pragma mark --- 分段控件的点击事件
 -(void)segmentedClick:(UISegmentedControl*)seg{

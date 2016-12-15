@@ -9,11 +9,13 @@
 #import "ServerVC.h"
 #import "Masonry.h"
 
+#import "NextServerVC.h"
+
 #import <WebKit/WebKit.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-@interface ServerVC ()<WKUIDelegate, WKNavigationDelegate>
+@interface ServerVC ()<WKUIDelegate, WKNavigationDelegate, UIWebViewDelegate>
 
-@property (nonatomic, strong) WKWebView * webView;
+@property (nonatomic, strong) UIWebView * webView;
 
 @property (nonatomic, strong) UIProgressView * progressV;
 
@@ -38,27 +40,30 @@
     self.naviBar.titleStr = @"客服中心";
 }
 - (void)setUpUI{
-    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
-    // 设置偏好设置
-    config.preferences = [[WKPreferences alloc] init];
-    // 默认为0
-    config.preferences.minimumFontSize = 10;
-    // 默认认为YES
-    config.preferences.javaScriptEnabled = YES;
-    // 在iOS上默认为NO，表示不能自动通过窗口打开
-    config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
-    config.processPool = [[WKProcessPool alloc] init];
-    
-    // 通过JS与webview内容交互
-    config.userContentController = [[WKUserContentController alloc] init];
+//    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+//    // 设置偏好设置
+//    config.preferences = [[WKPreferences alloc] init];
+//    // 默认为0
+//    config.preferences.minimumFontSize = 10;
+//    // 默认认为YES
+//    config.preferences.javaScriptEnabled = YES;
+//    // 在iOS上默认为NO，表示不能自动通过窗口打开
+//    config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
+//    config.processPool = [[WKProcessPool alloc] init];
+//    
+//    // 通过JS与webview内容交互
+//    config.userContentController = [[WKUserContentController alloc] init];
     
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
     // 我们可以在WKScriptMessageHandler代理中接收到
     //    [config.userContentController addScriptMessageHandler:self name:@"AppModel"];
-    CGRect rect = CGRectMake(0, 64, WIDTH, HEIGHT - 64);
-    WKWebView * webView  = [[WKWebView alloc] initWithFrame:rect
-                                      configuration:config];
+//    CGRect rect = CGRectMake(0, 64, WIDTH, HEIGHT - 64);
+//    WKWebView * webView  = [[WKWebView alloc] initWithFrame:rect
+//                                      configuration:config];
 //    webView.backgroundColor = [UIColor redColor];
+    
+    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 64)];
+    webView.delegate = self;
     [self.view addSubview:webView];
     [webView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.view);
@@ -66,31 +71,57 @@
         make.top.equalTo(self.naviBar.mas_bottom);
         make.bottom.equalTo(self.view);
     }];
-    webView.UIDelegate = self;
-    webView.navigationDelegate = self;
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:ServiceURL]]];
-    [webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
+//    webView.UIDelegate = self;
+//    webView.navigationDelegate = self;
+    if (self.weburl.length > 0) {
+        [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.weburl]]];
+    }else{
+    
+         [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:ServiceURL]]];
+    }
+   
+//    [webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     self.webView = webView;
     
     // UIWebView与JS的交互
-//    JSContext *context = [self.webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
-//    NSLog(@"%@", context);
-//    context[@"getPhoneNum"] = ^() { // 通过block回调获得h5传来的数据
-//    
-//        NSArray *args = [JSContext currentArguments];
+    JSContext *context = [self.webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+    NSLog(@"%@", context);
+    context[@"getPhoneNum"] = ^() { // 通过block回调获得h5传来的数据
+    
+        NSArray *args = [JSContext currentArguments];
 //        NSLog(@"%@", args);
-//        NSString * phoneNum = [args firstObject];
-//        NSLog(@"%@", phoneNum);
-//        NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",phoneNum];
-//        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
-//    };
-    UIProgressView * progressV = [[UIProgressView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 8)];
-    progressV.backgroundColor = [UIColor blueColor];
-    progressV.tintColor = [UIColor redColor];
-    CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 1.5f);
-    progressV.transform = transform;//设定宽高
-    [self.view addSubview:progressV];
-    self.progressV = progressV;
+        NSString * phoneNum = [args firstObject];
+        NSLog(@"phoneNum:%@", phoneNum);
+        NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",phoneNum];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
+
+    };
+    
+    context[@"getURL"] = ^() { // 通过block回调获得h5传来的数据
+        
+        NSArray *args = [JSContext currentArguments];
+//        NSLog(@"%@", args);
+        JSValue * value = [args firstObject];
+        NSLog(@"url:%@", value.toString);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            ServerVC * serVC = [[ServerVC alloc] init];
+            serVC.weburl = value.toString;
+            [self.navigationController pushViewController:serVC animated:YES];
+            
+        });
+        
+       
+    };
+    
+    
+//    UIProgressView * progressV = [[UIProgressView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 8)];
+//    progressV.backgroundColor = [UIColor blueColor];
+//    progressV.tintColor = [UIColor redColor];
+//    CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 1.5f);
+//    progressV.transform = transform;//设定宽高
+//    [self.view addSubview:progressV];
+//    self.progressV = progressV;
     
     
     // 返回按钮和前进按钮
@@ -134,24 +165,41 @@
     [self.webView goForward];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
-    
-    self.progressV.progress = self.webView.estimatedProgress;
-    self.progressV.hidden = self.webView.estimatedProgress >= 1;
+//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+//    
+//    self.progressV.progress = self.webView.estimatedProgress;
+//    self.progressV.hidden = self.webView.estimatedProgress >= 1;
 //    if ([self.webView canGoBack]) {
 //        self.backBtn.hidden = NO;
 //    }else{
 //        self.backBtn.hidden = YES;
 //    }
-}
+//}
 
-- (void)dealloc{
-    
-    [self.webView removeObserver:self forKeyPath:@"estimatedProgress"];
+//- (void)dealloc{
+//    
+//    [self.webView removeObserver:self forKeyPath:@"estimatedProgress"];
 //    [self.webView removeObserver:self forKeyPath:@"canGoBack"];
 //    [self.webView removeObserver:self forKeyPath:@"canGoForward"];
-}
+//}
 
+#pragma mark - UIWebViewDelegate
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
+    
+    return YES;
+}
+- (void)webViewDidStartLoad:(UIWebView *)webView{
+    
+    
+}
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    
+    
+}
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error{
+    
+    
+}
 
 #pragma mark - WKNavigationDelegate
 // 页面开始加载时调用
@@ -180,8 +228,9 @@
     NSLog(@"1------%@",navigationResponse.response.URL.absoluteString);
     //允许跳转
     decisionHandler(WKNavigationResponsePolicyAllow);
+    
     //不允许跳转
-    //decisionHandler(WKNavigationResponsePolicyCancel);
+//    decisionHandler(WKNavigationResponsePolicyCancel);
 }
 // 在发送请求之前，决定是否跳转
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
@@ -190,7 +239,7 @@
     //允许跳转
     decisionHandler(WKNavigationActionPolicyAllow);
     //不允许跳转
-    //decisionHandler(WKNavigationActionPolicyCancel);
+//    decisionHandler(WKNavigationActionPolicyCancel);
 }
 #pragma mark - WKUIDelegate
 // 创建一个新的WebView
@@ -213,19 +262,19 @@
     
     completionHandler();
     NSLog(@"3-----%@",message);
-    NSString * phoneNum = message;
-    NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",phoneNum];
-    NSURL * url = [NSURL URLWithString:str];
-    if ([[UIApplication sharedApplication] canOpenURL:url]) {
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
-            if (success) {
-                NSLog(@"%@", url);
-            }
-        }];
-    }else{
-        
-        NSLog(@"不能打电话");
-    }
+//    NSString * phoneNum = message;
+//    NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",phoneNum];
+//    NSURL * url = [NSURL URLWithString:str];
+//    if ([[UIApplication sharedApplication] canOpenURL:url]) {
+//        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+//            if (success) {
+//                NSLog(@"%@", url);
+//            }
+//        }];
+//    }else{
+//        
+//        NSLog(@"不能打电话");
+//    }
    
 }
 

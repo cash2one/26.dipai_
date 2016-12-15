@@ -149,6 +149,7 @@
 		C13365001CFD281F00E2719C /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C13364FF1CFD281F00E2719C /* AccountViewController.m */; };
 		C13365041CFD3D0100E2719C /* SettingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C13365031CFD3D0100E2719C /* SettingCell.m */; };
 		C134A7D91DFE8CEE00CF2778 /* FooterViewInShop.m in Sources */ = {isa = PBXBuildFile; fileRef = C134A7D81DFE8CEE00CF2778 /* FooterViewInShop.m */; };
+		C134A7E01DFEA5F700CF2778 /* H5ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C134A7DF1DFEA5F700CF2778 /* H5ViewController.m */; };
 		C13CB1211DB9F07400A51B82 /* ShopBannerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C13CB1201DB9F07400A51B82 /* ShopBannerModel.m */; };
 		C13CB1251DB9F12600A51B82 /* ShopListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C13CB1241DB9F12600A51B82 /* ShopListModel.m */; };
 		C13CB12C1DB9F39600A51B82 /* ShopGoodsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C13CB12B1DB9F39600A51B82 /* ShopGoodsModel.m */; };
@@ -401,6 +402,7 @@
 		C1EFBA8D1CEF14FE0066C4FF /* DataBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EFBA8C1CEF14FE0066C4FF /* DataBase.m */; };
 		C1F03B1C1DB8B0A700DDDBB0 /* MemberBenefitCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F03B1B1DB8B0A700DDDBB0 /* MemberBenefitCell.m */; };
 		C1F03B201DB8B65600DDDBB0 /* MemberBeneCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F03B1F1DB8B65600DDDBB0 /* MemberBeneCellModel.m */; };
+		C1F0CF4D1E00092800183E6A /* NextServerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F0CF4C1E00092800183E6A /* NextServerVC.m */; };
 		C1F10BB41D260B6200EF2F98 /* MyReplyFrameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F10BB31D260B6200EF2F98 /* MyReplyFrameModel.m */; };
 		C1F10BB81D260BB100EF2F98 /* MyReplyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F10BB71D260BB100EF2F98 /* MyReplyModel.m */; };
 		C1F10BBC1D260BEB00EF2F98 /* MyReplyCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F10BBB1D260BEB00EF2F98 /* MyReplyCell.m */; };
@@ -753,6 +755,8 @@
 		C13365031CFD3D0100E2719C /* SettingCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingCell.m; sourceTree = "<group>"; };
 		C134A7D71DFE8CEE00CF2778 /* FooterViewInShop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FooterViewInShop.h; sourceTree = "<group>"; };
 		C134A7D81DFE8CEE00CF2778 /* FooterViewInShop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FooterViewInShop.m; sourceTree = "<group>"; };
+		C134A7DE1DFEA5F700CF2778 /* H5ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = H5ViewController.h; sourceTree = "<group>"; };
+		C134A7DF1DFEA5F700CF2778 /* H5ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = H5ViewController.m; sourceTree = "<group>"; };
 		C13CB11F1DB9F07400A51B82 /* ShopBannerModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopBannerModel.h; sourceTree = "<group>"; };
 		C13CB1201DB9F07400A51B82 /* ShopBannerModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopBannerModel.m; sourceTree = "<group>"; };
 		C13CB1231DB9F12600A51B82 /* ShopListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopListModel.h; sourceTree = "<group>"; };
@@ -1236,6 +1240,8 @@
 		C1F03B1B1DB8B0A700DDDBB0 /* MemberBenefitCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberBenefitCell.m; sourceTree = "<group>"; };
 		C1F03B1E1DB8B65600DDDBB0 /* MemberBeneCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberBeneCellModel.h; sourceTree = "<group>"; };
 		C1F03B1F1DB8B65600DDDBB0 /* MemberBeneCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberBeneCellModel.m; sourceTree = "<group>"; };
+		C1F0CF4B1E00092800183E6A /* NextServerVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NextServerVC.h; sourceTree = "<group>"; };
+		C1F0CF4C1E00092800183E6A /* NextServerVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NextServerVC.m; sourceTree = "<group>"; };
 		C1F10BB21D260B6200EF2F98 /* MyReplyFrameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyReplyFrameModel.h; sourceTree = "<group>"; };
 		C1F10BB31D260B6200EF2F98 /* MyReplyFrameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyReplyFrameModel.m; sourceTree = "<group>"; };
 		C1F10BB61D260BB100EF2F98 /* MyReplyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyReplyModel.h; sourceTree = "<group>"; };
@@ -2019,6 +2025,7 @@
 		C1212E291CCDAA6200F76D4E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				C134A7DA1DFEA2A700CF2778 /* h5页面 */,
 				C1EE42C41CCF466800623E3C /* 咨询页面 */,
 				C126E4E91CD83F7700E49715 /* 详情页网页 */,
 			);
@@ -2698,6 +2705,15 @@
 			path = "积分商城脚视图";
 			sourceTree = "<group>";
 		};
+		C134A7DA1DFEA2A700CF2778 /* h5页面 */ = {
+			isa = PBXGroup;
+			children = (
+				C134A7DE1DFEA5F700CF2778 /* H5ViewController.h */,
+				C134A7DF1DFEA5F700CF2778 /* H5ViewController.m */,
+			);
+			path = "h5页面";
+			sourceTree = "<group>";
+		};
 		C13CB11E1DB9F06400A51B82 /* ShopBannerModel(商城banner模型) */ = {
 			isa = PBXGroup;
 			children = (
@@ -3081,6 +3097,8 @@
 			children = (
 				C194018F1DC0B8F9009FF75A /* ServerVC.h */,
 				C19401901DC0B8F9009FF75A /* ServerVC.m */,
+				C1F0CF4B1E00092800183E6A /* NextServerVC.h */,
+				C1F0CF4C1E00092800183E6A /* NextServerVC.m */,
 			);
 			name = "ServerVC(客服页面)";
 			path = "Controller/ServerVC(客服页面)";
@@ -5103,6 +5121,7 @@
 				C1ECB1F81CF83F730002CBF6 /* ResetPasswordViewController.m in Sources */,
 				C1F989941DB08E96009018D7 /* OrderDetailVC.m in Sources */,
 				C1EFBA751CEF14790066C4FF /* NSManagedObject+MagicalRecord.m in Sources */,
+				C1F0CF4D1E00092800183E6A /* NextServerVC.m in Sources */,
 				C1079F6D1D82971B0055C2C7 /* ModelOfPoker.m in Sources */,
 				C1C63DF41DC332E800769E22 /* NumberDetailCell.m in Sources */,
 				C1F03B1C1DB8B0A700DDDBB0 /* MemberBenefitCell.m in Sources */,
@@ -5175,6 +5194,7 @@
 				C19C7E7C1CFEB771008F3ECF /* TCPlayerSlider.m in Sources */,
 				C1E5F81C1CEC5667008A8A97 /* UIView+MJExtension.m in Sources */,
 				C1AB7EF81D22483E0029A987 /* ReplyModel.m in Sources */,
+				C134A7E01DFEA5F700CF2778 /* H5ViewController.m in Sources */,
 				C12F9DCB1CD9DA0D003CC7FC /* AFHTTPSessionManager.m in Sources */,
 				C12049381D7EC7E90073D33E /* NavigationBarV.m in Sources */,
 				C12F9D6B1CD9CE5C003CC7FC /* DataTool.m in Sources */,

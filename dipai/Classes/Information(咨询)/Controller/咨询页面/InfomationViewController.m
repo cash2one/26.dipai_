@@ -39,6 +39,10 @@
 #import "StarVC.h"
 // 普通用户主页
 #import "AnyBodyVC.h"
+// H5页面
+#import "H5ViewController.h"
+
+
 // 单元格
 #import "tournamentCell.h"
 #import "InformationCell.h"
@@ -108,7 +112,10 @@ typedef NS_ENUM(NSUInteger, LSType) {
     /** 专题 */
     LSTypeSpecial = 9,
     /** 专题列表 */
-    LSTypeSpecialList = 18
+    LSTypeSpecialList = 18,
+    
+    // H5活动
+    LSTypeH5 = 201
 };
 
 
@@ -310,7 +317,12 @@ typedef NS_ENUM(NSUInteger, LSType) {
                 [self.navigationController pushViewController:starVC animated:YES];
             }
             
-        }else{
+        }else if(num == LSTypeH5){  // 如果是H5页面
+#warning 未进行测试
+            H5ViewController * h5VC = [[H5ViewController alloc] init];
+            [self.navigationController pushViewController:h5VC animated:YES];
+        }
+        else{   // 未识别type
             
             NSLog(@"%@", url);
         }
@@ -656,7 +668,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
         if (indexPath.row == 0) {   // 如果点击的是推荐赛事
             TournamentModel * model = self.tournamentArr[0];
             
-            
             if ([model.lurl rangeOfString:@"club/view/5"].location != NSNotFound) {
                 // 赛事详情页分为两种情况：1.有直播  2.没有直播
                 MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
@@ -845,8 +856,19 @@ typedef NS_ENUM(NSUInteger, LSType) {
                 [self.navigationController pushViewController:starVC animated:YES];
             }
            
-        }else{
+        }
+#warning 未进行测试
+        else if(num == LSTypeH5){  // 如果是内部H5页面
+            NSString * wapurl = responseObject[@"content"];
+            H5ViewController * h5VC = [[H5ViewController alloc] init];
+            h5VC.wapurl = wapurl;
+            h5VC.hidesBottomBarWhenPushed = YES;
+            [self removeAction];
+            [self.navigationController pushViewController:h5VC animated:YES];
+        }
+        else{   // 未识别type
             NSLog(@"---%@",url);
+            
         }
         [SVProgressHUD dismiss];
     } failure:^(NSError *error) {

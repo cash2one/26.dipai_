@@ -168,7 +168,8 @@
     
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * userName = [defaults objectForKey:Cookie];
-    if (userName) {
+    NSDictionary * wxData = [defaults objectForKey:WXUser];
+    if (userName || wxData) {
         NSLog(@"已登录...");
         OrderDetailVC * orderDetailVC = [[OrderDetailVC alloc] init];
         orderDetailVC.goodID =  _goodsModel.goods_id;

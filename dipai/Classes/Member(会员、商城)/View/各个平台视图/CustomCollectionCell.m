@@ -41,7 +41,7 @@
     _picV = picV;
     
     UIButton * moreBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [moreBtn setImage:[UIImage imageNamed:@"bangding"] forState:UIControlStateNormal];
+//    [moreBtn setImage:[UIImage imageNamed:@"bangding"] forState:UIControlStateNormal];
 //    [moreBtn setBackgroundImage:[UIImage imageNamed:@"gengduoxinxi"] forState:UIControlStateNormal];
     [moreBtn addTarget:self action:@selector(moreInfoAction) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:moreBtn];
@@ -60,7 +60,14 @@
 - (void)setModel:(PlatformModel *)model{
     
     _model = model;
-    self.userInteractionEnabled = NO;
+    if ([_model.state isEqualToString:@"1"]) {
+        [_moreBtn setImage:[UIImage imageNamed:@"bangding"] forState:UIControlStateNormal];
+        self.userInteractionEnabled = YES;
+    }else{
+        [_moreBtn setImage:[UIImage imageNamed:@"jianshezhong"] forState:UIControlStateNormal];
+        self.userInteractionEnabled = NO;
+    }
+    
 }
 - (void)setRow:(NSInteger *)row{
     

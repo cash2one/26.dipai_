@@ -32,6 +32,32 @@
 
 // 普通人主页
 #import "AnyBodyVC.h"
+// 视频详情页
+#import "VideoViewController.h"
+//  赛事详情页
+#import "MatchDetailVC.h"
+//
+#import "PostDetailVC.h"
+// 扑克名人堂页面
+#import "PokerVC.h"
+// 名人堂列表
+#import "MorePokersVC.h"
+// 视频专辑页面
+#import "AlbumVC.h"
+// 俱乐部详情页
+#import "ClubDetailViewController.h"
+// 专题列表
+#import "SpecialViewController.h"
+// 专题详情页
+#import "SpecialDetailVC.h"
+// 全部视频专辑
+#import "MoreVideosVC.h"
+// 名人主页
+#import "StarVC.h"
+// 普通用户主页
+#import "AnyBodyVC.h"
+// H5页面
+#import "H5ViewController.h"
 
 // 数据库
 #import "DataBase.h"
@@ -44,12 +70,54 @@
 
 #import "Masonry.h"
 #import <JavaScriptCore/JavaScriptCore.h>
+#import "AFHTTPSessionManager.h"
+#import "HttpTool.h"
 @interface DetailWebViewController ()<BottomViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, UMSocialUIDelegate, UIWebViewDelegate, UIScrollViewDelegate>
 
 {
     // 发表的内容
     NSString * _sendContent;
+    // 网页中跳转的URL
+    NSString * _url;
 }
+typedef NS_ENUM(NSUInteger, LSType) {
+    /** 资讯 */
+    LSTypeInfo = 2,
+    /** 图集 */
+    LSTypePictures = 4,
+    /** 赛事 */
+    LSTypeMatch = 5,
+    /** 赛事 详情页*/
+    LSTypeMatchDetail = 51,
+    /** 直播 */
+    LSTypeLive = 6,
+    /** 视频 */
+    LSTypeVideo = 11,
+    /** 帖子详情 */
+    LSTypePostDetail = 172,
+    
+    /** 视频专辑 */
+    LSTypeVideoList = 101,
+    /** 全部视频专辑 */
+    LSTypeAllVideo = 10,
+    /** 帖子列表 */
+    LSTypePostList = 171,
+    /** 名人堂*/
+    LSTypePokerStar = 151,
+    /** 名人主页*/
+    LSTypeStar = 153,
+    /** 名人堂列表 */
+    LSTypePokerStarList = 152,
+    /** 俱乐部详细页面 */
+    LSTypeClubDetail = 81,
+    /** 专题 */
+    LSTypeSpecial = 9,
+    /** 专题列表 */
+    LSTypeSpecialList = 18,
+    
+    // H5活动
+    LSTypeH5 = 201
+};
 
 /**
  *  文章类型
@@ -395,16 +463,9 @@
     context[@"image_add_i"] = ^() { // 通过block回调获得h5传来的数据
     
         NSArray *args = [JSContext currentArguments];
-//        NSLog(@"%@", args);
         // 数组中装数组
         [self.picsArr addObject:args];
-//        NSLog(@"%@", self.picsArr);
-        
-//        for (JSValue *jsVal in args) {
-//            NSLog(@"－－%@", jsVal);
-//        }
-//        JSValue *this = [JSContext currentThis];
-//        NSLog(@"this: %@",this);
+
     };
     
     context[@"image_show_i"] = ^() {
@@ -419,6 +480,124 @@
         JSValue *this = [JSContext currentThis];
         NSLog(@"this: %@",this);
     };
+#warning 未进行测试
+    // 获取网页中注入的跳转页面的JS方法
+    context[@"getURL"] = ^(){
+        NSArray *args = [JSContext currentArguments];
+        for (JSValue *jsVal in args) {
+            _url = jsVal.toString;
+            NSLog(@"%@", _url);
+            [self turnPageWithURL:_url];
+        }
+    };
+}
+// 跳转页面（根据type类型跳）
+- (void)turnPageWithURL:(NSString *)url{
+    
+    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+    //设置监听
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (status == AFNetworkReachabilityStatusNotReachable) {
+            NSLog(@"没有网络");
+            [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+        }else{
+        }
+    }];
+    [manager startMonitoring];
+    [HttpTool GET:url parameters:nil success:^(id responseObject) {
+        
+        NSString * type = responseObject[@"type"];
+        NSInteger num = [type integerValue];
+        if (num == LSTypeInfo || num == LSTypePictures) {
+            // 跳转到资讯页面或图集页面
+            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+            detailVC.url = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        } else if (num == LSTypeVideo){ // 如果是视频
+            // 跳转到视频专辑页
+            VideoViewController * videoVC = [[VideoViewController alloc] init];
+            videoVC.url = url;
+            videoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:videoVC animated:YES];
+        } else if (num == LSTypeMatchDetail){  // 如果是赛事详情页
+            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+            detailVC.wapurl = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        }else if (num == LSTypePostDetail){ // 如果是帖子详情页
+            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+            postDetail.wapurl = url;
+            postDetail.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:postDetail animated:YES];
+        }else if (num == LSTypePokerStar){  // 扑克名人堂页面
+            PokerVC * pokerVC = [[PokerVC alloc] init];
+            pokerVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:pokerVC animated:YES];
+        }else if (num == LSTypePokerStarList){  // 扑克名人堂列表
+            MorePokersVC * morePokers = [[MorePokersVC alloc] init];
+            morePokers.wapurl = MorePokersURL;
+            morePokers.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:morePokers animated:YES];
+        }else if (num == LSTypePostList){   // 帖子列表
+            
+        }else if (num == LSTypeVideoList){  // 视频专辑
+            AlbumVC * albumVC = [[AlbumVC alloc] init];
+            albumVC.hidesBottomBarWhenPushed = YES;
+            albumVC.wapurl = url;
+            [self.navigationController pushViewController:albumVC animated:YES];
+        }else if (num == LSTypeClubDetail){ // 俱乐部详情页
+            NSString * title = responseObject[@"data"][@"title"];
+            ClubDetailViewController * clubDetaiVC = [[ClubDetailViewController alloc] init];
+            clubDetaiVC.wapurl = url;
+            clubDetaiVC.title = title;
+            clubDetaiVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:clubDetaiVC animated:YES];
+        }else if (num == LSTypeSpecial){    // 专题
+            SpecialViewController * specialVC = [[SpecialViewController alloc] init];
+            specialVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:specialVC animated:YES];
+        }else if (num == LSTypeSpecialList){    // 专题列表
+            SpecialDetailVC * specialVC = [[SpecialDetailVC alloc] init];
+            specialVC.wapurl = url;
+            specialVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:specialVC animated:YES];
+        }else if (num == LSTypeAllVideo){   // 全部视频专辑
+            MoreVideosVC * moreVideoVC = [[MoreVideosVC alloc] init];
+            moreVideoVC.moreURL = url;
+            moreVideoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:moreVideoVC animated:YES];
+        }else if (num == LSTypeStar){   // 名人主页
+            if ([responseObject[@"data"][@"certified"] isKindOfClass:[NSNull class]]) {
+                AnyBodyVC * anyBodyVC = [[AnyBodyVC alloc] init];
+                anyBodyVC.userURL = url;
+                anyBodyVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:anyBodyVC animated:YES];
+            }else{
+                StarVC * starVC = [[StarVC alloc] init];
+                starVC.userURL = url;
+                starVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:starVC animated:YES];
+            }
+            
+        }
+        else if(num == LSTypeH5){  // 如果是内部H5页面
+#warning 未进行测试
+            NSString * wapurl = responseObject[@"content"];
+            H5ViewController * h5VC = [[H5ViewController alloc] init];
+            h5VC.wapurl = wapurl;
+            [self.navigationController pushViewController:h5VC animated:YES];
+        }
+        else{   // 未识别type
+            NSLog(@"---%@",url);
+
+        }
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
+        
+        NSLog(@"出错：%@",error);
+    }];
+
 }
 
 
