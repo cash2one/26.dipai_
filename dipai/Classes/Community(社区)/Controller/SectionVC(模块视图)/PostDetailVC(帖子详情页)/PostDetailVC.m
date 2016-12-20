@@ -48,6 +48,7 @@
     
     CGFloat _h;
     NSString * _noFirstIn;  // 是否第一次进入的标识
+    BOOL _barHidden;    // navigationBar是否隐藏的标识
 }
 @property (nonatomic, strong) UITableView * tableView;
 /**
@@ -87,6 +88,9 @@
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
     
+    BOOL yes = self.navigationController.navigationBarHidden;
+    NSLog(@"%d", yes);
+    _barHidden = yes;
 //    [self.tableView.header beginRefreshing];
     if (_noFirstIn && _noFirstIn.length > 0) {
         //        [self loadNewData];
@@ -110,7 +114,6 @@
      [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
     
     self.view.backgroundColor = [UIColor whiteColor];
-    
     
     // 设置导航栏
     [self setUpNavigationBar];
@@ -352,12 +355,17 @@
 
 #pragma mark --- 添加标题
 - (void)addTableView{
-    if (self.heightStr.length>0) {
-         self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
+//    if (self.heightStr.length>0) {
+//         self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
+//    }else{
+//        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
+//    }
+    BOOL translucent =  self.navigationController.navigationBar.translucent;
+    if (translucent == YES) {
+        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
     }else{
         self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
     }
-    
     
     self.tableView.delegate = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -388,13 +396,21 @@
     
     NSLog(@"contentInset.top:------%f", self.tableView.contentInset.top);
     NSLog(@"%d", self.height);
-    if (self.heightStr.length  > 0) {
-        
+//    if (self.heightStr.length  > 0) {
+//        
+//        self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+//    }else{
+//        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+//    }
+
+    NSLog(@"透明度：%d", self.navigationController.navigationBar.translucent);
+    BOOL translucent =  self.navigationController.navigationBar.translucent;
+    if (translucent == YES) {
         self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     }else{
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
     }
-     NSLog(@"contentInset.top:------%f", self.tableView.contentInset.top);
+    NSLog(@"contentInset.top:------%f", self.tableView.contentInset.top);
     
 }
 

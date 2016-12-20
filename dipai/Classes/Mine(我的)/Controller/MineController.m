@@ -206,7 +206,7 @@
             
             if ([responseObject isKindOfClass:[NSString class]]) {
                 
-                UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"可能异地登录，请本地退出重新登录" preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                     
                     SettingViewController * setVC = [[SettingViewController alloc] init];

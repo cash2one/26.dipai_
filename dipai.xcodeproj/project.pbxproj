@@ -157,6 +157,7 @@
 		C13CB1371DB9FA6A00A51B82 /* ShopCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C13CB1361DB9FA6A00A51B82 /* ShopCell.m */; };
 		C13CB13B1DBA27E900A51B82 /* MoreGoodsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C13CB13A1DBA27E900A51B82 /* MoreGoodsVC.m */; };
 		C13F9C5F1D98FE58009651FD /* SMScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = C13F9C5E1D98FE58009651FD /* SMScrollView.m */; };
+		C141CB841E07DE9A005CE796 /* OutLoginTool.m in Sources */ = {isa = PBXBuildFile; fileRef = C141CB831E07DE9A005CE796 /* OutLoginTool.m */; };
 		C14238521D22A37F008B994D /* ReReplyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C14238511D22A37F008B994D /* ReReplyModel.m */; };
 		C14DB57A1CF29677007F69CA /* MyCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C14DB5791CF29677007F69CA /* MyCollectionViewController.m */; };
 		C14DB5921CF2A7BD007F69CA /* NewsList+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = C14DB58F1CF2A7BD007F69CA /* NewsList+CoreDataProperties.m */; };
@@ -771,6 +772,8 @@
 		C13CB13A1DBA27E900A51B82 /* MoreGoodsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreGoodsVC.m; sourceTree = "<group>"; };
 		C13F9C5D1D98FE58009651FD /* SMScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMScrollView.h; sourceTree = "<group>"; };
 		C13F9C5E1D98FE58009651FD /* SMScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMScrollView.m; sourceTree = "<group>"; };
+		C141CB821E07DE9A005CE796 /* OutLoginTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutLoginTool.h; sourceTree = "<group>"; };
+		C141CB831E07DE9A005CE796 /* OutLoginTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutLoginTool.m; sourceTree = "<group>"; };
 		C14238501D22A37F008B994D /* ReReplyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReReplyModel.h; sourceTree = "<group>"; };
 		C14238511D22A37F008B994D /* ReReplyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReReplyModel.m; sourceTree = "<group>"; };
 		C14DB5781CF29677007F69CA /* MyCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyCollectionViewController.h; sourceTree = "<group>"; };
@@ -2174,6 +2177,7 @@
 		C1212E381CCDAA6200F76D4E /* Lib */ = {
 			isa = PBXGroup;
 			children = (
+				C141CB811E07DE84005CE796 /* 退出登录的类 */,
 				C1E5F2CE1DE82F0000F556AF /* 3.image分类 */,
 				C10E64691DAE620700CCCD11 /* UMessage_Sdk_1.4.0 */,
 				C13F9C5C1D98FE58009651FD /* SMScrollView */,
@@ -2777,6 +2781,15 @@
 				C13F9C5E1D98FE58009651FD /* SMScrollView.m */,
 			);
 			path = SMScrollView;
+			sourceTree = "<group>";
+		};
+		C141CB811E07DE84005CE796 /* 退出登录的类 */ = {
+			isa = PBXGroup;
+			children = (
+				C141CB821E07DE9A005CE796 /* OutLoginTool.h */,
+				C141CB831E07DE9A005CE796 /* OutLoginTool.m */,
+			);
+			path = "退出登录的类";
 			sourceTree = "<group>";
 		};
 		C142384F1D22A372008B994D /* ReReplyModel(对回帖的回复模型) */ = {
@@ -5266,6 +5279,7 @@
 				C12F9D681CD9CDF8003CC7FC /* HttpTool.m in Sources */,
 				C1FDFCEB1CD35F0A0078F3DE /* MASViewAttribute.m in Sources */,
 				C12F9E3F1CDA031D003CC7FC /* MKAnnotationView+WebCache.m in Sources */,
+				C141CB841E07DE9A005CE796 /* OutLoginTool.m in Sources */,
 				C1248F6C1D1FD4050016B2F9 /* PostDaraModel.m in Sources */,
 				C12F9DD51CD9DA0D003CC7FC /* UIButton+AFNetworking.m in Sources */,
 				C12F9DD91CD9DA0D003CC7FC /* UIWebView+AFNetworking.m in Sources */,

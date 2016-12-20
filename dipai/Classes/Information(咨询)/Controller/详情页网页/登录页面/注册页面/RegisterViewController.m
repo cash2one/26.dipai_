@@ -457,12 +457,7 @@
         }
         
     } else{
-        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"手机号不合法" message:nil preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-        }];
-        [alertController addAction:OK];
-        [self presentViewController:alertController animated:YES completion:nil];
+        [SVProgressHUD showErrorWithStatus:@"手机号不合法"];
     }
     
     

@@ -82,7 +82,13 @@
     
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
-    [manager GET:MessageCenterURL parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+    NSString * url = nil;
+    if ([MessageCenterURL hasPrefix:@"http"]) {
+        url = MessageCenterURL;
+    }else{
+        url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, MessageCenterURL];
+    }
+    [manager GET:url parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
         NSLog(@"通知中心获取的数据：%@", responseObject);
 //        NSMutableArray * arr = responseObject[@"data"];
 //        self.dataSource = (NSMutableArray *) responseObject[@"data"];

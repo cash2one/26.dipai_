@@ -60,6 +60,7 @@
 #import "AFNetworking.h"
 // 加载图片第三方
 #import "UIImageView+WebCache.h"
+#import "UMessage.h"
 @interface MemberViewController ()<UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, ShopCellDelegate, CustomCollectionCellDelegate, LSAlertViewDeleagte>
 {
     UISegmentedControl *_segmented;
@@ -132,8 +133,26 @@
     NSLog(@"%s", __func__);
     [super viewWillAppear:YES];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    // 为何此页面每次出现的时候都要获取数据？ 因为头像和积分可能发生变化
-    [self getData];
+    // 在页面刚出现的时候需要判断是否被异地登录
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"99"]) {    // 异地登录
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                [OutLoginTool outLoginAction];
+                [self getData];
+            }];
+            [alertC addAction:OK];
+            [self presentViewController:alertC animated:YES completion:nil];
+        }else{
+            // 为何此页面每次出现的时候都要获取数据？ 因为头像和积分可能发生变化
+            [self getData];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+    
 }
 
 - (void)viewDidLoad {
@@ -449,10 +468,32 @@
 
 // 跳转到会员等级页面
 - (void)seeMemberlevel{
+    // 判断是否被异地登录
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
+        NSLog(@"登录状态码：%@", state);
+        if ([state isEqualToString:@"99"]) {
+            NSLog(@"异地登录");
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                [OutLoginTool outLoginAction];
+                [self getData];
+            }];
+            [alertC addAction:OK];
+            [self presentViewController:alertC animated:YES completion:nil];
+        }else{
+            MemberLevelViewController * memberLevelVC = [[MemberLevelViewController alloc] init];
+            memberLevelVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:memberLevelVC animated:YES];
+        }
+    } failure:^(NSError *error) {
+        NSLog(@"获取数据错误");
+    }];
+}
+
+- (void)outLogin{
     
-    MemberLevelViewController * memberLevelVC = [[MemberLevelViewController alloc] init];
-    memberLevelVC.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:memberLevelVC animated:YES];
 }
 
 - (void)getData{
@@ -465,12 +506,11 @@
                 NSLog(@"没有网络");
     
                 [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-//                _memberV.hidden = YES;
             }else{  // 有网络的情况
+                
                 [DataTool getMemberCenterDataWithStr:MemberCenter parameters:nil success:^(id responseObject) {
-                    
                     MemberDataModel * dataModel = responseObject;
-                    //            NSLog(@"会员数据模型：%@", dataModel);
+                    NSLog(@"会员数据模型：%@", dataModel);
                     // 字典转模型
                     MemberInfoModel * memberInfoModel = [MemberInfoModel objectWithKeyValues:dataModel.user_info];
                     // 字典数组转模型
@@ -482,12 +522,9 @@
                     if ([dataModel.user_info isKindOfClass:[NSNull class]]) {
                         
                         [self showNoLoginMessage];
-                        
                     }else{
-                        
                         [self showLoginMessage];
                         [SVProgressHUD dismiss];
-                        
                         // 头像
                         if (_face == [NSNull class] || _face == nil || ![_face isEqualToString:memberInfoModel.face]) { // 如果首次进入此页面需要设置头像，如果头像发生变化需要重新设置头像
                             _face = memberInfoModel.face;
@@ -498,15 +535,15 @@
                         }
                         // 设置头视图
                         [self setUpTopView];
-                        
                     }
                     // 显示
                     _memberV.hidden = NO;
                 } failure:^(NSError * error) {
+                    NSLog(@"加载失败原因：%@", error);
                     [SVProgressHUD dismiss];
                     [SVProgressHUD showErrorWithStatus:@"加载失败"];
                 }];
-    
+                 
             }
         }];
         [manager startMonitoring];
@@ -575,7 +612,7 @@
     PlatformModel * platModel = [self.dataArray objectAtIndex:indexPath.row];
     cell.model = platModel;
 //    cell.row = indexPath.row;
-    [cell.picV sd_setImageWithURL:[NSURL URLWithString:platModel.picname]];
+    [cell.picV sd_setImageWithURL:[NSURL URLWithString:platModel.picname] placeholderImage:[UIImage imageNamed:@"placeholder"]];
     return cell;
 }
 
@@ -588,14 +625,32 @@
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName  || wxData) {    // 如果已经登录
-
-        NSString * platformStr = [NSString stringWithFormat:@"bangding%@", platformID];
-        NSLog(@"%@", platformStr);
-        [MobClick event:platformStr];
-        MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
-        moreVC.url = url;
-        moreVC.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:moreVC animated:YES];
+        // 先判断是否登录再判断是否异地登录
+        [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+            NSString * state = responseObject[@"state"];
+            if ([state isEqualToString:@"99"]) {    // 异地登录
+                UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                    [OutLoginTool outLoginAction];
+                    [self getData];
+                }];
+                [alertC addAction:OK];
+                [self presentViewController:alertC animated:YES completion:nil];
+            }else{  // 没有异地登录
+                NSString * platformStr = [NSString stringWithFormat:@"bangding%@", platformID];
+                NSLog(@"%@", platformStr);
+                [MobClick event:platformStr];
+                MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
+                moreVC.url = url;
+                moreVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:moreVC animated:YES];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+        
+        
     }else{
         [self addAlertView];
     }

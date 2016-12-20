@@ -225,8 +225,13 @@
         dic[@"types"] = @"0";
     }
 //    dic[@"types"] = @"0";   // 0表示进行回帖
-    
-    [manager POST:ReplyPostsURL parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    NSString * url = nil;
+    if (![ReplyPostsURL hasPrefix:@"http"]) {
+        url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, ReplyPostsURL];
+    }else{
+        url = ReplyPostsURL;
+    }
+    [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         
         /**
          *  FileData:要上传文件的二进制数据

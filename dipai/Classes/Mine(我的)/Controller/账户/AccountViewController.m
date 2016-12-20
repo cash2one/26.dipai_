@@ -404,7 +404,14 @@
         AFHTTPRequestOperationManager * manager = [AFHTTPRequestOperationManager manager];
         manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
         [SVProgressHUD show];
-        [manager POST:ChangeAccountURL parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSString * url = nil;
+        if (![ChangeAccountURL hasPrefix:@"http"]) {
+           url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, ChangeAccountURL];
+        }else{
+            url = ChangeAccountURL;
+        }
+        
+        [manager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
             
             /**
              *  FileData:要上传文件的二进制数据

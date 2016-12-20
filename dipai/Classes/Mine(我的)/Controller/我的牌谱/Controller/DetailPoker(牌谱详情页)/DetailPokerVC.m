@@ -236,8 +236,13 @@
         NSMutableDictionary * dic = [NSMutableDictionary dictionary];
         dic[@"myfile"] = nil;
         dic[@"information"] = self.text;
-        
-        [manager POST:AddDefinePoker parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSString * url = nil;
+        if (![AddDefinePoker hasPrefix:@"http"]) {
+            url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, AddDefinePoker];
+        }else{
+            url = AddDefinePoker;
+        }
+        [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
             
             UIImage * image = viewImage;
 //            UIImage * image1 = [image rotateImage];
@@ -294,8 +299,13 @@
         dic[@"flop"] = [self.textArr objectAtIndex:2];
         dic[@"turn"] = [self.textArr objectAtIndex:3];
         dic[@"river"] = [self.textArr objectAtIndex:4];
-        
-        [manager POST:AddDefinePoker parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSString * url = nil;
+        if (![AddDefinePoker hasPrefix:@"http"]) {
+            url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, AddDefinePoker];
+        }else{
+            url = AddDefinePoker;
+        }
+        [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
             
             UIImage * image = viewImage;
             UIImage * image1 = [image rotateImage];

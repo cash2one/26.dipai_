@@ -132,6 +132,9 @@ typedef NS_ENUM(NSUInteger, LSType) {
 @property (nonatomic, strong) UIButton * loginBtn;
 // 没有关注的提示图
 @property (nonatomic, strong) UIImageView * noPayAttention;
+
+// 防止被再次点击的view
+@property (nonatomic, strong) UIView * backView;
 @end
 
 @implementation CommunityController
@@ -149,6 +152,13 @@ typedef NS_ENUM(NSUInteger, LSType) {
     }
     return _dataSource2;
 }
+- (UIView *)backView{
+    
+    if (_backView == nil) {
+        _backView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    }
+    return _backView;
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -158,6 +168,10 @@ typedef NS_ENUM(NSUInteger, LSType) {
     
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+    
+    if (_backView) {
+        [_backView removeFromSuperview];
+    }
     
     // 如果登录了而且有关注就不进行刷新了
     
@@ -678,15 +692,11 @@ typedef NS_ENUM(NSUInteger, LSType) {
 
 #pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{    
-    if (tableView == _tableView2) { // 圈子页的点击事件
+    if (tableView == _tableView2) { // 关注页的点击事件
+        [self.view addSubview:_backView];
         NSLog(@"...");
-        // 跳转到帖子详细页面
 //        PostDetailVC * postDetailVC = [[PostDetailVC alloc] init];
         GroupModel * model = self.dataSource2[indexPath.row];
-                
-        // 资讯页  视频页
-//        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
-//        VideoViewController * videoVC = [[VideoViewController alloc] init];
         // 页面跳转有两种情况：1.跳转到帖子详情页   2.跳转到一个网页详情或视频详情
 //        NSLog(@"wapurl---%@", model.wapurl);
 //        NSLog(@"type----%@", model.type);
@@ -770,6 +780,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
         postDetailVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:postDetailVC animated:YES];
     }
+    [_backView removeFromSuperview];
 }
 
 - (void)didReceiveMemoryWarning {

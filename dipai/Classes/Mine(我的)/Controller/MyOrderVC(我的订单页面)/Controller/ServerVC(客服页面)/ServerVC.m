@@ -37,7 +37,7 @@
     
     self.naviBar.popV.hidden = NO;
     [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
-    self.naviBar.titleStr = @"客服中心";
+    self.naviBar.titleStr = @"常见问题";
 }
 - (void)setUpUI{
 //    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];

@@ -340,31 +340,66 @@
 }
 // 确定按钮点击事件
 - (void)sureAction{
-    
-//    NSLog(@"确认添加按钮...");
-    NSMutableDictionary * parameters = [NSMutableDictionary dictionary];
-    parameters[@"address_name"] = _nameLbl.text;
-    if (_manBtn.selected == YES) {
-        parameters[@"gender"] = @"1";
-    }else{
-        parameters[@"gender"] = @"2";
-    }
-    parameters[@"district"] = _addressLbl.text;
-    parameters[@"address"] = _detailAddLbl.text;
-    parameters[@"mobile"] = _phoneLbl.text;
-    [DataTool postAddressWithStr:AddAddressURL parameters:parameters success:^(id responseObject) {
-        
-        if ([responseObject[@"msg"] isEqualToString:@"success"]) {
-            [SVProgressHUD showSuccessWithStatus:@"添加成功"];
-            [self dismissAction];
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"99"]) {    // 异地登录
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                [OutLoginTool outLoginAction];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            }];
+            [alertC addAction:OK];
+            [self presentViewController:alertC animated:YES completion:nil];
         }else{
-            
-            [SVProgressHUD showErrorWithStatus:@"添加失败"];
+            [self addAddressAction];
         }
-    } failure:^(NSError * error) {
-        NSLog(@"获取数据出错：%@", error);
+    } failure:^(NSError *error) {
+        
     }];
 }
+// 添加地址事件
+- (void)addAddressAction{
+    
+    //  判断手机号是否合法
+    BOOL yes = [self verifyMobile:_phoneLbl.text];
+    if (yes) {
+        NSMutableDictionary * parameters = [NSMutableDictionary dictionary];
+        parameters[@"address_name"] = _nameLbl.text;
+        if (_manBtn.selected == YES) {
+            parameters[@"gender"] = @"1";
+        }else{
+            parameters[@"gender"] = @"2";
+        }
+        parameters[@"district"] = _addressLbl.text;
+        parameters[@"address"] = _detailAddLbl.text;
+        parameters[@"mobile"] = _phoneLbl.text;
+        [DataTool postAddressWithStr:AddAddressURL parameters:parameters success:^(id responseObject) {
+            
+            if ([responseObject[@"msg"] isEqualToString:@"success"]) {
+                [SVProgressHUD showSuccessWithStatus:@"添加成功"];
+                [self dismissAction];
+            }else{
+                
+                [SVProgressHUD showErrorWithStatus:@"添加失败"];
+            }
+        } failure:^(NSError * error) {
+            NSLog(@"获取数据出错：%@", error);
+        }];
+        
+    }else{
+        [SVProgressHUD showErrorWithStatus:@"手机号不合法"];
+    }
+}
+
+#pragma mark --- 验证手机号是否合法
+- (BOOL)verifyMobile:(NSString *)mobilePhone{
+    NSString *express = @"^0{0,1}(13[0-9]|15[0-9]|18[0-9]|14[0-9])[0-9]{8}$";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF matches %@", express];
+    BOOL boo = [pred evaluateWithObject:mobilePhone];
+    return boo;
+}
+
 #pragma mark ---UITextFieldDelegate
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
     
@@ -373,8 +408,24 @@
     return YES;
 }
 - (void)dismissAction{
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"99"]) {    // 异地登录
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                [OutLoginTool outLoginAction];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            }];
+            [alertC addAction:OK];
+            [self presentViewController:alertC animated:YES completion:nil];
+        }else{
+           [self dismissViewControllerAnimated:YES completion:nil];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
     
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didReceiveMemoryWarning {

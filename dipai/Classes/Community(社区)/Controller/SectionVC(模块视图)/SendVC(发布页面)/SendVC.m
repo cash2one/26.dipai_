@@ -233,13 +233,15 @@
 
 }
 
+// 退出该页面的取消事件
 - (void)dismiss{
+//    AFHTTPRequestOperationManager * manager = [AFHTTPRequestOperationManager manager];
+//    [manager.operationQueue cancelAllOperations];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark --- 发送事件
 - (void)sendAction{
-
     
     // 得判断是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
@@ -253,6 +255,7 @@
         // 有图片发送图片
         if (self.imagesArr.count) {
             [self sendPictures];
+            _sendBtn.userInteractionEnabled = NO;   // 点击发布按钮之后按钮失效
         } else
         {
             [self sendText];
@@ -342,6 +345,9 @@
     NSString * url = formURL;
     url = [url stringByAppendingString:sectionModel.iD];
     
+    if (![url hasPrefix:@"http"]) {
+        url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, url];
+    }
     [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         
         /**

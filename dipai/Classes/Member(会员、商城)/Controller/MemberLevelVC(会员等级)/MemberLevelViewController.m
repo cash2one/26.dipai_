@@ -232,21 +232,31 @@
     [self.naviBar.rightBtn addTarget:self action:@selector(seeNumDetail) forControlEvents:UIControlEventTouchUpInside];
 }
 
+
 // 跳转到积分详情页面
 - (void)seeNumDetail{
+    // 先判读是否异地登录
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"99"]) {    // 异地登录
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                [OutLoginTool outLoginAction];
+                 [self.navigationController popToRootViewControllerAnimated:YES];
+            }];
+            [alertC addAction:OK];
+            [self presentViewController:alertC animated:YES completion:nil];
+        }else{
+            NumberDetailVC * numDetailVC = [[NumberDetailVC alloc] init];
+            numDetailVC.count_integral =  _levelModel.count_integral;
+            [self.navigationController pushViewController:numDetailVC animated:YES];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
     
-    NumberDetailVC * numDetailVC = [[NumberDetailVC alloc] init];
-    
-    numDetailVC.count_integral =  _levelModel.count_integral;
-    [self.navigationController pushViewController:numDetailVC animated:YES];
-//    if ([_levelModel.count_integral isEqualToString:@"0"]) {
-//        [SVProgressHUD showErrorWithStatus:@"暂无数据"];
-//    }else{
-//        NumberDetailVC * numDetailVC = [[NumberDetailVC alloc] init];
-//        numDetailVC.count_integral =  _levelModel.count_integral;
-//        [self.navigationController pushViewController:numDetailVC animated:YES];
-//    }
-    
+
 }
 
 - (void)setUpUI{
@@ -463,210 +473,245 @@
 // 跳转到更多礼遇页面
 - (void)seeMoreBenifits{
     
-    MoreBenifitsVC * moreVC = [[MoreBenifitsVC alloc] init];
-    [self.navigationController pushViewController:moreVC animated:YES];
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"99"]) {    // 异地登录
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                [OutLoginTool outLoginAction];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            }];
+            [alertC addAction:OK];
+            [self presentViewController:alertC animated:YES completion:nil];
+        }else{
+            MoreBenifitsVC * moreVC = [[MoreBenifitsVC alloc] init];
+            [self.navigationController pushViewController:moreVC animated:YES];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+   
 }
 
 // 显示等级详细信息
 - (void)showDetailMessage{
     
-    UIWindow * window = [UIApplication sharedApplication].keyWindow;
-    UIView * showBackV = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
-//    showBackV.backgroundColor = RGBA(255, 255, 255, 0.5);
-    showBackV.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.5];;
-    [window addSubview:showBackV];
-    _showBackV = showBackV;
-    
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeAction)];
-    tap.numberOfTouchesRequired = 1;
-    [showBackV addGestureRecognizer:tap];
-    
-    UIImageView * showV = [[UIImageView alloc] init];
-    showV.userInteractionEnabled = YES;
-    [showBackV addSubview:showV];
-    
-    // 当前等级
-    UILabel * textL = [[UILabel alloc] init];
-    textL.text = @"当前等级";
-    textL.textColor = RGBA(202, 156, 91, 1);
-    textL.textAlignment = NSTextAlignmentCenter;
-    [showV addSubview:textL];
-    if ([_levelLbl.text isEqualToString:@"V0"]) {
-        showV.image = [UIImage imageNamed:@"tanchuang1"];
-        
-        [showV mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.equalTo(showBackV.mas_centerX);
-            make.centerY.equalTo(showBackV.mas_centerY);
-            make.width.equalTo(@(233 * IPHONE6_W_SCALE));
-            make.height.equalTo(@(590 * 0.5 * IPHONE6_W_SCALE));
-        }];
-        
-        textL.font = [UIFont boldSystemFontOfSize:18 * IPHONE6_W_SCALE];
-        [textL mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.equalTo(showV.mas_centerX);
-            make.top.equalTo(showV.mas_top).offset(113 * IPHONE6_W_SCALE);
-            make.width.equalTo(showV.mas_width);
-            make.height.equalTo(@(18 * IPHONE6_W_SCALE));
-        }];
-        
-        // 达到v1要求
-        UILabel * requestLbl = [[UILabel alloc] init];
-        requestLbl.font = Font11;
-        requestLbl.textAlignment = NSTextAlignmentCenter;
-        requestLbl.textColor = Color178;
-        NSMutableAttributedString * text =[[NSMutableAttributedString alloc] initWithString:@"累积获得1000经验达到V1等级"];
-        [text addAttribute:NSForegroundColorAttributeName value:RGBA(202, 156, 91, 1) range:NSMakeRange(12, 4)];
-        requestLbl.attributedText = text;
-        [showV addSubview:requestLbl];
-        [requestLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.equalTo(showV.mas_centerX);
-            make.top.equalTo(showV.mas_top).offset(374 * 0.5 * IPHONE6_W_SCALE);
-            make.width.equalTo(showV.mas_width);
-            make.height.equalTo(@(11 * IPHONE6_W_SCALE));
-        }];
-        
-    }else{  // V0以上
-        
-        showV.image =[UIImage imageNamed:@"tanchuang2"];
-        [showV mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.equalTo(showBackV.mas_centerX);
-            make.centerY.equalTo(showBackV.mas_centerY);
-            make.width.equalTo(@(233 * IPHONE6_W_SCALE));
-            make.height.equalTo(@(350* IPHONE6_W_SCALE));
-        }];
-        // 当前等级
-        textL.font = [UIFont boldSystemFontOfSize:14 * IPHONE6_W_SCALE];
-        [textL mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.equalTo(showV.mas_centerX);
-            make.top.equalTo(showV.mas_top).offset(215 * 0.5 * IPHONE6_H_SCALE);
-            make.width.equalTo(showV.mas_width);
-            make.height.equalTo(@(14 * IPHONE6_W_SCALE));
-        }];
-        // 有效期
-        UILabel * dateLbl = [[UILabel alloc] init];
-        dateLbl.text = [NSString stringWithFormat:@"有效期至%@", self.dataDic[@"date"]];
+    // 先判读是否异地登录
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"99"]) {    // 异地登录
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                [OutLoginTool outLoginAction];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            }];
+            [alertC addAction:OK];
+            [self presentViewController:alertC animated:YES completion:nil];
+        }else{
+            UIWindow * window = [UIApplication sharedApplication].keyWindow;
+            UIView * showBackV = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+            //    showBackV.backgroundColor = RGBA(255, 255, 255, 0.5);
+            showBackV.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.5];;
+            [window addSubview:showBackV];
+            _showBackV = showBackV;
+            
+            UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeAction)];
+            tap.numberOfTouchesRequired = 1;
+            [showBackV addGestureRecognizer:tap];
+            
+            UIImageView * showV = [[UIImageView alloc] init];
+            showV.userInteractionEnabled = YES;
+            [showBackV addSubview:showV];
+            
+            // 当前等级
+            UILabel * textL = [[UILabel alloc] init];
+            textL.text = @"当前等级";
+            textL.textColor = RGBA(202, 156, 91, 1);
+            textL.textAlignment = NSTextAlignmentCenter;
+            [showV addSubview:textL];
+            if ([_levelLbl.text isEqualToString:@"V0"]) {
+                showV.image = [UIImage imageNamed:@"tanchuang1"];
+                
+                [showV mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.centerX.equalTo(showBackV.mas_centerX);
+                    make.centerY.equalTo(showBackV.mas_centerY);
+                    make.width.equalTo(@(233 * IPHONE6_W_SCALE));
+                    make.height.equalTo(@(590 * 0.5 * IPHONE6_W_SCALE));
+                }];
+                
+                textL.font = [UIFont boldSystemFontOfSize:18 * IPHONE6_W_SCALE];
+                [textL mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.centerX.equalTo(showV.mas_centerX);
+                    make.top.equalTo(showV.mas_top).offset(113 * IPHONE6_W_SCALE);
+                    make.width.equalTo(showV.mas_width);
+                    make.height.equalTo(@(18 * IPHONE6_W_SCALE));
+                }];
+                
+                // 达到v1要求
+                UILabel * requestLbl = [[UILabel alloc] init];
+                requestLbl.font = Font11;
+                requestLbl.textAlignment = NSTextAlignmentCenter;
+                requestLbl.textColor = Color178;
+                NSMutableAttributedString * text =[[NSMutableAttributedString alloc] initWithString:@"累积获得1000经验达到V1等级"];
+                [text addAttribute:NSForegroundColorAttributeName value:RGBA(202, 156, 91, 1) range:NSMakeRange(12, 4)];
+                requestLbl.attributedText = text;
+                [showV addSubview:requestLbl];
+                [requestLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.centerX.equalTo(showV.mas_centerX);
+                    make.top.equalTo(showV.mas_top).offset(374 * 0.5 * IPHONE6_W_SCALE);
+                    make.width.equalTo(showV.mas_width);
+                    make.height.equalTo(@(11 * IPHONE6_W_SCALE));
+                }];
+                
+            }else{  // V0以上
+                
+                showV.image =[UIImage imageNamed:@"tanchuang2"];
+                [showV mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.centerX.equalTo(showBackV.mas_centerX);
+                    make.centerY.equalTo(showBackV.mas_centerY);
+                    make.width.equalTo(@(233 * IPHONE6_W_SCALE));
+                    make.height.equalTo(@(350* IPHONE6_W_SCALE));
+                }];
+                // 当前等级
+                textL.font = [UIFont boldSystemFontOfSize:14 * IPHONE6_W_SCALE];
+                [textL mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.centerX.equalTo(showV.mas_centerX);
+                    make.top.equalTo(showV.mas_top).offset(215 * 0.5 * IPHONE6_H_SCALE);
+                    make.width.equalTo(showV.mas_width);
+                    make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+                }];
+                // 有效期
+                UILabel * dateLbl = [[UILabel alloc] init];
+                dateLbl.text = [NSString stringWithFormat:@"有效期至%@", self.dataDic[@"date"]];
 #warning 假的数据
-        dateLbl.text = [NSString stringWithFormat:@"有效期"];
-        dateLbl.font = Font14;
-        dateLbl.textColor = RGBA(202, 156, 91, 1);
-        dateLbl.textAlignment = NSTextAlignmentCenter;
-        [showV addSubview:dateLbl];
-        [dateLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.equalTo(showV.mas_centerX);
-            make.top.equalTo(textL.mas_bottom).offset(7 * IPHONE6_H_SCALE);
-            make.width.equalTo(showV.mas_width);
-            make.height.equalTo(@(14 * IPHONE6_W_SCALE));
-        }];
-        UILabel * firstLbl = [[UILabel alloc] init];
-        firstLbl.text = @"1.";
-        firstLbl.textColor = Color178;
-        firstLbl.font = Font10;
-        [showV addSubview:firstLbl];
-        [firstLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.equalTo(showV.mas_left).offset(27 * IPHONE6_W_SCALE);
-            make.top.equalTo(showV.mas_top).offset(356 * 0.5 * IPHONE6_H_SCALE);
-            make.width.equalTo(@(30));
-            make.height.equalTo(@(10 * IPHONE6_H_SCALE));
-        }];
-        
-        UILabel * firstContent = [[UILabel alloc] init];
-        firstContent.numberOfLines = 0;
-//        firstContent.backgroundColor = [UIColor redColor];
-        firstContent.textColor = RGBA(202, 156, 91, 1);
-        firstContent.font = Font10;
-        [showV addSubview:firstContent];
-//        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
+                dateLbl.text = [NSString stringWithFormat:@"有效期"];
+                dateLbl.font = Font14;
+                dateLbl.textColor = RGBA(202, 156, 91, 1);
+                dateLbl.textAlignment = NSTextAlignmentCenter;
+                [showV addSubview:dateLbl];
+                [dateLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.centerX.equalTo(showV.mas_centerX);
+                    make.top.equalTo(textL.mas_bottom).offset(7 * IPHONE6_H_SCALE);
+                    make.width.equalTo(showV.mas_width);
+                    make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+                }];
+                UILabel * firstLbl = [[UILabel alloc] init];
+                firstLbl.text = @"1.";
+                firstLbl.textColor = Color178;
+                firstLbl.font = Font10;
+                [showV addSubview:firstLbl];
+                [firstLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.left.equalTo(showV.mas_left).offset(27 * IPHONE6_W_SCALE);
+                    make.top.equalTo(showV.mas_top).offset(356 * 0.5 * IPHONE6_H_SCALE);
+                    make.width.equalTo(@(30));
+                    make.height.equalTo(@(10 * IPHONE6_H_SCALE));
+                }];
+                
+                UILabel * firstContent = [[UILabel alloc] init];
+                firstContent.numberOfLines = 0;
+                //        firstContent.backgroundColor = [UIColor redColor];
+                firstContent.textColor = RGBA(202, 156, 91, 1);
+                firstContent.font = Font10;
+                [showV addSubview:firstContent];
+                //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
 #warning 假数据
-        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
-        [content1 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
-        firstContent.attributedText = content1;
-        NSMutableDictionary * firstDic = [NSMutableDictionary dictionary];
-        firstDic[NSFontAttributeName] = Font10;
-        CGRect firstRect = [content1 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
-        firstContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, 356 * 0.5 * IPHONE6_H_SCALE - 3 * IPHONE6_H_SCALE}, firstRect.size};
-        
-        UILabel * secondLbl = [[UILabel alloc] init];
-        CGFloat secondY = CGRectGetMaxY(firstContent.frame) + 12 * IPHONE6_H_SCALE;
-        secondLbl.frame = CGRectMake(27 * IPHONE6_W_SCALE, secondY, 30, 10 * IPHONE6_H_SCALE);
-        secondLbl.text = @"2.";
-        secondLbl.textColor = Color178;
-        secondLbl.font = Font10;
-//        secondLbl.backgroundColor = [UIColor yellowColor];
-        [showV addSubview:secondLbl];
-        UILabel * secondContent = [[UILabel alloc] init];
-        secondContent.numberOfLines = 0;
-//        secondContent.backgroundColor = [UIColor redColor];
-        secondContent.textColor =RGBA(202, 156, 91, 1);
-        secondContent.font = Font10;
-        [showV addSubview:secondContent];
-        //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
+                NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
+                [content1 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
+                firstContent.attributedText = content1;
+                NSMutableDictionary * firstDic = [NSMutableDictionary dictionary];
+                firstDic[NSFontAttributeName] = Font10;
+                CGRect firstRect = [content1 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+                firstContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, 356 * 0.5 * IPHONE6_H_SCALE - 3 * IPHONE6_H_SCALE}, firstRect.size};
+                
+                UILabel * secondLbl = [[UILabel alloc] init];
+                CGFloat secondY = CGRectGetMaxY(firstContent.frame) + 12 * IPHONE6_H_SCALE;
+                secondLbl.frame = CGRectMake(27 * IPHONE6_W_SCALE, secondY, 30, 10 * IPHONE6_H_SCALE);
+                secondLbl.text = @"2.";
+                secondLbl.textColor = Color178;
+                secondLbl.font = Font10;
+                //        secondLbl.backgroundColor = [UIColor yellowColor];
+                [showV addSubview:secondLbl];
+                UILabel * secondContent = [[UILabel alloc] init];
+                secondContent.numberOfLines = 0;
+                //        secondContent.backgroundColor = [UIColor redColor];
+                secondContent.textColor =RGBA(202, 156, 91, 1);
+                secondContent.font = Font10;
+                [showV addSubview:secondContent];
+                //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
 #warning 假数据
-        NSMutableAttributedString * content2 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
-        [content2 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
-        secondContent.attributedText = content2;
-        NSMutableDictionary * secondDic = [NSMutableDictionary dictionary];
-        secondDic[NSFontAttributeName] = Font10;
-        CGRect secondRect = [content2 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
-        secondContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, secondY - 3 * IPHONE6_H_SCALE}, secondRect.size};
-        
-        UILabel * thirdLbl = [[UILabel alloc] init];
-        CGFloat thirdY = CGRectGetMaxY(secondContent.frame) + 12 * IPHONE6_H_SCALE;
-        thirdLbl.frame = CGRectMake(27 * IPHONE6_W_SCALE, thirdY, 30, 10 * IPHONE6_H_SCALE);
-        thirdLbl.text = @"3.";
-        thirdLbl.textColor = Color178;
-        thirdLbl.font = Font10;
-        [showV addSubview:thirdLbl];
-        UILabel * thirdContent = [[UILabel alloc] init];
-        thirdContent.numberOfLines = 0;
-//        thirdContent.backgroundColor = [UIColor redColor];
-        thirdContent.textColor = RGBA(202, 156, 91, 1);
-        thirdContent.font = Font10;
-        [showV addSubview:thirdContent];
-        //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
+                NSMutableAttributedString * content2 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
+                [content2 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
+                secondContent.attributedText = content2;
+                NSMutableDictionary * secondDic = [NSMutableDictionary dictionary];
+                secondDic[NSFontAttributeName] = Font10;
+                CGRect secondRect = [content2 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+                secondContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, secondY - 3 * IPHONE6_H_SCALE}, secondRect.size};
+                
+                UILabel * thirdLbl = [[UILabel alloc] init];
+                CGFloat thirdY = CGRectGetMaxY(secondContent.frame) + 12 * IPHONE6_H_SCALE;
+                thirdLbl.frame = CGRectMake(27 * IPHONE6_W_SCALE, thirdY, 30, 10 * IPHONE6_H_SCALE);
+                thirdLbl.text = @"3.";
+                thirdLbl.textColor = Color178;
+                thirdLbl.font = Font10;
+                [showV addSubview:thirdLbl];
+                UILabel * thirdContent = [[UILabel alloc] init];
+                thirdContent.numberOfLines = 0;
+                //        thirdContent.backgroundColor = [UIColor redColor];
+                thirdContent.textColor = RGBA(202, 156, 91, 1);
+                thirdContent.font = Font10;
+                [showV addSubview:thirdContent];
+                //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
 #warning 假数据
-        NSMutableAttributedString * content3 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
-         [content3 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
-        thirdContent.attributedText = content3;
-        NSMutableDictionary * thirdDic = [NSMutableDictionary dictionary];
-        thirdDic[NSFontAttributeName] = Font10;
-        CGRect thirdRect = [content3 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
-        thirdContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, thirdY - 3 * IPHONE6_H_SCALE}, thirdRect.size};
+                NSMutableAttributedString * content3 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
+                [content3 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
+                thirdContent.attributedText = content3;
+                NSMutableDictionary * thirdDic = [NSMutableDictionary dictionary];
+                thirdDic[NSFontAttributeName] = Font10;
+                CGRect thirdRect = [content3 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+                thirdContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, thirdY - 3 * IPHONE6_H_SCALE}, thirdRect.size};
+                
+            }
+            
+            // 等级
+            UILabel * levelL = [[UILabel alloc] init];
+            levelL.text = _levelLbl.text;
+            levelL.textAlignment = NSTextAlignmentCenter;
+            levelL.font = [UIFont fontWithName:@"Arial-BoldItalicMT" size:32 * IPHONE6_W_SCALE];
+            levelL.textColor = RGBA(202, 156, 91, 1);
+            [showV addSubview:levelL];
+            [levelL mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerX.equalTo(showV.mas_centerX);
+                make.top.equalTo(showV.mas_top);
+                make.width.equalTo(@(104 * IPHONE6_W_SCALE));
+                make.height.equalTo(@(104 * IPHONE6_W_SCALE));
+            }];
+            
+            // 我知道了按钮
+            UIButton * knowBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+            [knowBtn setTitle:@"知道了" forState:UIControlStateNormal];
+            knowBtn.titleLabel.font = Font12;
+            knowBtn.layer.cornerRadius = 13 * IPHONE6_W_SCALE;
+            knowBtn.layer.masksToBounds = YES;
+            knowBtn.layer.borderColor = RGBA(202, 156, 91, 1).CGColor;
+            knowBtn.layer.borderWidth = 0.5;
+            [knowBtn setTitleColor:RGBA(202, 156, 91, 1) forState:UIControlStateNormal];
+            knowBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+            [showV addSubview:knowBtn];
+            [knowBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerX.equalTo(showV.mas_centerX);
+                make.bottom.equalTo(showV.mas_bottom).offset(-37 * 0.5 * IPHONE6_W_SCALE);
+                make.width.equalTo(@(214 * 0.5 * IPHONE6_W_SCALE));
+                make.height.equalTo(@(25 * IPHONE6_W_SCALE));
+            }];
+            
+            [knowBtn addTarget:self action:@selector(removeAction) forControlEvents:UIControlEventTouchUpInside];
+        }
+    } failure:^(NSError *error) {
         
-    }
-    
-    // 等级
-    UILabel * levelL = [[UILabel alloc] init];
-    levelL.text = _levelLbl.text;
-    levelL.textAlignment = NSTextAlignmentCenter;
-    levelL.font = [UIFont fontWithName:@"Arial-BoldItalicMT" size:32 * IPHONE6_W_SCALE];
-    levelL.textColor = RGBA(202, 156, 91, 1);
-    [showV addSubview:levelL];
-    [levelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(showV.mas_centerX);
-        make.top.equalTo(showV.mas_top);
-        make.width.equalTo(@(104 * IPHONE6_W_SCALE));
-        make.height.equalTo(@(104 * IPHONE6_W_SCALE));
     }];
     
-    // 我知道了按钮
-    UIButton * knowBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [knowBtn setTitle:@"知道了" forState:UIControlStateNormal];
-    knowBtn.titleLabel.font = Font12;
-    knowBtn.layer.cornerRadius = 13 * IPHONE6_W_SCALE;
-    knowBtn.layer.masksToBounds = YES;
-    knowBtn.layer.borderColor = RGBA(202, 156, 91, 1).CGColor;
-    knowBtn.layer.borderWidth = 0.5;
-    [knowBtn setTitleColor:RGBA(202, 156, 91, 1) forState:UIControlStateNormal];
-    knowBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [showV addSubview:knowBtn];
-    [knowBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(showV.mas_centerX);
-        make.bottom.equalTo(showV.mas_bottom).offset(-37 * 0.5 * IPHONE6_W_SCALE);
-        make.width.equalTo(@(214 * 0.5 * IPHONE6_W_SCALE));
-        make.height.equalTo(@(25 * IPHONE6_W_SCALE));
-    }];
-    
-    [knowBtn addTarget:self action:@selector(removeAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 // 跳转到条款页面
@@ -680,12 +725,29 @@
 // 跳转到礼遇详情页
 - (void)seeBeneDetail:(UITapGestureRecognizer *)tap{
     
-    UIView * view = tap.view;
-    NSLog(@"%lu", view.tag);
-    BenifitsDetailVC * beniDetailVC = [[BenifitsDetailVC alloc] init];
-    BenifitModel * model = [self.beniModelArr objectAtIndex:view.tag];;
-    beniDetailVC.wapurl = model.wapurl;
-    [self.navigationController pushViewController:beniDetailVC animated:YES];
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"99"]) {    // 异地登录
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                [OutLoginTool outLoginAction];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            }];
+            [alertC addAction:OK];
+            [self presentViewController:alertC animated:YES completion:nil];
+        }else{
+            UIView * view = tap.view;
+            NSLog(@"%lu", view.tag);
+            BenifitsDetailVC * beniDetailVC = [[BenifitsDetailVC alloc] init];
+            BenifitModel * model = [self.beniModelArr objectAtIndex:view.tag];;
+            beniDetailVC.wapurl = model.wapurl;
+            [self.navigationController pushViewController:beniDetailVC animated:YES];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+    
 }
 
 // 移除提示框
@@ -693,6 +755,7 @@
     
     [_showBackV removeFromSuperview];
 }
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
