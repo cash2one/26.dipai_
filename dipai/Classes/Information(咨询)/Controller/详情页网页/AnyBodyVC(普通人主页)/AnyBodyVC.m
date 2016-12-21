@@ -455,72 +455,70 @@ typedef NS_ENUM(NSUInteger, LSType) {
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName || wxData) {
-        // 已登陆直接进行操作
-        // 如果要进行关注可以直接关注，而如果要取消关注则需要进行以下确认
-        NSLog(@"%@", _sbModel.data[@"is_follow"]);
         
-        if ([_sbModel.data[@"is_follow"] isEqualToString:@"0"]) {    // 未关注
-                        
-            NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _sbModel.userid]];
-            [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
-                
-//                NSLog(@"%@", responseObject);
-//                NSLog(@"%@", responseObject[@"content"]);
-//                NSLog(@"%@", responseObject[@"data"]);
-#warning 返回的data有问题
-                // 要根据返回的data判断有没有进行关注
-                if ([responseObject[@"data"] isEqualToString:@"0"]) {   // 未关注
-                    // 取消关注成功
-                    [_attentionBtn setImage:[UIImage imageNamed:@"yiguanzhu"] forState:UIControlStateNormal];
-                } else{
-                    // 关注成功
-                    [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
-                }
-                [SVProgressHUD showSuccessWithStatus:@"关注成功"];
-                [_tableView2.header beginRefreshing];
-            } failure:^(NSError * error) {
-                NSLog(@"关注或取消失败错误%@", error);
-            }];
-        }
-        if ([_sbModel.data[@"is_follow"] isEqualToString:@"1"]) {
-            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"确定不再关注此人" message:nil preferredStyle:UIAlertControllerStyleAlert];
-            
-            
-            UIAlertAction * cancle = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                NSLog(@"取消");
-            }];
-            
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                
-//                [self addRefreshWith:_tableView2];
-                
-                // 进行取消关注的操作
-                [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
-                NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@",_sbModel.userid]];
-                [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
-                    
-                    NSLog(@"进行取消关注获取到的数据%@", responseObject);
-                    NSLog(@"content:%@", responseObject[@"content"]);
-                } failure:^(NSError * error) {
-                    NSLog(@"进行取消关注操作时出错%@", error);
-                }];
-                // 对数据的刷新还有影响
-                [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
-                [_tableView2.header beginRefreshing];
-            }];
-            
-            [alert addAction:cancle];
-            [alert addAction:OK];
-            [self presentViewController:alert animated:YES completion:nil];
-        }
-        
-        
+        [self payAttentionWhenLogin];
     }else{
         // 未登陆要进行登陆
         [self addAlertView];
     }
-    
 }
+
+- (void)payAttentionWhenLogin{
+
+    // 已登陆直接进行操作
+    // 如果要进行关注可以直接关注，而如果要取消关注则需要进行以下确认
+    NSLog(@"%@", _sbModel.data[@"is_follow"]);
+    
+    if ([_sbModel.data[@"is_follow"] isEqualToString:@"0"]) {    // 未关注
+        
+        NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _sbModel.userid]];
+        [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+#warning 返回的data有问题
+            // 要根据返回的data判断有没有进行关注
+            if ([responseObject[@"data"] isEqualToString:@"0"]) {   // 未关注
+                // 取消关注成功
+                [_attentionBtn setImage:[UIImage imageNamed:@"yiguanzhu"] forState:UIControlStateNormal];
+            } else{
+                // 关注成功
+                [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
+            }
+            [SVProgressHUD showSuccessWithStatus:@"关注成功"];
+            [_tableView2.header beginRefreshing];
+        } failure:^(NSError * error) {
+            NSLog(@"关注或取消失败错误%@", error);
+        }];
+    }
+    if ([_sbModel.data[@"is_follow"] isEqualToString:@"1"]) {
+        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"确定不再关注此人" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        
+        
+        UIAlertAction * cancle = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            NSLog(@"取消");
+        }];
+        
+        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            // 进行取消关注的操作
+            [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
+            NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@",_sbModel.userid]];
+            [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+                
+                NSLog(@"进行取消关注获取到的数据%@", responseObject);
+                NSLog(@"content:%@", responseObject[@"content"]);
+            } failure:^(NSError * error) {
+                NSLog(@"进行取消关注操作时出错%@", error);
+            }];
+            // 对数据的刷新还有影响
+            [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
+            [_tableView2.header beginRefreshing];
+        }];
+        
+        [alert addAction:cancle];
+        [alert addAction:OK];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
 #pragma mark --- 添加登录的alertView
 - (void)addAlertView{
     LSAlertView * alertView = [[LSAlertView alloc] init];

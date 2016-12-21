@@ -224,6 +224,7 @@
 //            NSLog(@"cookies:%@", cookies);
             
             for (NSHTTPCookie * cookie in cookies) {
+                NSLog(@"cookie:%@", cookie);
                 NSString * name = [cookie name];
 //                NSLog(@"---name---%@", name);
                 NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
@@ -231,7 +232,6 @@
                 [defaults synchronize];
                                 
                 NSDictionary * dataDic = [responseObject objectForKey:@"data"];
-                
 //                NSLog(@"登录成功后获取的数据:%@", dataDic);
                 NSString * userid = dataDic[@"userid"];
                 [UMessage addAlias:userid type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {

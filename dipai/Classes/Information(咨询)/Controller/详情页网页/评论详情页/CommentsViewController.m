@@ -461,6 +461,7 @@
         [SVProgressHUD showSuccessWithStatus:@"发表成功"];
         // 再刷新一次
         [self.tableView.header beginRefreshing];
+       
     }else{
         [self addAlertView];
     }

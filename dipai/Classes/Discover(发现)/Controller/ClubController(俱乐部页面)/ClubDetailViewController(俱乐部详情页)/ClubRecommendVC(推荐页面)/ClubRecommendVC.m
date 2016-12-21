@@ -38,8 +38,7 @@
     
     NSURL * URL = [NSURL URLWithString:self.wapurl];
     NSURLRequest * request = [NSURLRequest requestWithURL:URL];
-    [webView loadRequest:request];
-//    NSLog(@"加载网页");
+     [webView loadRequest:request];
     JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
     
     context[@"image_add_i"] = ^() {

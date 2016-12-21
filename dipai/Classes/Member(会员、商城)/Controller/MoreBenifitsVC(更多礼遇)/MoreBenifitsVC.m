@@ -144,29 +144,13 @@
 
 - (void)MemberBenefitCell:(UITableViewCell *)cell didClickWithTag:(NSInteger)tag{
     
-    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
-        NSString * state = responseObject[@"state"];
-        if ([state isEqualToString:@"99"]) {    // 异地登录
-            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                // 确定按钮做两个操作：1.退出登录  2.回到根视图
-                [OutLoginTool outLoginAction];
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            }];
-            [alertC addAction:OK];
-            [self presentViewController:alertC animated:YES completion:nil];
-        }else{
-            // 跳转到礼遇详情
-            BenifitsDetailVC * benifitsDetailVC = [[BenifitsDetailVC alloc] init];
-            MemberBeneCellModel * model = [self.vMArr objectAtIndex:cell.tag];
-            NSDictionary * dic = [model.benefitsArr objectAtIndex:tag];
-            NSString * url = dic[@"wapurl"];
-            benifitsDetailVC.wapurl = url;
-            [self.navigationController pushViewController:benifitsDetailVC animated:YES];
-        }
-    } failure:^(NSError *error) {
-        
-    }];
+    // 跳转到礼遇详情
+    BenifitsDetailVC * benifitsDetailVC = [[BenifitsDetailVC alloc] init];
+    MemberBeneCellModel * model = [self.vMArr objectAtIndex:cell.tag];
+    NSDictionary * dic = [model.benefitsArr objectAtIndex:tag];
+    NSString * url = dic[@"wapurl"];
+    benifitsDetailVC.wapurl = url;
+    [self.navigationController pushViewController:benifitsDetailVC animated:YES];
     
 }
 

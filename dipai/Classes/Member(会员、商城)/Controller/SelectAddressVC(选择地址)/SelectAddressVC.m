@@ -53,8 +53,9 @@
     return _cellArr;
 }
 
-- (void)noLoginInOtherPhone{
+- (void)viewWillAppear:(BOOL)animated{
     
+    [super viewWillAppear:YES];
     // 页面每次出现的时候都要重新加载数据，因为可能增加新的地址
     [self getData];
 }
@@ -194,47 +195,32 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
-        NSString * state = responseObject[@"state"];
-        if ([state isEqualToString:@"99"]) {    // 异地登录
-            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                // 确定按钮做两个操作：1.退出登录  2.回到根视图
-                [OutLoginTool outLoginAction];
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            }];
-            [alertC addAction:OK];
-            [self presentViewController:alertC animated:YES completion:nil];
-        }else{
-            for (AddressCell * cell in self.cellArr) {
-                cell.flagV.hidden = YES;
-            }
-            
-            AddressCell * cell  =  [tableView cellForRowAtIndexPath:indexPath];
-            cell.flagV.hidden = NO;
-            
-            NSLog(@"didTag--->%lu", cell.tag);
-            
-            _cellTag = cell.tag;
-            AddressModel * model = [self.dataSource objectAtIndex:indexPath.row];
-            // 选择默认地址
-            NSString * url = [AddDefaAddressURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.address_id]];
-            [DataTool addDefaultAddWithStr:url parameters:nil success:^(id responseObject) {
-                
-                if ([responseObject[@"msg"] isEqualToString:@"success"]) {
-                    NSLog(@"选择默认地址成功..");
-                    //             [self.navigationController popViewControllerAnimated:YES];
-                }
-            } failure:^(NSError * error) {
-                
-                NSLog(@"选择默认地址出错：%@", error);
-            }];
+    for (AddressCell * cell in self.cellArr) {
+        cell.flagV.hidden = YES;
+    }
+    
+    AddressCell * cell  =  [tableView cellForRowAtIndexPath:indexPath];
+    cell.flagV.hidden = NO;
+    
+    NSLog(@"didTag--->%lu", cell.tag);
+    
+    _cellTag = cell.tag;
+    AddressModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    // 选择默认地址
+    NSString * url = [AddDefaAddressURL stringByAppendingString:[NSString stringWithFormat:@"/%@", model.address_id]];
+    [DataTool addDefaultAddWithStr:url parameters:nil success:^(id responseObject) {
+        
+        if ([responseObject[@"msg"] isEqualToString:@"success"]) {
+            NSLog(@"选择默认地址成功..");
             // 返回
             [self.navigationController popViewControllerAnimated:YES];
         }
-    } failure:^(NSError *error) {
+    } failure:^(NSError * error) {
         
+        NSLog(@"选择默认地址出错：%@", error);
     }];
+  
+
 
 }
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -246,24 +232,8 @@
 
 // 添加收货地址
 - (void)addAddressAction{
-    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
-        NSString * state = responseObject[@"state"];
-        if ([state isEqualToString:@"99"]) {    // 异地登录
-            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                // 确定按钮做两个操作：1.退出登录  2.回到根视图
-                [OutLoginTool outLoginAction];
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            }];
-            [alertC addAction:OK];
-            [self presentViewController:alertC animated:YES completion:nil];
-        }else{
-            AddAddressVC * addAddressVC = [[AddAddressVC alloc] init];
-            [self presentViewController:addAddressVC animated:YES completion:nil];
-        }
-    } failure:^(NSError *error) {
-        
-    }];
+    AddAddressVC * addAddressVC = [[AddAddressVC alloc] init];
+    [self presentViewController:addAddressVC animated:YES completion:nil];
    
 }
 

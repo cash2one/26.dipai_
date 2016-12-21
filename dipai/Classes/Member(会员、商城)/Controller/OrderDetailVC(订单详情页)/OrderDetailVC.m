@@ -52,8 +52,13 @@
     return _dataDic;
 }
 
-- (void)noLoginInOtherPhone{
+//- (void)noLoginInOtherPhone{
+//    
+//    [self getData];
+//}
+- (void)viewWillAppear:(BOOL)animated{
     
+    [super viewWillAppear:YES];
     [self getData];
 }
 
@@ -445,23 +450,7 @@
 // 提交订单事件
 - (void)submitAction{
     
-    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
-        NSString * state = responseObject[@"state"];
-        if ([state isEqualToString:@"99"]) {    // 异地登录
-            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                // 确定按钮做两个操作：1.退出登录  2.回到根视图
-                [OutLoginTool outLoginAction];
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            }];
-            [alertC addAction:OK];
-            [self presentViewController:alertC animated:YES completion:nil];
-        }else{
-            [self submitOrder];
-        }
-    } failure:^(NSError *error) {
-        
-    }];
+    [self submitOrder];
    
 }
 
@@ -520,25 +509,9 @@
 
 // 添加地址事件
 - (void)addAddressAction{
-    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
-        NSString * state = responseObject[@"state"];
-        if ([state isEqualToString:@"99"]) {    // 异地登录
-            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                // 确定按钮做两个操作：1.退出登录  2.回到根视图
-                [OutLoginTool outLoginAction];
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            }];
-            [alertC addAction:OK];
-            [self presentViewController:alertC animated:YES completion:nil];
-        }else{
-            // 跳转到地址选择页面
-            SelectAddressVC * selectAddressVC = [[SelectAddressVC alloc] init];
-            [self.navigationController pushViewController:selectAddressVC animated:YES];
-        }
-    } failure:^(NSError *error) {
-        
-    }];
+    // 跳转到地址选择页面
+    SelectAddressVC * selectAddressVC = [[SelectAddressVC alloc] init];
+    [self.navigationController pushViewController:selectAddressVC animated:YES];
    
 }
 

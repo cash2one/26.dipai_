@@ -164,8 +164,8 @@ typedef NS_ENUM(NSUInteger, LSType) {
 {
     [super viewWillAppear:YES];
     
+    self.navigationController.navigationBarHidden = NO;
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
     
@@ -178,7 +178,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
     if (_imageV.hidden == YES && _noPayAttention.hidden == YES) {
         NSLog(@"不进行刷新");
     }else{
-        [self loadNewData2];
+        [self getData];
     }
     
     
@@ -341,7 +341,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
     _tableView1.scrollsToTop = NO;
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData2)];
+        MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(getData)];
         [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
         header.stateLabel.font = [UIFont systemFontOfSize:14];
         header.stateLabel.textColor = [UIColor lightGrayColor];
@@ -474,7 +474,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
     
 }
 #pragma mark --- 圈子获取数据
-- (void)loadNewData2{
+- (void)getData{
 //    NSLog(@"加载关注数据...");
     
 //    NSLog(@"%@", _network);

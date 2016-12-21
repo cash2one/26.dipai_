@@ -177,7 +177,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
     [super viewWillAppear:YES];
     
 //    [MobClick beginLogPageView:@"InfomationViewController"];
-    
+    self.navigationController.navigationBarHidden = NO;
 //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];

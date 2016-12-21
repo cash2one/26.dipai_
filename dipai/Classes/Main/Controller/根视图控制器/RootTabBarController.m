@@ -107,7 +107,7 @@
     //
     MemberViewController * memberVC = [[MemberViewController alloc] init];
     RootNavigationController * memberNav = [[RootNavigationController alloc] initWithRootViewController:memberVC];
-    
+
     CommunityController * communityController = [[CommunityController alloc] init];
     RootNavigationController * comNav = [[RootNavigationController alloc] initWithRootViewController:communityController];
 //    [self setUPchildVC:communityController withImage:[UIImage imageNamed:@"shequ_moren"] withSelectedImage:[UIImage imageWithOriginalName:@"shequ_xuanzhong"] withTitle:@"社区"];
@@ -159,6 +159,9 @@
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
 {
     NSLog(@"%lu", self.selectedIndex);  // 各个tabBar的点击事件
+    // 将点击的tabBar下标记录下来
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:@(self.selectedIndex) forKey:tabBarIndex];
     if (self.selectedIndex == 2) {
         [MobClick event:@"centralTabBarBtnClick"];
     }

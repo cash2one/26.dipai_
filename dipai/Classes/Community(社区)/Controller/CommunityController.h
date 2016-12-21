@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface CommunityController : UIViewController
+#import "BaseViewController.h"
+@interface CommunityController : BaseViewController
 
 @end

@@ -404,8 +404,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
 - (void)setData{
     
     // 设置评论数
-//    NSLog(@"---发表评论数---%@", _model.commentNumber);
-    
     NSInteger commentNum = _model.commentNumber.integerValue;
 //    NSLog(@"%lu", commentNum);
     if (commentNum > 0) {
@@ -456,7 +454,8 @@ typedef NS_ENUM(NSUInteger, LSType) {
     NSURL * URL = [NSURL URLWithString:url];
 //    NSURL * URL = [NSURL URLWithString:@"http://www.baidu.com"];
     NSURLRequest * request = [NSURLRequest requestWithURL:URL];
-    [webView loadRequest:request];
+   [webView loadRequest:request];
+   
     
     JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
     NSLog(@"%@", context);
@@ -983,36 +982,30 @@ typedef NS_ENUM(NSUInteger, LSType) {
 }
 
 #pragma mark --- CommentViewDelegate
+// 发表按钮
 - (void)commnetView:(CommentView *)commentView sendMessage:(NSString *)message
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName || wxData) {
+        // 先判断是否异地登录
         NSLog(@"已经登录。。。进行发表");
-        /*
-         http://10.0.0.14:8080/app/add_comment
-         发送：id（被评论的id）,types(0:评论 1：回复),type(模块),content
-         */
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
-        //        CommentDic[@"id"] = self.newsModel.iD;
         CommentDic[@"id"] = _model.iD;
         CommentDic[@"types"] = @"0";
         CommentDic[@"type"] = _type;
         CommentDic[@"content"] = _commentView.textView.text;
         [DataTool postWithStr:SendComment parameters:CommentDic success:^(id responseObject) {
-            
             NSLog(@"发表评论返回的数据---%@", responseObject);
             NSString * content = [responseObject objectForKey:@"content"];
             NSLog(@"－－content--%@", content);
         } failure:^(NSError * error) {
             
             NSLog(@"发表评论的错误信息%@", error);
-            
         }];
         // 移除评论视图
         [self removeFromSuperviewAction];
-        
         // 显示发表成功
         [SVProgressHUD showSuccessWithStatus:@"发表成功"];
     }else{
@@ -1127,25 +1120,29 @@ typedef NS_ENUM(NSUInteger, LSType) {
     NSString * userName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (userName || wxData) { // 如果已经登录
-        if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
-            
-            // 进行收藏
-            [self collectOrCancelCollect];
-            [SVProgressHUD showSuccessWithStatus:@"收藏成功"];
-        } else{     // 如果收藏按钮被选中
-            
-            //  取消收藏
-            [self collectOrCancelCollect];
-            [SVProgressHUD showSuccessWithStatus:@"已取消收藏"];
-            
-        }
-        _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
+        [self collectionWhenLogin];
     } else  // 如果没有登录
     {
         [self addAlertViewWithMessage:@"请在登录后进行操作"];
     }
   
+}
+// 登录之后的操作
+- (void)collectionWhenLogin{
     
+    if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
+        
+        // 进行收藏
+        [self collectOrCancelCollect];
+        [SVProgressHUD showSuccessWithStatus:@"收藏成功"];
+    } else{     // 如果收藏按钮被选中
+        
+        //  取消收藏
+        [self collectOrCancelCollect];
+        [SVProgressHUD showSuccessWithStatus:@"已取消收藏"];
+        
+    }
+    _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
 }
 
 #pragma mark --- 收藏或取消收藏

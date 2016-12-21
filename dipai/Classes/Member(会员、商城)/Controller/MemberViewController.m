@@ -130,28 +130,11 @@
     return _bannerArr;
 }
 - (void)viewWillAppear:(BOOL)animated{
-    NSLog(@"%s", __func__);
     [super viewWillAppear:YES];
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    // 在页面刚出现的时候需要判断是否被异地登录
-    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
-        NSString * state = responseObject[@"state"];
-        if ([state isEqualToString:@"99"]) {    // 异地登录
-            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                // 确定按钮做两个操作：1.退出登录  2.回到根视图
-                [OutLoginTool outLoginAction];
-                [self getData];
-            }];
-            [alertC addAction:OK];
-            [self presentViewController:alertC animated:YES completion:nil];
-        }else{
-            // 为何此页面每次出现的时候都要获取数据？ 因为头像和积分可能发生变化
-            [self getData];
-        }
-    } failure:^(NSError *error) {
-        
-    }];
+    
+//    self.navigationController.navigationBarHidden = NO;
+    // 为何此页面每次出现的时候都要获取数据？ 因为头像和积分可能发生变化
+    [self getData];
     
 }
 
@@ -468,28 +451,9 @@
 
 // 跳转到会员等级页面
 - (void)seeMemberlevel{
-    // 判断是否被异地登录
-    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
-        NSString * state = responseObject[@"state"];
-        NSLog(@"登录状态码：%@", state);
-        if ([state isEqualToString:@"99"]) {
-            NSLog(@"异地登录");
-            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                // 确定按钮做两个操作：1.退出登录  2.回到根视图
-                [OutLoginTool outLoginAction];
-                [self getData];
-            }];
-            [alertC addAction:OK];
-            [self presentViewController:alertC animated:YES completion:nil];
-        }else{
-            MemberLevelViewController * memberLevelVC = [[MemberLevelViewController alloc] init];
-            memberLevelVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:memberLevelVC animated:YES];
-        }
-    } failure:^(NSError *error) {
-        NSLog(@"获取数据错误");
-    }];
+    MemberLevelViewController * memberLevelVC = [[MemberLevelViewController alloc] init];
+    memberLevelVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:memberLevelVC animated:YES];
 }
 
 - (void)outLogin{
@@ -625,31 +589,13 @@
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName  || wxData) {    // 如果已经登录
-        // 先判断是否登录再判断是否异地登录
-        [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
-            NSString * state = responseObject[@"state"];
-            if ([state isEqualToString:@"99"]) {    // 异地登录
-                UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"您的帐号已经在其它设备登录" preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    // 确定按钮做两个操作：1.退出登录  2.回到根视图
-                    [OutLoginTool outLoginAction];
-                    [self getData];
-                }];
-                [alertC addAction:OK];
-                [self presentViewController:alertC animated:YES completion:nil];
-            }else{  // 没有异地登录
-                NSString * platformStr = [NSString stringWithFormat:@"bangding%@", platformID];
-                NSLog(@"%@", platformStr);
-                [MobClick event:platformStr];
-                MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
-                moreVC.url = url;
-                moreVC.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:moreVC animated:YES];
-            }
-        } failure:^(NSError *error) {
-            
-        }];
-        
+        NSString * platformStr = [NSString stringWithFormat:@"bangding%@", platformID];
+        NSLog(@"%@", platformStr);
+        [MobClick event:platformStr];
+        MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
+        moreVC.url = url;
+        moreVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:moreVC animated:YES];
         
     }else{
         [self addAlertView];

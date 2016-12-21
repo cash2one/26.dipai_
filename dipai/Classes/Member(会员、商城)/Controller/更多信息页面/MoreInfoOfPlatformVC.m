@@ -92,10 +92,21 @@
     NSLog(@"---%@", self.url);
     webView.UIDelegate = self;
     webView.navigationDelegate = self;
-    //
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
-    [webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
-    self.webView = webView;
+    
+    [HttpTool GET:self.url parameters:nil success:^(id responseObject) {
+//        NSLog(@"%@", responseObject);
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"96"]) {    // 被异地登录
+            
+        }else{
+            [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
+            [webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
+            self.webView = webView;
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+    
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{

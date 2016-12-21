@@ -231,37 +231,58 @@
     }else{
         url = ReplyPostsURL;
     }
-    [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
         
-        /**
-         *  FileData:要上传文件的二进制数据
-         name:上传参数名称
-         fileName:上传到服务器的文件名称
-         mimeType:文件类型
-         */
-        
-        for (int i = 0; i < self.imagesArr.count; i ++) {
-            UIImage * image = self.imagesArr[i];
-            UIImage * image1 = [image rotateImage];
-//            NSData * data = UIImageJPEGRepresentation(image, 0.5);
-            NSData * data = UIImagePNGRepresentation(image1);
-            NSString * name = [NSString stringWithFormat:@"myfile%d", i];
-            NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
-            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
-            [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
+        if ([state isEqualToString:@"96"]) {    // 如果异地登录
+            NSString * message = responseObject[@"content"];
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                NSLog(@"退出登录...");
+                [self.navigationController popToRootViewControllerAnimated:YES];
+                [OutLoginTool outLoginAction];
+                
+            }];
+            [alertC addAction:action];
+            [self.navigationController presentViewController:alertC animated:YES completion:nil];
+        }else{
+            [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                
+                /**
+                 *  FileData:要上传文件的二进制数据
+                 name:上传参数名称
+                 fileName:上传到服务器的文件名称
+                 mimeType:文件类型
+                 */
+                
+                for (int i = 0; i < self.imagesArr.count; i ++) {
+                    UIImage * image = self.imagesArr[i];
+                    UIImage * image1 = [image rotateImage];
+                    //            NSData * data = UIImageJPEGRepresentation(image, 0.5);
+                    NSData * data = UIImagePNGRepresentation(image1);
+                    NSString * name = [NSString stringWithFormat:@"myfile%d", i];
+                    NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
+                    NSString * mimeType = [NSString stringWithFormat:@"image/png"];
+                    [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
+                }
+                [SVProgressHUD showWithStatus:@"发布中..."];
+                // 发布中发布按钮失效
+                _sendBtn.userInteractionEnabled = NO;
+            } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+                
+                [SVProgressHUD showSuccessWithStatus:@"发布成功"];
+                [self dismiss];
+                NSLog(@"上传图片成功:%@", responseObject);
+            } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+                [SVProgressHUD showErrorWithStatus:@"发布失败"];
+                
+                NSLog(@"上传图片失败：%@", error);
+            }];
         }
-        [SVProgressHUD showWithStatus:@"发布中..."];
-        // 发布中发布按钮失效
-        _sendBtn.userInteractionEnabled = NO;
-    } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+    } failure:^(NSError *error) {
         
-        [SVProgressHUD showSuccessWithStatus:@"发布成功"];
-        [self dismiss];
-        NSLog(@"上传图片成功:%@", responseObject);
-    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-        [SVProgressHUD showErrorWithStatus:@"发布失败"];
-        
-        NSLog(@"上传图片失败：%@", error);
     }];
     
 }

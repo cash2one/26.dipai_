@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface HttpTool : NSObject
-
 + (void)GET:(NSString *)URLString
   parameters:(id)parameters
      success:(void (^)(id responseObject))success

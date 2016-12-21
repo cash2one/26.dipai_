@@ -148,7 +148,6 @@
     // 给服务器发送code
     
     NSLog(@"给自己的服务器发送code：%s", __func__);
-    
     NSString * url = wxCodeURL;
 //    NSString * url = @"http://dpapp.replays.net/Weixin/wx_code";
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];

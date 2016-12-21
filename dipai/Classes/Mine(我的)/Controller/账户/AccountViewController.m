@@ -410,38 +410,47 @@
         }else{
             url = ChangeAccountURL;
         }
-        
-        [manager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-            
-            /**
-             *  FileData:要上传文件的二进制数据
-             name:上传参数名称
-             fileName:上传到服务器的文件名称
-             mimeType:文件类型
-             */
-            
-//                NSData * data = UIImagePNGRepresentation(image);
-//            NSData * data = UIImageJPEGRepresentation(image, 0.5);
-            UIImage * image1 = [image rotateImage];
-            NSData * data = UIImagePNGRepresentation(image1);
-            NSString * name = [NSString stringWithFormat:@"face"];
-            NSString * fileName = [NSString stringWithFormat:@"image.jpeg"];
-            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
-            [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
-            [SVProgressHUD showWithStatus:@"上传中"];
-            
-        } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-            
-            NSLog(@"上传图片成功---:%@", responseObject);
-            [self getData];
-            [SVProgressHUD showSuccessWithStatus:@"上传成功"];
-            
-        } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-//            [SVProgressHUD showErrorWithStatus:@"上传失败"];
-            
-            NSLog(@"上传图片失败：%@", error);
-            [SVProgressHUD showErrorWithStatus:@"上传失败"];
-        }];
+       [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+           
+           NSString * state = responseObject[@"state"];
+           if ([state isEqualToString:@"96"]) {
+               NSString * message = responseObject[@"content"];
+               UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+               UIAlertAction * action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                   // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                   NSLog(@"退出登录...");
+                   [self.navigationController popToRootViewControllerAnimated:YES];
+                   [OutLoginTool outLoginAction];
+                   
+               }];
+               [alertC addAction:action];
+               [self.navigationController presentViewController:alertC animated:YES completion:nil];
+           }else{
+               [manager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                   UIImage * image1 = [image rotateImage];
+                   NSData * data = UIImagePNGRepresentation(image1);
+                   NSString * name = [NSString stringWithFormat:@"face"];
+                   NSString * fileName = [NSString stringWithFormat:@"image.jpeg"];
+                   NSString * mimeType = [NSString stringWithFormat:@"image/png"];
+                   [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
+                   [SVProgressHUD showWithStatus:@"上传中"];
+                   
+               } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+                   
+                   NSLog(@"上传图片成功---:%@", responseObject);
+                   [self getData];
+                   [SVProgressHUD showSuccessWithStatus:@"上传成功"];
+                   
+               } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+                   //            [SVProgressHUD showErrorWithStatus:@"上传失败"];
+                   
+                   NSLog(@"上传图片失败：%@", error);
+                   [SVProgressHUD showErrorWithStatus:@"上传失败"];
+               }];
+           }
+       } failure:^(NSError *error) {
+           
+       }];
         
     }
     else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera)

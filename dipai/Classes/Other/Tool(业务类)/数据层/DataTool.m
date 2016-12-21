@@ -1017,16 +1017,6 @@
         }
     }];
     
-    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
-        
-        
-       
-        
-        
-    } failure:^(NSError *error) {
-        
-        
-    }];
 }
 // 获取收藏的数据
 + (void)getCollectionDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{

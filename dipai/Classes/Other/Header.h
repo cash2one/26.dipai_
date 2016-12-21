@@ -236,6 +236,8 @@
 
 // 判断App是否启动
 #define appStart @"appStart"
+// 点击的tabBar下标
+#define tabBarIndex @"tabBarIndex"
 
 #define UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
