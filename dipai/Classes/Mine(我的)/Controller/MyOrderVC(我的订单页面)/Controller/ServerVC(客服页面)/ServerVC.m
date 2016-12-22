@@ -76,8 +76,13 @@
     if (self.weburl.length > 0) {
         [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.weburl]]];
     }else{
-    
-         [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:ServiceURL]]];
+        NSString * url = nil;
+        if ([ServiceURL hasPrefix:@"http"]) {
+            url = ServiceURL;
+        }else{
+            url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, ServiceURL];
+        }
+         [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
     }
    
 //    [webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];

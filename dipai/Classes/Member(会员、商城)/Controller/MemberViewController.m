@@ -131,7 +131,6 @@
 }
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
-    
 //    self.navigationController.navigationBarHidden = NO;
     // 为何此页面每次出现的时候都要获取数据？ 因为头像和积分可能发生变化
     [self getData];

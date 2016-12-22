@@ -37,11 +37,13 @@
 
 #import "DataTool.h"
 #import "AFNetworking.h"
+#import "HttpTool.h"
 #import <JSPatchPlatform/JSPatch.h>
 #define UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 @interface AppDelegate ()<WXApiDelegate, UIAlertViewDelegate, UNUserNotificationCenterDelegate>
 {
-    NSString * _url;    // 推送的网址
+    NSString * _url;    // 普通推送的网址
+    NSString * _notiMessage;    //推送消息
 }
 @end
 
@@ -77,6 +79,8 @@
     [MobClick setAppVersion:version];
     //友盟推送
     [UMessage startWithAppkey:@"55556bc8e0f55a56230001d8" launchOptions:launchOptions];
+    //关闭友盟自带的弹出框
+    [UMessage setAutoAlert:NO];
     
     //注册通知，如果要使用category的自定义策略，可以参考demo中的代码。
     [UMessage registerForRemoteNotifications];
@@ -107,8 +111,18 @@
         if (remoteNotification) { // 说明有通知
             NSLog(@"---userInfo---%@", remoteNotification);
             _url = remoteNotification[@"1"];
-            UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:remoteNotification[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
-            [alertView show];
+            _notiMessage = remoteNotification[@"aps"][@"alert"];
+            if ([_notiMessage containsString:@"IOS"]) {    // 异地登录推送
+                [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+                    
+                } failure:^(NSError *error) {
+                    
+                }];
+            }else{  // 通知中心推送
+                UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:remoteNotification[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
+                [alertView show];
+            }
+            
             
         } else
         {
@@ -140,10 +154,11 @@
 
 #pragma mark --- UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex NS_DEPRECATED_IOS(2_0, 9_0){
+    
     if(buttonIndex == 0){
         NSLog(@",,,");
     }else{
-        if(_url.length > 0 ){
+        if(_url.length > 0 ){   // 普通通知
             RootTabBarController * root = (RootTabBarController *)self.window.rootViewController;
             if(root.selectedIndex != 0){    // 如果当前页面不是首页转换到首页，在首页中进行跳转
                 root.selectedIndex = 0;
@@ -166,6 +181,8 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"pushNoti" object:nil];
         }
     }
+
+   
 }
 
 #pragma mark --- 收到远程推送
@@ -173,10 +190,12 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     NSLog(@"注册通知...");
-    NSLog(@"deviceToken:%@",[[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""]
-                  stringByReplacingOccurrencesOfString: @">" withString: @""]
-                 stringByReplacingOccurrencesOfString: @" " withString: @""]);
-    
+    NSString * device = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""]
+                                stringByReplacingOccurrencesOfString: @">" withString: @""]
+                               stringByReplacingOccurrencesOfString: @" " withString: @""];
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:device forKey:DipaiDevice];
+    NSLog(@"deviceToken:%@", device);
     // 友盟推送用到的
     // 将deviceToken发送给友盟服务器
     [UMessage registerDeviceToken:deviceToken];
@@ -201,11 +220,22 @@
     NSString * string1 = userInfo[@"1"];
         NSLog(@"---string---%@", string1);
     _url = string1;
+    _notiMessage = userInfo[@"aps"][@"alert"] ;
     // 应用在前台 或者后台开启状态下，不跳转页面，让用户选择。
     if (application.applicationState == UIApplicationStateActive || application.applicationState == UIApplicationStateBackground) {
-        //        NSLog(@"acitve or background");
-        UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:userInfo[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
-        [alertView show];
+        
+        NSLog(@"_notiMessage%@", _notiMessage);
+        if ([_notiMessage containsString:@"IOS"]) {    // 异地登录
+            [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+                
+            } failure:^(NSError *error) {
+                
+            }];
+        }else{
+            UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:userInfo[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
+            [alertView show];
+        }
+        
         
     }
     else//后台运行状态下，直接跳转到跳转页面。
@@ -219,8 +249,16 @@
                 NSLog(@"跳转时，AppDelegate的代理没有响应...");
             }
         }else{
-            // 跳转到通知中心
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"pushNoti" object:nil];
+            if ([_notiMessage containsString:@"IOS"]) {    // 异地登录
+                [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+                    
+                } failure:^(NSError *error) {
+                    
+                }];
+            }else{
+                // 跳转到通知中心
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"pushNoti" object:nil];
+            }
         }
     }
     
@@ -239,8 +277,20 @@
         NSLog(@"前台。。。");
         NSString * str = userInfo[@"1"];
         _url = str;
-        UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:userInfo[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
-        [alertView show];
+        _notiMessage = userInfo[@"aps"][@"alert"];
+        NSLog(@"_notiMessage:%@", _notiMessage);
+        if ([_notiMessage containsString:@"IOS"]) {    // 异地登录推送
+            [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+                
+            } failure:^(NSError *error) {
+                
+            }];
+        }else{
+            
+            UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:userInfo[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
+            [alertView show];
+        }
+        
     }else{
         
         // 应用处于前台时的本地推送接受
@@ -260,8 +310,18 @@
         NSString * str = userInfo[@"1"];
         _url = str;
         NSLog(@"后台");
-        UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:userInfo[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
-        [alertView show];
+        _notiMessage = userInfo[@"aps"][@"alert"];
+        if ([_notiMessage containsString:@"IOS"]) {    // 异地登录推送
+            [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+                
+            } failure:^(NSError *error) {
+                
+            }];
+        }else{
+            UIAlertView *alertView =[[UIAlertView alloc]initWithTitle:@"提示" message:userInfo[@"aps"][@"alert"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"立即查看", nil];
+            [alertView show];
+        }
+        
     }else{
         
         // 应用处于后台时的本地推送接受

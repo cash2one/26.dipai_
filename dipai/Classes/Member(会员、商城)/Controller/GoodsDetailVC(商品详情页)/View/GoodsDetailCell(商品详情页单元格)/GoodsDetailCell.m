@@ -22,7 +22,11 @@
 @property (nonatomic, strong)  UILabel * nameLbl;
 // 商品积分
 @property (nonatomic, strong) UILabel * numLbl;
-// 商品详情
+// 非会员积分
+@property (nonatomic, strong) UILabel * feVIPLbl;
+// 删除线
+@property (nonatomic, strong)  UILabel * deleteLbl;
+ // 商品详情
 @property (nonatomic, strong) UILabel * detailLbl;
 
 @property (nonatomic, strong) UILabel * deTitleLbl;
@@ -115,16 +119,30 @@
     
     // 商品积分
     UILabel * numLbl = [[UILabel alloc] init];
+//    numLbl.backgroundColor = [UIColor greenColor];
     numLbl.font = [UIFont boldSystemFontOfSize:21 * IPHONE6_W_SCALE];
     numLbl.textColor = [UIColor redColor];
     [topV addSubview:numLbl];
-    [numLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(topV.mas_left).offset(15 * IPHONE6_W_SCALE);
-        make.bottom.equalTo(topV.mas_bottom).offset(-18 * IPHONE6_H_SCALE);
-        make.width.equalTo(@(WIDTH - 15 * IPHONE6_W_SCALE));
-        make.height.equalTo(@(21 * IPHONE6_H_SCALE));
-    }];
     _numLbl = numLbl;
+    // 非会员积分
+    UILabel * feVIPLbl = [[UILabel alloc] init];
+//    feVIPLbl.backgroundColor = [UIColor redColor];
+    feVIPLbl.textColor = Color102;
+    feVIPLbl.font = Font15;
+    [topV addSubview:feVIPLbl];
+    _feVIPLbl = feVIPLbl;
+    feVIPLbl.text = @"2000";
+    // 删除线
+    UILabel * deleteLbl = [[UILabel alloc] init];
+    deleteLbl.backgroundColor = Color102;
+    [feVIPLbl addSubview:deleteLbl];
+    [deleteLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(feVIPLbl.mas_centerX);
+        make.centerY.equalTo(feVIPLbl.mas_centerY);
+        make.width.equalTo(feVIPLbl.mas_width).offset(2);
+        make.height.equalTo(@(1));
+    }];
+    _deleteLbl = deleteLbl;
     
     // 分割线1
     UIView * lineV1 = [[UIView alloc] init];
@@ -185,7 +203,7 @@
         [arr addObject:[_detailModel.atlas firstObject]];
         for (int i = 0; i < arr.count; i ++) {
             UIImageView * imgV = [[UIImageView alloc] initWithFrame:CGRectMake(0+ i * WIDTH, 0 , WIDTH, 496*0.5 * IPHONE6_W_SCALE)];
-            imgV.backgroundColor = [UIColor greenColor];
+//            imgV.backgroundColor = [UIColor greenColor];
             [_scrollV addSubview:imgV];
             
             imgV.userInteractionEnabled = YES;
@@ -214,9 +232,34 @@
     
     // 商品积分
     if (_detailModel.shop_price.length > 0) {
-        NSMutableAttributedString * numText = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", _detailModel.shop_price]];
+        NSString * vIPNum = [NSString stringWithFormat:@"积分：%@", _detailModel.shop_price];
+        NSMutableAttributedString * numText = [[NSMutableAttributedString alloc] initWithString:vIPNum];
         [numText addAttribute:NSFontAttributeName value:Font15 range:NSMakeRange(0, 3)];
         _numLbl.attributedText = numText;
+        
+        NSMutableDictionary * numDic = [NSMutableDictionary dictionary];
+        numDic[NSFontAttributeName] = [UIFont boldSystemFontOfSize:21 * IPHONE6_W_SCALE];;
+        CGSize numSize = [vIPNum sizeWithAttributes:numDic];
+        CGFloat numWidth = numSize.width;
+        NSLog(@"numWidth:%f", numWidth);
+        // 会员积分
+        [_numLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(_topV.mas_left).offset(15 * IPHONE6_W_SCALE);
+            make.bottom.equalTo(_topV.mas_bottom).offset(-18 * IPHONE6_H_SCALE);
+            make.width.equalTo(@(numWidth-15*IPHONE6_W_SCALE));
+            make.height.equalTo(@(21 * IPHONE6_H_SCALE));
+        }];
+        
+        // 非会员积分
+        NSMutableDictionary * feNumDic = [NSMutableDictionary dictionary];
+        feNumDic[NSFontAttributeName] = Font15;
+        CGFloat feWidth = [_feVIPLbl.text sizeWithAttributes:feNumDic].width;
+        [_feVIPLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(_topV.mas_left).offset( numWidth+5*IPHONE6_W_SCALE);
+            make.bottom.equalTo(_numLbl.mas_bottom).offset(-1);
+            make.width.equalTo(@(feWidth+1));
+            make.height.equalTo(@(15 * IPHONE6_H_SCALE));
+        }];
     }
     
     // 商品详情

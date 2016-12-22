@@ -188,6 +188,8 @@
 // 积分详情
 #define NumberDtailURL @"/app/member/integra/view"
 //#define NumberDtailURL @"http://dpapp.replays.net/app/member/integra/view"
+// 礼遇条款
+#define DipaiLiyuURL @"/html/liyu.html"
 
 /*************************积分商城*************************/
 // 商城首页
@@ -229,8 +231,9 @@
 #define Phone @"phone"
 // 微信登录用户
 #define WXUser @"wxuser"
-
 #define Date @"date"
+// deviceToken值
+#define DipaiDevice @"deviceToken"
 // 牌谱制作人
 #define pokerMaker @"userName"
 

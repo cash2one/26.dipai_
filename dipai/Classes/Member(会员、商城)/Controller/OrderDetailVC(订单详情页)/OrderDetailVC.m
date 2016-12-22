@@ -31,6 +31,8 @@
 @property (nonatomic, strong)  UIImageView * goodsImage;
 // 商品积分
 @property (nonatomic, strong) UILabel * goodsNumL;
+// 非会员积分
+@property (nonatomic, strong) UILabel * feVIPLbl;
 // 账户总积分
 @property (nonatomic, strong) UILabel * allNumLbl ;
 // 积分消耗
@@ -107,6 +109,30 @@
     NSMutableAttributedString * goodsNumStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", goodsDic[@"shop_price"]]];
     [goodsNumStr addAttribute:NSFontAttributeName value:Font12 range:NSMakeRange(0, 3)];
     _goodsNumL.attributedText = goodsNumStr;
+   
+    NSString * vIPNum = [NSString stringWithFormat:@"积分：%@",goodsDic[@"shop_price"]];
+    NSMutableDictionary * numDic = [NSMutableDictionary dictionary];
+    numDic[NSFontAttributeName] = Font14;
+    CGSize numSize = [vIPNum sizeWithAttributes:numDic];
+    CGFloat numWidth = numSize.width;
+    [_goodsNumL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(_goodsImage.mas_right).offset(12 * IPHONE6_W_SCALE);
+        make.bottom.equalTo(_goodsImage.mas_bottom);
+        make.width.equalTo(@(numWidth+2));
+        make.height.equalTo(@(14 * IPHONE6_W_SCALE));
+    }];
+     // 非会员积分
+    _feVIPLbl.text = @"2000";
+    NSMutableDictionary * feNumDic = [NSMutableDictionary dictionary];
+    feNumDic[NSFontAttributeName] = Font12;
+    CGFloat feWidth = [_feVIPLbl.text sizeWithAttributes:feNumDic].width;
+    [_feVIPLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(_goodsNumL.mas_right).offset(5 * IPHONE6_W_SCALE);
+        make.bottom.equalTo(_goodsNumL.mas_bottom).offset(-1);
+        make.width.equalTo(@(feWidth+1));
+        make.height.equalTo(@(12 * IPHONE6_W_SCALE));
+    }];
+
     
     NSMutableAttributedString * needNumStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分消耗：%@", goodsDic[@"shop_price"]]];
     [needNumStr addAttribute:NSFontAttributeName value:Font12 range:NSMakeRange(0, 5)];
@@ -299,15 +325,27 @@
     _goodNameL = goodNameL;
     // 商品积分
     UILabel * goodsNumL = [[UILabel alloc] init];
+//    goodsNumL.backgroundColor = [UIColor greenColor];
     goodsNumL.textColor = [UIColor redColor];
     [self.view addSubview:goodsNumL];
-    [goodsNumL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(goodsImage.mas_right).offset(12 * IPHONE6_W_SCALE);
-        make.bottom.equalTo(goodsImage.mas_bottom);
-        make.width.equalTo(@(WIDTH - 274 * 0.5 * IPHONE6_W_SCALE));
-        make.height.equalTo(@(14 * IPHONE6_W_SCALE));
-    }];
     _goodsNumL = goodsNumL;
+    // 非会员积分
+    UILabel * feVIPLbl = [[UILabel alloc] init];
+//    feVIPLbl.backgroundColor = [UIColor redColor];
+    feVIPLbl.textColor = Color102;
+    feVIPLbl.font = Font12;
+    [self.view addSubview:feVIPLbl];
+    _feVIPLbl = feVIPLbl;
+    // 删除线
+    UILabel * deleteLbl = [[UILabel alloc] init];
+    deleteLbl.backgroundColor = Color102;
+    [feVIPLbl addSubview:deleteLbl];
+    [deleteLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(feVIPLbl.mas_centerX);
+        make.centerY.equalTo(feVIPLbl.mas_centerY);
+        make.width.equalTo(feVIPLbl.mas_width).offset(2);
+        make.height.equalTo(@(1));
+    }];
     
     UIView * line2 = [[UIView alloc] init];
     line2.backgroundColor = SeparateColor;
@@ -460,24 +498,39 @@
     if (_alertLbl.hidden == NO) {   // 如果没有收货地址
         [SVProgressHUD showErrorWithStatus:@"请填写收货地址"];
     }else{
-        NSDictionary * addressDic = self.dataDic[@"address"];
+        // 提交消耗积分
         NSDictionary * goodsDic = self.dataDic[@"goods"];
-        NSMutableDictionary * parameters = [NSMutableDictionary dictionary];
-        parameters[@"goods_id"] =goodsDic[@"goods_id"]; // 商品ID
-        parameters[@"address_id"] = addressDic[@"address_id"];  // 地址ID
-        [DataTool submitOrderWithStr:submitOrderURL parameters:parameters success:^(id responseObject) {
-            //            NSLog(@"提交订单返回数据：%@", responseObject);
-            if ([responseObject[@"msg"] isEqualToString:@"success"]) {
-                
-                //                [SVProgressHUD showSuccessWithStatus:@"提交成功"];
-                [self addSuccessView];
-                //                [self.navigationController popViewControllerAnimated:YES];
-            }
-        } failure:^(NSError * error) {
-            NSLog(@"提交订单出错：%@", error);
+        NSString * shopPrice = goodsDic[@"shop_price"];
+        NSString * message = [NSString stringWithFormat:@"提交订单后将会消耗您%@积分，确定提交吗？", shopPrice];
+        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction * sureAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self submitOrderAction];
         }];
+        UIAlertAction * cancleAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }];
+        [alertController addAction:cancleAction];
+        [alertController addAction:sureAction];
+        [self presentViewController:alertController animated:YES completion:nil];
         
     }
+}
+
+- (void)submitOrderAction{
+    
+    NSDictionary * addressDic = self.dataDic[@"address"];
+    NSDictionary * goodsDic = self.dataDic[@"goods"];
+    NSMutableDictionary * parameters = [NSMutableDictionary dictionary];
+    parameters[@"goods_id"] =goodsDic[@"goods_id"]; // 商品ID
+    parameters[@"address_id"] = addressDic[@"address_id"];  // 地址ID
+    [DataTool submitOrderWithStr:submitOrderURL parameters:parameters success:^(id responseObject) {
+        
+        if ([responseObject[@"msg"] isEqualToString:@"success"]) {
+            [self addSuccessView];
+        }
+    } failure:^(NSError * error) {
+        NSLog(@"提交订单出错：%@", error);
+    }];
 }
 
 // 提交订单成功后的提示框

@@ -7,7 +7,7 @@
 //
 
 #import "NavigationHiddenVC.h"
-
-@interface BenifitsArticleVC : NavigationHiddenVC
+#import "DPWKWebView.h"
+@interface BenifitsArticleVC : DPWKWebView
 
 @end

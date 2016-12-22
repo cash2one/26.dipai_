@@ -398,11 +398,15 @@
                     }else{  // 昵称长度合法
                         
                         // 完全合法之后发送数据请求
+                        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+                        NSString * deviceToken = [defaults objectForKey:DipaiDevice];
                         NSMutableDictionary * dic = [NSMutableDictionary dictionary];
                         dic[@"phone"] = _phoneNum.text;
                         dic[@"username"] = _name.text;
                         dic[@"password"] = _password.text;
                         dic[@"verify"] = _code.text;
+                        dic[@"system"] = @"1";  // 代表iPhone手机
+                        dic[@"device"] = deviceToken;
                         if (_inviteCode.text.length > 0) {
                             dic[@"istration_id"] = _inviteCode.text;
                         }
@@ -414,7 +418,6 @@
                             NSString * state = [responsObject objectForKey:@"state"];
                             if ([state isEqualToString:@"1"]) {
                                 [SVProgressHUD showSuccessWithStatus:@"注册成功"];
-                                
                                 NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
                                 for (NSHTTPCookie * cookie in cookies) {
                                     NSString * name = [cookie name];
@@ -424,6 +427,14 @@
                                     [defaults synchronize];
                                     NSString * phone = @"phone";
                                     [defaults setObject:phone forKey:Phone];
+                                    
+                                    NSDictionary * dataDic = [responsObject objectForKey:@"data"];
+                                    NSString * userid = dataDic[@"userid"];
+//                                    [UMessage addAlias:userid type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+//                                        NSLog(@"添加别名...");
+//                                        NSLog(@"---responseObject---%@", responseObject);
+//                                        NSLog(@"---error----%@", error);
+//                                    }];
                                 }
                                 
                                 if ([self.delegate respondsToSelector:@selector(dismissAfterRegister)]) {

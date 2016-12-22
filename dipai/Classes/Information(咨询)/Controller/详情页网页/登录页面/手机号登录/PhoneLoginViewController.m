@@ -198,31 +198,24 @@
 - (void)loginAction{
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     /*
-     phone，password
+     phone，password,system(ios:1,安卓：2),device(友盟推送码)
      */
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * deviceToken = [defaults objectForKey:DipaiDevice];
+    NSLog(@"deviceToken:%@", deviceToken);
     dic[@"phone"] = _phoneNum.text;
     dic[@"password"] = _code.text;
+    dic[@"system"] = @"1";
+    dic[@"device"] = deviceToken;
 //    NSLog(@"dic:%@", dic);
     [DataTool postWithStr:LoginURL parameters:dic success:^(id responseObject) {
         NSString * content = [responseObject objectForKey:@"content"];
-        
-        
         NSLog(@"登录获取的数据%@", responseObject);
-        
         [SVProgressHUD showErrorWithStatus:content];
-        if ([content isEqualToString:@"密码错误"]) {
-            [SVProgressHUD showErrorWithStatus:@"密码错误"];
-        }
-        if ([content isEqualToString:@"没有此用户"]) {
-            [SVProgressHUD showErrorWithStatus:@"没有此用户"];
-        }
         if ([content isEqualToString:@"登录成功"]) {
             [SVProgressHUD showSuccessWithStatus:@"登录成功"];
-            
             NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-            
 //            NSLog(@"cookies:%@", cookies);
-            
             for (NSHTTPCookie * cookie in cookies) {
                 NSLog(@"cookie:%@", cookie);
                 NSString * name = [cookie name];
@@ -230,15 +223,14 @@
                 NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
                 [defaults setObject:name forKey:Cookie];
                 [defaults synchronize];
-                                
                 NSDictionary * dataDic = [responseObject objectForKey:@"data"];
 //                NSLog(@"登录成功后获取的数据:%@", dataDic);
                 NSString * userid = dataDic[@"userid"];
-                [UMessage addAlias:userid type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
-                    NSLog(@"添加别名...");
-                    NSLog(@"---responseObject---%@", responseObject);
-                    NSLog(@"---error----%@", error);
-                }];
+//                [UMessage addAlias:userid type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+//                    NSLog(@"添加别名...");
+//                    NSLog(@"---responseObject---%@", responseObject);
+//                    NSLog(@"---error----%@", error);
+//                }];
                 
                 [defaults setObject:dataDic forKey:User];
                 [defaults setObject:@"phone" forKey:Phone];

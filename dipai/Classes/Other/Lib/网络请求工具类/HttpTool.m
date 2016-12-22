@@ -40,6 +40,7 @@
                 RootNavigationController * nav = (RootNavigationController *)tabBarC.childViewControllers[tabIndex];
                 UIViewController * VC = [nav.viewControllers lastObject];
                 UIViewController * firstVC = [nav.viewControllers firstObject];
+                // 不管有没有present的VC都先dismiss,防止有present的VC
                 [VC dismissViewControllerAnimated:YES completion:nil];
                 UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction * action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {

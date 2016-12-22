@@ -141,7 +141,7 @@
     [WXApi sendAuthReq:req viewController:self delegate:self];
     
     // 成功利用了AppDelegate
-    AppDelegate * delegate = [[UIApplication sharedApplication] delegate];
+    AppDelegate * delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     delegate.delegate = self;
 }
 - (void)dismissWithStr:(NSString *)str{
@@ -150,9 +150,14 @@
     NSLog(@"给自己的服务器发送code：%s", __func__);
     NSString * url = wxCodeURL;
 //    NSString * url = @"http://dpapp.replays.net/Weixin/wx_code";
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * deviceToken = [defaults objectForKey:DipaiDevice];
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"code"] = str;
-    
+    dic[@"system"] = @"1";
+    dic[@"device"] = deviceToken;
+    url = [NSString stringWithFormat:@"%@?code=%@&system=1&device=%@", url,str,deviceToken];
+    NSLog(@"url:%@", url);
     [SVProgressHUD showWithStatus:@"请稍候..."];
     [DataTool sendCodeWithStr:url parameters:dic success:^(id responseObject) {
         
@@ -162,10 +167,10 @@
         }
         NSDictionary * data = responseObject[@"data"];
         NSString * userid = data[@"userid"];
-        [UMessage addAlias:userid type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
-            //        NSLog(@"---responseObject---%@", responseObject);
-            //        NSLog(@"---error----%@", error);
-        }];
+        // 推送不用userid了
+//        [UMessage addAlias:userid type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+//           
+//        }];
         NSLog(@"---data---:%@", data);
         NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
         [userDefaults setObject:data forKey:WXUser];

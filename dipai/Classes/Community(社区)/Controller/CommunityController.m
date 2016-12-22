@@ -181,7 +181,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
         [self getData];
     }
     
-    
 }
 
 - (void)viewWillDisappear:(BOOL)animated

@@ -1,51 +1,29 @@
 //
-//  MoreInfoOfPlatformVC.m
+//  DPWKWebView.m
 //  dipai
 //
-//  Created by 梁森 on 16/11/8.
+//  Created by 梁森 on 16/12/21.
 //  Copyright © 2016年 梁森. All rights reserved.
 //
 
-#import "MoreInfoOfPlatformVC.h"
-#import "Masonry.h"
+#import "DPWKWebView.h"
 
-#import <WebKit/WebKit.h>
-#import <JavaScriptCore/JavaScriptCore.h>
-@interface MoreInfoOfPlatformVC ()<WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler>
-
-@property (nonatomic, strong) WKWebView * webView;
-
-@property (nonatomic, strong) UIProgressView * progressV;
+@interface DPWKWebView ()<WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler>
 
 @end
 
-@implementation MoreInfoOfPlatformVC
+@implementation DPWKWebView
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
-    [self setNavigationBar];
-    
+    [self addWebView];
+    [self addProgressView];
 }
 
-- (void)setNavigationBar{
+- (void)addWebView{
     
-    self.naviBar.titleStr = @"平台详情";
-    self.naviBar.popV.hidden = NO;
-    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
-     [self showView];
-    UIProgressView * progressV = [[UIProgressView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 8)];
-    progressV.backgroundColor = [UIColor blueColor];
-    progressV.tintColor = [UIColor redColor];
-    CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 1.5f);
-    progressV.transform = transform;//设定宽高
-    [self.view addSubview:progressV];
-    self.progressV = progressV;
-   
-}
-
-- (void)showView{
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
     // 设置偏好设置
     config.preferences = [[WKPreferences alloc] init];
@@ -56,51 +34,28 @@
     // 在iOS上默认为NO，表示不能自动通过窗口打开
     config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
     config.processPool = [[WKProcessPool alloc] init];
-    
     // 通过JS与webview内容交互
     config.userContentController = [[WKUserContentController alloc] init];
-    
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
     // 我们可以在WKScriptMessageHandler代理中接收到
-    [config.userContentController addScriptMessageHandler:self name:@"downloadApp"];
-    
+//    [config.userContentController addScriptMessageHandler:self name:@"downloadApp"];
     CGRect rect = CGRectMake(0, 64, WIDTH, HEIGHT - 64);
     WKWebView * webView  = [[WKWebView alloc] initWithFrame:rect configuration:config];
-//    webView.backgroundColor = [UIColor redColor];
     [self.view addSubview:webView];
-//    [webView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.equalTo(self.view);
-//        make.right.equalTo(self.view);
-//        make.top.equalTo(self.naviBar.mas_bottom);
-//        make.bottom.equalTo(self.view);
-//    }];
-    NSString * url = @"";
-    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    NSDictionary * xcDic = [defaults objectForKey:WXUser];
-    NSDictionary * phoneDic = [defaults objectForKey:User];
-
-    NSLog(@"%@", self.url);
-    if (xcDic != nil) {
-        url = xcDic[@"userid"];
-        self.url =  [self.url stringByAppendingString:[NSString stringWithFormat:@"?userid=%@", url]];
-    }else if(phoneDic != nil){
-        url = phoneDic[@"userid"];
-         self.url = [self.url stringByAppendingString:[NSString stringWithFormat:@"?userid=%@", url]];
-    }else{
-        self.url = [self.url stringByAppendingString:url];
-    }
-    NSLog(@"加载网址：---%@", self.url);
     webView.UIDelegate = self;
     webView.navigationDelegate = self;
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
     [webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     self.webView = webView;
-    [HttpTool GET:self.url parameters:nil success:^(id responseObject) {
-        NSLog(@"加载网址返回的数据：%@", responseObject);
-        
-    } failure:^(NSError *error) {
-        
-    }];
+}
+- (void)addProgressView{
+
+    UIProgressView * progressV = [[UIProgressView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 8)];
+    progressV.backgroundColor = [UIColor blueColor];
+    progressV.tintColor = [UIColor redColor];
+    CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 1.5f);
+    progressV.transform = transform;//设定宽高
+    [self.view addSubview:progressV];
+    self.progressV = progressV;
     
 }
 
@@ -151,7 +106,7 @@
     //允许跳转
     decisionHandler(WKNavigationActionPolicyAllow);
     //不允许跳转
-//    decisionHandler(WKNavigationActionPolicyCancel);
+    //    decisionHandler(WKNavigationActionPolicyCancel);
 }
 #pragma mark - WKUIDelegate
 // 创建一个新的WebView
@@ -171,7 +126,7 @@
 }
 // 警告框
 - (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler{
-//
+    //
     completionHandler();
     NSLog(@"3-----%@",message);
     UIAlertController * alertVC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
@@ -188,26 +143,13 @@
       didReceiveScriptMessage:(WKScriptMessage *)message {
     
     NSLog(@"message:%@", message);
-    if ([message.name isEqualToString:@"downloadApp"]) {
-        // 打印所传过来的参数，只支持NSNumber, NSString, NSDate, NSArray,
-        // NSDictionary, and NSNull类型
-        NSLog(@"body:%@", message.body);
-        NSDictionary * dic = message.body;
-//        NSLog(@"%@", dic[@"body"]);
-        NSString * phoneNum = dic[@"body"];
-        NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"%@",phoneNum];
-        NSURL * url = [NSURL URLWithString:str];
-        if ([[UIApplication sharedApplication] canOpenURL:url]) {
-            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
-                if (success) {
-                    NSLog(@"%@", url);
-                }
-            }];
-        }else{
-            
-            NSLog(@"不能打开网页");
-        }
-    }
+
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
 }
 
 

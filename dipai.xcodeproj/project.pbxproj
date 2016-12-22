@@ -210,6 +210,7 @@
 		C181F4F11D506F93008DFDCE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C181F4F01D506F93008DFDCE /* JavaScriptCore.framework */; };
 		C18F4DA41D27AAF500A4EEB1 /* ShowPicView.m in Sources */ = {isa = PBXBuildFile; fileRef = C18F4DA31D27AAF500A4EEB1 /* ShowPicView.m */; };
 		C18F4DA81D27B43000A4EEB1 /* FooterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C18F4DA71D27B43000A4EEB1 /* FooterCell.m */; };
+		C192CA181E0A7BAC00E7B8A9 /* DPWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = C192CA171E0A7BAC00E7B8A9 /* DPWKWebView.m */; };
 		C19401911DC0B8F9009FF75A /* ServerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C19401901DC0B8F9009FF75A /* ServerVC.m */; };
 		C1954AC21CF68A1E00B1DE71 /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1954AC11CF68A1E00B1DE71 /* RegisterViewController.m */; };
 		C1954AC91CF695EA00B1DE71 /* LSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = C1954AC81CF695EA00B1DE71 /* LSTextField.m */; };
@@ -875,6 +876,8 @@
 		C18F4DA31D27AAF500A4EEB1 /* ShowPicView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowPicView.m; sourceTree = "<group>"; };
 		C18F4DA61D27B43000A4EEB1 /* FooterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FooterCell.h; sourceTree = "<group>"; };
 		C18F4DA71D27B43000A4EEB1 /* FooterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FooterCell.m; sourceTree = "<group>"; };
+		C192CA161E0A7BAC00E7B8A9 /* DPWKWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPWKWebView.h; sourceTree = "<group>"; };
+		C192CA171E0A7BAC00E7B8A9 /* DPWKWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DPWKWebView.m; sourceTree = "<group>"; };
 		C194018F1DC0B8F9009FF75A /* ServerVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerVC.h; sourceTree = "<group>"; };
 		C19401901DC0B8F9009FF75A /* ServerVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerVC.m; sourceTree = "<group>"; };
 		C1954AC01CF68A1E00B1DE71 /* RegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterViewController.h; sourceTree = "<group>"; };
@@ -3105,6 +3108,15 @@
 			path = "FooterCell(最后一个单元格)";
 			sourceTree = "<group>";
 		};
+		C192CA151E0A7B8E00E7B8A9 /* 加载网页基类(礼遇条款之后) */ = {
+			isa = PBXGroup;
+			children = (
+				C192CA161E0A7BAC00E7B8A9 /* DPWKWebView.h */,
+				C192CA171E0A7BAC00E7B8A9 /* DPWKWebView.m */,
+			);
+			path = "加载网页基类(礼遇条款之后)";
+			sourceTree = "<group>";
+		};
 		C194018E1DC0B8E6009FF75A /* ServerVC(客服页面) */ = {
 			isa = PBXGroup;
 			children = (
@@ -3831,6 +3843,7 @@
 				C1DC613F1D0E5B5A00217A38 /* BaseViewController.m */,
 				C106888A1DAF9FD800E13D73 /* NavigationHiddenVC.h */,
 				C106888B1DAF9FD800E13D73 /* NavigationHiddenVC.m */,
+				C192CA151E0A7B8E00E7B8A9 /* 加载网页基类(礼遇条款之后) */,
 			);
 			path = "BaseVC(基控制器)";
 			sourceTree = "<group>";
@@ -5220,6 +5233,7 @@
 				C16AEE311CEDBE9200173A1C /* UIView+Frame.m in Sources */,
 				C1EFBA791CEF14790066C4FF /* NSManagedObjectContext+MagicalRecord.m in Sources */,
 				C111738A1DBF4AA1003C17FD /* AddressModel.m in Sources */,
+				C192CA181E0A7BAC00E7B8A9 /* DPWKWebView.m in Sources */,
 				C12F9D9E1CD9D8B7003CC7FC /* NSObject+MJCoding.m in Sources */,
 				C1E5F80C1CEC5667008A8A97 /* MJRefreshComponent.m in Sources */,
 				C12F9DE21CD9DE3A003CC7FC /* NewsListModel.m in Sources */,

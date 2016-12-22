@@ -26,18 +26,14 @@
     NSString * userid1 = xcDic[@"userid"];
     NSDictionary * phoneDic = [defaults objectForKey:User];
     NSString * userid2 = phoneDic[@"userid"];
-    //    NSLog(@"xcDic:%@", xcDic);
-    //    NSLog(@"phoneDic:%@", phoneDic);
-    //    NSLog(@"userid1:%@", userid1);
-    //    NSLog(@"userid2:%@", userid2);
-    [UMessage removeAlias:userid1 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
-        NSLog(@"删除userid1成功:%@", responseObject);
-        NSLog(@"删除userid1失败:%@", responseObject);
-    }];
-    [UMessage removeAlias:userid2 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
-        NSLog(@"删除userid2成功:%@", responseObject);
-        NSLog(@"删除userid1失败:%@", responseObject);
-    }];
+//    [UMessage removeAlias:userid1 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+//        NSLog(@"删除userid1成功:%@", responseObject);
+//        NSLog(@"删除userid1失败:%@", responseObject);
+//    }];
+//    [UMessage removeAlias:userid2 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+//        NSLog(@"删除userid2成功:%@", responseObject);
+//        NSLog(@"删除userid1失败:%@", responseObject);
+//    }];
     
     [defaults removeObjectForKey:Cookie];
     [defaults removeObjectForKey:Phone];
