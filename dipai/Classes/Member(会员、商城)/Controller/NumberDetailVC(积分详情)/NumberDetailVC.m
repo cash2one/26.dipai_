@@ -52,6 +52,7 @@
 - (void)getData{
     
     [DataTool getDetailNumberDataWithStr:NumberDtailURL parameters:nil success:^(id responseObject) {
+        NSLog(@"%@", responseObject);
         if ([responseObject isKindOfClass:[NSString class]]) {
             self.tableView.footer.state = MJRefreshStateNoMoreData;
         }else{
@@ -69,7 +70,7 @@
 
 - (void)setData{
     
-    _currentNumLbl.text = self. count_integral;
+    _currentNumLbl.text = self.num;
     NSLog(@"%@", _currentNumLbl.text);
 }
 

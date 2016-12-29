@@ -78,6 +78,7 @@
 @interface InfomationViewController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate, AppDelegate>
 {
     NSString * _name;   // 跳转页面接口地址
+    NSString * _downLoadURL;// AppStore链接
 }
 typedef NS_ENUM(NSUInteger, LSType) {
     /** 资讯 */
@@ -139,6 +140,8 @@ typedef NS_ENUM(NSUInteger, LSType) {
 @property (nonatomic, strong) UIView * popView;
 // 弹窗的背景图
 @property (nonatomic, strong)  UIView * backView;
+
+@property (nonatomic, strong) UIView * versionBackView;
 @end
 
 @implementation InfomationViewController
@@ -234,8 +237,28 @@ typedef NS_ENUM(NSUInteger, LSType) {
     self.tableView.footer = footer;
     
 //    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
+    
+    [self getMemberCenterData];
 }
 
+- (void)getMemberCenterData{
+//    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+//    NSString * cookieName = [defaults objectForKey:Cookie];
+//    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+//    if (cookieName  || wxData) {
+//        
+//        
+//    }else{  // 如果未登录
+//        [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+//            NSLog(@"%@", responseObject);
+//            NSDictionary * dic = (NSDictionary *)responseObject;
+//            NSLog(@"%@", dic);
+//            [defaults setObject:dic forKey:@"member"];
+//        } failure:^(NSError *error) {
+//            
+//        }];
+//    }
+}
 
 #pragma mark --- 有通知的时候进行跳转
 - (void)pushToViewControllerWithURL:(NSString *)url{
@@ -319,7 +342,9 @@ typedef NS_ENUM(NSUInteger, LSType) {
             
         }else if(num == LSTypeH5){  // 如果是H5页面
 #warning 未进行测试
+            NSString * wapurl = responseObject[@"content"];
             H5ViewController * h5VC = [[H5ViewController alloc] init];
+            h5VC.wapurl = wapurl;
             [self.navigationController pushViewController:h5VC animated:YES];
         }
         else{   // 未识别type
@@ -406,12 +431,176 @@ typedef NS_ENUM(NSUInteger, LSType) {
         [self addBannerView];
         [self.tableView reloadData];
         
+        // 添加提示弹窗
         [self addPopView];
+       
     } failure:^(NSError * error) {
         
          NSLog(@"获取首页错误信息%@", error);
     }];
 
+}
+
+- (void)addVersionView{
+    NSLog(@"查看是否需要更新..");
+        // 访问接口，如果有更新提示就显示
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[@"type"] = @"1";
+    dic[@"ver"] = @"2.2.0";
+    [HttpTool POST:DiPaiUpdateURL parameters:dic success:^(id responseObject) {
+//        NSLog(@"%@", responseObject);
+        NSString * versionFlag = responseObject[@"versionupdate"];
+        NSString * content = responseObject[@"content"];
+        if ([versionFlag isEqualToString:@"1"]) {
+            NSString * url = responseObject[@"downloadurl"];
+            NSLog(@"AppStoreURL:%@", url);
+            [self showUpdateViewWithContent:content withDownLoadURL:url];
+        }else{
+            
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+    
+}
+
+- (void)showUpdateViewWithContent:(NSString *)content withDownLoadURL:(NSString *)url{
+    
+    UIWindow * window = [UIApplication sharedApplication].keyWindow;
+    UIImageView * versionView = [[UIImageView alloc] init];
+    versionView.image = [UIImage imageNamed:@"gengxinbeijing"];
+    versionView.userInteractionEnabled = YES;
+    UIView * versionBackView = [[UIView alloc] init];
+    _versionBackView = versionBackView;
+    versionBackView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    //    backView.userInteractionEnabled = YES;
+    //    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeAction)];
+    //    tap.numberOfTapsRequired = 1;
+    //    [backView addGestureRecognizer:tap];
+    [window addSubview:versionBackView];
+    [versionBackView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.bottom.equalTo(self.view.mas_bottom);
+        make.top.equalTo(window.mas_top);
+    }];
+    [versionBackView addSubview:versionView];
+    [versionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(versionBackView.mas_top).offset(143 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(546 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(760 * 0.5 * IPHONE6_W_SCALE));
+    }];
+    
+    // 标题
+    UILabel * titleLbl = [[UILabel alloc] init];
+    titleLbl.text = @"V2.2版本更新提示";
+    [versionView addSubview:titleLbl];
+    titleLbl.font = Font15;
+    titleLbl.textColor = [UIColor blackColor];
+    titleLbl.textAlignment = NSTextAlignmentCenter;
+    [titleLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(versionView.mas_centerX);
+        make.top.equalTo(versionView.mas_top).offset(91 * IPHONE6_W_SCALE);
+        make.width.equalTo(versionView.mas_width);
+        make.height.equalTo(@(15 * IPHONE6_H_SCALE));
+    }];
+    // 更新内容
+    UILabel * subTitleLbl = [[UILabel alloc] init];
+    subTitleLbl.text = @"更新内容：";
+    [versionView addSubview:subTitleLbl];
+    subTitleLbl.font = Font13;
+    subTitleLbl.textColor = RGBA(51, 51, 51, 1);
+    [subTitleLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(versionView.mas_left).offset(24 * IPHONE6_W_SCALE);
+        make.top.equalTo(versionView.mas_top).offset(153 * IPHONE6_W_SCALE);
+        make.width.equalTo(versionView.mas_width);
+        make.height.equalTo(@(13 * IPHONE6_H_SCALE));
+    }];
+    CGRect contentRect = CGRectMake(0, 0, 0, 0);
+    CGFloat contentY = 352 * 0.5 * IPHONE6_W_SCALE;
+    UILabel * lbl = [[UILabel alloc] init];
+//    lbl.backgroundColor = [UIColor redColor];
+    lbl.numberOfLines = 0;
+    lbl.font = Font13;
+    lbl.text = content;
+    lbl.textColor = RGBA(112, 112, 112, 1);
+    [versionView addSubview:lbl];
+    CGFloat contentX = 24 * IPHONE6_W_SCALE;
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[NSFontAttributeName] = Font13;
+    dic[NSForegroundColorAttributeName] = RGBA(112, 112, 112, 1);
+     contentRect = [content boundingRectWithSize:CGSizeMake(546 * 0.5 * IPHONE6_W_SCALE - 48 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+    lbl.frame = (CGRect){{contentX, contentY}, contentRect.size};
+    /*
+    for (int i = 0; i < 3; i ++) {
+        CGFloat contentX = 24 * IPHONE6_W_SCALE;
+        contentY +=  contentRect.size.height + 10 * IPHONE6_W_SCALE;
+        UILabel * contentLbl = [[UILabel alloc] init];
+        contentLbl.numberOfLines = 0;
+        contentLbl.textColor = RGBA(112, 112, 112, 1);
+        contentLbl.font = Font13;
+        [versionView addSubview:contentLbl];
+        NSString * contentStr = @"我是中国人，我是中国人，我是中国人🇨🇳    。，。。。。。。";
+        contentLbl.text = contentStr;
+        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+        dic[NSFontAttributeName] = Font13;
+        dic[NSForegroundColorAttributeName] = RGBA(112, 112, 112, 1);
+        contentRect = [contentStr boundingRectWithSize:CGSizeMake(546 * 0.5 * IPHONE6_W_SCALE - 48 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+        contentLbl.frame = (CGRect){{contentX, contentY}, contentRect.size};
+    }
+    */
+    
+    // 取消按钮
+    UIButton * cancleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [cancleBtn setTitle:@"以后再说" forState:UIControlStateNormal];
+    cancleBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    cancleBtn.titleLabel.font = Font15;
+    [cancleBtn setTitleColor:RGBA(112, 112, 112, 1) forState:UIControlStateNormal];
+    cancleBtn.layer.cornerRadius = 2;
+    cancleBtn.layer.borderWidth = 0.5;
+    cancleBtn.layer.borderColor = RGBA(112, 112, 112, 1).CGColor;
+    [versionView addSubview:cancleBtn];
+    [cancleBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(versionView.mas_left).offset(35 * 0.5 * IPHONE6_W_SCALE);
+        make.width.equalTo(@(230 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(33 * IPHONE6_W_SCALE));
+        make.bottom.equalTo(versionView.mas_bottom).offset(-18 * IPHONE6_W_SCALE);
+    }];
+    [cancleBtn addTarget:self action:@selector(removeVersionView) forControlEvents:UIControlEventTouchUpInside];
+    
+    // 更新按钮
+    UIButton * updateBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [updateBtn setTitle:@"立即更新" forState:UIControlStateNormal];
+    [updateBtn setTitleColor:RGBA(180, 0, 0, 1) forState:UIControlStateNormal];
+    updateBtn.titleLabel.font = Font15;
+    updateBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    updateBtn.backgroundColor = RGBA(255, 222, 2, 1);
+    updateBtn.layer.cornerRadius = 2;
+    [versionView addSubview:updateBtn];
+    [updateBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(versionView.mas_right).offset(-35 * 0.5 * IPHONE6_W_SCALE);
+        make.width.equalTo(cancleBtn.mas_width);
+        make.height.equalTo(cancleBtn.mas_height);
+        make.bottom.equalTo(cancleBtn.mas_bottom);
+    }];
+    _downLoadURL = url;
+    [updateBtn addTarget:self action:@selector(turnToAppStore) forControlEvents:UIControlEventTouchUpInside];
+}
+
+// 跳转到AppStore进行版本更新
+- (void)turnToAppStore{
+    if (_downLoadURL.length > 0) {
+         [[UIApplication sharedApplication]openURL:[NSURL URLWithString:_downLoadURL]];
+    }else{
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]];
+    }
+   
+    [self removeVersionView];
+}
+// 移除版本提示框
+- (void)removeVersionView{
+    [_versionBackView removeFromSuperview];
 }
 
 - (void)addPopView{
@@ -421,10 +610,11 @@ typedef NS_ENUM(NSUInteger, LSType) {
     if (first.length > 0) {
         NSLog(@"App第一次启动");
         [HttpTool GET:PopViewURL parameters:nil success:^(id responseObject) {
-            NSDictionary * dataDic = responseObject[@"data"];
-            NSString * picName = dataDic[@"picname"];
-            _name = dataDic[@"name"];
-            if (dataDic.count > 0) {    // 如果有数据
+            NSLog(@"%@", responseObject);
+            id dataDic = responseObject[@"data"];
+            if (![dataDic isKindOfClass:[NSString class]]) {    // 如果有数据
+                NSString * picName = dataDic[@"picname"];
+                _name = dataDic[@"name"];
                 // 如果App第一次启动，有弹窗
                 UIWindow * window = [UIApplication sharedApplication].keyWindow;
                 UIView * popView = [[UIView alloc] init];
@@ -449,7 +639,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
                     make.width.equalTo(@(280 * IPHONE6_W_SCALE));
                     make.height.equalTo(@(778 * 0.5 * IPHONE6_W_SCALE));
                 }];
-                
+         
                 
                 // 图片
                 UIImageView * picV = [[UIImageView alloc] init];
@@ -490,6 +680,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
             NSLog(@"获取数据出错：%@", error);
         }];
         
+         [self addVersionView];
         }
     [defaults removeObjectForKey:appStart];
 }
@@ -780,6 +971,15 @@ typedef NS_ENUM(NSUInteger, LSType) {
         }
     }];
     [manager startMonitoring];
+    /*
+    H5ViewController * h5VC = [[H5ViewController alloc] init];
+    h5VC.wapurl = @"http://dipaiapp.replays.net/html/zp/index.html";
+    h5VC.hidesBottomBarWhenPushed = YES;
+    [self removeAction];
+    [self.navigationController pushViewController:h5VC animated:YES];
+    */
+   
+    
     [HttpTool GET:url parameters:nil success:^(id responseObject) {
         
         NSString * type = responseObject[@"type"];
@@ -859,7 +1059,8 @@ typedef NS_ENUM(NSUInteger, LSType) {
         }
 #warning 未进行测试
         else if(num == LSTypeH5){  // 如果是内部H5页面
-            NSString * wapurl = responseObject[@"content"];
+            NSLog(@"%@", responseObject);
+            NSString * wapurl = responseObject[@"content"][@"wapurl"];
             H5ViewController * h5VC = [[H5ViewController alloc] init];
             h5VC.wapurl = wapurl;
             h5VC.hidesBottomBarWhenPushed = YES;
@@ -868,11 +1069,10 @@ typedef NS_ENUM(NSUInteger, LSType) {
         }
         else{   // 未识别type
             NSLog(@"---%@",url);
-            
+         
         }
         [SVProgressHUD dismiss];
     } failure:^(NSError *error) {
-        
         NSLog(@"出错：%@",error);
     }];
     

@@ -153,21 +153,23 @@
     _detailLbl.text = _detailModel.content;
     
     _typeLbl.text = _detailModel.type;
-    _inOrOutLbl.text = _detailModel.extcredits1;
     _balanceLbl.text = [NSString stringWithFormat:@"余额：%@", _detailModel.extcredits2];
     _dateLbl.text = _detailModel.datetime;
     
-    float inOrtOut = [_inOrOutLbl.text floatValue];
-    if (inOrtOut > 0) {
-        _flagLbl.text = @"积分来源：";
-    }else{
-        _flagLbl.text = @"支出详情：";
-    }
+//    float inOrtOut = [_inOrOutLbl.text floatValue];
+//    if (inOrtOut > 0) {
+//        _flagLbl.text = @"积分来源：";
+//        
+//    }else{
+//        _flagLbl.text = @"支出详情：";
+//    }
 //    NSLog(@"%@", _detailModel.type);
     if ([_detailModel.type isEqualToString:@"商城支出"]) {
         _flagLbl.text = @"支出详情：";
+         _inOrOutLbl.text = [NSString stringWithFormat:@"-%@", _detailModel.extcredits1];
     }else{
         _flagLbl.text = @"积分来源：";
+         _inOrOutLbl.text = [NSString stringWithFormat:@"%@", _detailModel.extcredits1];
     }
 }
 

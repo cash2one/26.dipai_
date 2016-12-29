@@ -113,7 +113,7 @@
 
 #pragma mark --- 手机号登录
 - (void)phoneLoginAction{
-    NSLog(@"手机号登录");
+    NSLog(@"手机号登录。。。");
     PhoneLoginViewController * phoneLoginVC = [[PhoneLoginViewController alloc] init];
     phoneLoginVC.delegate = self;
     [self.navigationController pushViewController:phoneLoginVC animated:YES];

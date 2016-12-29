@@ -211,8 +211,27 @@
 //            numLbl.backgroundColor = [UIColor greenColor];
             numLbl.font = Font14;
             [backV addSubview:numLbl];
+            // 非会员积分
+            UILabel * feVIPNumLbl = [[UILabel alloc] init];
+            //            feVIPNumLbl.backgroundColor = [UIColor redColor];
+            feVIPNumLbl.textColor = Color102;
+            feVIPNumLbl.font = Font12;
+            feVIPNumLbl.text = goodsModel.shop_price;
+            NSMutableDictionary * feNumDic = [NSMutableDictionary dictionary];
+            feNumDic[NSFontAttributeName] = Font12;
+            CGFloat feWidth = [feVIPNumLbl.text sizeWithAttributes:feNumDic].width;
+            [backV addSubview:feVIPNumLbl];
+            NSString * vIPNum = nil;
+            if ([goodsModel.vip_price isEqualToString:@"0"]) {
+                vIPNum = [NSString stringWithFormat:@"积分：%@", goodsModel.shop_price];
+                feVIPNumLbl.text = goodsModel.vip_price;
+                feVIPNumLbl.hidden = YES;
+            }else{
+               vIPNum = [NSString stringWithFormat:@"积分：%@", goodsModel.vip_price];
+                feVIPNumLbl.text = goodsModel.shop_price;
+                feVIPNumLbl.hidden = NO;
+            }
             
-            NSString * vIPNum = [NSString stringWithFormat:@"积分：%@", goodsModel.shop_price];
             NSMutableAttributedString * numText = [[NSMutableAttributedString alloc] initWithString:vIPNum];
             [numText addAttribute:NSFontAttributeName value:Font11 range:NSMakeRange(0, 3)];
             //             [numText addAttribute:NSFontAttributeName value:Font8 range:NSMakeRange(0, 3)];
@@ -230,17 +249,6 @@
             }];
             [numLbl sizeToFit];
             
-            
-            // 非会员积分
-            UILabel * feVIPNumLbl = [[UILabel alloc] init];
-//            feVIPNumLbl.backgroundColor = [UIColor redColor];
-            feVIPNumLbl.textColor = Color102;
-            feVIPNumLbl.font = Font12;
-             feVIPNumLbl.text = @"2000";
-            NSMutableDictionary * feNumDic = [NSMutableDictionary dictionary];
-            feNumDic[NSFontAttributeName] = Font12;
-            CGFloat feWidth = [feVIPNumLbl.text sizeWithAttributes:feNumDic].width;
-            [backV addSubview:feVIPNumLbl];
             [feVIPNumLbl mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.left.equalTo(numLbl.mas_right).offset(5 * IPHONE6_W_SCALE);
                 make.bottom.equalTo(numLbl.mas_bottom).offset(-1);
@@ -257,7 +265,15 @@
                 make.width.equalTo(feVIPNumLbl.mas_width).offset(2);
                 make.height.equalTo(@(1));
             }];
-           
+            NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+            NSString * cookieName = [defaults objectForKey:Cookie];
+            NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+//            if (cookieName  || wxData) {
+//                feVIPNumLbl.hidden = NO;
+//            }else{
+//                feVIPNumLbl.hidden = YES;
+//                
+//            }
             
             [self addSubview:backV];
         }

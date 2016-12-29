@@ -130,8 +130,9 @@
     feVIPLbl.textColor = Color102;
     feVIPLbl.font = Font15;
     [topV addSubview:feVIPLbl];
+    feVIPLbl.hidden = YES;
     _feVIPLbl = feVIPLbl;
-    feVIPLbl.text = @"2000";
+    
     // 删除线
     UILabel * deleteLbl = [[UILabel alloc] init];
     deleteLbl.backgroundColor = Color102;
@@ -231,8 +232,18 @@
     }];
     
     // 商品积分
-    if (_detailModel.shop_price.length > 0) {
-        NSString * vIPNum = [NSString stringWithFormat:@"积分：%@", _detailModel.shop_price];
+    if (_detailModel.vip_price.length > 0) {
+        
+        NSString * vIPNum = nil;
+        if ([_detailModel.vip_price isEqualToString:@"0"]) {
+            _feVIPLbl.hidden = YES;
+            vIPNum = [NSString stringWithFormat:@"积分：%@", _detailModel.shop_price];
+        }else{
+            _feVIPLbl.hidden = NO;
+             vIPNum = [NSString stringWithFormat:@"积分：%@", _detailModel.vip_price];
+            _feVIPLbl.text = _detailModel.shop_price;
+        }
+        
         NSMutableAttributedString * numText = [[NSMutableAttributedString alloc] initWithString:vIPNum];
         [numText addAttribute:NSFontAttributeName value:Font15 range:NSMakeRange(0, 3)];
         _numLbl.attributedText = numText;

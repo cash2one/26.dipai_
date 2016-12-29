@@ -22,4 +22,6 @@
 @property (nonatomic, copy) NSString * shop_price;
 @property (nonatomic, copy) NSString * goods_img;
 @property (nonatomic, copy) NSString * wapurl;
+// 会员价格
+@property (nonatomic, copy) NSString * vip_price;
 @end

@@ -48,7 +48,7 @@
 
 - (void)getData{
     
-//    NSLog(@"self.url--->%@", self.url);
+    NSLog(@"self.url--->%@", self.url);
     [DataTool  getMoreGoodsDataWithStr:self.url parameters:nil success:^(id responseObject) {
         NSLog(@"---%@", responseObject);
         if ([responseObject isKindOfClass:[NSString class]]) {

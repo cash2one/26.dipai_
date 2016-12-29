@@ -10,4 +10,6 @@
 #import "NavigationHiddenVC.h"
 @interface MemberLevelViewController : NavigationHiddenVC
 
+// 当前可用积分
+@property (nonatomic, copy) NSString * num;
 @end

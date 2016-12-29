@@ -34,7 +34,10 @@
             [self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
                 if(group){
                     // group：分组的相册
-                    [_groups addObject:group];
+                    if ([group numberOfAssets]>0){
+                     [_groups addObject:group];
+                    }
+                    NSLog(@"%@", _groups);
                     [self.tableView reloadData];
                 }
             } failureBlock:^(NSError *error) {
@@ -59,6 +62,7 @@
 
 #pragma mark - -----------------代理方法-----------------
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSLog(@"分组个数%lu", self.groups.count);
     return self.groups.count;
 }
 
@@ -68,6 +72,7 @@
     // 自定义的单元格
     AssetGroupTableViewCell *cell = [AssetGroupTableViewCell groupCell:tableView];
     ALAssetsGroup *group = self.groups[indexPath.row];
+    NSLog(@"ALAssetsGroup:%@", group);
     cell.group = group;
     return cell;
 }
@@ -78,7 +83,7 @@
 // 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    // UICollectionView
+    // 选择图片页面是一个UICollectionView
     ImgSelectCollectionViewController *collectionVC = [[ImgSelectCollectionViewController alloc] init];
     
     NSLog(@"已选图片数%lu", self.selectedPics);

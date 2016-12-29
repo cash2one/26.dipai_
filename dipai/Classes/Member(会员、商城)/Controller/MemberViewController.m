@@ -71,6 +71,10 @@
     NSString * _face;
     // 积分
     NSString * _num;
+    //
+    NSString * _stype;
+    // 第一次加载的标识
+    NSString * _firstLoad;
 }
 // 会员中心
 @property (nonatomic, strong) UITableView * tableView1;
@@ -135,12 +139,17 @@
     // 为何此页面每次出现的时候都要获取数据？ 因为头像和积分可能发生变化
     [self getData];
     
+    if (_firstLoad.length > 0) {    // 如果不是第一次进入
+        [self loadNewData];
+    }
+    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _firstLoad = @"firstLoad";
     NSLog(@"%s", __func__);
     self.navigationController.navigationBarHidden = YES;
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -451,6 +460,7 @@
 // 跳转到会员等级页面
 - (void)seeMemberlevel{
     MemberLevelViewController * memberLevelVC = [[MemberLevelViewController alloc] init];
+    memberLevelVC.num = _numLbl.text;
     memberLevelVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:memberLevelVC animated:YES];
 }
@@ -473,6 +483,7 @@
                 
                 [DataTool getMemberCenterDataWithStr:MemberCenter parameters:nil success:^(id responseObject) {
                     MemberDataModel * dataModel = responseObject;
+                    _stype = dataModel.stype;
                     NSLog(@"会员数据模型：%@", dataModel);
                     // 字典转模型
                     MemberInfoModel * memberInfoModel = [MemberInfoModel objectWithKeyValues:dataModel.user_info];
@@ -573,6 +584,8 @@
     CustomCollectionCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
     cell.delegate = self;
     PlatformModel * platModel = [self.dataArray objectAtIndex:indexPath.row];
+    NSLog(@"%@", _stype);
+    cell.stype = _stype;
     cell.model = platModel;
 //    cell.row = indexPath.row;
     [cell.picV sd_setImageWithURL:[NSURL URLWithString:platModel.picname] placeholderImage:[UIImage imageNamed:@"placeholder"]];
@@ -593,6 +606,7 @@
         [MobClick event:platformStr];
         MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
         moreVC.url = url;
+        moreVC.stype = _stype;
         moreVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:moreVC animated:YES];
         
@@ -722,7 +736,7 @@
 }
 // 跳转到商品页面
 - (void)tableviewCell:(ShopCell *)cell didClickWithURL:(NSString *)url withTitle:(NSString *)title{
-    
+    NSLog(@"%@", url);
     // 跳转到商品详情页
     [self seeGoodsDetailWithURL:url withTitle:title];
 }
@@ -739,7 +753,6 @@
 - (void)loadNewData{
     
     [DataTool getShoppingMallDataWithStr:ShoppingMallURL parameters:nil success:^(id responseObject) {
-        
         [self.tableView2.header endRefreshing];
         [self.tableView2.footer endRefreshing];
         ShopMallModel * mallModel = responseObject;
@@ -782,7 +795,9 @@
     NSLog(@"banner...");
     
     UIImageView * imgV = (UIImageView *) tap.view;
+    
     ShopBannerModel * model = [self.bannerArr objectAtIndex:imgV.tag];
+    NSLog(@"%@---%@", model.wapurl, model.name);
     [self seeGoodsDetailWithURL:model.wapurl withTitle:model.name];
 }
 

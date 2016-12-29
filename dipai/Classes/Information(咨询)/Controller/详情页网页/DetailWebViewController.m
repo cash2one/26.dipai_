@@ -79,6 +79,8 @@
     NSString * _sendContent;
     // 网页中跳转的URL
     NSString * _url;
+    // 当前网页的网址
+    NSString * _webURL;
 }
 typedef NS_ENUM(NSUInteger, LSType) {
     /** 资讯 */
@@ -226,7 +228,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
     [super viewWillAppear:YES];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
     // 每次进来的时候都要检测是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
@@ -251,6 +252,77 @@ typedef NS_ENUM(NSUInteger, LSType) {
             
         }];
     }
+    
+//    if (_webURL.length > 0) {
+//        [self loadWebViewAgain];
+//    }
+
+}
+
+- (void)loadWebViewAgain{
+    
+    [_webView removeFromSuperview];
+    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
+    webView.delegate = self;
+    webView.scalesPageToFit = YES;
+    [self.view addSubview:webView];
+    [webView setScalesPageToFit:YES];
+    _webView = webView;
+    
+    NSURL * URL = [NSURL URLWithString:_webURL];
+    //    NSURL * URL = [NSURL URLWithString:@"http://www.baidu.com"];
+    NSURLRequest * request = [NSURLRequest requestWithURL:URL];
+    [webView loadRequest:request];
+    
+    
+    JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+     [self.picsArr removeAllObjects];
+    context[@"image_add_i"] = ^() { // 通过block回调获得h5传来的数据
+        NSArray *args = [JSContext currentArguments];
+        // 数组中装数组
+        [self.picsArr addObject:args];
+        NSLog(@"self.picsArr.count:%lu", self.picsArr.count);
+    };
+    
+    context[@"image_show_i"] = ^() {
+        NSArray *args = [JSContext currentArguments];
+        //        NSLog(@"%@", args);
+        for (JSValue *jsVal in args) {
+            //            NSLog(@"%@", jsVal);
+            _picIndex = jsVal;
+            // 展示图片
+            [self showBigPic];
+        }
+        JSValue *this = [JSContext currentThis];
+        NSLog(@"this: %@",this);
+    };
+#warning 未进行测试
+    // 获取网页中注入的跳转页面的JS方法
+    context[@"getURL"] = ^(){
+        NSArray *args = [JSContext currentArguments];
+        for (JSValue *jsVal in args) {
+            _url = jsVal.toString;
+            NSLog(@"%@", _url);
+            [self turnPageWithURL:_url];
+        }
+    };
+    
+    // 登录事件
+    context[@"login"] = ^() { // 通过block回调获得h5传来的数据
+        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+        NSString * cookieName = [defaults objectForKey:Cookie];
+        NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+        NSLog(@"---用户迷宫%@,", cookieName);
+        if (cookieName  || wxData) {
+            
+        }else{  // 如果没有登录进行登录
+            LoginViewController * loginVC = [[LoginViewController alloc] init];
+            [self.navigationController pushViewController:loginVC animated:YES];
+        }
+        
+    };
+
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -444,6 +516,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
 #pragma mark --- 请求网页
 - (void)setUpView:(NSString *)url
 {
+    _webURL = url;
     UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
     webView.delegate = self;
     webView.scalesPageToFit = YES;
@@ -458,13 +531,12 @@ typedef NS_ENUM(NSUInteger, LSType) {
    
     
     JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
-    NSLog(@"%@", context);
     context[@"image_add_i"] = ^() { // 通过block回调获得h5传来的数据
     
         NSArray *args = [JSContext currentArguments];
         // 数组中装数组
         [self.picsArr addObject:args];
-
+        NSLog(@"self.picsArr.count:%lu", self.picsArr.count);
     };
     
     context[@"image_show_i"] = ^() {
@@ -488,6 +560,13 @@ typedef NS_ENUM(NSUInteger, LSType) {
             NSLog(@"%@", _url);
             [self turnPageWithURL:_url];
         }
+    };
+    
+    // 登录事件
+    context[@"login"] = ^() { // 通过block回调获得h5传来的数据
+        LoginViewController * loginVC = [[LoginViewController alloc] init];
+        [self.navigationController pushViewController:loginVC animated:YES];
+        
     };
 }
 // 跳转页面（根据type类型跳）
@@ -634,6 +713,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
         index = index + 1;
         _pageLbl = [[UILabel alloc] init];
         _pageLbl.text = [NSString stringWithFormat:@"%d/%lu" ,index, self.picsArr.count];
+        NSLog(@"%@", _pageLbl.text);
         self.currentPage = index;
         _pageLbl.textAlignment = NSTextAlignmentCenter;
         _pageLbl.textColor = [UIColor whiteColor];
@@ -951,18 +1031,47 @@ typedef NS_ENUM(NSUInteger, LSType) {
     // 加载完成后消失
 //    [SVProgressHUD dismiss];
     NSLog(@"加载完成...");
-// 能够缩小、放大网页
-//     [webView stringByEvaluatingJavaScriptFromString:@"var element = document.createElement('meta');  element.name = \"viewport\";  element.content = \"width=device-width,initial-scale=1.0,minimum-scale=0.5,maximum-scale=3,user-scalable=1\"; var head = document.getElementsByTagName('head')[0]; head.appendChild(element);"];
     
+    JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+    NSLog(@"%@", context);
+    context[@"image_add_i"] = ^() { // 通过block回调获得h5传来的数据
+        
+        NSArray *args = [JSContext currentArguments];
+        // 数组中装数组
+        [self.picsArr removeAllObjects];
+        [self.picsArr addObject:args];
+        
+    };
     
-    // 用户判断登录后是否是同一个cookie
-//    NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-//    for (NSHTTPCookie * cookie in cookies) {
-//        NSString * name = [cookie name];
-//        NSLog(@"---name---%@", name);
-//        
-//    }
+    context[@"image_show_i"] = ^() {
+        NSArray *args = [JSContext currentArguments];
+        //        NSLog(@"%@", args);
+        for (JSValue *jsVal in args) {
+            //            NSLog(@"%@", jsVal);
+            _picIndex = jsVal;
+            // 展示图片
+            [self showBigPic];
+        }
+        JSValue *this = [JSContext currentThis];
+        NSLog(@"this: %@",this);
+    };
+#warning 未进行测试
+    // 获取网页中注入的跳转页面的JS方法
+    context[@"getURL"] = ^(){
+        NSArray *args = [JSContext currentArguments];
+        for (JSValue *jsVal in args) {
+            _url = jsVal.toString;
+            NSLog(@"%@", _url);
+            [self turnPageWithURL:_url];
+        }
+    };
     
+    // 登录事件
+    context[@"login"] = ^() { // 通过block回调获得h5传来的数据
+        LoginViewController * loginVC = [[LoginViewController alloc] init];
+        [self.navigationController pushViewController:loginVC animated:YES];
+        
+    };
 
 
 }

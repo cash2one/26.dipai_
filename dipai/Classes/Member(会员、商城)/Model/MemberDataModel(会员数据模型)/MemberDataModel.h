@@ -18,5 +18,7 @@
  *  平台列表
  */
 @property (nonatomic, strong) NSArray * list;
+// 为了绕过苹果审核添加的状态码
+@property (nonatomic, copy) NSString * stype;
 
 @end

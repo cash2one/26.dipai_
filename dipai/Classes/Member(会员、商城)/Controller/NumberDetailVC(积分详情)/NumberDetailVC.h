@@ -14,4 +14,6 @@
  可用积分
  */
 @property (nonatomic, copy) NSString * count_integral;
+// 当前可用积分
+@property (nonatomic, copy) NSString * num;
 @end

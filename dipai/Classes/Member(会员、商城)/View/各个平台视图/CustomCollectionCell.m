@@ -57,11 +57,20 @@
     _moreBtn = moreBtn;
 }
 
+- (void)setStype:(NSString *)stype{
+    
+    _stype = stype;
+}
+
 - (void)setModel:(PlatformModel *)model{
     
     _model = model;
     if ([_model.state isEqualToString:@"1"]) {
-        [_moreBtn setImage:[UIImage imageNamed:@"bangding"] forState:UIControlStateNormal];
+        if ([_stype isEqualToString:@"1"]) {
+            [_moreBtn setImage:[UIImage imageNamed:@"bangding"] forState:UIControlStateNormal];
+        }else{
+            [_moreBtn setImage:[UIImage imageNamed:@"chakan"] forState:UIControlStateNormal];
+        }
         self.userInteractionEnabled = YES;
     }else{
         [_moreBtn setImage:[UIImage imageNamed:@"jianshezhong"] forState:UIControlStateNormal];

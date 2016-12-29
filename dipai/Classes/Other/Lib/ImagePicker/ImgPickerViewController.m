@@ -43,6 +43,7 @@
 
 -(AssetGroupTableViewController *)rootVc{
     if (!_rootVc) {
+        // 这是一个UITableViewController
         _rootVc=[[AssetGroupTableViewController alloc]init];
         
         _rootVc.selectedPics = self.selectedPics;

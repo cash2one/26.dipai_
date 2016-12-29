@@ -109,7 +109,7 @@
     versionCell.titleLbl.text = @"当前版本";
     versionCell.titleLbl.font = Font16;
     versionCell.accessView.hidden = YES;
-    versionCell.versionLbl.text = @"2.2";
+    versionCell.versionLbl.text = @"2.2.0";
     versionCell.versionLbl.font = Font14;
     CGFloat versionX = 0;
     CGFloat versionY = CGRectGetMaxY(AppStoreCell.frame);
@@ -197,6 +197,7 @@
             break;
         case 2:
             NSLog(@"去评分....");
+            // https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8
             [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=1000553183&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8"]];
             break;
         case 3:

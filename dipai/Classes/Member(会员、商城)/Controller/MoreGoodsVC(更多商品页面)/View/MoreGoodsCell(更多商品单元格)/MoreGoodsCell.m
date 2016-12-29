@@ -82,6 +82,7 @@
     feVIPLbl.textColor = Color102;
     [self addSubview:feVIPLbl];
     _feVIPLbl = feVIPLbl;
+    feVIPLbl.hidden = YES;
     // 删除线
     UILabel * deleteLbl = [[UILabel alloc] init];
     deleteLbl.backgroundColor = Color102;
@@ -107,11 +108,31 @@
     [_picV sd_setImageWithURL:[NSURL URLWithString:_goodsModel.goods_img] placeholderImage:[UIImage imageNamed:@"123"]];
     // 标题
     _titleLbl.text = _goodsModel.goods_name;
-    NSMutableAttributedString * numStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", _goodsModel.shop_price]];
+    
+    NSMutableAttributedString * numStr = nil;
+    if ([_goodsModel.vip_price isEqualToString:@"0"]) {
+        
+        _feVIPLbl.hidden = YES;
+       numStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", _goodsModel.shop_price]];
+    }else{
+        _feVIPLbl.hidden = NO;
+        numStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", _goodsModel.vip_price]];
+         _feVIPLbl.text = _goodsModel.shop_price;
+    }
+    
     [numStr addAttribute:NSFontAttributeName value:Font12 range:NSMakeRange(0, 3)];
     _numLbl.attributedText = numStr;
     // 非会员积分
-    _feVIPLbl.text = @"2000";
+   
+//    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+//    NSString * cookieName = [defaults objectForKey:Cookie];
+//    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+//    NSLog(@"---用户迷宫%@,", cookieName);
+//    if (cookieName  || wxData) {
+//        _feVIPLbl.hidden = NO;
+//    }else{
+//        _feVIPLbl.hidden = YES;
+//    }
 }
 
 - (void)layoutSubviews{

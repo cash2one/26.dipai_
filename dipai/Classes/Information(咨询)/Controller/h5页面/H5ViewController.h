@@ -7,8 +7,8 @@
 //
 
 #import "NavigationHiddenVC.h"
-
-@interface H5ViewController : NavigationHiddenVC
+#import "DPWKWebView.h"
+@interface H5ViewController : DPWKWebView
 // 网页链接
 @property (nonatomic, copy) NSString * wapurl;
 @end

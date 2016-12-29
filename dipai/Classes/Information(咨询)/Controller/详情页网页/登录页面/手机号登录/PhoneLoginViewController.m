@@ -210,9 +210,10 @@
 //    NSLog(@"dic:%@", dic);
     [DataTool postWithStr:LoginURL parameters:dic success:^(id responseObject) {
         NSString * content = [responseObject objectForKey:@"content"];
+        NSString * state = responseObject[@"state"];
+        NSDictionary * dataDic = responseObject[@"data"];
         NSLog(@"登录获取的数据%@", responseObject);
-        [SVProgressHUD showErrorWithStatus:content];
-        if ([content isEqualToString:@"登录成功"]) {
+        if ([state isEqualToString:@"1"] && dataDic.count > 0) {
             [SVProgressHUD showSuccessWithStatus:@"登录成功"];
             NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
 //            NSLog(@"cookies:%@", cookies);
@@ -244,6 +245,9 @@
                 NSLog(@"PhoneLoginViewController的代理没有响应");
             }
             [self.navigationController popToRootViewControllerAnimated:YES];
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:content];
         }
         
     } failure:^(NSError * error) {

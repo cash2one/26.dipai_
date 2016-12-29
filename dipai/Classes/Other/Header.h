@@ -10,8 +10,8 @@
 #define Header_h
 /******************资讯页接口********************/
 // http://10.0.0.14:8080
-#define DipaiBaseURL @"http://dipaiapp.replays.net"
-//#define DipaiBaseURL @"http://dpapp.replays.net"
+//#define DipaiBaseURL @"http://dipaiapp.replays.net"
+#define DipaiBaseURL @"http://dpapp.replays.net"
 #define InformationURL @"/app/index/0/0/0"
 // http://dpapp.replays.net/
 //#define InformationURL @"http://dpapp.replays.net/app/index/0/0/0"
@@ -214,11 +214,14 @@
 #define MyOrderURL @"/app/order/list"
 //#define MyOrderURL @"http://dpapp.replays.net/app/order/list"
 // 客服接口
-#define ServiceURL @"http://dipaiapp.replays.net/html/list.html"
+#define ServiceURL @"/html/list.html"
 //#define ServiceURL @"http://dpapp.replays.net/html/list.html"
 // 弹窗接口
 #define PopViewURL @"/app/add/popup"
 //#define PopViewURL @"http://dpapp.replays.net/app/add/popup"
+//版本更新接口
+#define DiPaiUpdateURL @"/app/versioncode"
+//
 
 
 
@@ -241,6 +244,8 @@
 #define appStart @"appStart"
 // 点击的tabBar下标
 #define tabBarIndex @"tabBarIndex"
+// 会员中心数据
+#define DipaiMemberData @"DipaiMemberData"
 
 #define UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 

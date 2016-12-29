@@ -8,10 +8,8 @@
 
 #import "H5ViewController.h"
 #import <WebKit/WebKit.h>
+#import "LoginViewController.h"
 @interface H5ViewController ()<WKUIDelegate, WKNavigationDelegate>
-
-@property (nonatomic, strong) WKWebView * webView;
-@property (nonatomic, strong) UIProgressView * progressV;
 
 @end
 
@@ -21,16 +19,94 @@
     [super viewWillDisappear:YES];
     self.navigationController.navigationBarHidden = NO;
 }
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+//    [self.webView reload];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    
+    [super viewDidAppear:YES];
+    [self reload];
+}
+
+- (void)reload{
+    
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    NSString * cookieName = [defaults objectForKey:Cookie];
+    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+    if (cookieName  || wxData) {
+        NSLog(@"已登录..");
+    }else{
+        // 清除cookie
+        NSLog(@"未登录..");
+        if ([[[UIDevice currentDevice] systemVersion] intValue ] > 8) {
+            NSLog(@"iOS版本大于8.。。");
+            WKWebsiteDataStore *dateStore = [WKWebsiteDataStore defaultDataStore];
+            [dateStore fetchDataRecordsOfTypes:[WKWebsiteDataStore allWebsiteDataTypes]
+                             completionHandler:^(NSArray<WKWebsiteDataRecord *> * __nonnull records) {
+                                 for (WKWebsiteDataRecord *record  in records)
+                                 {
+                                     [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:record.dataTypes
+                                                                               forDataRecords:@[record]
+                                                                            completionHandler:^{
+                                                                                NSLog(@"Cookies for %@ deleted successfully",record.displayName);
+                                                                            }];
+                                 }
+                             }];
+        }
+        
+        NSSet *websiteDataTypes = [NSSet setWithArray:@[
+                                                        WKWebsiteDataTypeDiskCache,
+                                                        //                                                        WKWebsiteDataTypeOfflineWebApplicationCache,
+                                                        WKWebsiteDataTypeMemoryCache,
+                                                        //                                                        WKWebsiteDataTypeLocalStorage,
+                                                        WKWebsiteDataTypeCookies,
+                                                        WKWebsiteDataTypeSessionStorage,
+                                                        //                                                        WKWebsiteDataTypeIndexedDBDatabases,
+                                                        //                                                        WKWebsiteDataTypeWebSQLDatabases
+                                                        ]];
+        //你可以选择性的删除一些你需要删除的文件 or 也可以直接全部删除所有缓存的type
+        //NSSet *websiteDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+        NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+        [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:websiteDataTypes
+                                                   modifiedSince:dateFrom completionHandler:^{
+                                                       // code
+                                                   }];
+    }
+    
+    if (self.wapurl) {
+        // 在请求中添加cookie
+        // 在此处获取返回的cookie
+        NSMutableDictionary *cookieDic = [NSMutableDictionary dictionary];
+        NSMutableString *cookieValue = [NSMutableString stringWithFormat:@""];
+        NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (NSHTTPCookie *cookie in [cookieJar cookies]) {
+            [cookieDic setObject:cookie.value forKey:cookie.name];
+        }
+        
+        // cookie重复，先放到字典进行去重，再进行拼接
+        for (NSString *key in cookieDic) {
+            NSString *appendString = [NSString stringWithFormat:@"%@=%@;", key, [cookieDic valueForKey:key]];
+            [cookieValue appendString:appendString];
+        }
+        NSLog(@"%@", cookieValue);
+        NSMutableURLRequest * request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.wapurl]];
+        [request addValue:cookieValue forHTTPHeaderField:@"Cookie"];
+        NSLog(@"添加cookie");
+        [self.webView loadRequest:request];
+        
+    }
+
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
     [self setNavigationBar];
-    if (self.wapurl) {
-        // 显示网页
-        [self showWebView];
-    }
+   
 }
 
 - (void)setNavigationBar{
@@ -42,115 +118,67 @@
 
 - (void)showWebView{
     
-    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
-    // 设置偏好设置
-    config.preferences = [[WKPreferences alloc] init];
-    // 默认为0
-    config.preferences.minimumFontSize = 10;
-    // 默认认为YES
-    config.preferences.javaScriptEnabled = YES;
-    // 在iOS上默认为NO，表示不能自动通过窗口打开
-    config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
-    config.processPool = [[WKProcessPool alloc] init];
-    
-    // 通过JS与webview内容交互
-    config.userContentController = [[WKUserContentController alloc] init];
-    
-    // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
-    // 我们可以在WKScriptMessageHandler代理中接收到
-    //    [config.userContentController addScriptMessageHandler:self name:@"AppModel"];
-    
-    CGRect rect = CGRectMake(0, 64, WIDTH, HEIGHT - 64);
-    WKWebView * webView  = [[WKWebView alloc] initWithFrame:rect configuration:config];
-    //    webView.backgroundColor = [UIColor redColor];
-    [self.view addSubview:webView];
-    
-    webView.UIDelegate = self;
-    webView.navigationDelegate = self;
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.wapurl]]];
-    [webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
-    self.webView = webView;
-    
-    UIProgressView * progressV = [[UIProgressView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 8)];
-    progressV.backgroundColor = [UIColor blueColor];
-    progressV.tintColor = [UIColor redColor];
-    CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 1.5f);
-    progressV.transform = transform;//设定宽高
-    [self.view addSubview:progressV];
-    self.progressV = progressV;
-}
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
-    
-    self.progressV.progress = self.webView.estimatedProgress;
-    self.progressV.hidden = self.webView.estimatedProgress >= 1;
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.wapurl]]];
 }
 
-- (void)dealloc{
-    
-    [self.webView removeObserver:self forKeyPath:@"estimatedProgress"];
-}
 
 #pragma mark - WKNavigationDelegate
-// 页面开始加载时调用
-- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
+#pragma mark - WKScriptMessageHandler
+- (void)userContentController:(WKUserContentController *)userContentController
+      didReceiveScriptMessage:(WKScriptMessage *)message {
     
-}
-// 当内容开始返回时调用
-- (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation{
+    NSLog(@"body:%@", message.body);
+    NSDictionary * dic = message.body;
+    NSString * urlStr = dic[@"body"];
+    if ([message.name isEqualToString:@"downloadApp"]) {    // 打开外部链接
+        NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"%@",urlStr];
+        NSURL * url = [NSURL URLWithString:str];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
+            // 在9上不能运行
+        }else{
+            
+            NSLog(@"不能打开网页");
+        }
+    }
+    if ([message.name isEqualToString:@"getPhoneNum"]) {
+        NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",urlStr];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
+    }
+    if ([message.name isEqualToString:@"getURL"]) {
+        
+    }
+    if ([message.name isEqualToString:@"openHTML"]) {
+        [HttpTool GET:urlStr parameters:nil success:^(id responseObject) {
+            NSString * type = responseObject[@"type"];
+            NSString * wapurl = responseObject[@"content"];
+            if ([type isEqualToString:@"201"]) {
+                // 打开H5页面
+                H5ViewController * h5VC = [[H5ViewController alloc] init];
+                h5VC.wapurl = wapurl;
+                [self.navigationController pushViewController:h5VC animated:YES];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+    }
     
-}
-// 页面加载完成之后调用
-- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
-    
-}
-// 页面加载失败时调用
-- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation{
-    NSLog(@"失败...");
-}
-// 接收到服务器跳转请求之后调用
-- (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation{
-    NSLog(@"www");
-}
-// 在收到响应后，决定是否跳转
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler{
-    
-    NSLog(@"1------%@",navigationResponse.response.URL.absoluteString);
-    //允许跳转
-    decisionHandler(WKNavigationResponsePolicyAllow);
-    //不允许跳转
-    //decisionHandler(WKNavigationResponsePolicyCancel);
-}
-// 在发送请求之前，决定是否跳转
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
-    
-    NSLog(@"2------%@",navigationAction.request.URL.absoluteString);
-    //允许跳转
-    decisionHandler(WKNavigationActionPolicyAllow);
-    //不允许跳转
-    //    decisionHandler(WKNavigationActionPolicyCancel);
-}
-#pragma mark - WKUIDelegate
-// 创建一个新的WebView
-- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures{
-    return [[WKWebView alloc]init];
-}
-// 输入框
-- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(nullable NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString * __nullable result))completionHandler{
-    completionHandler(@"http");
-    
-    NSLog(@"－－－－－%@", prompt);
-}
-// 确认框
-- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL result))completionHandler{
-    completionHandler(YES);
-    NSLog(@"-----%@",message);
-}
-// 警告框
-- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler{
-    
-    completionHandler();
-    NSLog(@"3-----%@",message);
-    
+    if ([message.name isEqualToString:@"login"]) {
+        NSLog(@"login....");
+        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+        NSString * cookieName = [defaults objectForKey:Cookie];
+        NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+        if (cookieName  || wxData) {
+            NSLog(@"已登录...");
+        }else{
+            NSLog(@"未登录....");
+            //
+            
+            LoginViewController * loginVC = [[LoginViewController alloc] init];
+            UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+            [self presentViewController:loginNav animated:YES completion:nil];        }
+        
+    }
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -17,7 +17,7 @@
 @end
 
 @interface ShopCell : UITableViewCell
-
+// 
 @property (nonatomic, strong) ShopListModel * listModel;
 
 @property (nonatomic, assign) id <ShopCellDelegate> delegate;

@@ -112,7 +112,7 @@
             NSLog(@"---userInfo---%@", remoteNotification);
             _url = remoteNotification[@"1"];
             _notiMessage = remoteNotification[@"aps"][@"alert"];
-            if ([_notiMessage containsString:@"IOS"]) {    // 异地登录推送
+            if ([_notiMessage containsString:@"IOS"] || [_notiMessage containsString:@"Android"]) {    // 异地登录推送
                 [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
                     
                 } failure:^(NSError *error) {
@@ -216,7 +216,7 @@
     [UMessage setAutoAlert:NO];
     
     [UMessage didReceiveRemoteNotification:userInfo];
-    //    NSLog(@"---userInfo---%@", userInfo);
+    NSLog(@"---userInfo---%@", userInfo);
     NSString * string1 = userInfo[@"1"];
         NSLog(@"---string---%@", string1);
     _url = string1;
@@ -225,7 +225,7 @@
     if (application.applicationState == UIApplicationStateActive || application.applicationState == UIApplicationStateBackground) {
         
         NSLog(@"_notiMessage%@", _notiMessage);
-        if ([_notiMessage containsString:@"IOS"]) {    // 异地登录
+        if ([_notiMessage containsString:@"IOS"] || [_notiMessage containsString:@"Android"]) {    // 异地登录
             [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
                 
             } failure:^(NSError *error) {
@@ -249,7 +249,7 @@
                 NSLog(@"跳转时，AppDelegate的代理没有响应...");
             }
         }else{
-            if ([_notiMessage containsString:@"IOS"]) {    // 异地登录
+            if ([_notiMessage containsString:@"IOS"] || [_notiMessage containsString:@"Android"]) {    // 异地登录
                 [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
                     
                 } failure:^(NSError *error) {
@@ -279,7 +279,7 @@
         _url = str;
         _notiMessage = userInfo[@"aps"][@"alert"];
         NSLog(@"_notiMessage:%@", _notiMessage);
-        if ([_notiMessage containsString:@"IOS"]) {    // 异地登录推送
+        if ([_notiMessage containsString:@"IOS"] || [_notiMessage containsString:@"Android"]) {    // 异地登录推送
             [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
                 
             } failure:^(NSError *error) {
@@ -311,7 +311,7 @@
         _url = str;
         NSLog(@"后台");
         _notiMessage = userInfo[@"aps"][@"alert"];
-        if ([_notiMessage containsString:@"IOS"]) {    // 异地登录推送
+        if ([_notiMessage containsString:@"IOS"] || [_notiMessage containsString:@"Android"]) {    // 异地登录推送
             [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
                 
             } failure:^(NSError *error) {

@@ -26,5 +26,6 @@
 @property (nonatomic, assign) NSInteger * row;
 // 传递过来的平台模型
 @property (nonatomic, strong) PlatformModel * model;
+@property (nonatomic, copy) NSString * stype;
 @property (nonatomic, assign) id<CustomCollectionCellDelegate>delegate;
 @end

@@ -8,7 +8,7 @@
 
 #import "NavigationHiddenVC.h"
 #import <WebKit/WebKit.h>
-@interface DPWKWebView : NavigationHiddenVC
+@interface DPWKWebView : NavigationHiddenVC<WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, UIAlertViewDelegate>
 @property (nonatomic, strong) WKWebView * webView;
 
 @property (nonatomic, strong) UIProgressView * progressV;

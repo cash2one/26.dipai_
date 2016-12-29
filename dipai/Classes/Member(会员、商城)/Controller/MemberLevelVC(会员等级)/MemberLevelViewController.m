@@ -86,7 +86,7 @@
 - (void)getData{
     
     [DataTool getMemberLevelDataWithStr:MemberLevel parameters:nil success:^(id responseObject) {
-        
+//        NSLog(@"%@", responseObject);
         if ([responseObject isKindOfClass:[NSString class]]) {  // 获取数据失败
             
         }else{
@@ -99,6 +99,7 @@
             
             // 设置数据
             [self setData];
+           
         }
     } failure:^(NSError * error) {
         
@@ -106,10 +107,19 @@
     
     
     [DataTool getDetailLevelDataWithStr:DetailLevelURL parameters:nil success:^(id responseObject) {
+        NSLog(@"%@", responseObject);
         self.dataDic = responseObject;
-        [self setDataAgain];
+//        [self setDataAgain];
     } failure:^(NSError * error) {
         NSLog(@"获取等级详情出错：%@", error);
+    }];
+    
+    [HttpTool GET:BenifitsList parameters:nil success:^(id responseObject) {
+        NSLog(@"%@", responseObject);
+        NSDictionary * dataDic = responseObject[@"data"];
+        [self setDataAgainWithDic:dataDic];
+    } failure:^(NSError *error) {
+        
     }];
     
     // 获取积分等级
@@ -124,12 +134,13 @@
     
 //    NSLog(@"%f   %f", integral, allScore);
     CGFloat progress = (integral / allScore);
-    
-//    NSLog(@"%f", progress);
-    if (progress == 0) {
+//CGFloat progress = (1000 / allScore);
+    NSLog(@"%f", progress);
+    if (integral == 0) {
         
         self.progressView.progressTopGradientColor =[UIColor blackColor];
         self.progressView.progressBottomGradientColor = [UIColor blackColor];
+//        self.progressView.progressBottomGradientColor = [UIColor redColor];
     }else{
         self.progressView.progressTopGradientColor = [UIColor colorWithRed:187 / 255.f  green:89 / 255.f blue:255 / 255.f alpha:1];
         self.progressView.progressBottomGradientColor = [UIColor colorWithRed:68 / 252.f green:220 / 252.f blue:252 / 255.f alpha:1];
@@ -204,11 +215,15 @@
     }
 }
 
+ - (void)setDataAgainWithDic:(NSDictionary *)dic{
+     
+     NSString * text = self.dataDic[@"content"];
+     NSLog(@"%@", text);
+     _requestLbl.text = text;
+ }
 - (void)setDataAgain{
     
-    NSString * text = self.dataDic[@"content"];
-    NSLog(@"%@", text);
-    _requestLbl.text = text;
+    
 }
 
 - (void)viewDidLoad {
@@ -237,6 +252,7 @@
 - (void)seeNumDetail{
     NumberDetailVC * numDetailVC = [[NumberDetailVC alloc] init];
     numDetailVC.count_integral =  _levelModel.count_integral;
+    numDetailVC.num = self.num;
     [self.navigationController pushViewController:numDetailVC animated:YES];
     
 }
@@ -261,6 +277,7 @@
     [topV addSubview:progressV];
     _progressView = progressV;
     self.progressView.textColor = [UIColor colorWithRed:192/255.0 green:212/255.0 blue:195/255.0 alpha:0.0];
+//    self.progressView.textColor = [UIColor redColor];
     self.progressView.touchview.hidden = YES;
     self.progressView.triangleImageView.hidden = YES;
     // 开始颜色
@@ -306,7 +323,7 @@
     requestLbl.font = Font11;
     requestLbl.textAlignment = NSTextAlignmentCenter;
     requestLbl.textColor = Color178;
-    requestLbl.text = @"累计获取1000积分到达V1等级";
+    requestLbl.text = @"累计获取1000积分到达V1等级                 ";
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[NSFontAttributeName] = Font11;
     CGSize size = [requestLbl.text sizeWithAttributes:dic];
@@ -507,7 +524,7 @@
         requestLbl.font = Font11;
         requestLbl.textAlignment = NSTextAlignmentCenter;
         requestLbl.textColor = Color178;
-        NSMutableAttributedString * text =[[NSMutableAttributedString alloc] initWithString:@"累积获得1000经验达到V1等级"];
+        NSMutableAttributedString * text =[[NSMutableAttributedString alloc] initWithString:@"累积获取1000经验达到V1等级"];
         [text addAttribute:NSForegroundColorAttributeName value:RGBA(202, 156, 91, 1) range:NSMakeRange(12, 4)];
         requestLbl.attributedText = text;
         [showV addSubview:requestLbl];
@@ -539,7 +556,7 @@
         UILabel * dateLbl = [[UILabel alloc] init];
         dateLbl.text = [NSString stringWithFormat:@"有效期至%@", self.dataDic[@"date"]];
 #warning 假的数据
-        dateLbl.text = [NSString stringWithFormat:@"有效期"];
+//        dateLbl.text = [NSString stringWithFormat:@"有效期"];
         dateLbl.font = Font14;
         dateLbl.textColor = RGBA(202, 156, 91, 1);
         dateLbl.textAlignment = NSTextAlignmentCenter;
@@ -568,9 +585,9 @@
         firstContent.textColor = RGBA(202, 156, 91, 1);
         firstContent.font = Font10;
         [showV addSubview:firstContent];
-        //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
+                NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
 #warning 假数据
-        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
+//        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
         [content1 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
         firstContent.attributedText = content1;
         NSMutableDictionary * firstDic = [NSMutableDictionary dictionary];
@@ -592,10 +609,11 @@
         secondContent.textColor =RGBA(202, 156, 91, 1);
         secondContent.font = Font10;
         [showV addSubview:secondContent];
-        //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
+        
+        NSMutableAttributedString * content2 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content1"]];
 #warning 假数据
-        NSMutableAttributedString * content2 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
-        [content2 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
+//        NSMutableAttributedString * content2 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
+        [content2 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content2.length -4)];
         secondContent.attributedText = content2;
         NSMutableDictionary * secondDic = [NSMutableDictionary dictionary];
         secondDic[NSFontAttributeName] = Font10;
@@ -608,22 +626,27 @@
         thirdLbl.text = @"3.";
         thirdLbl.textColor = Color178;
         thirdLbl.font = Font10;
-        [showV addSubview:thirdLbl];
         UILabel * thirdContent = [[UILabel alloc] init];
         thirdContent.numberOfLines = 0;
         //        thirdContent.backgroundColor = [UIColor redColor];
         thirdContent.textColor = RGBA(202, 156, 91, 1);
         thirdContent.font = Font10;
-        [showV addSubview:thirdContent];
-        //        NSMutableAttributedString * content1 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content"]];
+        
+        NSMutableAttributedString * content3 = [[NSMutableAttributedString alloc] initWithString:self.dataDic[@"content2"]];
 #warning 假数据
-        NSMutableAttributedString * content3 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
-        [content3 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content1.length -4)];
-        thirdContent.attributedText = content3;
-        NSMutableDictionary * thirdDic = [NSMutableDictionary dictionary];
-        thirdDic[NSFontAttributeName] = Font10;
-        CGRect thirdRect = [content3 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
-        thirdContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, thirdY - 3 * IPHONE6_H_SCALE}, thirdRect.size};
+//        NSMutableAttributedString * content3 = [[NSMutableAttributedString alloc] initWithString:@"将阿萨德飞机离开发啦解放啦达到v2等级"];
+       
+        if (content3.length > 0) {
+            [showV addSubview:thirdLbl];
+             [showV addSubview:thirdContent];
+            [content3 addAttribute:NSForegroundColorAttributeName value:Color178 range:NSMakeRange(0, content3.length -4)];
+            thirdContent.attributedText = content3;
+            NSMutableDictionary * thirdDic = [NSMutableDictionary dictionary];
+            thirdDic[NSFontAttributeName] = Font10;
+            CGRect thirdRect = [content3 boundingRectWithSize:CGSizeMake(233 * IPHONE6_W_SCALE - 40 * IPHONE6_W_SCALE-27 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+            thirdContent.frame = (CGRect){{40 * IPHONE6_W_SCALE, thirdY - 3 * IPHONE6_H_SCALE}, thirdRect.size};
+        }
+        
         
     }
     

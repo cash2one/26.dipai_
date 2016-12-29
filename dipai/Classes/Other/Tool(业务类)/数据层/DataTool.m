@@ -1292,6 +1292,7 @@
         MemberDataModel * dataModel = [MemberDataModel objectWithKeyValues:dataDic];
         dataModel.user_info = dataDic[@"user_info"];
         dataModel.list = dataDic[@"list"];
+        dataModel.stype = responseObject[@"stype"];
         if (success) {
             success(dataModel);
         }
@@ -1331,7 +1332,7 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-//        NSLog(@"%@", responseObject);
+        NSLog(@"%@", responseObject);
         NSString * msg = responseObject[@"msg"];
         if ([msg isEqualToString:@"success"]) { // 登录
             
@@ -1438,7 +1439,7 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-//        NSLog(@"%@", responseObject);
+        NSLog(@"%@", responseObject);
         NSArray * dicArr = responseObject[@"data"];
         NSString * page = responseObject[@"page"];
         
@@ -1472,7 +1473,7 @@
 + (void)getShoppingMallDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
-        
+        NSLog(@"%@", responseObject);
         NSDictionary * dataDic = responseObject[@"data"];
         
         // 字典数组转模型数组
@@ -1641,7 +1642,8 @@
         
 //        NSLog(@"%@", responseObject);
         NSArray  * dataArr = responseObject[@"data"];
-        if (dataArr.count > 0) {
+        NSLog(@"%@", [responseObject[@"data"] class]);
+        if (![responseObject[@"data"] isKindOfClass:[NSNull class]]) {  // 如果没有数据返回的是空
             // 字典数组转模型数组
             NSArray * modelArr = [OrderModel objectArrayWithKeyValuesArray:dataArr];
             if (success) {

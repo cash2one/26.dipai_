@@ -254,7 +254,7 @@
 #pragma mark --- 加载新的数据
 - (void)loadNewData{
     // 如果网络有问题结束刷新状态
-    [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
+//    [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
     
     NSString * url = [NSString stringWithFormat:@"%@/%@/%@", CommentsURL, self.iD, self.type];
 //    NSLog(@"%@", url);

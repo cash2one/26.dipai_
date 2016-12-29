@@ -13,14 +13,24 @@
 @end
 
 @implementation BenifitsArticleVC
-
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    NSString * url = nil;
+    if ([DipaiLiyuURL hasPrefix:@"http"]) {
+        url = DipaiLiyuURL;
+    }else{
+        url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, DipaiLiyuURL];
+    }
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self setNavigationBar];
-    [self loadWebView];
+//    [self loadWebView];
 }
 
 - (void)setNavigationBar{

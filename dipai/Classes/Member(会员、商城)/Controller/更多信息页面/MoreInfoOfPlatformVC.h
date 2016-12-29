@@ -7,8 +7,11 @@
 //
 
 #import "NavigationHiddenVC.h"
-
-@interface MoreInfoOfPlatformVC : NavigationHiddenVC
+#import "DPWKWebView.h"
+@interface MoreInfoOfPlatformVC : DPWKWebView
+// 状态码1:正常  2:假页面
+@property (nonatomic, copy) NSString * stype;
 // 平台绑定地址
 @property (nonatomic, copy) NSString * url;
+
 @end

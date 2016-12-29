@@ -322,6 +322,7 @@
 		C1DFC1371D19557200DDBC94 /* MineController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DFC1361D19557200DDBC94 /* MineController.m */; };
 		C1DFC13A1D1956BB00DDBC94 /* ClickView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DFC1391D1956BB00DDBC94 /* ClickView.m */; };
 		C1E2C1391DC9D55000DF133C /* ImageBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E2C1381DC9D55000DF133C /* ImageBrowserView.m */; };
+		C1E355391E0D08C1002EA3CC /* DPWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E355381E0D08C1002EA3CC /* DPWebView.m */; };
 		C1E465151DC1D3B4008A2791 /* NotifationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E465141DC1D3B4008A2791 /* NotifationCell.m */; };
 		C1E5F2D11DE82F0000F556AF /* UIImage+extend.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F2D01DE82F0000F556AF /* UIImage+extend.m */; };
 		C1E5F7D11CEBFFC2008A8A97 /* InfomationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5F7D01CEBFFC2008A8A97 /* InfomationModel.m */; };
@@ -404,7 +405,6 @@
 		C1EFBA8D1CEF14FE0066C4FF /* DataBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C1EFBA8C1CEF14FE0066C4FF /* DataBase.m */; };
 		C1F03B1C1DB8B0A700DDDBB0 /* MemberBenefitCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F03B1B1DB8B0A700DDDBB0 /* MemberBenefitCell.m */; };
 		C1F03B201DB8B65600DDDBB0 /* MemberBeneCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F03B1F1DB8B65600DDDBB0 /* MemberBeneCellModel.m */; };
-		C1F0CF4D1E00092800183E6A /* NextServerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F0CF4C1E00092800183E6A /* NextServerVC.m */; };
 		C1F10BB41D260B6200EF2F98 /* MyReplyFrameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F10BB31D260B6200EF2F98 /* MyReplyFrameModel.m */; };
 		C1F10BB81D260BB100EF2F98 /* MyReplyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F10BB71D260BB100EF2F98 /* MyReplyModel.m */; };
 		C1F10BBC1D260BEB00EF2F98 /* MyReplyCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F10BBB1D260BEB00EF2F98 /* MyReplyCell.m */; };
@@ -1079,6 +1079,8 @@
 		C1DFC1391D1956BB00DDBC94 /* ClickView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClickView.m; sourceTree = "<group>"; };
 		C1E2C1371DC9D55000DF133C /* ImageBrowserView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageBrowserView.h; sourceTree = "<group>"; };
 		C1E2C1381DC9D55000DF133C /* ImageBrowserView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageBrowserView.m; sourceTree = "<group>"; };
+		C1E355371E0D08C1002EA3CC /* DPWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPWebView.h; sourceTree = "<group>"; };
+		C1E355381E0D08C1002EA3CC /* DPWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DPWebView.m; sourceTree = "<group>"; };
 		C1E465131DC1D3B4008A2791 /* NotifationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotifationCell.h; sourceTree = "<group>"; };
 		C1E465141DC1D3B4008A2791 /* NotifationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotifationCell.m; sourceTree = "<group>"; };
 		C1E5F2CF1DE82F0000F556AF /* UIImage+extend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+extend.h"; sourceTree = "<group>"; };
@@ -1246,8 +1248,6 @@
 		C1F03B1B1DB8B0A700DDDBB0 /* MemberBenefitCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberBenefitCell.m; sourceTree = "<group>"; };
 		C1F03B1E1DB8B65600DDDBB0 /* MemberBeneCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberBeneCellModel.h; sourceTree = "<group>"; };
 		C1F03B1F1DB8B65600DDDBB0 /* MemberBeneCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberBeneCellModel.m; sourceTree = "<group>"; };
-		C1F0CF4B1E00092800183E6A /* NextServerVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NextServerVC.h; sourceTree = "<group>"; };
-		C1F0CF4C1E00092800183E6A /* NextServerVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NextServerVC.m; sourceTree = "<group>"; };
 		C1F10BB21D260B6200EF2F98 /* MyReplyFrameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyReplyFrameModel.h; sourceTree = "<group>"; };
 		C1F10BB31D260B6200EF2F98 /* MyReplyFrameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyReplyFrameModel.m; sourceTree = "<group>"; };
 		C1F10BB61D260BB100EF2F98 /* MyReplyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyReplyModel.h; sourceTree = "<group>"; };
@@ -3122,8 +3122,6 @@
 			children = (
 				C194018F1DC0B8F9009FF75A /* ServerVC.h */,
 				C19401901DC0B8F9009FF75A /* ServerVC.m */,
-				C1F0CF4B1E00092800183E6A /* NextServerVC.h */,
-				C1F0CF4C1E00092800183E6A /* NextServerVC.m */,
 			);
 			name = "ServerVC(客服页面)";
 			path = "Controller/ServerVC(客服页面)";
@@ -3843,6 +3841,7 @@
 				C1DC613F1D0E5B5A00217A38 /* BaseViewController.m */,
 				C106888A1DAF9FD800E13D73 /* NavigationHiddenVC.h */,
 				C106888B1DAF9FD800E13D73 /* NavigationHiddenVC.m */,
+				C1E355361E0D08A3002EA3CC /* UIWebView基类 */,
 				C192CA151E0A7B8E00E7B8A9 /* 加载网页基类(礼遇条款之后) */,
 			);
 			path = "BaseVC(基控制器)";
@@ -3964,6 +3963,15 @@
 				C1E2C1381DC9D55000DF133C /* ImageBrowserView.m */,
 			);
 			path = "图片浏览器";
+			sourceTree = "<group>";
+		};
+		C1E355361E0D08A3002EA3CC /* UIWebView基类 */ = {
+			isa = PBXGroup;
+			children = (
+				C1E355371E0D08C1002EA3CC /* DPWebView.h */,
+				C1E355381E0D08C1002EA3CC /* DPWebView.m */,
+			);
+			path = "UIWebView基类";
 			sourceTree = "<group>";
 		};
 		C1E465111DC1D39F008A2791 /* View */ = {
@@ -5147,7 +5155,6 @@
 				C1ECB1F81CF83F730002CBF6 /* ResetPasswordViewController.m in Sources */,
 				C1F989941DB08E96009018D7 /* OrderDetailVC.m in Sources */,
 				C1EFBA751CEF14790066C4FF /* NSManagedObject+MagicalRecord.m in Sources */,
-				C1F0CF4D1E00092800183E6A /* NextServerVC.m in Sources */,
 				C1079F6D1D82971B0055C2C7 /* ModelOfPoker.m in Sources */,
 				C1C63DF41DC332E800769E22 /* NumberDetailCell.m in Sources */,
 				C1F03B1C1DB8B0A700DDDBB0 /* MemberBenefitCell.m in Sources */,
@@ -5470,6 +5477,7 @@
 				C1E6BDDD1D1A8FE30065DF9C /* SectionVC.m in Sources */,
 				C14DB5921CF2A7BD007F69CA /* NewsList+CoreDataProperties.m in Sources */,
 				C1D97E181D11710C00A8DA64 /* ClubRecommendVC.m in Sources */,
+				C1E355391E0D08C1002EA3CC /* DPWebView.m in Sources */,
 				C1E5F80F1CEC5667008A8A97 /* MJRefreshAutoGifFooter.m in Sources */,
 				C12F9E551CDA111C003CC7FC /* PhotoModel.m in Sources */,
 				C1C0497B1CFC3D6400389E7D /* SettingViewController.m in Sources */,
