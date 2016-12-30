@@ -39,7 +39,8 @@
 
 // 我的牌谱页面
 #import "MyPokersVC.h"
-@interface ReplyPostVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte>
+#import "TZImagePickerController.h"
+@interface ReplyPostVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte, TZImagePickerControllerDelegate>
 
 @end
 
@@ -431,18 +432,22 @@
             __block typeof(self) weakSelf = self;
             _pictureView.Commplete = ^{ //跳转到相册
                 if (self.imagesArr.count < 9) {
-                    
                     NSLog(@"再次跳转到相册。。。");
-                    
-                    ImgPickerViewController* vc=[[ImgPickerViewController alloc]initWithSelectedPics:weakSelf.imagesArr.count];
-                    
-                    NSLog(@"0已选图片数：%lu", weakSelf.imagesArr.count);
-                    
-                    [weakSelf presentViewController:vc animated:YES completion:nil];
-                    [vc setSelectOriginals:^(NSArray * Originals) {
-                        [weakSelf.imagesArr addObjectsFromArray:Originals];
-                        _pictureView.dataSource = weakSelf.imagesArr;
+                    TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:9 columnNumber:4 delegate:weakSelf pushPhotoPickerVc:YES];
+                    imagePickerVc.allowTakePicture = NO;
+                    __weak typeof (imagePickerVc) imagePicker = imagePickerVc;
+                    [imagePicker setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
+                        [weakSelf.imagesArr addObjectsFromArray:photos];
+                        _pictureView.dataSource = self.imagesArr;
                     }];
+                    
+                    [self presentViewController:imagePickerVc animated:YES completion:nil];
+                    /*
+                     [vc setSelectOriginals:^(NSArray * Originals) {
+                     [weakSelf.imagesArr addObjectsFromArray:Originals];
+                     _pictureView.dataSource = weakSelf.imagesArr;
+                     }];
+                     */
                 }else{
                     [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
                 }
@@ -493,7 +498,35 @@
 - (void)selectPic{
     
     NSLog(@"跳转到相册....");
+    TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:9 columnNumber:4 delegate:self pushPhotoPickerVc:YES];
+    imagePickerVc.allowTakePicture = NO;
+    [self presentViewController:imagePickerVc animated:YES completion:nil];
+    __weak typeof (imagePickerVc) imagePicker = imagePickerVc;
+    [imagePickerVc setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
+        
+        NSLog(@"选择图片完成之后...");
+        self.imagesArr = (NSMutableArray *)photos;
+        if (!_pictureView) {
+            _pictureView = [X_SelectPicView shareSelectPicView];
+            _pictureView.delegate = self;
+            __block typeof(self) weakSelf = self;
+            _pictureView.Commplete = ^{ //跳转到相册
+                if (self.imagesArr.count < 9) {
+                    [weakSelf presentViewController:imagePicker animated:YES completion:nil];
+                }else{
+                    [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
+                }
+                
+            };
+            
+            [self.view addSubview:_pictureView];
+        }
+        
+        _pictureView.dataSource = self.imagesArr;
+    }];
     
+ 
+    /*
     if (self.imagesArr.count <9) {
         
         ImgPickerViewController* vc=[[ImgPickerViewController alloc]init];
@@ -544,6 +577,7 @@
     }else{
         [SVProgressHUD showErrorWithStatus:@"最多选九张图片"];
     }
+     */
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info

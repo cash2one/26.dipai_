@@ -13,5 +13,53 @@
             stopOnStyle = "0">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "dipai/Classes/Community(&#x793e;&#x533a;)/Controller/SectionVC(&#x6a21;&#x5757;&#x89c6;&#x56fe;)/SendVC(&#x53d1;&#x5e03;&#x9875;&#x9762;)/SendVC.m"
+            timestampString = "504699045.44442"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "643"
+            endingLineNumber = "643"
+            landmarkName = "-selectPic"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "dipai/Classes/Community(&#x793e;&#x533a;)/Controller/SectionVC(&#x6a21;&#x5757;&#x89c6;&#x56fe;)/SendVC(&#x53d1;&#x5e03;&#x9875;&#x9762;)/SendVC.m"
+            timestampString = "504699162.083355"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "652"
+            endingLineNumber = "652"
+            landmarkName = "-selectPic"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "dipai/Classes/Community(&#x793e;&#x533a;)/Controller/SectionVC(&#x6a21;&#x5757;&#x89c6;&#x56fe;)/SendVC(&#x53d1;&#x5e03;&#x9875;&#x9762;)/SendVC.m"
+            timestampString = "504699151.546926"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "649"
+            endingLineNumber = "649"
+            landmarkName = "-selectPic"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

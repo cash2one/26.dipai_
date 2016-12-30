@@ -7,17 +7,64 @@
 //
 
 #import "DPWKWebView.h"
-
-@interface DPWKWebView ()<WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler>
-
+#import "H5ViewController.h"
+// 登录页面
+#import "LoginViewController.h"
+@interface DPWKWebView ()
 @end
 
 @implementation DPWKWebView
 
+
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    /*
+     
+     WKWebsiteDataTypeDiskCache,
+     
+     WKWebsiteDataTypeOfflineWebApplicationCache,
+     
+     WKWebsiteDataTypeMemoryCache,
+     
+     WKWebsiteDataTypeLocalStorage,
+     
+     WKWebsiteDataTypeCookies,
+     
+     WKWebsiteDataTypeSessionStorage,
+     
+     WKWebsiteDataTypeIndexedDBDatabases,
+     
+     WKWebsiteDataTypeWebSQLDatabases
+     
+     */
+    
+    NSArray * types = @[WKWebsiteDataTypeMemoryCache, WKWebsiteDataTypeDiskCache];
+    NSSet *websiteDataTypes = [NSSet setWithArray:types];
+    
+    //// All kinds of data
+    
+    //NSSet *websiteDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+    
+    //// Date from
+    
+    NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+    
+    //// Execute
+    
+    [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:websiteDataTypes modifiedSince:dateFrom completionHandler:^{
+        
+        // Done
+        
+    }];
+    
+    
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
+    self.naviBar.titleStr = @"";
     [self addWebView];
     [self addProgressView];
 }
@@ -38,7 +85,11 @@
     config.userContentController = [[WKUserContentController alloc] init];
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
     // 我们可以在WKScriptMessageHandler代理中接收到
-//    [config.userContentController addScriptMessageHandler:self name:@"downloadApp"];
+    [config.userContentController addScriptMessageHandler:self name:@"downloadApp"];    // 打开外部链接
+    [config.userContentController addScriptMessageHandler:self name:@"getPhoneNum"];    // 打电话
+    [config.userContentController addScriptMessageHandler:self name:@"getURL"]; // 打开内部网页
+    [config.userContentController addScriptMessageHandler:self name:@"openHTML"];   // 打开另一个HTML
+    [config.userContentController addScriptMessageHandler:self name:@"login"];   // 登录
     CGRect rect = CGRectMake(0, 64, WIDTH, HEIGHT - 64);
     WKWebView * webView  = [[WKWebView alloc] initWithFrame:rect configuration:config];
     [self.view addSubview:webView];
@@ -123,18 +174,28 @@
 - (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL result))completionHandler{
     completionHandler(YES);
     NSLog(@"-----%@",message);
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    [self presentViewController:alert animated:YES completion:NULL];
 }
 // 警告框
 - (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler{
     //
     completionHandler();
     NSLog(@"3-----%@",message);
-    UIAlertController * alertVC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
-    }];
-    [alertVC addAction:OK];
-    [self presentViewController:alertVC animated:YES completion:nil];
+    UIAlertView * alertV = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+    [alertV show];
+//    UIAlertController * alertVC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+//    UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//        
+//    }];
+//    [alertVC addAction:OK];
+//    [self presentViewController:alertVC animated:YES completion:nil];
     
 }
 
@@ -142,8 +203,58 @@
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message {
     
-    NSLog(@"message:%@", message);
-
+    NSLog(@"body:%@", message.body);
+    NSDictionary * dic = message.body;
+    NSString * urlStr = dic[@"body"];
+    if ([message.name isEqualToString:@"downloadApp"]) {    // 打开外部链接
+        NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"%@",urlStr];
+        NSURL * url = [NSURL URLWithString:str];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
+            // 在9上不能运行
+        }else{
+            
+            NSLog(@"不能打开网页");
+        }
+    }
+    if ([message.name isEqualToString:@"getPhoneNum"]) {
+        NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",urlStr];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
+    }
+    if ([message.name isEqualToString:@"getURL"]) {
+        
+    }
+    if ([message.name isEqualToString:@"openHTML"]) {
+        [HttpTool GET:urlStr parameters:nil success:^(id responseObject) {
+            NSString * type = responseObject[@"type"];
+            NSString * wapurl = responseObject[@"content"];
+            if ([type isEqualToString:@"201"]) {
+                // 打开H5页面
+                H5ViewController * h5VC = [[H5ViewController alloc] init];
+                h5VC.wapurl = wapurl;
+                [self.navigationController pushViewController:h5VC animated:YES];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+    }
+    
+    if ([message.name isEqualToString:@"login"]) {
+        NSLog(@"login....");
+        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+        NSString * cookieName = [defaults objectForKey:Cookie];
+        NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+        if (cookieName  || wxData) {
+            NSLog(@"已登录...");
+        }else{
+            NSLog(@"未登录....");
+            //
+            
+            LoginViewController * loginVC = [[LoginViewController alloc] init];
+            UINavigationController * loginNav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+            [self presentViewController:loginNav animated:YES completion:nil];        }
+        
+    }
 }
 
 

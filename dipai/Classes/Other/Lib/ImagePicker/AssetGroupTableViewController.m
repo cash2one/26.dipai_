@@ -11,7 +11,7 @@
 #import "AssetGroupTableViewCell.h"
 #import "ImgSelectCollectionViewController.h"
 
-
+#import <Photos/Photos.h>
 @interface AssetGroupTableViewController ()
 
 @property (nonatomic,strong) ALAssetsLibrary *assetsLibrary;
@@ -26,14 +26,25 @@
     }
     return _assetsLibrary;
 }
+
+- (void)loadPH{
+    
+   
+}
+
 - (NSMutableArray *)groups{
     if (_groups == nil) {
         _groups = [NSMutableArray array];
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            // 选择类型
             [self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
                 if(group){
                     // group：分组的相册
+                    NSLog(@"%lu", [group numberOfAssets]);
+                    ALAssetsFilter * filter = [ALAssetsFilter allPhotos];
+                    [group setAssetsFilter:filter];
+                    NSLog(@"%lu", [group numberOfAssets]);
                     if ([group numberOfAssets]>0){
                      [_groups addObject:group];
                     }

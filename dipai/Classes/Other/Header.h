@@ -10,8 +10,8 @@
 #define Header_h
 /******************资讯页接口********************/
 // http://10.0.0.14:8080
-//#define DipaiBaseURL @"http://dipaiapp.replays.net"
-#define DipaiBaseURL @"http://dpapp.replays.net"
+#define DipaiBaseURL @"http://dipaiapp.replays.net"
+//#define DipaiBaseURL @"http://dpapp.replays.net"
 #define InformationURL @"/app/index/0/0/0"
 // http://dpapp.replays.net/
 //#define InformationURL @"http://dpapp.replays.net/app/index/0/0/0"

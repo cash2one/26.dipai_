@@ -37,7 +37,8 @@
 
 // 相册选择器
 #import "ImgPickerViewController.h"
-@interface SendVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte>
+#import "TZImagePickerController.h"
+@interface SendVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte, TZImagePickerControllerDelegate>
 
 {
     NSString * _previousTextFieldContent;
@@ -571,18 +572,22 @@
             __block typeof(self) weakSelf = self;
             _pictureView.Commplete = ^{ //跳转到相册
                 if (self.imagesArr.count < 9) {
-                    
                     NSLog(@"再次跳转到相册。。。");
+                    TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:9 columnNumber:4 delegate:weakSelf pushPhotoPickerVc:YES];
+                    imagePickerVc.allowTakePicture = NO;
+                    __weak typeof (imagePickerVc) imagePicker = imagePickerVc;
+                    [imagePicker setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
+                        [weakSelf.imagesArr addObjectsFromArray:photos];
+                        _pictureView.dataSource = self.imagesArr;
+                    }];
                     
-                    ImgPickerViewController* vc=[[ImgPickerViewController alloc]initWithSelectedPics:weakSelf.imagesArr.count];
-                    
-                    NSLog(@"0已选图片数：%lu", weakSelf.imagesArr.count);
-                    
-                    [weakSelf presentViewController:vc animated:YES completion:nil];
+                    [self presentViewController:imagePickerVc animated:YES completion:nil];
+                    /*
                     [vc setSelectOriginals:^(NSArray * Originals) {
                         [weakSelf.imagesArr addObjectsFromArray:Originals];
                         _pictureView.dataSource = weakSelf.imagesArr;
                     }];
+                     */
                 }else{
                     [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
                 }
@@ -607,10 +612,65 @@
 }
 
 #pragma mark ---- 选择图片的事件
+#pragma mark - TZImagePickerControllerDelegate
+
+/// User click cancel button
+/// 用户点击了取消
+- (void)tz_imagePickerControllerDidCancel:(TZImagePickerController *)picker {
+     NSLog(@"cancel");
+}
+// 这个照片选择器会自己dismiss，当选择器dismiss的时候，会执行下面的代理方法
+// 如果isSelectOriginalPhoto为YES，表明用户选择了原图
+// 你可以通过一个asset获得原图，通过这个方法：[[TZImageManager manager] getOriginalPhotoWithAsset:completion:]
+// photos数组里的UIImage对象，默认是828像素宽，你可以通过设置photoWidth属性的值来改变它
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto {
+    NSLog(@"1111");
+}
+
+// 如果用户选择了一个视频，下面的handle会被执行
+// 如果系统版本大于iOS8，asset是PHAsset类的对象，否则是ALAsset类的对象
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingVideo:(UIImage *)coverImage sourceAssets:(id)asset {
+
+}
+
+// 如果用户选择了一个gif图片，下面的handle会被执行
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingGifImage:(UIImage *)animatedImage sourceAssets:(id)asset {
+
+}
+
 - (void)selectPic{
     
     NSLog(@"跳转到相册....");
+    TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:9 columnNumber:4 delegate:self pushPhotoPickerVc:YES];
+    imagePickerVc.allowTakePicture = NO;
+    [self presentViewController:imagePickerVc animated:YES completion:nil];
+     __weak typeof (imagePickerVc) imagePicker = imagePickerVc;
     
+    NSLog(@"图片选择器回调");
+    [imagePickerVc setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
+        
+        NSLog(@"选择图片完成之后...");
+        self.imagesArr = (NSMutableArray *)photos;
+        
+        NSLog(@"_pictureView:%@", _pictureView);
+        if (!_pictureView) {
+            _pictureView = [X_SelectPicView shareSelectPicView];
+            _pictureView.delegate = self;
+            __block typeof(self) weakSelf = self;
+            _pictureView.Commplete = ^{ //跳转到相册
+                if (self.imagesArr.count < 9) {
+                    [weakSelf presentViewController:imagePicker animated:YES completion:nil];
+                }else{
+                    [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
+                }
+            };
+            
+            [self.view addSubview:_pictureView];
+        }
+        
+        _pictureView.dataSource = self.imagesArr;
+    }];
+    /*
     NSArray * origainals = [NSArray array];
     _Originals = origainals;
     if (self.imagesArr.count <9) {
@@ -660,7 +720,7 @@
     }else{
         [SVProgressHUD showErrorWithStatus:@"最多选九张图片"];
     }
-    
+    */
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
