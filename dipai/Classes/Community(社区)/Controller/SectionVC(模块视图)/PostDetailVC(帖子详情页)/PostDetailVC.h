@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface PostDetailVC : UIViewController
+#import "NavigationHiddenVC.h"
+@interface PostDetailVC : NavigationHiddenVC
 /**
  *  详情页接口
  */
@@ -18,5 +18,6 @@
  *  从个人主页跳过来的时候tableView高度为64
  */
 @property (nonatomic, assign) int height;
+@property (nonatomic, copy) NSString * heightStr;
 
 @end

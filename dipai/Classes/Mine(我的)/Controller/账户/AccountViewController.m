@@ -66,8 +66,6 @@
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
     // 每次进入页面都要进行刷新，昵称、头像、密码随时可能被修改
-    
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -96,11 +94,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor colorWithRed:244 / 255.0 green:244 / 255.0 blue:244 / 255.0 alpha:1];
-    
     [self setNavigationBar];
-    
     [self createUI];
-    
     AppDelegate * delegate =  (AppDelegate*)[[UIApplication sharedApplication] delegate];
     delegate.delegate = self;
 
@@ -108,26 +103,18 @@
 
 #pragma mark --- 设置导航条
 - (void)setNavigationBar {
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
-    
-    // 左侧按钮
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
-    // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:38/2];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"帐号管理";
-    self.navigationItem.titleView = titleLabel;
-}
-#pragma mark --- 返回
-- (void)returnBack{
-    [self.navigationController popViewControllerAnimated:YES];
+    self.naviBar.titleStr = @"帐号管理";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.titleLbl.textColor = [UIColor blackColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark --- 搭建UI
 - (void)createUI{
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 110*4/2*IPHONE6_H_SCALE) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 110*4/2*IPHONE6_H_SCALE) style:UITableViewStylePlain];
     self.tableView.backgroundColor = [UIColor colorWithRed:244 / 255.0 green:244 / 255.0 blue:244 / 255.0 alpha:1];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 //    self.tableView.scrollEnabled = NO;
@@ -136,59 +123,14 @@
     self.automaticallyAdjustsScrollViewInsets = YES;
     [self.view addSubview:self.tableView];
     
-    UIView * headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 28 / 2 * IPHONE6_H_SCALE)];
+    UIView * headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 28 / 2 * IPHONE6_H_SCALE)];
     headerView.backgroundColor = [UIColor colorWithRed:244 / 255.0 green:244 / 255.0 blue:244 / 255.0 alpha:1];
     
     self.tableView.tableHeaderView = headerView;
     
     NSArray * array = @[@"头像", @"昵称", @"绑定微信", @"绑定手机"];
     self.dataSource = [NSMutableArray arrayWithArray:array];
-    
-    
-    // 登录按钮被移动到了设置界面
-//    UIButton * outBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    CGFloat btnX = Margin40 * IPHONE6_W_SCALE;
-//    CGFloat btnY = CGRectGetMaxY(self.tableView.frame) + Margin70 * IPHONE6_H_SCALE;
-//    CGFloat btnW = WIDTH - 2 * btnX;
-//    CGFloat btnH = Margin100 * IPHONE6_H_SCALE;
-//    outBtn.frame = CGRectMake(btnX, btnY, btnW, btnH);
-//    [outBtn setImage:[UIImage imageNamed:@"tuichudenglu"] forState:UIControlStateNormal];
-//    [outBtn setBackgroundImage:[UIImage imageNamed:@"tuichudenglu"] forState:UIControlStateNormal];
-//    [outBtn setTitle:@"退出登录" forState:UIControlStateNormal];
-//    outBtn.layer.masksToBounds = YES;
-//    outBtn.layer.cornerRadius = 4;
-//    outBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
-//    outBtn.backgroundColor = RGBA(225, 10, 24, 1);
-//    [outBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//    outBtn.titleLabel.font = Font17;
-//    [outBtn addTarget:self action:@selector(outLogin) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:outBtn];
-}
 
-#pragma mark --- 退出的点击事件
-- (void)outLogin{
-
-//    [self deleteCookie];
-//    
-//    [self.navigationController popViewControllerAnimated:YES];
-}
-#pragma mark --- 删除cookie
-- (void)deleteCookie
-{
-//    NSLog(@"============删除cookie===============");
-//    NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-//    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-//    
-//    //删除cookie
-//    for (NSHTTPCookie *tempCookie in cookies) {
-//        [cookieStorage deleteCookie:tempCookie];
-//    }
-//    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-//    [defaults removeObjectForKey:Cookie];
-//    [defaults removeObjectForKey:Phone];
-//    [defaults removeObjectForKey:User];
-//    [defaults removeObjectForKey:WXUser];
-//    [SVProgressHUD showSuccessWithStatus:@"退出成功"];
 }
 
 #pragma mark --- UITableViewDataSource
@@ -404,37 +346,53 @@
         AFHTTPRequestOperationManager * manager = [AFHTTPRequestOperationManager manager];
         manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
         [SVProgressHUD show];
-        [manager POST:ChangeAccountURL parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-            
-            /**
-             *  FileData:要上传文件的二进制数据
-             name:上传参数名称
-             fileName:上传到服务器的文件名称
-             mimeType:文件类型
-             */
-            
-//                NSData * data = UIImagePNGRepresentation(image);
-//            NSData * data = UIImageJPEGRepresentation(image, 0.5);
-            UIImage * image1 = [image rotateImage];
-            NSData * data = UIImagePNGRepresentation(image1);
-            NSString * name = [NSString stringWithFormat:@"face"];
-            NSString * fileName = [NSString stringWithFormat:@"image.jpeg"];
-            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
-            [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
-            [SVProgressHUD showWithStatus:@"上传中"];
-            
-        } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-            
-            NSLog(@"上传图片成功---:%@", responseObject);
-            [self getData];
-            [SVProgressHUD showSuccessWithStatus:@"上传成功"];
-            
-        } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-//            [SVProgressHUD showErrorWithStatus:@"上传失败"];
-            
-            NSLog(@"上传图片失败：%@", error);
-            [SVProgressHUD showErrorWithStatus:@"上传失败"];
-        }];
+        NSString * url = nil;
+        if (![ChangeAccountURL hasPrefix:@"http"]) {
+           url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, ChangeAccountURL];
+        }else{
+            url = ChangeAccountURL;
+        }
+       [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+           
+           NSString * state = responseObject[@"state"];
+           if ([state isEqualToString:@"96"]) {
+               NSString * message = responseObject[@"content"];
+               UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+               UIAlertAction * action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                   // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                   NSLog(@"退出登录...");
+                   [self.navigationController popToRootViewControllerAnimated:YES];
+                   [OutLoginTool outLoginAction];
+                   
+               }];
+               [alertC addAction:action];
+               [self.navigationController presentViewController:alertC animated:YES completion:nil];
+           }else{
+               [manager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                   UIImage * image1 = [image rotateImage];
+                   NSData * data = UIImagePNGRepresentation(image1);
+                   NSString * name = [NSString stringWithFormat:@"face"];
+                   NSString * fileName = [NSString stringWithFormat:@"image.jpeg"];
+                   NSString * mimeType = [NSString stringWithFormat:@"image/png"];
+                   [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
+                   [SVProgressHUD showWithStatus:@"上传中"];
+                   
+               } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+                   
+                   NSLog(@"上传图片成功---:%@", responseObject);
+                   [self getData];
+                   [SVProgressHUD showSuccessWithStatus:@"上传成功"];
+                   
+               } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+                   //            [SVProgressHUD showErrorWithStatus:@"上传失败"];
+                   
+                   NSLog(@"上传图片失败：%@", error);
+                   [SVProgressHUD showErrorWithStatus:@"上传失败"];
+               }];
+           }
+       } failure:^(NSError *error) {
+           
+       }];
         
     }
     else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera)

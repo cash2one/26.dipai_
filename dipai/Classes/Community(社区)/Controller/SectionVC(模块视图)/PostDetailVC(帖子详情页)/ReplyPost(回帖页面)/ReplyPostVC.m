@@ -39,7 +39,8 @@
 
 // 我的牌谱页面
 #import "MyPokersVC.h"
-@interface ReplyPostVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte>
+#import "TZImagePickerController.h"
+@interface ReplyPostVC ()<UITextFieldDelegate, UITextViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, LSPicturesViewDelegate,X_SelectPicViewDelegate, LSAlertViewDeleagte, TZImagePickerControllerDelegate>
 
 @end
 
@@ -225,38 +226,64 @@
         dic[@"types"] = @"0";
     }
 //    dic[@"types"] = @"0";   // 0表示进行回帖
+    NSString * url = nil;
+    if (![ReplyPostsURL hasPrefix:@"http"]) {
+        url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, ReplyPostsURL];
+    }else{
+        url = ReplyPostsURL;
+    }
     
-    [manager POST:ReplyPostsURL parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+        NSString * state = responseObject[@"state"];
         
-        /**
-         *  FileData:要上传文件的二进制数据
-         name:上传参数名称
-         fileName:上传到服务器的文件名称
-         mimeType:文件类型
-         */
-        
-        for (int i = 0; i < self.imagesArr.count; i ++) {
-            UIImage * image = self.imagesArr[i];
-            UIImage * image1 = [image rotateImage];
-//            NSData * data = UIImageJPEGRepresentation(image, 0.5);
-            NSData * data = UIImagePNGRepresentation(image1);
-            NSString * name = [NSString stringWithFormat:@"myfile%d", i];
-            NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
-            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
-            [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
+        if ([state isEqualToString:@"96"]) {    // 如果异地登录
+            NSString * message = responseObject[@"content"];
+            UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                NSLog(@"退出登录...");
+                [self.navigationController popToRootViewControllerAnimated:YES];
+                [OutLoginTool outLoginAction];
+                
+            }];
+            [alertC addAction:action];
+            [self.navigationController presentViewController:alertC animated:YES completion:nil];
+        }else{
+            [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                
+                /**
+                 *  FileData:要上传文件的二进制数据
+                 name:上传参数名称
+                 fileName:上传到服务器的文件名称
+                 mimeType:文件类型
+                 */
+                
+                for (int i = 0; i < self.imagesArr.count; i ++) {
+                    UIImage * image = self.imagesArr[i];
+                    UIImage * image1 = [image rotateImage];
+                    //            NSData * data = UIImageJPEGRepresentation(image, 0.5);
+                    NSData * data = UIImagePNGRepresentation(image1);
+                    NSString * name = [NSString stringWithFormat:@"myfile%d", i];
+                    NSString * fileName = [NSString stringWithFormat:@"image%d.jpeg", i];
+                    NSString * mimeType = [NSString stringWithFormat:@"image/png"];
+                    [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
+                }
+                [SVProgressHUD showWithStatus:@"发布中..."];
+                // 发布中发布按钮失效
+                _sendBtn.userInteractionEnabled = NO;
+            } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+                
+                [SVProgressHUD showSuccessWithStatus:@"发布成功"];
+                [self dismiss];
+                NSLog(@"上传图片成功:%@", responseObject);
+            } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+                [SVProgressHUD showErrorWithStatus:@"发布失败"];
+                
+                NSLog(@"上传图片失败：%@", error);
+            }];
         }
-        [SVProgressHUD showWithStatus:@"发布中..."];
-        // 发布中发布按钮失效
-        _sendBtn.userInteractionEnabled = NO;
-    } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+    } failure:^(NSError *error) {
         
-        [SVProgressHUD showSuccessWithStatus:@"发布成功"];
-        [self dismiss];
-        NSLog(@"上传图片成功:%@", responseObject);
-    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-        [SVProgressHUD showErrorWithStatus:@"发布失败"];
-        
-        NSLog(@"上传图片失败：%@", error);
     }];
     
 }
@@ -369,7 +396,6 @@
     bottomLine.backgroundColor = Color216;
     //    bottomLine.backgroundColor = [UIColor redColor];
     [selectPicView addSubview:bottomLine];
-    
     upLine.frame = CGRectMake(0, 0, WIDTH, 0.5);
     [bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(selectPicView.mas_left);
@@ -377,7 +403,6 @@
         make.bottom.equalTo(selectPicView.mas_bottom);
         make.height.equalTo(@0.5);
     }];
-    
     
     //    CGFloat picsY = CGRectGetMaxY(selectPicView.frame);
     LSPicturesView * pictures = [[LSPicturesView alloc] initWithFrame:CGRectMake(0, HEIGHT, WIDTH, 0)];
@@ -391,32 +416,28 @@
 }
 
 #pragma mark --- 选取牌谱
+// 第一次进入牌谱页面
 - (void)selectPoker{
-    
     NSLog(@"跳到牌谱页面");
+    NSLog(@"已选图片张数：%lu", self.imagesArr.count);
     if (self.imagesArr.count <9) {
-        
+        // 如果先选牌谱，创建选择图片的视图
         if (!_pictureView) {
             _pictureView = [X_SelectPicView shareSelectPicView];
             _pictureView.delegate = self;
-            
             [self.view addSubview:_pictureView];
-            
             __block typeof(self) weakSelf = self;
+            
             _pictureView.Commplete = ^{ //跳转到相册
-                if (self.imagesArr.count < 9) {
-                    
-                    NSLog(@"再次跳转到相册。。。");
-                    
-                    ImgPickerViewController* vc=[[ImgPickerViewController alloc]initWithSelectedPics:weakSelf.imagesArr.count];
-                    
-                    NSLog(@"0已选图片数：%lu", weakSelf.imagesArr.count);
-                    
-                    [weakSelf presentViewController:vc animated:YES completion:nil];
-                    [vc setSelectOriginals:^(NSArray * Originals) {
-                        [weakSelf.imagesArr addObjectsFromArray:Originals];
-                        _pictureView.dataSource = weakSelf.imagesArr;
+                NSLog(@"已选图片张数weakSelf.imagesArr.count：%lu", weakSelf.imagesArr.count);
+                if (weakSelf.imagesArr.count < 9) {
+                    MyPokersVC * myPokerVC = [[MyPokersVC alloc] init];
+                    [myPokerVC returnText:^(NSArray *imageArr) {
+                        [weakSelf.imagesArr addObjectsFromArray:imageArr];
+                        _pictureView.dataSource = self.imagesArr;
                     }];
+                    myPokerVC.selectedNumOfPic = self.imagesArr.count;
+                    [self presentViewController:myPokerVC animated:YES completion:nil];
                 }else{
                     [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
                 }
@@ -426,103 +447,129 @@
         
         MyPokersVC * myPokerVC = [[MyPokersVC alloc] init];
         [myPokerVC returnText:^(NSArray *imageArr) {
-            
             NSLog(@"101010%@", imageArr);
             [self.imagesArr addObjectsFromArray:imageArr];
+            // 将图片数据源传递给图片显示视图
             _pictureView.dataSource = self.imagesArr;
         }];
         myPokerVC.selectedNumOfPic = self.imagesArr.count;
         [self presentViewController:myPokerVC animated:YES completion:nil];
-        
     }else{
         [SVProgressHUD showErrorWithStatus:@"最多选九张图片"];
     }
     
 }
-// 选择牌谱
+// 第二次利用SelectView进入牌谱页面
 - (void)didSelectPoker:(X_SelectPicView *)view{
-    
+    NSLog(@"利用代理选择牌谱...");
+    NSLog(@"已选图片张数：%lu", self.imagesArr.count);
     if (self.imagesArr.count <9) {
-        
         MyPokersVC * myPokerVC = [[MyPokersVC alloc] init];
         [myPokerVC returnText:^(NSArray *imageArr) {
-            
-            //            NSLog(@"%@", imageArr);
-            
             [self.imagesArr addObjectsFromArray:imageArr];
+            NSLog(@"self.imagesArr.count:%lu", self.imagesArr.count);
             _pictureView.dataSource = self.imagesArr;
         }];
         myPokerVC.selectedNumOfPic = self.imagesArr.count;
         [self presentViewController:myPokerVC animated:YES completion:nil];
-        
-        
-        
     }else{
         [SVProgressHUD showErrorWithStatus:@"最多选九张图片"];
     }
+    
 }
 
 
 #pragma mark ---- 选择图片的事件
 - (void)selectPic{
-    
-    NSLog(@"跳转到相册....");
-    
+    NSLog(@"跳到相册页面");
     if (self.imagesArr.count <9) {
-        
-        ImgPickerViewController* vc=[[ImgPickerViewController alloc]init];
-        //        _vc = vc;
-        [self presentViewController:vc animated:YES completion:nil];
-        
-        [vc setSelectOriginals:^(NSArray *Originals) {
-            
-            
-            [self.imagesArr addObjectsFromArray:Originals];
-            if (!_pictureView) {
-                _pictureView = [X_SelectPicView shareSelectPicView];
-                _pictureView.delegate = self;
-                
-                __block typeof(self) weakSelf = self;
-                _pictureView.Commplete = ^{ //跳转到相册
-                    if (self.imagesArr.count < 9) {
+        // 如果先选牌谱，创建选择图片的视图
+        if (!_pictureView) {
+            _pictureView = [X_SelectPicView shareSelectPicView];
+            _pictureView.delegate = self;
+            [self.view addSubview:_pictureView];
+            __block typeof(self) weakSelf = self;
+            _pictureView.Commplete = ^{ //跳转到相册
+                if (weakSelf.imagesArr.count < 9) {
+                    NSLog(@"再次跳转到相册。。。");
+                    NSInteger images = 9 - weakSelf.imagesArr.count;
+                    NSLog(@"还能再选图片数：%lu", images);
+                    TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:images columnNumber:4 delegate:weakSelf pushPhotoPickerVc:YES];
+                    imagePickerVc.allowTakePicture = NO;
+                    __weak typeof (imagePickerVc) imagePicker = imagePickerVc;
+                    [imagePicker setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
                         
-                        NSLog(@"再次跳转到相册。。。");
-                        
-                        ImgPickerViewController* vc=[[ImgPickerViewController alloc]initWithSelectedPics:weakSelf.imagesArr.count];
-                        
-                        NSLog(@"0已选图片数：%lu", weakSelf.imagesArr.count);
-                        
-                        [weakSelf presentViewController:vc animated:YES completion:nil];
-                        [vc setSelectOriginals:^(NSArray * Originals) {
-                            [weakSelf.imagesArr addObjectsFromArray:Originals];
-                            _pictureView.dataSource = self.imagesArr;
-                        }];
-                    }else{
-                        [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
-                    }
-                    
-                };
-                
-                [self.view addSubview:_pictureView];
-            }
-            
-            _pictureView.dataSource = self.imagesArr;
-            
+                    }];
+                    [weakSelf presentViewController:imagePickerVc animated:YES completion:nil];
+                }else{
+                    [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
+                }
+            };
+        }
+        TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:9 columnNumber:4 delegate:self pushPhotoPickerVc:YES];
+        // 不允许拍照
+        imagePickerVc.allowTakePicture = NO;
+        // 不允许选视频
+        imagePickerVc.allowPickingVideo = NO;
+        // 不允许选GIF图
+        imagePickerVc.allowPickingGif = NO;
+        [self presentViewController:imagePickerVc animated:YES completion:nil];
+        NSLog(@"图片选择器回调");
+        [imagePickerVc setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
             
         }];
-        //        _imagePicker = [[UIImagePickerController alloc] init];
-        //        _imagePicker.delegate = self;
-        //        _imagePicker.allowsEditing = NO;
-        //        _imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-        //        [self presentViewController:_imagePicker animated:YES completion:nil];
     }else{
         [SVProgressHUD showErrorWithStatus:@"最多选九张图片"];
     }
+    
+}
+#pragma mark - TZImagePickerControllerDelegate
+/// User click cancel button
+/// 用户点击了取消
+- (void)tz_imagePickerControllerDidCancel:(TZImagePickerController *)picker {
+    NSLog(@"cancel");
+}
+// 这个照片选择器会自己dismiss，当选择器dismiss的时候，会执行下面的代理方法
+// 如果isSelectOriginalPhoto为YES，表明用户选择了原图
+// 你可以通过一个asset获得原图，通过这个方法：[[TZImageManager manager] getOriginalPhotoWithAsset:completion:]
+// photos数组里的UIImage对象，默认是828像素宽，你可以通过设置photoWidth属性的值来改变它
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto {
+    NSLog(@"选择图片完成之后...");
+    //    self.imagesArr = (NSMutableArray *)photos;
+    [self.imagesArr addObjectsFromArray:photos];
+    NSLog(@"已选图片张数：%lu", self.imagesArr.count);
+    NSLog(@"_pictureView:%@", _pictureView);
+    if (!_pictureView) {
+        _pictureView = [X_SelectPicView shareSelectPicView];
+        _pictureView.delegate = self;
+        __block typeof(self) weakSelf = self;
+        _pictureView.Commplete = ^{ //跳转到相册
+            if (self.imagesArr.count < 9) {
+                [weakSelf presentViewController:picker animated:YES completion:nil];
+            }else{
+                [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
+            }
+        };
+        
+        [self.view addSubview:_pictureView];
+    }
+    
+    _pictureView.dataSource = self.imagesArr;
 }
 
+// 如果用户选择了一个视频，下面的handle会被执行
+// 如果系统版本大于iOS8，asset是PHAsset类的对象，否则是ALAsset类的对象
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingVideo:(UIImage *)coverImage sourceAssets:(id)asset {
+    
+}
+
+// 如果用户选择了一个gif图片，下面的handle会被执行
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingGifImage:(UIImage *)animatedImage sourceAssets:(id)asset {
+    
+}
+/*
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    
     //    NSLog(@"%s", __func__);
     if (picker.sourceType == UIImagePickerControllerSourceTypeSavedPhotosAlbum) {
         // 返回
@@ -541,9 +588,7 @@
                 }else{
                     [SVProgressHUD showSuccessWithStatus:@"最多选择九张图片"];
                 }
-                
             };
-            
             [self.view addSubview:_pictureView];
         }
         
@@ -557,7 +602,7 @@
     }
     
 }
-
+*/
 #pragma mark --- textView的内容发生变化后进行调用
 - (void)textViewChanged
 {
@@ -666,7 +711,6 @@
 #pragma mark --- 键盘发生变化后通知
 - (void)keyBoardChanged:(NSNotification *)note
 {
-    
     // 键盘的大小
     CGRect frame = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     // 键盘出现的时长

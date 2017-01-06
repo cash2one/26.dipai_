@@ -7,8 +7,8 @@
 //
 
 #import "BaseViewController.h"
-
-@interface AlbumVC : BaseViewController
+#import "NavigationHiddenVC.h"
+@interface AlbumVC : NavigationHiddenVC
 /**
  *  接口
  */

@@ -73,29 +73,29 @@
 }
 
 - (void)getData{
-    
-//    [DataTool getMessageCenterWithStr:MessageCenterURL parameters:nil success:^(id responseObject) {
-//        NSLog(@"responseObject:%@", responseObject);
-//    } failure:^(NSError * error) {
-//         NSLog(@"获取数据错误：%@", error);
-//    }];
-    
-    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
-    [manager GET:MessageCenterURL parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+//    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
+    NSString * url = nil;
+    if ([MessageCenterURL hasPrefix:@"http"]) {
+        url = MessageCenterURL;
+    }else{
+        url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, MessageCenterURL];
+    }
+    [HttpTool GET:url parameters:nil success:^(id responseObject) {
         NSLog(@"通知中心获取的数据：%@", responseObject);
-//        NSMutableArray * arr = responseObject[@"data"];
-//        self.dataSource = (NSMutableArray *) responseObject[@"data"];
-//        [self.dataSource removeAllObjects];
-//        self.dataSource = arr;
         [self.dataSource addObjectsFromArray:responseObject[@"data"]];
         if (self.dataSource.count  == 0) {
             [SVProgressHUD showErrorWithStatus:@"没有通知"];
         }
         [self.tableView reloadData];
-    } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
+    } failure:^(NSError *error) {
         NSLog(@"获取数据错误：%@", error);
     }];
+//    [manager GET:url parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+//        
+//    } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
+//        
+//    }];
 }
 
 - (void)setNavigationBar{

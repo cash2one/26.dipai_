@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseViewController.h"
+@interface MineController : BaseViewController
 
-@interface MineController : UIViewController
 
+@property (nonatomic, copy ) void(^complete)(void);
 @end

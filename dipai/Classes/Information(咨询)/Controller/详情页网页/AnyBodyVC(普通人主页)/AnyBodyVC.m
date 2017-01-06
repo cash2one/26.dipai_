@@ -57,7 +57,8 @@
 #import "UIImageView+WebCache.h"
 #import "MJPhoto.h"
 #import "MJPhotoBrowser.h"
-
+#import "HttpTool.h"
+#import "AFNetworking.h"
 #import "DataTool.h"
 @interface AnyBodyVC ()<UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate, LSAlertViewDeleagte>
 
@@ -67,6 +68,45 @@
     UIScrollView *_sc;
     NSString * _flag;
 }
+
+typedef NS_ENUM(NSUInteger, LSType) {
+    /** 资讯 */
+    LSTypeInfo = 2,
+    /** 图集 */
+    LSTypePictures = 4,
+    /** 赛事 */
+    LSTypeMatch = 5,
+    /** 赛事 详情页*/
+    LSTypeMatchDetail = 51,
+    /** 直播 */
+    LSTypeLive = 6,
+    /** 视频 */
+    LSTypeVideo = 11,
+    /** 帖子详情 */
+    LSTypePostDetail = 172,
+    
+    /** 视频专辑 */
+    LSTypeVideoList = 101,
+    /** 全部视频专辑 */
+    LSTypeAllVideo = 10,
+    /** 帖子列表 */
+    LSTypePostList = 171,
+    /** 名人堂*/
+    LSTypePokerStar = 151,
+    /** 名人主页*/
+    LSTypeStar = 153,
+    /** 名人堂列表 */
+    LSTypePokerStarList = 152,
+    /** 俱乐部详细页面 */
+    LSTypeClubDetail = 81,
+    /** 专题 */
+    LSTypeSpecial = 9,
+    /** 专题列表 */
+    LSTypeSpecialList = 18,
+    
+    // H5活动
+    LSTypeH5 = 201
+};
 
 /**
  *  头视图
@@ -415,72 +455,70 @@
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName || wxData) {
-        // 已登陆直接进行操作
-        // 如果要进行关注可以直接关注，而如果要取消关注则需要进行以下确认
-        NSLog(@"%@", _sbModel.data[@"is_follow"]);
         
-        if ([_sbModel.data[@"is_follow"] isEqualToString:@"0"]) {    // 未关注
-                        
-            NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _sbModel.userid]];
-            [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
-                
-//                NSLog(@"%@", responseObject);
-//                NSLog(@"%@", responseObject[@"content"]);
-//                NSLog(@"%@", responseObject[@"data"]);
-#warning 返回的data有问题
-                // 要根据返回的data判断有没有进行关注
-                if ([responseObject[@"data"] isEqualToString:@"0"]) {   // 未关注
-                    // 取消关注成功
-                    [_attentionBtn setImage:[UIImage imageNamed:@"yiguanzhu"] forState:UIControlStateNormal];
-                } else{
-                    // 关注成功
-                    [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
-                }
-                [SVProgressHUD showSuccessWithStatus:@"关注成功"];
-                [_tableView2.header beginRefreshing];
-            } failure:^(NSError * error) {
-                NSLog(@"关注或取消失败错误%@", error);
-            }];
-        }
-        if ([_sbModel.data[@"is_follow"] isEqualToString:@"1"]) {
-            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"确定不再关注此人" message:nil preferredStyle:UIAlertControllerStyleAlert];
-            
-            
-            UIAlertAction * cancle = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                NSLog(@"取消");
-            }];
-            
-            UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                
-//                [self addRefreshWith:_tableView2];
-                
-                // 进行取消关注的操作
-                [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
-                NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@",_sbModel.userid]];
-                [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
-                    
-                    NSLog(@"进行取消关注获取到的数据%@", responseObject);
-                    NSLog(@"content:%@", responseObject[@"content"]);
-                } failure:^(NSError * error) {
-                    NSLog(@"进行取消关注操作时出错%@", error);
-                }];
-                // 对数据的刷新还有影响
-                [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
-                [_tableView2.header beginRefreshing];
-            }];
-            
-            [alert addAction:cancle];
-            [alert addAction:OK];
-            [self presentViewController:alert animated:YES completion:nil];
-        }
-        
-        
+        [self payAttentionWhenLogin];
     }else{
         // 未登陆要进行登陆
         [self addAlertView];
     }
-    
 }
+
+- (void)payAttentionWhenLogin{
+
+    // 已登陆直接进行操作
+    // 如果要进行关注可以直接关注，而如果要取消关注则需要进行以下确认
+    NSLog(@"%@", _sbModel.data[@"is_follow"]);
+    
+    if ([_sbModel.data[@"is_follow"] isEqualToString:@"0"]) {    // 未关注
+        
+        NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@", _sbModel.userid]];
+        [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+#warning 返回的data有问题
+            // 要根据返回的data判断有没有进行关注
+            if ([responseObject[@"data"] isEqualToString:@"0"]) {   // 未关注
+                // 取消关注成功
+                [_attentionBtn setImage:[UIImage imageNamed:@"yiguanzhu"] forState:UIControlStateNormal];
+            } else{
+                // 关注成功
+                [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
+            }
+            [SVProgressHUD showSuccessWithStatus:@"关注成功"];
+            [_tableView2.header beginRefreshing];
+        } failure:^(NSError * error) {
+            NSLog(@"关注或取消失败错误%@", error);
+        }];
+    }
+    if ([_sbModel.data[@"is_follow"] isEqualToString:@"1"]) {
+        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"确定不再关注此人" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        
+        
+        UIAlertAction * cancle = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            NSLog(@"取消");
+        }];
+        
+        UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            // 进行取消关注的操作
+            [_attentionBtn setImage:[UIImage imageNamed:@"jiaguangzhu"] forState:UIControlStateNormal];
+            NSString * url = [PayAttentionURL stringByAppendingString:[NSString stringWithFormat:@"/%@",_sbModel.userid]];
+            [DataTool PayAttentionOrCancleWithStr:url parameters:nil success:^(id responseObject) {
+                
+                NSLog(@"进行取消关注获取到的数据%@", responseObject);
+                NSLog(@"content:%@", responseObject[@"content"]);
+            } failure:^(NSError * error) {
+                NSLog(@"进行取消关注操作时出错%@", error);
+            }];
+            // 对数据的刷新还有影响
+            [SVProgressHUD showSuccessWithStatus:@"取消关注成功"];
+            [_tableView2.header beginRefreshing];
+        }];
+        
+        [alert addAction:cancle];
+        [alert addAction:OK];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
 #pragma mark --- 添加登录的alertView
 - (void)addAlertView{
     LSAlertView * alertView = [[LSAlertView alloc] init];
@@ -992,7 +1030,7 @@
         // 跳转到帖子详情页
         PostDetailVC * detailVC = [[PostDetailVC alloc] init];
         PostFrameModel * model = self.dataSource2[indexPath.row];
-        
+        detailVC.heightStr = @"64";
         detailVC.wapurl = model.postsModel.wapurl;
         [self.navigationController pushViewController:detailVC animated:YES];
     }else{  // 回复页面
@@ -1000,39 +1038,77 @@
         // 回复的情况：1.资讯／图集  2.视频  3.帖子  4.赛事评论
         MyReplyFrameModel * myReFrameModel = self.dataSource3[indexPath.row];
         MyReplyModel * replyModel = myReFrameModel.myreplyModel;
-        if ([replyModel.userurl rangeOfString:@"art/view/11"].location != NSNotFound) {
+        
+        NSString * url = replyModel.userurl;
+        AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+        //设置监听
+        [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+            if (status == AFNetworkReachabilityStatusNotReachable) {
+                NSLog(@"没有网络");
+                [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+            }else{
+            }
+        }];
+        [manager startMonitoring];
+        [HttpTool GET:url parameters:nil success:^(id responseObject) {
             
-            // 跳转到视频专辑页
-            VideoViewController * videoVC = [[VideoViewController alloc] init];
-            videoVC.url = replyModel.userurl;
-            [self.navigationController pushViewController:videoVC animated:YES];
-        }else if ([replyModel.userurl rangeOfString:@"art/view/2"].location != NSNotFound || [replyModel.userurl rangeOfString:@"art/view/4"].location != NSNotFound){
-            // 跳转到资讯页面
+            NSString * type = responseObject[@"type"];
+            NSInteger num = [type integerValue];
+            NSLog(@"type:%lu", num);
+            if (num == LSTypeInfo || num == LSTypePictures) {
+                // 跳转到资讯页面或图集页面
+                DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+                detailVC.url = url;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            } else if (num == LSTypeVideo){ // 如果是视频
+                // 跳转到视频专辑页
+                VideoViewController * videoVC = [[VideoViewController alloc] init];
+                videoVC.url = url;
+                videoVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:videoVC animated:YES];
+            } else if (num == LSTypeMatchDetail){  // 如果是赛事详情页
+                MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+                detailVC.wapurl = url;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            }else if (num == LSTypePostDetail){ // 如果是帖子详情页
+                PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+                postDetail.wapurl = url;
+                postDetail.heightStr = @"64";
+                postDetail.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:postDetail animated:YES];
+            }else if (num == LSTypePokerStar){  // 扑克名人堂页面
+                
+            }else if (num == LSTypePokerStarList){  // 扑克名人堂列表
+                
+            }else if (num == LSTypePostList){   // 帖子列表
+                
+            }else if (num == LSTypeVideoList){  // 视频专辑
+                
+            }else if (num == LSTypeClubDetail){ // 俱乐部详情页
+                
+            }else if (num == LSTypeSpecial){    // 专题
+                
+            }else if (num == LSTypeSpecialList){    // 专题列表
+                
+            }else if (num == LSTypeAllVideo){   // 全部视频专辑
+                
+            }else if (num == LSTypeStar){   // 名人主页
+                
+            }
+            else if(num == LSTypeH5){  // 如果是内部H5页面
+                
+            }
+            else{   // 未识别type
+                NSLog(@"---%@",url);
+                
+            }
+            [SVProgressHUD dismiss];
+        } failure:^(NSError *error) {
             
-            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
-            detailVC.url = replyModel.userurl;
-            [self.navigationController pushViewController:detailVC animated:YES];
-            
-        } else if ([replyModel.userurl rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
-            
-            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
-            postDetail.wapurl = replyModel.userurl;
-            [self.navigationController pushViewController:postDetail animated:YES];
-            
-        }else if ([replyModel.userurl rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
-            
-            NSLog(@"%@", replyModel.userurl);
-            // 赛事详情页分为两种情况：1.有直播  2.没有直播
-            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-            detailVC.wapurl = replyModel.userurl;
-            [self.navigationController pushViewController:detailVC animated:YES];
-            
-        }
-        else
-        {
-            NSLog(@"%@", replyModel.userurl);
-            NSLog(@"%lu", indexPath.row);
-        }
+            NSLog(@"出错：%@",error);
+        }];
     }
 }
 

@@ -59,9 +59,9 @@
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
     // 禁用 iOS7 返回手势
-    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
-        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-    }
+//    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+//        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+//    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -77,21 +77,12 @@
     }
 }
 
-//- (void)viewDidDisappear:(BOOL)animated{
-//    [super viewDidDisappear:YES];
-//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-//    self.navigationController.navigationBarHidden = NO;
-//}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     self.view.backgroundColor = [UIColor whiteColor];
-    
     // 设置导航栏
     [self setUpNavigationBar];
-    
     [self getData];
 }
 /******************************搭建界面*************************/
@@ -105,22 +96,9 @@
     topView.frame = CGRectMake(0, 0, WIDTH, 250 * IPHONE6_H_SCALE);
     
     // 名人堂简介
-//    UILabel * starDes = [[UILabel alloc] init];
-//    starDes.numberOfLines = 0;
-//    starDes.font = Font13;
-//    starDes.textColor = [UIColor whiteColor];
-//    starDes.text = @"底牌名人堂会邀请国内知名牌手入驻，他们常年征战于国内外扑克大赛，成绩斐然，贡献卓越。通过名人堂，您可以快速找到他们并与他们进行互动。";
-//    
-//    [topView addSubview:starDes];
     CGFloat starX = 32 * IPHONE6_W_SCALE;
     CGFloat starY = 167 * IPHONE6_H_SCALE;
     CGFloat starW = WIDTH - 2 * starX;
-//    NSMutableDictionary * starDic = [NSMutableDictionary dictionary];
-//    starDic[NSFontAttributeName] = Font13;
-//    CGRect starRect = [starDes.text boundingRectWithSize:CGSizeMake(starW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:starDic context:nil];
-//    starDes.frame = (CGRect){{starX, starY}, starRect.size};
-    
-    
     NSString *textStr = @"底牌名人堂会邀请国内知名牌手入驻，他们常年征战于国内外扑克大赛，成绩斐然，贡献卓越。通过名人堂，您可以快速找到他们并与他们进行互动。";
     UIFont *textFont = Font13;
     CGSize textSize = [textStr sizeWithFont:textFont

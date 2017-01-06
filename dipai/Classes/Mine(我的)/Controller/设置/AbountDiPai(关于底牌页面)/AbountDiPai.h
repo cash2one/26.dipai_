@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface AbountDiPai : UIViewController
+#import "NavigationHiddenVC.h"
+@interface AbountDiPai : NavigationHiddenVC
 
 @end

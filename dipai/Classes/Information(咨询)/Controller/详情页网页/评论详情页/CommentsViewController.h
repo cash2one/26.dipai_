@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface CommentsViewController : UIViewController
+#import "NavigationHiddenVC.h"
+@interface CommentsViewController : NavigationHiddenVC
 /**
  *  文章类型
  */

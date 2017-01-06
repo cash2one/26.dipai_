@@ -165,10 +165,10 @@
 //                                    ];
 
         NSArray *gradientColors = @[
-                                    (id)[[UIColor colorWithWhite:0.0 alpha:0.1] CGColor],
-                                    (id)[[UIColor colorWithWhite:0.0 alpha:0.7] CGColor],
-                                    (id)[[UIColor colorWithWhite:0.0 alpha:0.7] CGColor],
-                                    (id)[[UIColor colorWithWhite:0.0 alpha:0.1] CGColor],
+                                    (id)[[UIColor colorWithWhite:0.0 alpha:0.0] CGColor],
+                                    (id)[[UIColor colorWithWhite:0.11 alpha:0.5] CGColor],
+                                    (id)[[UIColor colorWithWhite:0.11 alpha:0.5] CGColor],
+                                    (id)[[UIColor colorWithWhite:0.0 alpha:0.0] CGColor],
                                     ];
         CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
         CGGradientRef gradient = CGGradientCreateWithColors(rgb, (__bridge CFArrayRef)gradientColors, locations);

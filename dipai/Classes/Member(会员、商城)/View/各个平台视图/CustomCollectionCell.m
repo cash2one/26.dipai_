@@ -41,7 +41,7 @@
     _picV = picV;
     
     UIButton * moreBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [moreBtn setImage:[UIImage imageNamed:@"bangding"] forState:UIControlStateNormal];
+//    [moreBtn setImage:[UIImage imageNamed:@"bangding"] forState:UIControlStateNormal];
 //    [moreBtn setBackgroundImage:[UIImage imageNamed:@"gengduoxinxi"] forState:UIControlStateNormal];
     [moreBtn addTarget:self action:@selector(moreInfoAction) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:moreBtn];
@@ -57,10 +57,26 @@
     _moreBtn = moreBtn;
 }
 
+- (void)setStype:(NSString *)stype{
+    
+    _stype = stype;
+}
+
 - (void)setModel:(PlatformModel *)model{
     
     _model = model;
-    self.userInteractionEnabled = NO;
+    if ([_model.state isEqualToString:@"1"]) {
+        if ([_stype isEqualToString:@"1"]) {
+            [_moreBtn setImage:[UIImage imageNamed:@"bangding"] forState:UIControlStateNormal];
+        }else{
+            [_moreBtn setImage:[UIImage imageNamed:@"chakan"] forState:UIControlStateNormal];
+        }
+        self.userInteractionEnabled = YES;
+    }else{
+        [_moreBtn setImage:[UIImage imageNamed:@"jianshezhong"] forState:UIControlStateNormal];
+        self.userInteractionEnabled = NO;
+    }
+    
 }
 - (void)setRow:(NSInteger *)row{
     
@@ -68,8 +84,8 @@
 }
 - (void)moreInfoAction{
     
-    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickWithURL:andRow:)]) {
-        [self.delegate tableViewCell:self didClickWithURL:_model.weburl andRow:0];
+    if ([self.delegate respondsToSelector:@selector(tableViewCell:didClickWithURL:andRow: andPlatformID:)]) {
+        [self.delegate tableViewCell:self didClickWithURL:_model.weburl andRow:0 andPlatformID:_model.platform_id];
     }
 }
 

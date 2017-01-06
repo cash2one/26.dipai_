@@ -30,9 +30,50 @@
 
 #import "DataTool.h"
 #import "SVProgressHUD.h"
+#import "AFNetworking.h"
+#import "HttpTool.h"
 
 #import "Masonry.h"
 @interface MyReceiveCommentsViewController ()<UITableViewDataSource, UITableViewDelegate, MyReceiveCellDelegate>
+
+typedef NS_ENUM(NSUInteger, LSType) {
+    /** 资讯 */
+    LSTypeInfo = 2,
+    /** 图集 */
+    LSTypePictures = 4,
+    /** 赛事 */
+    LSTypeMatch = 5,
+    /** 赛事 详情页*/
+    LSTypeMatchDetail = 51,
+    /** 直播 */
+    LSTypeLive = 6,
+    /** 视频 */
+    LSTypeVideo = 11,
+    /** 帖子详情 */
+    LSTypePostDetail = 172,
+    
+    /** 视频专辑 */
+    LSTypeVideoList = 101,
+    /** 全部视频专辑 */
+    LSTypeAllVideo = 10,
+    /** 帖子列表 */
+    LSTypePostList = 171,
+    /** 名人堂*/
+    LSTypePokerStar = 151,
+    /** 名人主页*/
+    LSTypeStar = 153,
+    /** 名人堂列表 */
+    LSTypePokerStarList = 152,
+    /** 俱乐部详细页面 */
+    LSTypeClubDetail = 81,
+    /** 专题 */
+    LSTypeSpecial = 9,
+    /** 专题列表 */
+    LSTypeSpecialList = 18,
+    
+    // H5活动
+    LSTypeH5 = 201
+};
 /**
  *  数据源
  */
@@ -62,41 +103,26 @@
     self.view.backgroundColor = [UIColor colorWithRed:244 / 255.0 green:244 / 255.0 blue:244 / 255.0 alpha:1];
     // 设置导航栏
     [self setNavigationBar];
-    
-    //
     [self addTabelView];
-    
-    // 我收到的评论接口
 }
 
 #pragma mark --- 设置导航条
 - (void)setNavigationBar {
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
-    
-    // 左侧按钮
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
-    // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:38/2];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"我收到的评论";
-    self.navigationItem.titleView = titleLabel;
-    
-}
-#pragma mark --- 返回
-- (void)returnBack{
-    [self.navigationController popViewControllerAnimated:YES];
+    self.naviBar.titleStr = @"我收到的评论";
+    self.naviBar.titleLbl.textColor = [UIColor blackColor];
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)addTabelView{
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 8 * IPHONE6_H_SCALE , WIDTH , HEIGHT-64-8 *IPHONE6_H_SCALE) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 8 * IPHONE6_H_SCALE+64 , WIDTH , HEIGHT-64-8 *IPHONE6_H_SCALE) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     [self.view addSubview:self.tableView];
     
     UIImageView * imageV = [[UIImageView alloc] init];
@@ -110,7 +136,6 @@
     }];
     _imageV = imageV;
     _imageV.hidden = YES;
-    
     
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
     [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
@@ -136,14 +161,12 @@
         
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
-        
         if ([responseObject isKindOfClass:[NSString class]]) {
             _imageV.hidden = NO;
         }else{
             _imageV.hidden = YES;
            self.dataSource = responseObject;
         }
-        
         [self.tableView reloadData];
 //        NSLog(@"%@", responseObject);
     } failure:^(NSError * error) {
@@ -201,39 +224,77 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     MyReceiveModel * receiveModel = self.dataSource[indexPath.row];
    
-    // 现在收到的评论只是帖子中的回复？？？ 对评论详情页中的评论进行回复不能收到
-    if ([receiveModel.wapurl rangeOfString:@"art/view/11"].location != NSNotFound) {
+    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+    //设置监听
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (status == AFNetworkReachabilityStatusNotReachable) {
+            NSLog(@"没有网络");
+            [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+        }else{
+        }
+    }];
+    [manager startMonitoring];
+    
+    NSString * url = receiveModel.wapurl;
+    [HttpTool GET:url parameters:nil success:^(id responseObject) {
         
-        // 跳转到视频专辑页
-        VideoViewController * videoVC = [[VideoViewController alloc] init];
-        videoVC.url = receiveModel.wapurl;
-        [self.navigationController pushViewController:videoVC animated:YES];
-    }else if ([receiveModel.wapurl rangeOfString:@"art/view/2"].location != NSNotFound || [receiveModel.wapurl rangeOfString:@"art/view/4"].location != NSNotFound){
-        // 跳转到资讯页面
+        NSString * type = responseObject[@"type"];
+        NSInteger num = [type integerValue];
+        NSLog(@"type:%lu", num);
+        if (num == LSTypeInfo || num == LSTypePictures) {
+            // 跳转到资讯页面或图集页面
+            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+            detailVC.url = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        } else if (num == LSTypeVideo){ // 如果是视频
+            // 跳转到视频专辑页
+            VideoViewController * videoVC = [[VideoViewController alloc] init];
+            videoVC.url = url;
+            videoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:videoVC animated:YES];
+        } else if (num == LSTypeMatchDetail){  // 如果是赛事详情页
+            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+            detailVC.wapurl = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        }else if (num == LSTypePostDetail){ // 如果是帖子详情页
+            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+            postDetail.wapurl = url;
+            postDetail.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:postDetail animated:YES];
+        }else if (num == LSTypePokerStar){  // 扑克名人堂页面
+            
+        }else if (num == LSTypePokerStarList){  // 扑克名人堂列表
+            
+        }else if (num == LSTypePostList){   // 帖子列表
+            
+        }else if (num == LSTypeVideoList){  // 视频专辑
+            
+        }else if (num == LSTypeClubDetail){ // 俱乐部详情页
+            
+        }else if (num == LSTypeSpecial){    // 专题
+            
+        }else if (num == LSTypeSpecialList){    // 专题列表
+            
+        }else if (num == LSTypeAllVideo){   // 全部视频专辑
+            
+        }else if (num == LSTypeStar){   // 名人主页
+            
+        }
+        else if(num == LSTypeH5){  // 如果是内部H5页面
+            
+        }
+        else{   // 未识别type
+            NSLog(@"---%@",url);
+            
+        }
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
         
-        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
-        detailVC.url = receiveModel.wapurl;
-        [self.navigationController pushViewController:detailVC animated:YES];
-        
-    } else if ([receiveModel.wapurl rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
-        
-        PostDetailVC * postDetail =[[PostDetailVC alloc] init];
-        postDetail.wapurl = receiveModel.wapurl;
-        [self.navigationController pushViewController:postDetail animated:YES];
-        
-    }else if ([receiveModel.wapurl rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
-        
-        // 赛事详情页分为两种情况：1.有直播  2.没有直播
-        MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-        detailVC.wapurl = receiveModel.wapurl;
-        [self.navigationController pushViewController:detailVC animated:YES];
-        
-    }
-    else
-    {
-        NSLog(@"%@", receiveModel.wapurl);
-        NSLog(@"%lu", indexPath.row);
-    }
+        NSLog(@"出错：%@",error);
+    }];
+
     
 }
 

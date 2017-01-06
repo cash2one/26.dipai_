@@ -60,6 +60,7 @@
 #import "AFNetworking.h"
 // 加载图片第三方
 #import "UIImageView+WebCache.h"
+#import "UMessage.h"
 @interface MemberViewController ()<UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, ShopCellDelegate, CustomCollectionCellDelegate, LSAlertViewDeleagte>
 {
     UISegmentedControl *_segmented;
@@ -70,6 +71,10 @@
     NSString * _face;
     // 积分
     NSString * _num;
+    //
+    NSString * _stype;
+    // 第一次加载的标识
+    NSString * _firstLoad;
 }
 // 会员中心
 @property (nonatomic, strong) UITableView * tableView1;
@@ -129,17 +134,22 @@
     return _bannerArr;
 }
 - (void)viewWillAppear:(BOOL)animated{
-    NSLog(@"%s", __func__);
     [super viewWillAppear:YES];
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+//    self.navigationController.navigationBarHidden = NO;
     // 为何此页面每次出现的时候都要获取数据？ 因为头像和积分可能发生变化
     [self getData];
+    
+    if (_firstLoad.length > 0) {    // 如果不是第一次进入
+        [self loadNewData];
+    }
+    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _firstLoad = @"firstLoad";
     NSLog(@"%s", __func__);
     self.navigationController.navigationBarHidden = YES;
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -376,7 +386,9 @@
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.scrollsToTop = NO;
     [collectionView registerClass:[CustomCollectionCell class] forCellWithReuseIdentifier:@"cellId"];
-    collectionView.contentInset = UIEdgeInsetsMake(0, -232.5*IPHONE6_W_SCALE, 0, 0);
+    
+    // 为了在显示该页面的时候显示第二张图片
+//    collectionView.contentInset = UIEdgeInsetsMake(0, -232.5*IPHONE6_W_SCALE, 0, 0);
     self.collectionView = collectionView;
 //    NSIndexPath  * indexpath = [NSIndexPath indexPathWithIndex:0];
 //    [self.collectionView scrollToItemAtIndexPath:indexpath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
@@ -429,9 +441,9 @@
 //     NSLog(@"%f----%f", self.collectionView.contentOffset.x, self.collectionView.contentOffset.y);
 //    NSLog(@"%f---%f---%f---%f", self.collectionView.contentInset.top, self.collectionView.contentInset.left, self.collectionView.contentInset.bottom, self.collectionView.contentInset.right);
 }
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-}
+//- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+//    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+//}
 
 #pragma mark --- 分段控件的点击事件
 -(void)segmentedClick:(UISegmentedControl*)seg{
@@ -447,10 +459,14 @@
 
 // 跳转到会员等级页面
 - (void)seeMemberlevel{
-    
     MemberLevelViewController * memberLevelVC = [[MemberLevelViewController alloc] init];
+    memberLevelVC.num = _numLbl.text;
     memberLevelVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:memberLevelVC animated:YES];
+}
+
+- (void)outLogin{
+    
 }
 
 - (void)getData{
@@ -463,12 +479,12 @@
                 NSLog(@"没有网络");
     
                 [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-//                _memberV.hidden = YES;
             }else{  // 有网络的情况
+                
                 [DataTool getMemberCenterDataWithStr:MemberCenter parameters:nil success:^(id responseObject) {
-                    
                     MemberDataModel * dataModel = responseObject;
-                    //            NSLog(@"会员数据模型：%@", dataModel);
+                    _stype = dataModel.stype;
+                    NSLog(@"会员数据模型：%@", dataModel);
                     // 字典转模型
                     MemberInfoModel * memberInfoModel = [MemberInfoModel objectWithKeyValues:dataModel.user_info];
                     // 字典数组转模型
@@ -480,12 +496,9 @@
                     if ([dataModel.user_info isKindOfClass:[NSNull class]]) {
                         
                         [self showNoLoginMessage];
-                        
                     }else{
-                        
                         [self showLoginMessage];
                         [SVProgressHUD dismiss];
-                        
                         // 头像
                         if (_face == [NSNull class] || _face == nil || ![_face isEqualToString:memberInfoModel.face]) { // 如果首次进入此页面需要设置头像，如果头像发生变化需要重新设置头像
                             _face = memberInfoModel.face;
@@ -496,15 +509,15 @@
                         }
                         // 设置头视图
                         [self setUpTopView];
-                        
                     }
                     // 显示
                     _memberV.hidden = NO;
                 } failure:^(NSError * error) {
+                    NSLog(@"加载失败原因：%@", error);
                     [SVProgressHUD dismiss];
                     [SVProgressHUD showErrorWithStatus:@"加载失败"];
                 }];
-    
+                 
             }
         }];
         [manager startMonitoring];
@@ -571,26 +584,32 @@
     CustomCollectionCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
     cell.delegate = self;
     PlatformModel * platModel = [self.dataArray objectAtIndex:indexPath.row];
+    NSLog(@"%@", _stype);
+    cell.stype = _stype;
     cell.model = platModel;
 //    cell.row = indexPath.row;
-    [cell.picV sd_setImageWithURL:[NSURL URLWithString:platModel.picname]];
+    [cell.picV sd_setImageWithURL:[NSURL URLWithString:platModel.picname] placeholderImage:[UIImage imageNamed:@"placeholder"]];
     return cell;
 }
 
 
 #pragma mark --- CustomCollectionCellDelegate
-- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url andRow:(NSInteger)row{
+- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url andRow:(NSInteger)row andPlatformID:(NSString *)platformID{
     
     NSLog(@"查看更多信息：");
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName  || wxData) {    // 如果已经登录
-
+        NSString * platformStr = [NSString stringWithFormat:@"bangding%@", platformID];
+        NSLog(@"%@", platformStr);
+        [MobClick event:platformStr];
         MoreInfoOfPlatformVC * moreVC = [[MoreInfoOfPlatformVC alloc] init];
         moreVC.url = url;
+        moreVC.stype = _stype;
         moreVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:moreVC animated:YES];
+        
     }else{
         [self addAlertView];
     }
@@ -717,7 +736,7 @@
 }
 // 跳转到商品页面
 - (void)tableviewCell:(ShopCell *)cell didClickWithURL:(NSString *)url withTitle:(NSString *)title{
-    
+    NSLog(@"%@", url);
     // 跳转到商品详情页
     [self seeGoodsDetailWithURL:url withTitle:title];
 }
@@ -734,7 +753,6 @@
 - (void)loadNewData{
     
     [DataTool getShoppingMallDataWithStr:ShoppingMallURL parameters:nil success:^(id responseObject) {
-        
         [self.tableView2.header endRefreshing];
         [self.tableView2.footer endRefreshing];
         ShopMallModel * mallModel = responseObject;
@@ -777,7 +795,9 @@
     NSLog(@"banner...");
     
     UIImageView * imgV = (UIImageView *) tap.view;
+    
     ShopBannerModel * model = [self.bannerArr objectAtIndex:imgV.tag];
+    NSLog(@"%@---%@", model.wapurl, model.name);
     [self seeGoodsDetailWithURL:model.wapurl withTitle:model.name];
 }
 

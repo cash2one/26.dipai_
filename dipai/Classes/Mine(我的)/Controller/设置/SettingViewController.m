@@ -28,12 +28,10 @@
     [super viewWillAppear:YES];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
     [self getDataOfLogin];
 }
 
 - (void)getDataOfLogin{
-    
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * name = [defaults objectForKey:Cookie];
 //    NSDictionary * dataDic = [defaults objectForKey:User];
@@ -41,7 +39,6 @@
     if (name || wxData) {
         _outBtn.hidden = NO;
     }else{
-        
         _outBtn.hidden = YES;
     }
 }
@@ -51,35 +48,24 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor colorWithRed:240 / 255.0 green:239 / 255.0 blue:245 / 255.0 alpha:1];
-    
     [self setNavigationBar];
-    
     [self setUpUI];
 }
 #pragma mark --- 设置导航条
 - (void)setNavigationBar {
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
-    
-    // 左侧按钮
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
-    // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:38/2];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"设置";
-    self.navigationItem.titleView = titleLabel;
-}
-#pragma mark --- 返回
-- (void)returnBack{
-    [self.navigationController popViewControllerAnimated:YES];
+    self.naviBar.titleStr = @"设置";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark --- 搭建界面
 - (void)setUpUI{
     // 关于底牌
     CGFloat abountX = 0;
-    CGFloat abountY = 18 / 2 * IPHONE6_H_SCALE;
+    CGFloat abountY = 18 / 2 * IPHONE6_H_SCALE + 64;
     CGFloat abountW = WIDTH;
     CGFloat abountH = 99 / 2 * IPHONE6_H_SCALE;
     SettingCell * AbountCell = [[SettingCell alloc] initWithFrame:CGRectMake(abountX, abountY, abountW, abountH)];
@@ -88,7 +74,6 @@
     AbountCell.btn.tag = 1;
     [AbountCell.btn addTarget:self action:@selector(clickAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:AbountCell];
-    
     
     // 评分
     SettingCell * AppStoreCell = [[SettingCell alloc] init];
@@ -109,7 +94,7 @@
     versionCell.titleLbl.text = @"当前版本";
     versionCell.titleLbl.font = Font16;
     versionCell.accessView.hidden = YES;
-    versionCell.versionLbl.text = @"2.2";
+    versionCell.versionLbl.text = @"2.2.0";
     versionCell.versionLbl.font = Font14;
     CGFloat versionX = 0;
     CGFloat versionY = CGRectGetMaxY(AppStoreCell.frame);
@@ -147,10 +132,6 @@
 - (void)outLogin{
     
     [self deleteCookie];
-    NSUserDefaults * userDefaults =  [NSUserDefaults standardUserDefaults];
-    
-    [userDefaults removeObjectForKey:WXUser];
-    [userDefaults removeObjectForKey:User];
     [self.navigationController popViewControllerAnimated:YES];
     
 }
@@ -173,18 +154,15 @@
     NSString * userid1 = xcDic[@"userid"];
     NSDictionary * phoneDic = [defaults objectForKey:User];
     NSString * userid2 = phoneDic[@"userid"];
-//    NSLog(@"xcDic:%@", xcDic);
-//    NSLog(@"phoneDic:%@", phoneDic);
-//    NSLog(@"userid1:%@", userid1);
-//    NSLog(@"userid2:%@", userid2);
-    [UMessage removeAlias:userid1 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
-        NSLog(@"删除userid1成功:%@", responseObject);
-        NSLog(@"删除userid1失败:%@", responseObject);
-    }];
-    [UMessage removeAlias:userid2 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
-        NSLog(@"删除userid2成功:%@", responseObject);
-        NSLog(@"删除userid1失败:%@", responseObject);
-    }];
+
+//    [UMessage removeAlias:userid1 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+//        NSLog(@"删除userid1成功:%@", responseObject);
+//        NSLog(@"删除userid1失败:%@", responseObject);
+//    }];
+//    [UMessage removeAlias:userid2 type:@"ALIAS_TYPE.DIPAI" response:^(id  _Nonnull responseObject, NSError * _Nonnull error) {
+//        NSLog(@"删除userid2成功:%@", responseObject);
+//        NSLog(@"删除userid1失败:%@", responseObject);
+//    }];
     
     [defaults removeObjectForKey:Cookie];
     [defaults removeObjectForKey:Phone];
@@ -204,6 +182,7 @@
             break;
         case 2:
             NSLog(@"去评分....");
+            // https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8
             [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=1000553183&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8"]];
             break;
         case 3:

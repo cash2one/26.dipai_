@@ -211,18 +211,70 @@
 //            numLbl.backgroundColor = [UIColor greenColor];
             numLbl.font = Font14;
             [backV addSubview:numLbl];
+            // 非会员积分
+            UILabel * feVIPNumLbl = [[UILabel alloc] init];
+            //            feVIPNumLbl.backgroundColor = [UIColor redColor];
+            feVIPNumLbl.textColor = Color102;
+            feVIPNumLbl.font = Font12;
+            feVIPNumLbl.text = goodsModel.shop_price;
+            NSMutableDictionary * feNumDic = [NSMutableDictionary dictionary];
+            feNumDic[NSFontAttributeName] = Font12;
+            CGFloat feWidth = [feVIPNumLbl.text sizeWithAttributes:feNumDic].width;
+            [backV addSubview:feVIPNumLbl];
+            NSString * vIPNum = nil;
+            if ([goodsModel.vip_price isEqualToString:@"0"]) {
+                vIPNum = [NSString stringWithFormat:@"积分：%@", goodsModel.shop_price];
+                feVIPNumLbl.text = goodsModel.vip_price;
+                feVIPNumLbl.hidden = YES;
+            }else{
+               vIPNum = [NSString stringWithFormat:@"积分：%@", goodsModel.vip_price];
+                feVIPNumLbl.text = goodsModel.shop_price;
+                feVIPNumLbl.hidden = NO;
+            }
+            
+            NSMutableAttributedString * numText = [[NSMutableAttributedString alloc] initWithString:vIPNum];
+            [numText addAttribute:NSFontAttributeName value:Font11 range:NSMakeRange(0, 3)];
+            //             [numText addAttribute:NSFontAttributeName value:Font8 range:NSMakeRange(0, 3)];
+            numLbl.attributedText = numText;
+            
+            NSMutableDictionary * numDic = [NSMutableDictionary dictionary];
+            numDic[NSFontAttributeName] = Font13;
+            CGSize numSize = [vIPNum sizeWithAttributes:numDic];
+            CGFloat numWidth = numSize.width;
             [numLbl mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.left.equalTo(backV.mas_left).offset(9 * IPHONE6_W_SCALE);
                 make.bottom.equalTo(backV.mas_bottom).offset(-10 * IPHONE6_H_SCALE);
-                make.width.equalTo(@(backV.frame.size.width - 18 * IPHONE6_W_SCALE));
+                make.width.equalTo(@(numWidth+1));
                 make.height.equalTo(@(14 * IPHONE6_H_SCALE));
             }];
             [numLbl sizeToFit];
             
-            NSMutableAttributedString * numText = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", goodsModel.shop_price]];
-            [numText addAttribute:NSFontAttributeName value:Font11 range:NSMakeRange(0, 3)];
-//             [numText addAttribute:NSFontAttributeName value:Font8 range:NSMakeRange(0, 3)];
-            numLbl.attributedText = numText;
+            [feVIPNumLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.equalTo(numLbl.mas_right).offset(5 * IPHONE6_W_SCALE);
+                make.bottom.equalTo(numLbl.mas_bottom).offset(-1);
+                make.width.equalTo(@(feWidth+1*IPHONE6_W_SCALE));
+                make.height.equalTo(@(12 * IPHONE6_W_SCALE));
+            }];
+            // 删除线
+            UILabel * deleteLbl = [[UILabel alloc] init];
+            deleteLbl.backgroundColor = Color102;
+            [feVIPNumLbl addSubview:deleteLbl];
+            [deleteLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerX.equalTo(feVIPNumLbl.mas_centerX);
+                make.centerY.equalTo(feVIPNumLbl.mas_centerY);
+                make.width.equalTo(feVIPNumLbl.mas_width).offset(2);
+                make.height.equalTo(@(1));
+            }];
+            NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+            NSString * cookieName = [defaults objectForKey:Cookie];
+            NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+//            if (cookieName  || wxData) {
+//                feVIPNumLbl.hidden = NO;
+//            }else{
+//                feVIPNumLbl.hidden = YES;
+//                
+//            }
+            
             [self addSubview:backV];
         }
         

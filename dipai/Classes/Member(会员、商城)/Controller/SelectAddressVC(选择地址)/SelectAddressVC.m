@@ -212,13 +212,16 @@
         
         if ([responseObject[@"msg"] isEqualToString:@"success"]) {
             NSLog(@"选择默认地址成功..");
-//             [self.navigationController popViewControllerAnimated:YES];
+            // 返回
+            [self.navigationController popViewControllerAnimated:YES];
         }
     } failure:^(NSError * error) {
-       
+        
         NSLog(@"选择默认地址出错：%@", error);
     }];
-    // 返回
+  
+
+
 }
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
     
@@ -229,9 +232,9 @@
 
 // 添加收货地址
 - (void)addAddressAction{
-    
     AddAddressVC * addAddressVC = [[AddAddressVC alloc] init];
     [self presentViewController:addAddressVC animated:YES completion:nil];
+   
 }
 
 

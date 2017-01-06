@@ -212,9 +212,7 @@
 - (void)completeAction{
     
     if (self.text.length > 0) {
-        
         CGFloat h;
-        
         UIGraphicsBeginImageContextWithOptions(_pokerV.bounds.size, NO, 0);
         [_pokerV.layer renderInContext:UIGraphicsGetCurrentContext()];
         UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
@@ -236,34 +234,58 @@
         NSMutableDictionary * dic = [NSMutableDictionary dictionary];
         dic[@"myfile"] = nil;
         dic[@"information"] = self.text;
-        
-        [manager POST:AddDefinePoker parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSString * url = nil;
+        if (![AddDefinePoker hasPrefix:@"http"]) {
+            url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, AddDefinePoker];
+        }else{
+            url = AddDefinePoker;
+        }
+        [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+            NSString * state = responseObject[@"96"];
+            if ([state isEqualToString:@"96"]) {    // 如果异地登录
+                NSString * message = responseObject[@"content"];
+                UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction * action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                    NSLog(@"退出登录...");
+                    [self.navigationController popToRootViewControllerAnimated:YES];
+                    [OutLoginTool outLoginAction];
+                    
+                }];
+                [alertC addAction:action];
+                [self.navigationController presentViewController:alertC animated:YES completion:nil];
+            }else{
+                [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                    
+                    UIImage * image = viewImage;
+                    //            UIImage * image1 = [image rotateImage];
+                    NSData * data = UIImagePNGRepresentation(image);
+                    NSString * name = [NSString stringWithFormat:@"myfile%d", 1];
+                    NSString * fileName = [NSString stringWithFormat:@"image%d.png", 1];
+                    NSString * mimeType = [NSString stringWithFormat:@"image/png"];
+                    [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
+                    [SVProgressHUD showWithStatus:@"正在保存..."];
+                } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+                    
+                    [SVProgressHUD showSuccessWithStatus:@"保存成功"];
+                    NSLog(@"上传图片成功:%@", responseObject);
+                    NSLog(@"---content---%@", responseObject[@"content"]);
+                } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+                    [SVProgressHUD showErrorWithStatus:@"保存失败"];
+                    
+                    NSLog(@"上传图片失败：%@", error);
+                }];
+                
+            }
+        } failure:^(NSError *error) {
             
-            UIImage * image = viewImage;
-//            UIImage * image1 = [image rotateImage];
-            NSData * data = UIImagePNGRepresentation(image);
-            NSString * name = [NSString stringWithFormat:@"myfile%d", 1];
-            NSString * fileName = [NSString stringWithFormat:@"image%d.png", 1];
-            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
-            [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
-            [SVProgressHUD showWithStatus:@"正在保存..."];
-        } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-            
-            [SVProgressHUD showSuccessWithStatus:@"保存成功"];
-            NSLog(@"上传图片成功:%@", responseObject);
-            NSLog(@"---content---%@", responseObject[@"content"]);
-        } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-            [SVProgressHUD showErrorWithStatus:@"保存失败"];
-            
-            NSLog(@"上传图片失败：%@", error);
         }];
-        
         [self dismissViewControllerAnimated:YES completion:nil];
     }
    
+  
     if (self.textArr.count > 0) {
         CGFloat h;
-        
         UIGraphicsBeginImageContextWithOptions(_pokerV.bounds.size, NO, 0);
         [_pokerV.layer renderInContext:UIGraphicsGetCurrentContext()];
         UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
@@ -272,8 +294,6 @@
         UIImage *viewImage = [self reSizeImage:image toSize:CGSizeMake(750, h-2)];
         //    UIImageWriteToSavedPhotosAlbum(viewImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
         UIGraphicsEndImageContext();
-        
-        
         AFHTTPRequestOperationManager * manager = [AFHTTPRequestOperationManager manager];
         manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
         /*
@@ -281,46 +301,60 @@
          */
         NSMutableDictionary * dic = [NSMutableDictionary dictionary];
         dic[@"myfile"] = nil;
-        /*
-         myfile（图片）
-         information,（基本信息）
-         preflop,
-         flop,
-         turn, 
-         river
-         */
         dic[@"information"] = [self.textArr objectAtIndex:0];
         dic[@"preflop"] = [self.textArr objectAtIndex:1];
         dic[@"flop"] = [self.textArr objectAtIndex:2];
         dic[@"turn"] = [self.textArr objectAtIndex:3];
         dic[@"river"] = [self.textArr objectAtIndex:4];
-        
-        [manager POST:AddDefinePoker parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSString * url = nil;
+        if (![AddDefinePoker hasPrefix:@"http"]) {
+            url = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, AddDefinePoker];
+        }else{
+            url = AddDefinePoker;
+        }
+        [HttpTool GET:MemberCenter parameters:nil success:^(id responseObject) {
+            NSString * state = responseObject[@"state"];
+            if ([state isEqualToString:@"96"]) {    // 如果异地登录
+                NSString * message = responseObject[@"content"];
+                UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction * action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    // 确定按钮做两个操作：1.退出登录  2.回到根视图
+                    NSLog(@"退出登录...");
+                    [self.navigationController popToRootViewControllerAnimated:YES];
+                    [OutLoginTool outLoginAction];
+                    
+                }];
+                [alertC addAction:action];
+                [self.navigationController presentViewController:alertC animated:YES completion:nil];
+            }else{
+                [manager POST:url parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                    
+                    UIImage * image = viewImage;
+                    UIImage * image1 = [image rotateImage];
+                    NSData * data = UIImagePNGRepresentation(image1);
+                    NSString * name = [NSString stringWithFormat:@"myfile%d", 1];
+                    NSString * fileName = [NSString stringWithFormat:@"image%d.png", 1];
+                    NSString * mimeType = [NSString stringWithFormat:@"image/png"];
+                    [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
+                    [SVProgressHUD showWithStatus:@"正在保存..."];
+                } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+                    
+                    [SVProgressHUD showSuccessWithStatus:@"保存成功"];
+                    NSLog(@"上传图片成功:%@", responseObject);
+                    NSLog(@"---content---%@", responseObject[@"content"]);
+                } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+                    [SVProgressHUD showErrorWithStatus:@"保存失败"];
+                    
+                    NSLog(@"上传图片失败：%@", error);
+                }];
+
+            }
+
+        } failure:^(NSError *error) {
             
-            UIImage * image = viewImage;
-            UIImage * image1 = [image rotateImage];
-            NSData * data = UIImagePNGRepresentation(image1);
-            NSString * name = [NSString stringWithFormat:@"myfile%d", 1];
-            NSString * fileName = [NSString stringWithFormat:@"image%d.png", 1];
-            NSString * mimeType = [NSString stringWithFormat:@"image/png"];
-            [formData appendPartWithFileData:data name:name fileName:fileName mimeType:mimeType];
-            [SVProgressHUD showWithStatus:@"正在保存..."];
-        } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-            
-            [SVProgressHUD showSuccessWithStatus:@"保存成功"];
-            NSLog(@"上传图片成功:%@", responseObject);
-            NSLog(@"---content---%@", responseObject[@"content"]);
-        } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-            [SVProgressHUD showErrorWithStatus:@"保存失败"];
-            
-            NSLog(@"上传图片失败：%@", error);
         }];
-        
-        [self dismissViewControllerAnimated:YES completion:nil];
+         [self dismissViewControllerAnimated:YES completion:nil];
     }
-    
-    
-    
 }
 // 保存到相册
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{

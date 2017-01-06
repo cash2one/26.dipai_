@@ -108,6 +108,7 @@
     [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
+
 - (void)addTableView{
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 64) style:UITableViewStylePlain];
@@ -143,15 +144,14 @@
 
 - (void)MemberBenefitCell:(UITableViewCell *)cell didClickWithTag:(NSInteger)tag{
     
-//    NSLog(@"%lu", cell.tag);
-    
     // 跳转到礼遇详情
     BenifitsDetailVC * benifitsDetailVC = [[BenifitsDetailVC alloc] init];
     MemberBeneCellModel * model = [self.vMArr objectAtIndex:cell.tag];
     NSDictionary * dic = [model.benefitsArr objectAtIndex:tag];
     NSString * url = dic[@"wapurl"];
     benifitsDetailVC.wapurl = url;
-     [self.navigationController pushViewController:benifitsDetailVC animated:YES];
+    [self.navigationController pushViewController:benifitsDetailVC animated:YES];
+    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{

@@ -37,6 +37,8 @@
 #import "MJChiBaoZiHeader.h"
 #import "Masonry.h"
 #import "SVProgressHUD.h"
+#import "HttpTool.h"
+#import "AFNetworking.h"
 @interface MyPostsViewController ()<UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate>
 {
     // 滚动视图
@@ -45,6 +47,44 @@
     UITableView *_tableView1;
     UITableView *_tableView2;
 }
+typedef NS_ENUM(NSUInteger, LSType) {
+    /** 资讯 */
+    LSTypeInfo = 2,
+    /** 图集 */
+    LSTypePictures = 4,
+    /** 赛事 */
+    LSTypeMatch = 5,
+    /** 赛事 详情页*/
+    LSTypeMatchDetail = 51,
+    /** 直播 */
+    LSTypeLive = 6,
+    /** 视频 */
+    LSTypeVideo = 11,
+    /** 帖子详情 */
+    LSTypePostDetail = 172,
+    
+    /** 视频专辑 */
+    LSTypeVideoList = 101,
+    /** 全部视频专辑 */
+    LSTypeAllVideo = 10,
+    /** 帖子列表 */
+    LSTypePostList = 171,
+    /** 名人堂*/
+    LSTypePokerStar = 151,
+    /** 名人主页*/
+    LSTypeStar = 153,
+    /** 名人堂列表 */
+    LSTypePokerStarList = 152,
+    /** 俱乐部详细页面 */
+    LSTypeClubDetail = 81,
+    /** 专题 */
+    LSTypeSpecial = 9,
+    /** 专题列表 */
+    LSTypeSpecialList = 18,
+    
+    // H5活动
+    LSTypeH5 = 201
+};
 /**
  *  发帖标签
  */
@@ -110,37 +150,27 @@
 
 #pragma mark --- 设置导航条
 - (void)setNavigationBar {
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+    self.naviBar.titleStr = @"我的帖子";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.titleLbl.textColor = [UIColor blackColor];
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
     
-    // 左侧按钮
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
-    // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:38/2];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"我的帖子";
-    self.navigationItem.titleView = titleLabel;
-    
-}
-#pragma mark --- 返回
-- (void)returnBack{
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark --- 设置UI
 - (void)setUpUI{
-    
     // 添加分割条
     UIView * separateView = [[UIView alloc] init];
     [self.view addSubview:separateView];
     separateView.backgroundColor = [UIColor colorWithRed:240 / 255.0 green:239 / 255.0 blue:245 / 255.0 alpha:1];
-    separateView.frame = CGRectMake(0, 81 * 0.5 * IPHONE6_H_SCALE, WIDTH, 20 * IPHONE6_H_SCALE);
-    
+    separateView.frame = CGRectMake(0, 81 * 0.5 * IPHONE6_H_SCALE+64, WIDTH, 20 * IPHONE6_H_SCALE);
     
     UIView * topView = [[UIView alloc] init];
     topView.backgroundColor = [UIColor whiteColor];
-    topView.frame = CGRectMake(0, 0, WIDTH, 81 * 0.5 * IPHONE6_H_SCALE);
+    topView.frame = CGRectMake(0, 64, WIDTH, 81 * 0.5 * IPHONE6_H_SCALE);
     [self.view addSubview:topView];
     
     // 添加我的发帖和我的回复两个标题
@@ -210,7 +240,6 @@
     _replyLbl.textColor = Color102;
     
     [UIView animateWithDuration:0.25 animations:^{
-        
         CGFloat x = CGRectGetMinX(_postsLbl.frame) - 9 * IPHONE6_W_SCALE;
         CGFloat y = CGRectGetMaxY(_postsLbl.frame) - 2*IPHONE6_H_SCALE;
         CGFloat w = 158 * 0.5 * IPHONE6_W_SCALE;
@@ -246,8 +275,8 @@
 #pragma mark --- 添加滚动视图
 - (void)addScrollView {
     
-    CGFloat scY = 121 * 0.5 * IPHONE6_H_SCALE;
-    self.sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, scY, WIDTH , HEIGHT - 64- scY)];
+    CGFloat scY = 121 * 0.5 * IPHONE6_H_SCALE+64;
+    self.sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, scY, WIDTH , HEIGHT - scY)];
     self.sc.contentSize=CGSizeMake(WIDTH * 2 , HEIGHT - 64-scY);
     self.sc.delegate=self;
     self.sc.bounces=NO;
@@ -263,10 +292,9 @@
 #pragma mark --- 添加tableView
 - (void)addTableView{
     CGFloat scY = 121 * 0.5 * IPHONE6_H_SCALE;
-    _tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT - 64 - scY) style:UITableViewStylePlain];
+    _tableView1 = [[UITableView alloc]initWithFrame:self.sc.bounds style:UITableViewStylePlain];
     _tableView1.delegate = self;
     _tableView1.dataSource = self;
-    _tableView1.showsVerticalScrollIndicator = NO;
     _tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_sc addSubview:_tableView1];
     
@@ -285,7 +313,6 @@
     _tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT - 64 - scY) style:UITableViewStylePlain];
     _tableView2.delegate=self;
     _tableView2.dataSource=self;
-    _tableView2.showsVerticalScrollIndicator=NO;
     _tableView2.separatorStyle=UITableViewCellSeparatorStyleNone;
     [self.sc addSubview:_tableView2];
 
@@ -520,39 +547,75 @@
         // 回复的情况：1.资讯／图集  2.视频  3.帖子  4.赛事评论
         MyReplyFrameModel * myReFrameModel = self.dataSource2[indexPath.row];
         MyReplyModel * replyModel = myReFrameModel.myreplyModel;
-        if ([replyModel.userurl rangeOfString:@"art/view/11"].location != NSNotFound) {
+        NSString * url = replyModel.userurl;
+        AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+        //设置监听
+        [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+            if (status == AFNetworkReachabilityStatusNotReachable) {
+                NSLog(@"没有网络");
+                [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+            }else{
+            }
+        }];
+        [manager startMonitoring];        
+        [HttpTool GET:url parameters:nil success:^(id responseObject) {
             
-            // 跳转到视频专辑页
-            VideoViewController * videoVC = [[VideoViewController alloc] init];
-            videoVC.url = replyModel.userurl;
-            [self.navigationController pushViewController:videoVC animated:YES];
-        }else if ([replyModel.userurl rangeOfString:@"art/view/2"].location != NSNotFound || [replyModel.userurl rangeOfString:@"art/view/4"].location != NSNotFound){
-            // 跳转到资讯页面
+            NSString * type = responseObject[@"type"];
+            NSInteger num = [type integerValue];
+            NSLog(@"type:%lu", num);
+            if (num == LSTypeInfo || num == LSTypePictures) {
+                // 跳转到资讯页面或图集页面
+                DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+                detailVC.url = url;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            } else if (num == LSTypeVideo){ // 如果是视频
+                // 跳转到视频专辑页
+                VideoViewController * videoVC = [[VideoViewController alloc] init];
+                videoVC.url = url;
+                videoVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:videoVC animated:YES];
+            } else if (num == LSTypeMatchDetail){  // 如果是赛事详情页
+                MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+                detailVC.wapurl = url;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            }else if (num == LSTypePostDetail){ // 如果是帖子详情页
+                PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+                postDetail.wapurl = url;
+                postDetail.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:postDetail animated:YES];
+            }else if (num == LSTypePokerStar){  // 扑克名人堂页面
+                
+            }else if (num == LSTypePokerStarList){  // 扑克名人堂列表
+                
+            }else if (num == LSTypePostList){   // 帖子列表
+                
+            }else if (num == LSTypeVideoList){  // 视频专辑
+                
+            }else if (num == LSTypeClubDetail){ // 俱乐部详情页
+                
+            }else if (num == LSTypeSpecial){    // 专题
+                
+            }else if (num == LSTypeSpecialList){    // 专题列表
+                
+            }else if (num == LSTypeAllVideo){   // 全部视频专辑
+                
+            }else if (num == LSTypeStar){   // 名人主页
+                
+            }
+            else if(num == LSTypeH5){  // 如果是内部H5页面
+                
+            }
+            else{   // 未识别type
+                NSLog(@"---%@",url);
+                
+            }
+            [SVProgressHUD dismiss];
+        } failure:^(NSError *error) {
             
-            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
-            detailVC.url = replyModel.userurl;
-            [self.navigationController pushViewController:detailVC animated:YES];
-            
-        } else if ([replyModel.userurl rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
-            
-            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
-            postDetail.wapurl = replyModel.userurl;
-            [self.navigationController pushViewController:postDetail animated:YES];
-
-        }else if ([replyModel.userurl rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
-            
-            NSLog(@"%@", replyModel.userurl);
-            // 赛事详情页分为两种情况：1.有直播  2.没有直播
-            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-            detailVC.wapurl = replyModel.userurl;
-            [self.navigationController pushViewController:detailVC animated:YES];
-            
-        }
-        else
-        {
-            NSLog(@"%@", replyModel.userurl);
-            NSLog(@"%lu", indexPath.row);
-        }
+            NSLog(@"出错：%@",error);
+        }];
 
     }
 }

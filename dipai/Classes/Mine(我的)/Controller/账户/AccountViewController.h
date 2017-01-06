@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface AccountViewController : UIViewController
+#import "NavigationHiddenVC.h"
+@interface AccountViewController : NavigationHiddenVC
 /**
  *  绑定的标识
  */

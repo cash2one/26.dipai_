@@ -7,7 +7,7 @@
 //
 
 #import "NavigationHiddenVC.h"
-
-@interface ServerVC : NavigationHiddenVC
+#import "DPWebView.h"
+@interface ServerVC : DPWebView
 
 @end

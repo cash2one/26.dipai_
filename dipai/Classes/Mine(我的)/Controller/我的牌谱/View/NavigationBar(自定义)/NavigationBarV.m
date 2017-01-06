@@ -71,7 +71,7 @@
         make.centerX.equalTo(self.mas_centerX);
         make.top.equalTo(self.mas_top).offset(20);
         make.bottom.equalTo(self.mas_bottom);
-        make.width.equalTo(@(100 * IPHONE6_W_SCALE));
+        make.width.equalTo(@(200 * IPHONE6_W_SCALE));
     }];
     _titleLbl = titleLbl;
     
@@ -101,7 +101,11 @@
         make.left.equalTo(newLbl.mas_left).offset(-10);
     }];
     
-    
+    UIView * bottomLine = [[UIView alloc] initWithFrame:CGRectMake(0, 63.5, WIDTH, 0.5)];
+    bottomLine.backgroundColor = Color216;
+    [self addSubview:bottomLine];
+    bottomLine.hidden = YES;
+    _bottomLine = bottomLine;
     _popBtn = popBtn;
     _popV = popV;
     _rightBtn = newBtn;
@@ -138,6 +142,10 @@
     _leftLbl.textColor = color;
     _rightLbl.textColor = color;
     _titleLbl.textColor = color;
+}
+// 重新设置返回按钮视图
+- (void)setPopImage:(UIImage *)popImage{
+    _popV.image = popImage;
 }
 
 @end

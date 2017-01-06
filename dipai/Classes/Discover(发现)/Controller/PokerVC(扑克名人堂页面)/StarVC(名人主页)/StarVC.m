@@ -57,7 +57,8 @@
 #import "UIImageView+WebCache.h"
 #import "MJPhoto.h"
 #import "MJPhotoBrowser.h"
-
+#import "HttpTool.h"
+#import "AFNetworking.h"
 #import "DataTool.h"
 @interface StarVC ()<UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate, LSAlertViewDeleagte>
 
@@ -67,6 +68,44 @@
     UIScrollView *_sc;
     NSString * _flag;
 }
+typedef NS_ENUM(NSUInteger, LSType) {
+    /** 资讯 */
+    LSTypeInfo = 2,
+    /** 图集 */
+    LSTypePictures = 4,
+    /** 赛事 */
+    LSTypeMatch = 5,
+    /** 赛事 详情页*/
+    LSTypeMatchDetail = 51,
+    /** 直播 */
+    LSTypeLive = 6,
+    /** 视频 */
+    LSTypeVideo = 11,
+    /** 帖子详情 */
+    LSTypePostDetail = 172,
+    
+    /** 视频专辑 */
+    LSTypeVideoList = 101,
+    /** 全部视频专辑 */
+    LSTypeAllVideo = 10,
+    /** 帖子列表 */
+    LSTypePostList = 171,
+    /** 名人堂*/
+    LSTypePokerStar = 151,
+    /** 名人主页*/
+    LSTypeStar = 153,
+    /** 名人堂列表 */
+    LSTypePokerStarList = 152,
+    /** 俱乐部详细页面 */
+    LSTypeClubDetail = 81,
+    /** 专题 */
+    LSTypeSpecial = 9,
+    /** 专题列表 */
+    LSTypeSpecialList = 18,
+    
+    // H5活动
+    LSTypeH5 = 201
+};
 
 /**
  *  头视图
@@ -1157,40 +1196,79 @@
         // 可以跳转到评论页面、赛事的评论页面、帖子的回复页面
         MyReplyFrameModel * frameModel =  self.dataSource3[indexPath.row];
         MyReplyModel * replyModel = frameModel.myreplyModel;
-        // 
-        if ([replyModel.userurl rangeOfString:@"art/view/11"].location != NSNotFound) {
+        //
+        AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+        //设置监听
+        [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+            if (status == AFNetworkReachabilityStatusNotReachable) {
+                NSLog(@"没有网络");
+                [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+            }else{
+            }
+        }];
+        [manager startMonitoring];
+        
+        NSString * url = replyModel.userurl;
+        [HttpTool GET:url parameters:nil success:^(id responseObject) {
             
-            // 跳转到视频专辑页
-            VideoViewController * videoVC = [[VideoViewController alloc] init];
-            videoVC.url = replyModel.userurl;
-            [self.navigationController pushViewController:videoVC animated:YES];
-        }else if ([replyModel.userurl rangeOfString:@"art/view/2"].location != NSNotFound){
-            // 跳转到资讯页面
+            NSString * type = responseObject[@"type"];
+            NSInteger num = [type integerValue];
+            NSLog(@"type:%lu", num);
+            if (num == LSTypeInfo || num == LSTypePictures) {
+                // 跳转到资讯页面或图集页面
+                DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+                detailVC.url = url;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            } else if (num == LSTypeVideo){ // 如果是视频
+                // 跳转到视频专辑页
+                VideoViewController * videoVC = [[VideoViewController alloc] init];
+                videoVC.url = url;
+                videoVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:videoVC animated:YES];
+            } else if (num == LSTypeMatchDetail){  // 如果是赛事详情页
+                MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+                detailVC.wapurl = url;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            }else if (num == LSTypePostDetail){ // 如果是帖子详情页
+                PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+                postDetail.wapurl = url;
+                postDetail.heightStr = @"64";
+                postDetail.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:postDetail animated:YES];
+            }else if (num == LSTypePokerStar){  // 扑克名人堂页面
+               
+            }else if (num == LSTypePokerStarList){  // 扑克名人堂列表
+                
+            }else if (num == LSTypePostList){   // 帖子列表
+                
+            }else if (num == LSTypeVideoList){  // 视频专辑
+                
+            }else if (num == LSTypeClubDetail){ // 俱乐部详情页
+                
+            }else if (num == LSTypeSpecial){    // 专题
+                
+            }else if (num == LSTypeSpecialList){    // 专题列表
+                
+            }else if (num == LSTypeAllVideo){   // 全部视频专辑
+                
+            }else if (num == LSTypeStar){   // 名人主页
+                
+            }
+            else if(num == LSTypeH5){  // 如果是内部H5页面
+
+            }
+            else{   // 未识别type
+                NSLog(@"---%@",url);
+                
+            }
+            [SVProgressHUD dismiss];
+        } failure:^(NSError *error) {
             
-            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
-            detailVC.url = replyModel.userurl;
-            [self.navigationController pushViewController:detailVC animated:YES];
-            
-        } else if ([replyModel.userurl rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
-            
-            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
-            postDetail.wapurl = replyModel.userurl;
-            [self.navigationController pushViewController:postDetail animated:YES];
-            
-        }else if ([replyModel.userurl rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
-            
-            NSLog(@"%@", replyModel.userurl);
-            // 赛事详情页分为两种情况：1.有直播  2.没有直播
-            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-            detailVC.wapurl = replyModel.userurl;
-            [self.navigationController pushViewController:detailVC animated:YES];
-            
-        }
-        else
-        {
-            NSLog(@"%@", replyModel.userurl);
-            NSLog(@"%lu", indexPath.row);
-        }
+            NSLog(@"出错：%@",error);
+        }];
+
     }
 }
 

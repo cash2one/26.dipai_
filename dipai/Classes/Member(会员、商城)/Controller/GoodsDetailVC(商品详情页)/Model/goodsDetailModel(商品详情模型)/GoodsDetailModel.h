@@ -24,4 +24,7 @@
 @property (nonatomic, copy) NSString * goods_desc;
 @property (nonatomic, copy) NSString * goods_img;
 @property (nonatomic, strong) NSArray * atlas;
+
+// 会员价格
+@property (nonatomic, copy) NSString * vip_price;
 @end

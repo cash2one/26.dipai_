@@ -50,43 +50,30 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-//    NSLog(@"%@", self.specialModel);
-    
     self.view.backgroundColor = [UIColor whiteColor];
     // 设置导航栏内容
     [self setUpNavigationBar];
-    
     [self addTableView];
 }
 #pragma mark --- 设置导航栏内容
 - (void)setUpNavigationBar
 {
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-    
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:17];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = self.specialModel.title;
-    self.navigationItem.titleView = titleLabel;
-    
-}
-
-- (void)pop{
-    [self.navigationController popViewControllerAnimated:YES];
+    self.naviBar.titleStr = self.specialModel.title;
+    self.naviBar.titleLbl.textColor = [UIColor blackColor];
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)addTableView{
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT  - 64) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT  - 64) style:UITableViewStylePlain];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    //    NSLog(@"表格的高度：%f", self.tableView.frame.size.height);
     [self.view addSubview:self.tableView];
-    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     // 添加下拉刷新控件
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
     // 隐藏状态

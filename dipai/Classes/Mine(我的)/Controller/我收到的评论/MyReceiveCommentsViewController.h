@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface MyReceiveCommentsViewController : UIViewController
+#import "NavigationHiddenVC.h"
+@interface MyReceiveCommentsViewController : NavigationHiddenVC
 
 @end

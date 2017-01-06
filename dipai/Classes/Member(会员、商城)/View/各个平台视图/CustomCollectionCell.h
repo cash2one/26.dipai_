@@ -11,7 +11,7 @@
 @class PlatformModel;
 @protocol CustomCollectionCellDelegate <NSObject>
 
-- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url andRow:(NSInteger)row;
+- (void)tableViewCell:(CustomCollectionCell *)cell didClickWithURL:(NSString *)url andRow:(NSInteger)row andPlatformID:(NSString *)platformID;
 
 @end
 
@@ -26,5 +26,6 @@
 @property (nonatomic, assign) NSInteger * row;
 // 传递过来的平台模型
 @property (nonatomic, strong) PlatformModel * model;
+@property (nonatomic, copy) NSString * stype;
 @property (nonatomic, assign) id<CustomCollectionCellDelegate>delegate;
 @end

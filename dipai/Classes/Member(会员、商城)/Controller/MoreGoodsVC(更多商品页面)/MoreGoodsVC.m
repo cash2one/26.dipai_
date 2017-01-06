@@ -48,7 +48,7 @@
 
 - (void)getData{
     
-//    NSLog(@"self.url--->%@", self.url);
+    NSLog(@"self.url--->%@", self.url);
     [DataTool  getMoreGoodsDataWithStr:self.url parameters:nil success:^(id responseObject) {
         NSLog(@"---%@", responseObject);
         if ([responseObject isKindOfClass:[NSString class]]) {
@@ -59,15 +59,8 @@
         }
         
         [self.tableView reloadData];
-        if (self.tableView.contentSize.height > HEIGHT - 64) {
-            // 脚视图
-            FooterViewInShop * tableFooterV = [[FooterViewInShop alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 35 * IPHONE6_H_SCALE)];
-            self.tableView.tableFooterView = tableFooterV;
-        }else{
-            FooterViewInShop * footerV = [[FooterViewInShop alloc] initWithFrame:CGRectMake(0, HEIGHT - 64-35*IPHONE6_H_SCALE, WIDTH, 35*IPHONE6_H_SCALE)];
-            [self.tableView addSubview:footerV];
-            
-        }
+        FooterViewInShop * footerV = [[FooterViewInShop alloc] initWithFrame:CGRectMake(0, HEIGHT - 35 * IPHONE6_H_SCALE, WIDTH, 35 * IPHONE6_H_SCALE)];
+        [self.view addSubview:footerV];
     } failure:^(NSError * error) {
         
         NSLog(@"获取数据错误：%@", error);
@@ -84,7 +77,7 @@
 
 - (void)addTableView{
     
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 64) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 64-35*IPHONE6_H_SCALE) style:UITableViewStylePlain];
     [self.view addSubview:self.tableView];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;

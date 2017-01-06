@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "NavigationHiddenVC.h"
 #import "SpecialModel.h"
-@interface SpecialDetailVC : UIViewController
+@interface SpecialDetailVC : NavigationHiddenVC
 
 @property (nonatomic, copy) NSString * wapurl;
 @property (nonatomic, strong) SpecialModel * specialModel;

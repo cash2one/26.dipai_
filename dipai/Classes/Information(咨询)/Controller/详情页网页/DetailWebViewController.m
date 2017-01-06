@@ -32,6 +32,32 @@
 
 // 普通人主页
 #import "AnyBodyVC.h"
+// 视频详情页
+#import "VideoViewController.h"
+//  赛事详情页
+#import "MatchDetailVC.h"
+//
+#import "PostDetailVC.h"
+// 扑克名人堂页面
+#import "PokerVC.h"
+// 名人堂列表
+#import "MorePokersVC.h"
+// 视频专辑页面
+#import "AlbumVC.h"
+// 俱乐部详情页
+#import "ClubDetailViewController.h"
+// 专题列表
+#import "SpecialViewController.h"
+// 专题详情页
+#import "SpecialDetailVC.h"
+// 全部视频专辑
+#import "MoreVideosVC.h"
+// 名人主页
+#import "StarVC.h"
+// 普通用户主页
+#import "AnyBodyVC.h"
+// H5页面
+#import "H5ViewController.h"
 
 // 数据库
 #import "DataBase.h"
@@ -44,12 +70,56 @@
 
 #import "Masonry.h"
 #import <JavaScriptCore/JavaScriptCore.h>
+#import "AFHTTPSessionManager.h"
+#import "HttpTool.h"
 @interface DetailWebViewController ()<BottomViewDelegate, CommentViewDelegate, LSAlertViewDeleagte, UMSocialUIDelegate, UIWebViewDelegate, UIScrollViewDelegate>
 
 {
     // 发表的内容
     NSString * _sendContent;
+    // 网页中跳转的URL
+    NSString * _url;
+    // 当前网页的网址
+    NSString * _webURL;
 }
+typedef NS_ENUM(NSUInteger, LSType) {
+    /** 资讯 */
+    LSTypeInfo = 2,
+    /** 图集 */
+    LSTypePictures = 4,
+    /** 赛事 */
+    LSTypeMatch = 5,
+    /** 赛事 详情页*/
+    LSTypeMatchDetail = 51,
+    /** 直播 */
+    LSTypeLive = 6,
+    /** 视频 */
+    LSTypeVideo = 11,
+    /** 帖子详情 */
+    LSTypePostDetail = 172,
+    
+    /** 视频专辑 */
+    LSTypeVideoList = 101,
+    /** 全部视频专辑 */
+    LSTypeAllVideo = 10,
+    /** 帖子列表 */
+    LSTypePostList = 171,
+    /** 名人堂*/
+    LSTypePokerStar = 151,
+    /** 名人主页*/
+    LSTypeStar = 153,
+    /** 名人堂列表 */
+    LSTypePokerStarList = 152,
+    /** 俱乐部详细页面 */
+    LSTypeClubDetail = 81,
+    /** 专题 */
+    LSTypeSpecial = 9,
+    /** 专题列表 */
+    LSTypeSpecialList = 18,
+    
+    // H5活动
+    LSTypeH5 = 201
+};
 
 /**
  *  文章类型
@@ -158,7 +228,6 @@
     [super viewWillAppear:YES];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
     // 每次进来的时候都要检测是否登录
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
@@ -183,6 +252,73 @@
             
         }];
     }
+
+}
+
+- (void)loadWebViewAgain{
+    
+    [_webView removeFromSuperview];
+    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
+    webView.delegate = self;
+    webView.scalesPageToFit = YES;
+    [self.view addSubview:webView];
+    [webView setScalesPageToFit:YES];
+    _webView = webView;
+    
+    NSURL * URL = [NSURL URLWithString:_webURL];
+    //    NSURL * URL = [NSURL URLWithString:@"http://www.baidu.com"];
+    NSURLRequest * request = [NSURLRequest requestWithURL:URL];
+    [webView loadRequest:request];
+    
+    
+    JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+     [self.picsArr removeAllObjects];
+    context[@"image_add_i"] = ^() { // 通过block回调获得h5传来的数据
+        NSArray *args = [JSContext currentArguments];
+        // 数组中装数组
+        [self.picsArr addObject:args];
+//        NSLog(@"self.picsArr.count:%lu", self.picsArr.count);
+    };
+    
+    context[@"image_show_i"] = ^() {
+        NSArray *args = [JSContext currentArguments];
+        //        NSLog(@"%@", args);
+        for (JSValue *jsVal in args) {
+            //            NSLog(@"%@", jsVal);
+            _picIndex = jsVal;
+            // 展示图片
+            [self showBigPic];
+        }
+        JSValue *this = [JSContext currentThis];
+        NSLog(@"this: %@",this);
+    };
+#warning 未进行测试
+    // 获取网页中注入的跳转页面的JS方法
+    context[@"getURL"] = ^(){
+        NSArray *args = [JSContext currentArguments];
+        for (JSValue *jsVal in args) {
+            _url = jsVal.toString;
+            NSLog(@"%@", _url);
+            [self turnPageWithURL:_url];
+        }
+    };
+    
+    // 登录事件
+    context[@"login"] = ^() { // 通过block回调获得h5传来的数据
+        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+        NSString * cookieName = [defaults objectForKey:Cookie];
+        NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+        NSLog(@"---用户迷宫%@,", cookieName);
+        if (cookieName  || wxData) {
+            
+        }else{  // 如果没有登录进行登录
+            LoginViewController * loginVC = [[LoginViewController alloc] init];
+            [self.navigationController pushViewController:loginVC animated:YES];
+        }
+        
+    };
+
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -191,31 +327,34 @@
     
     [_leftBtn removeFromSuperview];
     [SVProgressHUD dismiss];
+    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
+    // 设置导航栏
+    [self setNavigationBar];
     NSLog(@"跳转到网页详情页的接口：%@", self.url);
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    // 请求数据
-    [self getData];
+    NSLog(@"%@", self.weburl);
     // 添加底部评论框
     [self addBottomView];
-    // 设置导航栏
-    [self setUpNavigationBar];
-    // 添加评论视图
-//    [self addCommentView];
-    
-    
+    // 请求数据
+    [self getData];
     // 在分享中添加自定义按钮
     [self addCustomShareBtn];
-    
     // 对键盘添加监听
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardChanged:) name:UIKeyboardWillChangeFrameNotification object:nil];
+}
+
+- (void)setNavigationBar{
+    
+    self.naviBar.titleStr = @"";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)dealloc{
@@ -303,7 +442,7 @@
     BottomView * bottomView = [[BottomView alloc] init];
     bottomView.delegate = self;
     CGFloat x = 0;
-    CGFloat y = HEIGHT - Margin92 * IPHONE6_H_SCALE - 64;
+    CGFloat y = HEIGHT - Margin92 * IPHONE6_H_SCALE;
     CGFloat w = WIDTH;
     CGFloat h = Margin92 * IPHONE6_H_SCALE;
     bottomView.frame = CGRectMake(x, y, w, h);
@@ -313,61 +452,61 @@
 
 - (void)getData
 {
-    [DataTool getDataInWebViewWithStr:self.url parameters:nil success:^(NSArray * array) {
-        
-        WebDetailModel * model = array[0];
-        NSString * type = array[1];
+    NSLog(@"开始请求数据...");
+    if (self.responseObject) {  // 如果是上个页面传递过来的数据
+        NSDictionary * contentDic = self.responseObject[@"content"];
+        // 字典转模型
+        WebDetailModel * model = [WebDetailModel objectWithKeyValues:contentDic];
+        NSString * type = self.responseObject[@"type"];
+        NSLog(@"%@", model.is_collection);
         _model = model;
-        
+        NSLog(@"%@", _model.is_collection);
         _type = type;
         _wapurl = model.wapurl;
-        // 设置数据
-        [self setData];
-        
         // 设置网页内容
-        [self setUpView:_wapurl];
-    } failure:^(NSError * error) {
-        
-        NSLog(@"错误信息：%@", error);
-    }];
+        if (!self.weburl) {
+            [self setUpView:_wapurl];
+        }else{
+            [self setUpView:self.weburl];
+        }
+        // 设置数据
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self setData];
+//            });
+    }else{
+        [DataTool getDataInWebViewWithStr:self.url parameters:nil success:^(NSArray * array) {
+            WebDetailModel * model = array[0];
+            NSString * type = array[1];
+            _model = model;
+            _type = type;
+            _wapurl = model.wapurl;
+            // 设置数据
+            [self setData];
+            // 设置网页内容
+            [self setUpView:_wapurl];
+        } failure:^(NSError * error) {
+            NSLog(@"错误信息：%@", error);
+        }];
+    }
 }
 
 #pragma mark --- 设置数据
 - (void)setData{
-    
     // 设置评论数
-//    NSLog(@"---发表评论数---%@", _model.commentNumber);
-    
     NSInteger commentNum = _model.commentNumber.integerValue;
-//    NSLog(@"%lu", commentNum);
+    NSLog(@"%lu", commentNum);
     if (commentNum > 0) {
-        
         _bottomView.commentsLbl.hidden = NO;
         if (commentNum >= 100) {
-             _bottomView.commentsLbl.text = @"99+";
+            _bottomView.commentsLbl.text = @"99+";
         }else{
-            
-             _bottomView.commentsLbl.text = _model.commentNumber;
+            _bottomView.commentsLbl.text = _model.commentNumber;
         }
     }else{
-    
         _bottomView.commentsLbl.hidden = YES;
     }
-//    if ([_model.commentNumber integerValue] >= 100) {
-//        _botomView.hidden = NO;
-//        _bottomView.commentsLbl.text = @"99+";
-//    } else{
-//        if ([_model.commentNumber integerValue] == 0) {
-//            _bottomView.commentsLbl.hidden = YES;
-//        }else{
-//            _botomView.hidden = NO;
-//            _bottomView.commentsLbl.text = _model.commentNumber;
-//        }
-//        
-//    }
     // 判断收藏按钮的状态
-    
-//    NSLog(@"---收藏的状态---%@", _model.is_collection);
+    NSLog(@"---收藏的状态---%@", _model.is_collection);
     if ([_model.is_collection isEqualToString:@"1"]) {
         _bottomView.collectionBtn.selected = YES;
     } else{
@@ -378,7 +517,9 @@
 #pragma mark --- 请求网页
 - (void)setUpView:(NSString *)url
 {
-    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
+    _webURL = url;
+    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
+//    webView.backgroundColor = [UIColor redColor];
     webView.delegate = self;
     webView.scalesPageToFit = YES;
     [self.view addSubview:webView];
@@ -388,23 +529,16 @@
     NSURL * URL = [NSURL URLWithString:url];
 //    NSURL * URL = [NSURL URLWithString:@"http://www.baidu.com"];
     NSURLRequest * request = [NSURLRequest requestWithURL:URL];
-    [webView loadRequest:request];
+   [webView loadRequest:request];
+   
     
     JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
-    NSLog(@"%@", context);
     context[@"image_add_i"] = ^() { // 通过block回调获得h5传来的数据
     
         NSArray *args = [JSContext currentArguments];
-//        NSLog(@"%@", args);
         // 数组中装数组
         [self.picsArr addObject:args];
-//        NSLog(@"%@", self.picsArr);
-        
-//        for (JSValue *jsVal in args) {
-//            NSLog(@"－－%@", jsVal);
-//        }
-//        JSValue *this = [JSContext currentThis];
-//        NSLog(@"this: %@",this);
+//        NSLog(@"self.picsArr.count:%lu", self.picsArr.count);
     };
     
     context[@"image_show_i"] = ^() {
@@ -419,6 +553,130 @@
         JSValue *this = [JSContext currentThis];
         NSLog(@"this: %@",this);
     };
+#warning 未进行测试
+    // 获取网页中注入的跳转页面的JS方法
+    context[@"getURL"] = ^(){
+        NSArray *args = [JSContext currentArguments];
+        for (JSValue *jsVal in args) {
+            _url = jsVal.toString;
+            NSLog(@"%@", _url);
+            [self turnPageWithURL:_url];
+        }
+    };
+    
+    // 登录事件
+    context[@"login"] = ^() { // 通过block回调获得h5传来的数据
+        LoginViewController * loginVC = [[LoginViewController alloc] init];
+        [self.navigationController pushViewController:loginVC animated:YES];
+        
+    };
+}
+// 跳转页面（根据type类型跳）
+- (void)turnPageWithURL:(NSString *)url{
+    
+    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+    //设置监听
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (status == AFNetworkReachabilityStatusNotReachable) {
+            NSLog(@"没有网络");
+            [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+        }else{
+        }
+    }];
+    [manager startMonitoring];
+    [HttpTool GET:url parameters:nil success:^(id responseObject) {
+        NSString * type = responseObject[@"type"];
+        NSInteger num = [type integerValue];
+        if (num == LSTypeInfo || num == LSTypePictures) {
+            // 跳转到资讯页面或图集页面
+            DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+            detailVC.url = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        } else if (num == LSTypeVideo){ // 如果是视频
+            // 跳转到视频专辑页
+            VideoViewController * videoVC = [[VideoViewController alloc] init];
+            videoVC.url = url;
+            videoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:videoVC animated:YES];
+        } else if (num == LSTypeMatchDetail){  // 如果是赛事详情页
+            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+            detailVC.wapurl = url;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        }else if (num == LSTypePostDetail){ // 如果是帖子详情页
+            PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+            postDetail.wapurl = url;
+            postDetail.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:postDetail animated:YES];
+        }else if (num == LSTypePokerStar){  // 扑克名人堂页面
+            PokerVC * pokerVC = [[PokerVC alloc] init];
+            pokerVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:pokerVC animated:YES];
+        }else if (num == LSTypePokerStarList){  // 扑克名人堂列表
+            MorePokersVC * morePokers = [[MorePokersVC alloc] init];
+            morePokers.wapurl = MorePokersURL;
+            morePokers.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:morePokers animated:YES];
+        }else if (num == LSTypePostList){   // 帖子列表
+            
+        }else if (num == LSTypeVideoList){  // 视频专辑
+            AlbumVC * albumVC = [[AlbumVC alloc] init];
+            albumVC.hidesBottomBarWhenPushed = YES;
+            albumVC.wapurl = url;
+            [self.navigationController pushViewController:albumVC animated:YES];
+        }else if (num == LSTypeClubDetail){ // 俱乐部详情页
+            NSString * title = responseObject[@"data"][@"title"];
+            ClubDetailViewController * clubDetaiVC = [[ClubDetailViewController alloc] init];
+            clubDetaiVC.wapurl = url;
+            clubDetaiVC.title = title;
+            clubDetaiVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:clubDetaiVC animated:YES];
+        }else if (num == LSTypeSpecial){    // 专题
+            SpecialViewController * specialVC = [[SpecialViewController alloc] init];
+            specialVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:specialVC animated:YES];
+        }else if (num == LSTypeSpecialList){    // 专题列表
+            SpecialDetailVC * specialVC = [[SpecialDetailVC alloc] init];
+            specialVC.wapurl = url;
+            specialVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:specialVC animated:YES];
+        }else if (num == LSTypeAllVideo){   // 全部视频专辑
+            MoreVideosVC * moreVideoVC = [[MoreVideosVC alloc] init];
+            moreVideoVC.moreURL = url;
+            moreVideoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:moreVideoVC animated:YES];
+        }else if (num == LSTypeStar){   // 名人主页
+            if ([responseObject[@"data"][@"certified"] isKindOfClass:[NSNull class]]) {
+                AnyBodyVC * anyBodyVC = [[AnyBodyVC alloc] init];
+                anyBodyVC.userURL = url;
+                anyBodyVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:anyBodyVC animated:YES];
+            }else{
+                StarVC * starVC = [[StarVC alloc] init];
+                starVC.userURL = url;
+                starVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:starVC animated:YES];
+            }
+            
+        }
+        else if(num == LSTypeH5){  // 如果是内部H5页面
+#warning 未进行测试
+            NSString * wapurl = responseObject[@"content"];
+            H5ViewController * h5VC = [[H5ViewController alloc] init];
+            h5VC.wapurl = wapurl;
+            [self.navigationController pushViewController:h5VC animated:YES];
+        }
+        else{   // 未识别type
+            NSLog(@"---%@",url);
+
+        }
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
+        
+        NSLog(@"出错：%@",error);
+    }];
+
 }
 
 
@@ -456,6 +714,7 @@
         index = index + 1;
         _pageLbl = [[UILabel alloc] init];
         _pageLbl.text = [NSString stringWithFormat:@"%d/%lu" ,index, self.picsArr.count];
+        NSLog(@"%@", _pageLbl.text);
         self.currentPage = index;
         _pageLbl.textAlignment = NSTextAlignmentCenter;
         _pageLbl.textColor = [UIColor whiteColor];
@@ -773,18 +1032,47 @@
     // 加载完成后消失
 //    [SVProgressHUD dismiss];
     NSLog(@"加载完成...");
-// 能够缩小、放大网页
-//     [webView stringByEvaluatingJavaScriptFromString:@"var element = document.createElement('meta');  element.name = \"viewport\";  element.content = \"width=device-width,initial-scale=1.0,minimum-scale=0.5,maximum-scale=3,user-scalable=1\"; var head = document.getElementsByTagName('head')[0]; head.appendChild(element);"];
     
+    JSContext *context = [_webView  valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+    NSLog(@"%@", context);
+    context[@"image_add_i"] = ^() { // 通过block回调获得h5传来的数据
+        
+        NSArray *args = [JSContext currentArguments];
+        // 数组中装数组
+        [self.picsArr removeAllObjects];
+        [self.picsArr addObject:args];
+        
+    };
     
-    // 用户判断登录后是否是同一个cookie
-//    NSArray * cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-//    for (NSHTTPCookie * cookie in cookies) {
-//        NSString * name = [cookie name];
-//        NSLog(@"---name---%@", name);
-//        
-//    }
+    context[@"image_show_i"] = ^() {
+        NSArray *args = [JSContext currentArguments];
+        //        NSLog(@"%@", args);
+        for (JSValue *jsVal in args) {
+            //            NSLog(@"%@", jsVal);
+            _picIndex = jsVal;
+            // 展示图片
+            [self showBigPic];
+        }
+        JSValue *this = [JSContext currentThis];
+        NSLog(@"this: %@",this);
+    };
+#warning 未进行测试
+    // 获取网页中注入的跳转页面的JS方法
+    context[@"getURL"] = ^(){
+        NSArray *args = [JSContext currentArguments];
+        for (JSValue *jsVal in args) {
+            _url = jsVal.toString;
+            NSLog(@"%@", _url);
+            [self turnPageWithURL:_url];
+        }
+    };
     
+    // 登录事件
+    context[@"login"] = ^() { // 通过block回调获得h5传来的数据
+        LoginViewController * loginVC = [[LoginViewController alloc] init];
+        [self.navigationController pushViewController:loginVC animated:YES];
+        
+    };
 
 
 }
@@ -804,36 +1092,30 @@
 }
 
 #pragma mark --- CommentViewDelegate
+// 发表按钮
 - (void)commnetView:(CommentView *)commentView sendMessage:(NSString *)message
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * cookieName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (cookieName || wxData) {
+        // 先判断是否异地登录
         NSLog(@"已经登录。。。进行发表");
-        /*
-         http://10.0.0.14:8080/app/add_comment
-         发送：id（被评论的id）,types(0:评论 1：回复),type(模块),content
-         */
         NSMutableDictionary * CommentDic = [NSMutableDictionary dictionary];
-        //        CommentDic[@"id"] = self.newsModel.iD;
         CommentDic[@"id"] = _model.iD;
         CommentDic[@"types"] = @"0";
         CommentDic[@"type"] = _type;
         CommentDic[@"content"] = _commentView.textView.text;
         [DataTool postWithStr:SendComment parameters:CommentDic success:^(id responseObject) {
-            
             NSLog(@"发表评论返回的数据---%@", responseObject);
             NSString * content = [responseObject objectForKey:@"content"];
             NSLog(@"－－content--%@", content);
         } failure:^(NSError * error) {
             
             NSLog(@"发表评论的错误信息%@", error);
-            
         }];
         // 移除评论视图
         [self removeFromSuperviewAction];
-        
         // 显示发表成功
         [SVProgressHUD showSuccessWithStatus:@"发表成功"];
     }else{
@@ -948,25 +1230,29 @@
     NSString * userName = [defaults objectForKey:Cookie];
     NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
     if (userName || wxData) { // 如果已经登录
-        if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
-            
-            // 进行收藏
-            [self collectOrCancelCollect];
-            [SVProgressHUD showSuccessWithStatus:@"收藏成功"];
-        } else{     // 如果收藏按钮被选中
-            
-            //  取消收藏
-            [self collectOrCancelCollect];
-            [SVProgressHUD showSuccessWithStatus:@"已取消收藏"];
-            
-        }
-        _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
+        [self collectionWhenLogin];
     } else  // 如果没有登录
     {
         [self addAlertViewWithMessage:@"请在登录后进行操作"];
     }
   
+}
+// 登录之后的操作
+- (void)collectionWhenLogin{
     
+    if (!_bottomView.collectionBtn.selected) {  // 如果收藏按钮没有被选中
+        
+        // 进行收藏
+        [self collectOrCancelCollect];
+        [SVProgressHUD showSuccessWithStatus:@"收藏成功"];
+    } else{     // 如果收藏按钮被选中
+        
+        //  取消收藏
+        [self collectOrCancelCollect];
+        [SVProgressHUD showSuccessWithStatus:@"已取消收藏"];
+        
+    }
+    _bottomView.collectionBtn.selected = !_bottomView.collectionBtn.selected;
 }
 
 #pragma mark --- 收藏或取消收藏

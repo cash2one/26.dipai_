@@ -82,16 +82,16 @@
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewDidLoad {
@@ -99,10 +99,8 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    
     // 设置导航栏
     [self setUpNavigationBar];
-    
     // 添加滚动视图
     [self addScrollView];
     
@@ -111,11 +109,11 @@
 #pragma mark --- 设置导航栏
 - (void)setUpNavigationBar
 {
-//    [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui_baise"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-    
+    self.naviBar.titleStr = @"";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui_baise"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
     [self addSegmentControl];
-    
 }
 #pragma mark --- 添加分段控件
 - (void)addSegmentControl{
@@ -135,10 +133,11 @@
     // 正常情况下的字体颜色
     [_segmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:[UIFont systemFontOfSize:15]} forState:UIControlStateNormal];
     
-    _segmented.frame=CGRectMake( 0 , 0, 250 * IPHONE6_W_SCALE , 44 );
+    _segmented.frame=CGRectMake( (WIDTH - 250 * IPHONE6_W_SCALE)*0.5 , 20, 250 * IPHONE6_W_SCALE , 44 );
     // 为分段控件添加点事件
     [_segmented addTarget:self action:@selector(segmentedClick:) forControlEvents:UIControlEventValueChanged];
-    self.navigationItem.titleView = _segmented;
+    [self.naviBar addSubview:_segmented];
+//    self.navigationItem.titleView = _segmented;
 }
 // 分段控件的点击事件
 -(void)segmentedClick:(UISegmentedControl*)seg{
@@ -160,7 +159,7 @@
 
 #pragma mark --- 添加滚动视图
 - (void)addScrollView {
-    _sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, WIDTH , HEIGHT - 64)];
+    _sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 64, WIDTH , HEIGHT - 64)];
     _sc.contentSize=CGSizeMake(WIDTH * 3 , HEIGHT - 64);
     _sc.delegate=self;
     _sc.bounces=NO;

@@ -22,6 +22,8 @@
 @property (nonatomic, strong) UIView * lineV;
 
 @property (nonatomic, strong) UILabel * numLbl;
+// 非会员积分
+@property (nonatomic, strong) UILabel * feVIPLbl;
 @end
 
 @implementation MoreGoodsCell
@@ -68,11 +70,29 @@
     
     // 积分
     UILabel * numLbl = [[UILabel alloc] init];
+//    numLbl.backgroundColor = [UIColor greenColor];
     numLbl.font = Font16;
     numLbl.textColor = [UIColor redColor];
     [self addSubview:numLbl];
     _numLbl = numLbl;
-    
+    // 非会员积分
+    UILabel * feVIPLbl = [[UILabel alloc] init];
+//    feVIPLbl.backgroundColor = [UIColor redColor];
+    feVIPLbl.font = Font12;
+    feVIPLbl.textColor = Color102;
+    [self addSubview:feVIPLbl];
+    _feVIPLbl = feVIPLbl;
+    feVIPLbl.hidden = YES;
+    // 删除线
+    UILabel * deleteLbl = [[UILabel alloc] init];
+    deleteLbl.backgroundColor = Color102;
+    [feVIPLbl addSubview:deleteLbl];
+    [deleteLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(feVIPLbl.mas_centerX);
+        make.centerY.equalTo(feVIPLbl.mas_centerY);
+        make.width.equalTo(feVIPLbl.mas_width).offset(2);
+        make.height.equalTo(@(1));
+    }];
     // 分割线
     UIView * lineV = [[UIView alloc] init];
     lineV.backgroundColor = Color229;
@@ -88,9 +108,31 @@
     [_picV sd_setImageWithURL:[NSURL URLWithString:_goodsModel.goods_img] placeholderImage:[UIImage imageNamed:@"123"]];
     // 标题
     _titleLbl.text = _goodsModel.goods_name;
-    NSMutableAttributedString * numStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", _goodsModel.shop_price]];
+    
+    NSMutableAttributedString * numStr = nil;
+    if ([_goodsModel.vip_price isEqualToString:@"0"]) {
+        
+        _feVIPLbl.hidden = YES;
+       numStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", _goodsModel.shop_price]];
+    }else{
+        _feVIPLbl.hidden = NO;
+        numStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"积分：%@", _goodsModel.vip_price]];
+         _feVIPLbl.text = _goodsModel.shop_price;
+    }
+    
     [numStr addAttribute:NSFontAttributeName value:Font12 range:NSMakeRange(0, 3)];
     _numLbl.attributedText = numStr;
+    // 非会员积分
+   
+//    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+//    NSString * cookieName = [defaults objectForKey:Cookie];
+//    NSDictionary * wxData = [defaults objectForKey:WXUser]; // face/userid/username
+//    NSLog(@"---用户迷宫%@,", cookieName);
+//    if (cookieName  || wxData) {
+//        _feVIPLbl.hidden = NO;
+//    }else{
+//        _feVIPLbl.hidden = YES;
+//    }
 }
 
 - (void)layoutSubviews{
@@ -105,11 +147,24 @@
     }];
     
     // 积分
+    NSMutableDictionary * numDic = [NSMutableDictionary dictionary];
+    numDic[NSFontAttributeName] = Font14;
+    CGFloat numWidth = [_numLbl.text sizeWithAttributes:numDic].width;
     [_numLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(_picV.mas_right).offset(12 * IPHONE6_W_SCALE);
         make.bottom.equalTo(self.mas_bottom).offset(- 27 * 0.5 * IPHONE6_H_SCALE);
-        make.width.equalTo(@(WIDTH-174 * IPHONE6_W_SCALE));
+        make.width.equalTo(@(numWidth));
         make.height.equalTo(@(16 * IPHONE6_H_SCALE));
+    }];
+    // 非会员积分
+    NSMutableDictionary * feNumDic = [NSMutableDictionary dictionary];
+    feNumDic[NSFontAttributeName] = Font12;
+    CGFloat feWidth = [_feVIPLbl.text sizeWithAttributes:feNumDic].width;
+    [_feVIPLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(_numLbl.mas_right).offset(8 * IPHONE6_W_SCALE);
+        make.bottom.equalTo(_numLbl.mas_bottom).offset(-1);
+        make.width.equalTo(@(feWidth+1*IPHONE6_W_SCALE));
+        make.height.equalTo(@(12 * IPHONE6_W_SCALE));
     }];
     
     // 标题

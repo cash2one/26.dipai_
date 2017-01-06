@@ -22,6 +22,9 @@
 // 用来装imageView
 @property (nonatomic, strong) NSMutableArray * imagesArr;
 
+@property (nonatomic, strong) UIImage * image;
+@property (nonatomic, assign) CGFloat height;
+
 @end
 @implementation DetailPhotoView
 - (NSMutableArray *)imagesArr{
@@ -61,8 +64,6 @@
 - (void)tapClick:(UITapGestureRecognizer *)tap
 {
     
-//    NSLog(@"/.....");
-    
     UIImageView *tapView = (UIImageView *)tap.view;
     // CZPhoto -> MJPhoto
     int i = 0;
@@ -88,7 +89,6 @@
 }
 
 - (void)setPicArr:(NSArray *)picArr{
-    
     _picArr = picArr;
     NSMutableArray * arr = [NSMutableArray array];
     if (picArr.count >= 9) {
@@ -97,20 +97,18 @@
         }
         _picArr = (NSArray *)arr;
     }
-//     [self layoutSubviews];
     NSUInteger counts = self.subviews.count;
-    
     for (int i = 0; i < counts; i ++) {
         UIImageView * imageView = self.subviews[i];
         // 9张图片以内显示上传的所有图片
         if (i < _picArr.count) {
-            // 显示
             imageView.hidden = NO;
             if (picArr.count > 0) {
                 SDWebImageOptions options = SDWebImageRetryFailed | SDWebImageLowPriority;
-                [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"placeholder"] options:options];
+                [imageView sd_setImageWithURL:_picArr[i] placeholderImage:[UIImage imageNamed:@"placeholder"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                    
+                }];
             }
-
         }else
         {
             // 隐藏
@@ -123,29 +121,20 @@
     [super layoutSubviews];
     
     CGFloat height = 0;
-//    CGFloat width = 0;
     if (_picArr.count > 0) {
         for (int i = 0; i < _picArr.count; i ++) {
-          
             UIImageView * imageV = self.subviews[i];
-//            UIImageView * imageV = self.imagesArr[i];
-//
+            
             CGFloat h;    // 图片的高度
             CGFloat w; // 图片的宽度
-//            NSLog(@"%@", _picArr[i]);
             CGSize size = [UIImageView downloadImageSizeWithURL:[NSURL URLWithString:_picArr[i]]];
-            
-//            NSLog(@"宽：%f   %f", size.width, size.height);
-            
+            NSLog(@"宽：%f   %f", size.width, size.height);
             if (size.width <= 0.f || size.height <= 0.f) {
                  UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:_picArr[i]]]];
                 size = img.size;
             }
             h = size.height * IPHONE6_W_SCALE;
             w = size.width * IPHONE6_W_SCALE;
-//            NSLog(@"%@", _picArr[i]);
-//            NSLog(@"%f---%f", h, w);
-            
             CGFloat scale = 1.0;
             if (w == 0) {   // 如果获取不到图片的大小
                 w = WIDTH - 30 * IPHONE6_W_SCALE;
@@ -159,24 +148,16 @@
                     h = size.height * IPHONE6_W_SCALE;
                 }
             }
-
-            
-            if (w >0 && w < WIDTH - 30 * IPHONE6_W_SCALE) { // 图片剧中显示
+            if (w >0 && w < WIDTH - 30 * IPHONE6_W_SCALE) { // 图片居中显示
                 imageV.frame = CGRectMake(self.center.x-w/2-10, 0 + height, w, h);
             }else{
-//                NSLog(@"图片宽比较大...");
+                //                NSLog(@"图片宽比较大...");
                 imageV.frame = CGRectMake(0, 0 + height, WIDTH - 30 * IPHONE6_W_SCALE, h);
             }
-            
-
             height = height + h + 8*IPHONE6_H_SCALE;
-//            imageV.backgroundColor = [UIColor redColor];
-//            SDWebImageOptions options = SDWebImageRetryFailed | SDWebImageLowPriority;
-//            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"placeholder"] options:options];
             
         }
     }
     
 }
-
 @end

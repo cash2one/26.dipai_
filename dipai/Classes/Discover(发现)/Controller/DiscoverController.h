@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface DiscoverController : UIViewController
+#import "NavigationHiddenVC.h"
+@interface DiscoverController : NavigationHiddenVC
 
 @end

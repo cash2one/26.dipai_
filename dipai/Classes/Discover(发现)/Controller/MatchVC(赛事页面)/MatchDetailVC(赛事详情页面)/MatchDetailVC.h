@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "NavigationHiddenVC.h"
 @class EndMatchModel;
-@interface MatchDetailVC : UIViewController
+@interface MatchDetailVC : NavigationHiddenVC
 
 @property (nonatomic, strong) EndMatchModel * matchModel;
 

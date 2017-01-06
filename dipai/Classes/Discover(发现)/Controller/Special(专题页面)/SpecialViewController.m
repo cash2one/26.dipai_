@@ -42,94 +42,44 @@
     [super viewWillAppear:YES];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    
-    //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
-    //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+
 }
-//- (void)viewWillAppear:(BOOL)animated{
-//    [super viewWillAppear:YES];
-//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-//    self.navigationController.navigationBarHidden = YES;
-//    
-//}
-//- (void)viewWillDisappear:(BOOL)animated{
-//    [super viewWillDisappear:YES];
-//    self.navigationController.navigationBarHidden = NO;
-//    // 开启
-//    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
-//        self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-//    }
-//}
-//
-//- (void)viewDidAppear:(BOOL)animated
-//{
-//    [super viewDidAppear:animated];
-//    
-//    // 禁用 iOS7 返回手势
-//    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
-//        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-//    }
-//}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     self.view.backgroundColor = [UIColor whiteColor];
-    
     // 设置导航栏
     [self setUpNavigationBar];
-    
     [self addTableView];
-    
     [self getData];
 }
 
 - (void)setUpNavigationBar{
+    /*
     [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
     self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui_baise"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-//    UIView * navigationBar = [[UIView alloc] init];
-//    [self.view addSubview:navigationBar];
-//    navigationBar.backgroundColor = [UIColor blackColor];
-//    navigationBar.frame = CGRectMake(0, 0, WIDTH, 64);
-//    
-//    UIImageView * popView = [[UIImageView alloc] init];
-//    [self.view addSubview:popView];
-//    popView.frame = CGRectMake(15, 30, 10 * IPHONE6_W_SCALE, 19 * IPHONE6_W_SCALE);
-//    popView.image = [UIImage imageNamed:@"houtui_baise"];
-//    
-//    UIButton * popBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    [self.view addSubview:popBtn];
-//    popBtn.frame = CGRectMake(0, 20, 50, 44);
-//    popBtn.backgroundColor =[UIColor clearColor];
-//    [popBtn addTarget:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-}
-
-- (void)pop{
-    [self.navigationController popViewControllerAnimated:YES];
+     */
+    self.naviBar.titleStr = @"";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui_baise"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark --- 添加表格
 - (void)addTableView{
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT  - 64) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT  - 64) style:UITableViewStylePlain];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    //    NSLog(@"表格的高度：%f", self.tableView.frame.size.height);
     [self.view addSubview:self.tableView];
-    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     // 添加下拉刷新控件
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
     // 隐藏状态

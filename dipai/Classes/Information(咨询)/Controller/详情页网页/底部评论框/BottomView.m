@@ -34,7 +34,6 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        
         // 设置子控件
         [self setUpChildControl];
     }
@@ -142,9 +141,7 @@
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     [btn setImage:image forState:UIControlStateNormal];
     [btn setImage:image forState:UIControlStateHighlighted];
-    
     [btn addTarget:target action:action forControlEvents:controlEvents];
-    
     btn.tag = self.subviews.count;
     
     [self addSubview:btn];

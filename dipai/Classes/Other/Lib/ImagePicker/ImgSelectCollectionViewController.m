@@ -181,6 +181,7 @@ static NSString * const reuseIdentifier = @"Cell";
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
+    NSLog(@"某个分组中的相片数量：%lu", self.assetModels.count);
     return self.assetModels.count;
     
 }

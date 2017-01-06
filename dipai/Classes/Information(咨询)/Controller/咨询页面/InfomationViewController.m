@@ -39,6 +39,10 @@
 #import "StarVC.h"
 // 普通用户主页
 #import "AnyBodyVC.h"
+// H5页面
+#import "H5ViewController.h"
+
+
 // 单元格
 #import "tournamentCell.h"
 #import "InformationCell.h"
@@ -71,9 +75,12 @@
 #import "AppDelegate.h"
 #import "AFHTTPSessionManager.h"
 #import "HttpTool.h"
+#import "SVProgressHUD.h"
 @interface InfomationViewController ()<UIScrollViewDelegate ,UITableViewDataSource, UITableViewDelegate, AdvertisementViewDelegate, AppDelegate>
 {
     NSString * _name;   // 跳转页面接口地址
+    NSString * _downLoadURL;// AppStore链接
+    NSString *_requestURL;  // 请求URL
 }
 typedef NS_ENUM(NSUInteger, LSType) {
     /** 资讯 */
@@ -108,7 +115,10 @@ typedef NS_ENUM(NSUInteger, LSType) {
     /** 专题 */
     LSTypeSpecial = 9,
     /** 专题列表 */
-    LSTypeSpecialList = 18
+    LSTypeSpecialList = 18,
+    
+    // H5活动
+    LSTypeH5 = 201
 };
 
 
@@ -132,6 +142,8 @@ typedef NS_ENUM(NSUInteger, LSType) {
 @property (nonatomic, strong) UIView * popView;
 // 弹窗的背景图
 @property (nonatomic, strong)  UIView * backView;
+
+@property (nonatomic, strong) UIView * versionBackView;
 @end
 
 @implementation InfomationViewController
@@ -168,13 +180,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
-    
-//    [MobClick beginLogPageView:@"InfomationViewController"];
-    
-//    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
-    
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
 }
 
@@ -182,51 +187,25 @@ typedef NS_ENUM(NSUInteger, LSType) {
 {
     [super viewWillDisappear:YES];
     
-//    [MobClick endLogPageView:@"InfomationViewController"];
-    
-//    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+    [HttpTool pauseWithURL:_requestURL];
+
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-
+     [self  setUpNaviBar];
     AppDelegate * delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     delegate.delegate = self;
-    
     // 搭建UI
     [self createUI];
-    // 添加下拉刷新控件
-    MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
-    // 隐藏状态
-    [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
-    header.stateLabel.font = [UIFont systemFontOfSize:14];
-    header.stateLabel.textColor = [UIColor lightGrayColor];
-    header.lastUpdatedTimeLabel.hidden = YES;
-    // 设置自动切换透明度(在导航栏下面自动隐藏)
-    header.automaticallyChangeAlpha = YES;
-    // 设置header
-    self.tableView.header = header;
-    // 马上进入刷新状态
-    [header beginRefreshing];
-    
-    // 添加上拉加载控件
-    //往上拉加载数据.
-    MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
-    // 设置文字
-    //加载更多
-    [footer setTitle:@"正在加载..." forState:MJRefreshStateRefreshing];
-    //没有更多数据
-    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
-    footer.stateLabel.font = [UIFont systemFontOfSize:13];
-    footer.stateLabel.textColor = [UIColor lightGrayColor];
-    // 设置footer
-    self.tableView.footer = footer;
     
 //    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
+    
+}
+
+- (void)setUpNaviBar{
+    
+    self.naviBar.titleStr = @"资讯";
 }
 
 
@@ -242,6 +221,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
             // 跳转到资讯页面或图集页面
             DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
             detailVC.url = url;
+            detailVC.responseObject = responseObject;
             detailVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:detailVC animated:YES];
         } else if (num == LSTypeVideo){ // 如果是视频
@@ -310,7 +290,14 @@ typedef NS_ENUM(NSUInteger, LSType) {
                 [self.navigationController pushViewController:starVC animated:YES];
             }
             
-        }else{
+        }else if(num == LSTypeH5){  // 如果是H5页面
+#warning 未进行测试
+            NSString * wapurl = responseObject[@"content"];
+            H5ViewController * h5VC = [[H5ViewController alloc] init];
+            h5VC.wapurl = wapurl;
+            [self.navigationController pushViewController:h5VC animated:YES];
+        }
+        else{   // 未识别type
             
             NSLog(@"%@", url);
         }
@@ -319,44 +306,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
         
         NSLog(@"出错：%@",error);
     }];
-    
-//    if ([url rangeOfString:@"art/view/11"].location != NSNotFound) {
-//        // 跳转到视频专辑页
-//        VideoViewController * videoVC = [[VideoViewController alloc] init];
-//        videoVC.url = url;
-//        videoVC.hidesBottomBarWhenPushed = YES;
-//        [self.navigationController pushViewController:videoVC animated:YES];
-//    }else if ([url rangeOfString:@"art/view/2"].location != NSNotFound || [url rangeOfString:@"art/view/4"].location != NSNotFound){
-//        // 跳转到资讯页面
-//        
-//        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
-//        detailVC.url = url;
-//        detailVC.hidesBottomBarWhenPushed = YES;
-//        [self.navigationController pushViewController:detailVC animated:YES];
-//        
-//    } else if ([url rangeOfString:@"forum/view"].location != NSNotFound){    // 跳转到帖子详情页
-//        
-//        PostDetailVC * postDetail =[[PostDetailVC alloc] init];
-//        postDetail.wapurl = url;
-//        postDetail.hidesBottomBarWhenPushed = YES;
-//        [self.navigationController pushViewController:postDetail animated:YES];
-//        
-//    }else if ([url rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
-//        
-//        // 赛事详情页分为两种情况：1.有直播  2.没有直播
-//        MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-//        detailVC.wapurl = url;
-//        detailVC.hidesBottomBarWhenPushed = YES;
-//        [self.navigationController pushViewController:detailVC animated:YES];
-//        
-//    }else if ([url isEqualToString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]){   // 跳转到AppStore中
-//        
-//        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]];
-//    }
-//    else
-//    {
-//        NSLog(@"%@", url);
-//    }
+    _requestURL = url;
 }
 
 #pragma mark ------ 下拉刷新，加载新的数据
@@ -365,7 +315,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
     if (self.tableView.footer.state == MJRefreshStateRefreshing) return;    // 如果正在加载就不刷新
     // 如果网络有问题结束刷新状态
     [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
-    
     [DataTool getNewDataWithStr:InformationURL parameters:nil success:^(NSArray * arr) {
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
@@ -375,7 +324,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
         // 轮播页的数组
         [self.bannerArr removeAllObjects];
         [self.bannerArr addObjectsFromArray:bannerModelArr];
-        
         // 赛事页的数组
         if (tournamentModelArr.count > 1) {
             NSLog(@"没有赛事");
@@ -386,15 +334,15 @@ typedef NS_ENUM(NSUInteger, LSType) {
             [self.tournamentArr removeAllObjects];
             [self.tournamentArr addObjectsFromArray:tournamentModelArr];
         }
-        
         // 表格的数组
         [self.newslistArr removeAllObjects];
         [self.newslistArr addObjectsFromArray:listModelArr];
         // 添加轮播页
         [self addBannerView];
         [self.tableView reloadData];
-        
+        // 添加提示弹窗
         [self addPopView];
+       
     } failure:^(NSError * error) {
         
          NSLog(@"获取首页错误信息%@", error);
@@ -402,17 +350,154 @@ typedef NS_ENUM(NSUInteger, LSType) {
 
 }
 
-- (void)addPopView{
+- (void)addVersionView{
+    NSLog(@"查看是否需要更新..");
+        // 访问接口，如果有更新提示就显示
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[@"type"] = @"1";
+    dic[@"ver"] = @"2.2.0";
+    [HttpTool POST:DiPaiUpdateURL parameters:dic success:^(id responseObject) {
+//        NSLog(@"%@", responseObject);
+        NSString * versionFlag = responseObject[@"versionupdate"];
+        NSString * content = responseObject[@"content"];
+        if ([versionFlag isEqualToString:@"1"]) {
+            NSString * url = responseObject[@"downloadurl"];
+            NSLog(@"AppStoreURL:%@", url);
+            [self showUpdateViewWithContent:content withDownLoadURL:url];
+        }else{
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+}
+// 显示更新视图
+- (void)showUpdateViewWithContent:(NSString *)content withDownLoadURL:(NSString *)url{
+    UIWindow * window = [UIApplication sharedApplication].keyWindow;
+    UIImageView * versionView = [[UIImageView alloc] init];
+    versionView.image = [UIImage imageNamed:@"gengxinbeijing"];
+    versionView.userInteractionEnabled = YES;
+    UIView * versionBackView = [[UIView alloc] init];
+    _versionBackView = versionBackView;
+    versionBackView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    [window addSubview:versionBackView];
+    [versionBackView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.bottom.equalTo(self.view.mas_bottom);
+        make.top.equalTo(window.mas_top);
+    }];
+    [versionBackView addSubview:versionView];
+    [versionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(versionBackView.mas_top).offset(143 * IPHONE6_H_SCALE);
+        make.width.equalTo(@(546 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(760 * 0.5 * IPHONE6_W_SCALE));
+    }];
     
+    // 标题
+    UILabel * titleLbl = [[UILabel alloc] init];
+    titleLbl.text = @"V2.2版本更新提示";
+    [versionView addSubview:titleLbl];
+    titleLbl.font = Font15;
+    titleLbl.textColor = [UIColor blackColor];
+    titleLbl.textAlignment = NSTextAlignmentCenter;
+    [titleLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(versionView.mas_centerX);
+        make.top.equalTo(versionView.mas_top).offset(91 * IPHONE6_W_SCALE);
+        make.width.equalTo(versionView.mas_width);
+        make.height.equalTo(@(15 * IPHONE6_H_SCALE));
+    }];
+    // 更新内容
+    UILabel * subTitleLbl = [[UILabel alloc] init];
+    subTitleLbl.text = @"更新内容：";
+    [versionView addSubview:subTitleLbl];
+    subTitleLbl.font = Font13;
+    subTitleLbl.textColor = RGBA(51, 51, 51, 1);
+    [subTitleLbl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(versionView.mas_left).offset(24 * IPHONE6_W_SCALE);
+        make.top.equalTo(versionView.mas_top).offset(153 * IPHONE6_W_SCALE);
+        make.width.equalTo(versionView.mas_width);
+        make.height.equalTo(@(13 * IPHONE6_H_SCALE));
+    }];
+    CGRect contentRect = CGRectMake(0, 0, 0, 0);
+    CGFloat contentY = 352 * 0.5 * IPHONE6_W_SCALE;
+    UILabel * lbl = [[UILabel alloc] init];
+//    lbl.backgroundColor = [UIColor redColor];
+    lbl.numberOfLines = 0;
+    lbl.font = Font13;
+    lbl.text = content;
+    lbl.textColor = RGBA(112, 112, 112, 1);
+    [versionView addSubview:lbl];
+    CGFloat contentX = 24 * IPHONE6_W_SCALE;
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    dic[NSFontAttributeName] = Font13;
+    dic[NSForegroundColorAttributeName] = RGBA(112, 112, 112, 1);
+     contentRect = [content boundingRectWithSize:CGSizeMake(546 * 0.5 * IPHONE6_W_SCALE - 48 * IPHONE6_W_SCALE, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+    lbl.frame = (CGRect){{contentX, contentY}, contentRect.size};
+    
+    // 取消按钮
+    UIButton * cancleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [cancleBtn setTitle:@"以后再说" forState:UIControlStateNormal];
+    cancleBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    cancleBtn.titleLabel.font = Font15;
+    [cancleBtn setTitleColor:RGBA(112, 112, 112, 1) forState:UIControlStateNormal];
+    cancleBtn.layer.cornerRadius = 2;
+    cancleBtn.layer.borderWidth = 0.5;
+    cancleBtn.layer.borderColor = RGBA(112, 112, 112, 1).CGColor;
+    [versionView addSubview:cancleBtn];
+    [cancleBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(versionView.mas_left).offset(35 * 0.5 * IPHONE6_W_SCALE);
+        make.width.equalTo(@(230 * 0.5 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(33 * IPHONE6_W_SCALE));
+        make.bottom.equalTo(versionView.mas_bottom).offset(-18 * IPHONE6_W_SCALE);
+    }];
+    [cancleBtn addTarget:self action:@selector(removeVersionView) forControlEvents:UIControlEventTouchUpInside];
+    
+    // 更新按钮
+    UIButton * updateBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [updateBtn setTitle:@"立即更新" forState:UIControlStateNormal];
+    [updateBtn setTitleColor:RGBA(180, 0, 0, 1) forState:UIControlStateNormal];
+    updateBtn.titleLabel.font = Font15;
+    updateBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    updateBtn.backgroundColor = RGBA(255, 222, 2, 1);
+    updateBtn.layer.cornerRadius = 2;
+    [versionView addSubview:updateBtn];
+    [updateBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(versionView.mas_right).offset(-35 * 0.5 * IPHONE6_W_SCALE);
+        make.width.equalTo(cancleBtn.mas_width);
+        make.height.equalTo(cancleBtn.mas_height);
+        make.bottom.equalTo(cancleBtn.mas_bottom);
+    }];
+    _downLoadURL = url;
+    [updateBtn addTarget:self action:@selector(turnToAppStore) forControlEvents:UIControlEventTouchUpInside];
+}
+
+// 跳转到AppStore进行版本更新
+- (void)turnToAppStore{
+    if (_downLoadURL.length > 0) {
+         [[UIApplication sharedApplication]openURL:[NSURL URLWithString:_downLoadURL]];
+    }else{
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://itunes.apple.com/cn/app/di-pai/id1000553183?mt=8"]];
+    }
+   
+    [self removeVersionView];
+}
+// 移除版本提示框
+- (void)removeVersionView{
+    [_versionBackView removeFromSuperview];
+}
+// 添加跳转弹框
+- (void)addPopView{
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * first = [defaults objectForKey:appStart];
     if (first.length > 0) {
         NSLog(@"App第一次启动");
         [HttpTool GET:PopViewURL parameters:nil success:^(id responseObject) {
-            NSDictionary * dataDic = responseObject[@"data"];
-            NSString * picName = dataDic[@"picname"];
-            _name = dataDic[@"name"];
-            if (dataDic.count > 0) {    // 如果有数据
+            NSLog(@"%@", responseObject);
+            id dataDic = responseObject[@"data"];
+            if (![dataDic isKindOfClass:[NSString class]]) {    // 如果有数据
+                NSString * picName = dataDic[@"picname"];
+                _name = dataDic[@"name"];
                 // 如果App第一次启动，有弹窗
                 UIWindow * window = [UIApplication sharedApplication].keyWindow;
                 UIView * popView = [[UIView alloc] init];
@@ -437,7 +522,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
                     make.width.equalTo(@(280 * IPHONE6_W_SCALE));
                     make.height.equalTo(@(778 * 0.5 * IPHONE6_W_SCALE));
                 }];
-                
                 
                 // 图片
                 UIImageView * picV = [[UIImageView alloc] init];
@@ -478,6 +562,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
             NSLog(@"获取数据出错：%@", error);
         }];
         
+         [self addVersionView];
         }
     [defaults removeObjectForKey:appStart];
 }
@@ -506,23 +591,47 @@ typedef NS_ENUM(NSUInteger, LSType) {
     [advertiseView setScrollWithCount:counts andArray:self.bannerArr];
     // 设置轮播页上的数据
     self.tableView.tableHeaderView = advertiseView;
-    
+//    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 49, 0);
     // 添加一个表格的脚视图
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49 * IPHONE6_H_SCALE)];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 49)];
 }
 
 #pragma mark --- 添加表格
 - (void)createUI
 {
-//    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT - 49 - 64) style:UITableViewStylePlain];
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT  - 64) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT  - 64) style:UITableViewStylePlain];
 //    self.tableView.backgroundColor = [UIColor blackColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.automaticallyAdjustsScrollViewInsets = NO;
-//    NSLog(@"表格的高度：%f", self.tableView.frame.size.height);
     [self.view addSubview:self.tableView];
+    // 添加下拉刷新控件
+    MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
+    // 隐藏状态
+    [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
+    header.stateLabel.font = [UIFont systemFontOfSize:14];
+    header.stateLabel.textColor = [UIColor lightGrayColor];
+    header.lastUpdatedTimeLabel.hidden = YES;
+    // 设置自动切换透明度(在导航栏下面自动隐藏)
+    header.automaticallyChangeAlpha = YES;
+    // 设置header
+    self.tableView.header = header;
+    // 马上进入刷新状态
+    [header beginRefreshing];
+    
+    // 添加上拉加载控件
+    //往上拉加载数据.
+    MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
+    // 设置文字
+    //加载更多
+    [footer setTitle:@"正在加载..." forState:MJRefreshStateRefreshing];
+    //没有更多数据
+    [footer setTitle:@"没有更多内容" forState:MJRefreshStateNoMoreData];
+    footer.stateLabel.font = [UIFont systemFontOfSize:13];
+    footer.stateLabel.textColor = [UIColor lightGrayColor];
+    // 设置footer
+    self.tableView.footer = footer;
     
 }
 #pragma mark --- 跳转页面的点击事件
@@ -598,11 +707,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
         
         NewsListModel * newslistModel = self.newslistArr[indexPath.row - 1];
         // 需要判断是什么类型的单元格
-        /*
-         2.资讯
-         4.图集
-         11.视频
-         */
         if ([newslistModel.type isEqualToString:@"2"]) {
             InformationCell * cell = [InformationCell cellWithTableView:tableView];
             cell.newslistModel = newslistModel;
@@ -622,12 +726,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
     } else  // 没有赛事
     {
         NewsListModel * newslistModel = self.newslistArr[indexPath.row];
-        // 需要判断是什么类型的单元格
-        /*
-         2.资讯
-         4.图集
-         11.视频
-         */
         if ([newslistModel.type isEqualToString:@"2"]) {
             InformationCell * cell = [InformationCell cellWithTableView:tableView];
             cell.newslistModel = newslistModel;
@@ -649,25 +747,15 @@ typedef NS_ENUM(NSUInteger, LSType) {
 #pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     NSLog(@"点击行数%lu", indexPath.row);
     if (self.tournamentArr.count > 0) { // 如果有推荐赛事
-        
         if (indexPath.row == 0) {   // 如果点击的是推荐赛事
             TournamentModel * model = self.tournamentArr[0];
-            
-            
-            if ([model.lurl rangeOfString:@"club/view/5"].location != NSNotFound) {
-                // 赛事详情页分为两种情况：1.有直播  2.没有直播
-                MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-                detailVC.wapurl = model.lurl;
-                detailVC.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:detailVC animated:YES];
-            }else{
-                NSLog(@"%@", model.lurl);
-                NSLog(@"没有赛事");
-            }
-
+            // 赛事详情页分为两种情况：1.有直播  2.没有直播
+            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+            detailVC.wapurl = model.lurl;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
         } else  // 如果点击的不是推荐赛事
         {
             NewsListModel * model = self.newslistArr[indexPath.row -1];
@@ -681,15 +769,21 @@ typedef NS_ENUM(NSUInteger, LSType) {
             } else{
                 [self turnPageToDetailView:model.url withNewsListModel:model];
             }
-            
         }
-        
     } else  // 如果没有推荐赛事
     {
         NSLog(@"没有推荐赛事..");
         NewsListModel * model = self.newslistArr[indexPath.row];
-//        [self turnPageToDetailView:model.url withNewsListModel:model];
-        [self turnPageToDetailView:model.url];
+        if ([model.type isEqualToString:@"11"]) {
+            // 跳转到视频详情页
+            VideoViewController * videoVC = [[VideoViewController alloc] init];
+            videoVC.url = model.url;
+            videoVC.des = model.descriptioN;
+            videoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:videoVC animated:YES];
+        } else{
+            [self turnPageToDetailView:model.url withNewsListModel:model];
+        }
     }
    
 }
@@ -725,41 +819,10 @@ typedef NS_ENUM(NSUInteger, LSType) {
 }
 
 // 实现代理中的方法
-#pragma mark ------- 跳转到详情页网页
+#pragma mark ------- 跳转到详情页网页(点击banner)
 - (void)turnPageToDetailView:(NSString *)url
 {
-    
-    // 详情页：1:资讯页 2:图集页  3:视频页 4:赛事页  5:
-//    [SVProgressHUD show];
-    // 视频
-//    url = @"http://dipaiapp.replays.net/app/art/view/11/7914";
-//    // 帖子
-//    url = @"http://dipaiapp.replays.net/app/forum/view/6";
-//   
-//    // http://dpapp.replays.net/app/poker/list  名人堂列表
-//    url = @"http://dpapp.replays.net/app/poker/list";
-//    // http://dpapp.replays.net/app/user/poker 扑克名人堂
-//    url = @"http://dpapp.replays.net/app/user/poker";
-//    // 帖子列表
-//    url = @"http://dpapp.replays.net/app/forum/list/2";
-//    // 视频专辑
-//    url = @"http://dpapp.replays.net/app/album/list/7913";
-//    // 俱乐部详情页
-//    url = @"http://dpapp.replays.net/app/club/view/8/1981";
-//    // 专题列表
-//    url = @"http://dpapp.replays.net/app/special/9";
-//    // 专题详细列表
-//    url = @"http://dpapp.replays.net/article/special_list/10098330";
-//    // 赛事
-//    url = @"http://dpapp.replays.net/app/club/view/5/8576";
-//    // 全部视频专辑
-//    url = @"http://dpapp.replays.net/app/hot/album/list/1";
-//    // 名人主页
-//    url = @"http://dpapp.replays.net/app/user_space/259";
-//    // 普通用户主页
-//    url = @"http://dpapp.replays.net/app/user_space/856";
-    
-    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+      AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
     //设置监听
     [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         if (status == AFNetworkReachabilityStatusNotReachable) {
@@ -769,14 +832,18 @@ typedef NS_ENUM(NSUInteger, LSType) {
         }
     }];
     [manager startMonitoring];
+
+    _requestURL = url;
+    [SVProgressHUD show];
     [HttpTool GET:url parameters:nil success:^(id responseObject) {
-        
+        [SVProgressHUD dismiss];
         NSString * type = responseObject[@"type"];
         NSInteger num = [type integerValue];
         if (num == LSTypeInfo || num == LSTypePictures) {
             // 跳转到资讯页面或图集页面
             DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
             detailVC.url = url;
+            detailVC.responseObject = responseObject;
             detailVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:detailVC animated:YES];
         } else if (num == LSTypeVideo){ // 如果是视频
@@ -845,21 +912,33 @@ typedef NS_ENUM(NSUInteger, LSType) {
                 [self.navigationController pushViewController:starVC animated:YES];
             }
            
-        }else{
+        }
+#warning 未进行测试
+        else if(num == LSTypeH5){  // 如果是内部H5页面
+            NSLog(@"%@", responseObject);
+            NSString * wapurl = responseObject[@"content"][@"wapurl"];
+            H5ViewController * h5VC = [[H5ViewController alloc] init];
+            h5VC.wapurl = wapurl;
+            h5VC.hidesBottomBarWhenPushed = YES;
+            [self removeAction];
+            [self.navigationController pushViewController:h5VC animated:YES];
+        }
+        else{   // 未识别type
             NSLog(@"---%@",url);
         }
         [SVProgressHUD dismiss];
     } failure:^(NSError *error) {
-        
         NSLog(@"出错：%@",error);
     }];
     
+    _requestURL = url;
 }
-
+// 点击cell跳转到资讯页详情页
 - (void)turnPageToDetailView:(NSString *)url withNewsListModel:(NewsListModel *)newsListModel
 {
     DetailWebViewController * detaiVC = [[DetailWebViewController alloc] init];
     detaiVC.url = url;
+    _requestURL = url;
     detaiVC.newsModel = newsListModel;
     detaiVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:detaiVC animated:YES];

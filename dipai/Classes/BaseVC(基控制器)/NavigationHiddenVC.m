@@ -16,8 +16,16 @@
 - (void)viewWillAppear:(BOOL)animated{
     
     [super viewWillAppear:YES];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
      self.navigationController.navigationBarHidden = YES;
+
 }
+// 没有被异地登录的处理
+- (void)noLoginInOtherPhone{
+    
+}
+
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -27,10 +35,11 @@
     [self.view addSubview:naviBar];
     naviBar.backgroundColor = [UIColor blackColor];
     self.naviBar = naviBar;
+    
 }
 - (void)popAction{
-    
-    [self.navigationController popViewControllerAnimated:YES];
+     [self.navigationController popViewControllerAnimated:YES];
+
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

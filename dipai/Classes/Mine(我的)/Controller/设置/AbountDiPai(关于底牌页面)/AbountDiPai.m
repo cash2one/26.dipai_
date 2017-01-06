@@ -14,36 +14,30 @@
 @end
 
 @implementation AbountDiPai
-
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     self.view.backgroundColor = [UIColor whiteColor];
     // 设置导航栏
     [self setNavigationBar];
-    
     // 设置UI
     [self setUpUI];
 }
 #pragma mark --- 设置导航条
 - (void)setNavigationBar {
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
-    
-    // 左侧按钮
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
-    // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:38/2];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"关于底牌";
-    self.navigationItem.titleView = titleLabel;
+    self.naviBar.titleStr = @"关于底牌";
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
-#pragma mark --- 返回
-- (void)returnBack{
-    [self.navigationController popViewControllerAnimated:YES];
-}
+
 
 #pragma mark --- 设置UI
 - (void)setUpUI{
@@ -52,7 +46,7 @@
     imageV.image = [UIImage imageNamed:@"dipai_logo"];
     [self.view addSubview:imageV];
     CGFloat imageX = 215*0.5*IPHONE6_W_SCALE;
-    CGFloat imageY = 39*IPHONE6_H_SCALE;
+    CGFloat imageY = 39*IPHONE6_H_SCALE + 64;
     CGFloat imageW = 160 * IPHONE6_W_SCALE;
     CGFloat imageH = 61 * IPHONE6_W_SCALE;
     imageV.frame = CGRectMake(imageX, imageY, imageW, imageH);
@@ -62,7 +56,6 @@
     introduceLbl.font = Font15;
     [self.view addSubview:introduceLbl];
     introduceLbl.text = @"底牌是德州扑克游戏的爱好者聚集地。通过底牌让更多喜欢这款游戏的朋友，了解德州扑克，学习德州扑克，爱上德州扑克。";
-    
     
     CGFloat introduceX = 25 * IPHONE6_W_SCALE;
     CGFloat introduceY = CGRectGetMaxY(imageV.frame) + 41 * IPHONE6_H_SCALE;

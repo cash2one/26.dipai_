@@ -92,8 +92,6 @@
     // 设置导航栏
     [self setUpNavigationBar];
     
-    // 添加一个第三方控件
-//    [self addCAPSPageMenu];
 }
 
 - (void)addCAPSPageMenu{
@@ -132,21 +130,15 @@
                                  CAPSPageMenuOptionMenuItemWidth: @(SPWidth * 7.5),
                                  CAPSPageMenuOptionCenterMenuItems: @(YES)
                                  };
-    _pageMenu = [[CAPSPageMenu alloc] initWithViewControllers:array frame:CGRectMake( 0.0 , 0.0, self.view.frame.size.width, self.view.frame.size.height ) options:parameters];
+    _pageMenu = [[CAPSPageMenu alloc] initWithViewControllers:array frame:CGRectMake( 0.0 , 0.0+64, self.view.frame.size.width, self.view.frame.size.height -64) options:parameters];
     [self.view addSubview:_pageMenu.view];
 }
 
 - (void)setUpNavigationBar{
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui_baise"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-    
-    
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:17];
-    titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = self.title;
-    self.navigationItem.titleView = titleLabel;
+    self.naviBar.titleStr = self.title;
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui_baise"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 #pragma mark --- 返回上一个视图控制器
 - (void)pop

@@ -700,7 +700,6 @@
 + (void)getMorePokerDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-        
         NSArray * dataArr = responseObject[@"data"];
         // 字典数组转模型数组
         NSArray * morePokersModelArr = [MorePokersModel objectArrayWithKeyValuesArray:dataArr];
@@ -996,7 +995,8 @@
         
         NSLog(@"获取个人中心获取到的数据：%@", responseObject);
         NSDictionary * dic = responseObject;
-        if (dic.count == 3) {
+        NSString * state = responseObject[@"state"];
+        if ([state isEqualToString:@"99"]) {
             
             if (success) {
                 success(@"未登录");
@@ -1017,16 +1017,6 @@
         }
     }];
     
-    [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
-        
-        
-       
-        
-        
-    } failure:^(NSError *error) {
-        
-        
-    }];
 }
 // 获取收藏的数据
 + (void)getCollectionDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
@@ -1294,13 +1284,15 @@
 + (void)getMemberCenterDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
-        
-        NSLog(@"%@", responseObject);
+        NSLog(@"%@", URLString);
+        NSLog(@"-----%@", responseObject);
+        NSArray * dic = responseObject;
         NSDictionary * dataDic = responseObject[@"data"];
         // 字典转模型
         MemberDataModel * dataModel = [MemberDataModel objectWithKeyValues:dataDic];
         dataModel.user_info = dataDic[@"user_info"];
         dataModel.list = dataDic[@"list"];
+        dataModel.stype = responseObject[@"stype"];
         if (success) {
             success(dataModel);
         }
@@ -1340,7 +1332,7 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-//        NSLog(@"%@", responseObject);
+        NSLog(@"%@", responseObject);
         NSString * msg = responseObject[@"msg"];
         if ([msg isEqualToString:@"success"]) { // 登录
             
@@ -1400,6 +1392,7 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
+        NSLog(@"礼遇详情：%@", responseObject);
         NSString * msg = responseObject[@"msg"];
         if ([msg isEqualToString:@"success"]) { // 登录
             
@@ -1446,7 +1439,7 @@
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
         
-//        NSLog(@"%@", responseObject);
+        NSLog(@"%@", responseObject);
         NSArray * dicArr = responseObject[@"data"];
         NSString * page = responseObject[@"page"];
         
@@ -1480,7 +1473,7 @@
 + (void)getShoppingMallDataWithStr:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     
     [HttpTool GET:URLString parameters:parameters success:^(id responseObject) {
-        
+        NSLog(@"%@", responseObject);
         NSDictionary * dataDic = responseObject[@"data"];
         
         // 字典数组转模型数组
@@ -1649,7 +1642,8 @@
         
 //        NSLog(@"%@", responseObject);
         NSArray  * dataArr = responseObject[@"data"];
-        if (dataArr.count > 0) {
+        NSLog(@"%@", [responseObject[@"data"] class]);
+        if (![responseObject[@"data"] isKindOfClass:[NSNull class]]) {  // 如果没有数据返回的是空
             // 字典数组转模型数组
             NSArray * modelArr = [OrderModel objectArrayWithKeyValuesArray:dataArr];
             if (success) {

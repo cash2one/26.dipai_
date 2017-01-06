@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BaseViewController.h"
-@interface MoreVideosVC : BaseViewController
-
+#import "NavigationHiddenVC.h"
+@interface MoreVideosVC : NavigationHiddenVC
 /**
  *  更多内容接口
  */

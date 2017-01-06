@@ -186,14 +186,13 @@
 #pragma mark --- 设置导航栏内容
 - (void)setUpNavigationBar
 {
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-   
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-//    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:17];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"评论列表";
-    self.navigationItem.titleView = titleLabel;
+    self.naviBar.titleStr = @"评论列表";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
+
     
 }
 #pragma mark --- 返回上一个视图控制器
@@ -205,10 +204,10 @@
 #pragma mark --- 设置UI
 - (void)setUpUI{
     CGFloat x = 0;
-    CGFloat y = 0;
+    CGFloat y = 64;
     CGFloat w = WIDTH;
 //    CGFloat h = HEIGHT - Margin92 * IPHONE6_H_SCALE;
-    CGFloat h = HEIGHT - 64 - Margin92 * IPHONE6_H_SCALE;
+    CGFloat h = HEIGHT  - Margin92 * IPHONE6_H_SCALE;
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(x, y, w, h) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -254,7 +253,7 @@
 #pragma mark --- 加载新的数据
 - (void)loadNewData{
     // 如果网络有问题结束刷新状态
-    [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
+//    [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
     
     NSString * url = [NSString stringWithFormat:@"%@/%@/%@", CommentsURL, self.iD, self.type];
 //    NSLog(@"%@", url);
@@ -340,7 +339,7 @@
     UIView * bottomView = [[UIView alloc] init];
     CGFloat bottomX= 0;
     CGFloat bottomH = 92 * 0.5 * IPHONE6_H_SCALE;
-    CGFloat bottomY = HEIGHT - bottomH - 64;
+    CGFloat bottomY = HEIGHT - bottomH;
     CGFloat bottomW = WIDTH;
     bottomView.frame = CGRectMake(bottomX, bottomY, bottomW, bottomH);
     [self.view addSubview:bottomView];
@@ -461,6 +460,7 @@
         [SVProgressHUD showSuccessWithStatus:@"发表成功"];
         // 再刷新一次
         [self.tableView.header beginRefreshing];
+       
     }else{
         [self addAlertView];
     }

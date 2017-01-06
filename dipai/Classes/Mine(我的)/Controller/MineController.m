@@ -145,14 +145,13 @@
     
     // 设置导航栏上按钮
     [self setUpNavigationBarItem];
-    [self getData];
 
 }
 
 
 #pragma mark --- 获取数据
 - (void)getData{
-    
+    NSLog(@"获取个人中心数据..");
     // 检测是否联网
     AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
     //设置监听
@@ -180,8 +179,6 @@
     _name = name;
     if (name || wxData) {
         NSLog(@"已登录");
-//        _loginLbl.text = userModel.username;
-//        [_loginLbl sizeToFit];
         _loginLbl.textColor = [UIColor colorWithRed:255 / 255.0 green:255 / 255.0 blue:255 / 255.0 alpha:1];
         _line.hidden = NO;
         _fansNum.hidden = NO;
@@ -205,16 +202,7 @@
         [DataTool getPersonDataWithStr:PersonURL parameters:nil success:^(id responseObject) {
             
             if ([responseObject isKindOfClass:[NSString class]]) {
-                
-                UIAlertController * alertC = [UIAlertController alertControllerWithTitle:@"警告" message:@"可能异地登录，请本地退出重新登录" preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction * OK = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    
-                    SettingViewController * setVC = [[SettingViewController alloc] init];
-                    [self.navigationController pushViewController:setVC animated:YES];
-                    
-                }];
-                [alertC addAction:OK];
-                [self presentViewController:alertC animated:YES completion:nil];
+                NSLog(@"异地登录");
                 
             }else{
                 
@@ -534,7 +522,6 @@
     CGFloat collectH = 98 / 2 * IPHONE6_H_SCALE;
     collectionView.frame = CGRectMake(collectX, collectY, collectW, collectH);
     [self.view addSubview:collectionView];
-    
     
 //    // 帖子
     ClickView * postView = [[ClickView alloc] init];

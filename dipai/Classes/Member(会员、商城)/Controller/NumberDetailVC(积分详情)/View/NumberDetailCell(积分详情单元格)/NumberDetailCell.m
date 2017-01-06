@@ -126,6 +126,7 @@
     
     UIView * detailV = [[UIView alloc] init];
     detailV.backgroundColor = [UIColor whiteColor];
+//    detailV.backgroundColor = [UIColor redColor];
     [self addSubview:detailV];
     _detailV = detailV;
     
@@ -152,21 +153,23 @@
     _detailLbl.text = _detailModel.content;
     
     _typeLbl.text = _detailModel.type;
-    _inOrOutLbl.text = _detailModel.extcredits1;
     _balanceLbl.text = [NSString stringWithFormat:@"余额：%@", _detailModel.extcredits2];
     _dateLbl.text = _detailModel.datetime;
     
-    float inOrtOut = [_inOrOutLbl.text floatValue];
-    if (inOrtOut > 0) {
-        _flagLbl.text = @"积分来源：";
-    }else{
-        _flagLbl.text = @"支出详情：";
-    }
+//    float inOrtOut = [_inOrOutLbl.text floatValue];
+//    if (inOrtOut > 0) {
+//        _flagLbl.text = @"积分来源：";
+//        
+//    }else{
+//        _flagLbl.text = @"支出详情：";
+//    }
 //    NSLog(@"%@", _detailModel.type);
     if ([_detailModel.type isEqualToString:@"商城支出"]) {
         _flagLbl.text = @"支出详情：";
+         _inOrOutLbl.text = [NSString stringWithFormat:@"-%@", _detailModel.extcredits1];
     }else{
         _flagLbl.text = @"积分来源：";
+         _inOrOutLbl.text = [NSString stringWithFormat:@"%@", _detailModel.extcredits1];
     }
 }
 
@@ -180,12 +183,15 @@
     CGFloat detailH = detailRect.size.height;
     _detailLbl.frame = CGRectMake(75 * IPHONE6_W_SCALE, 10 * IPHONE6_H_SCALE, WIDTH - 90 * IPHONE6_W_SCALE, detailH);
     
-    [_detailV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.mas_left);
-        make.right.equalTo(self.mas_right);
-        make.top.equalTo(_topV.mas_bottom);
-        make.height.equalTo(@(47 * 0.5 * IPHONE6_H_SCALE + detailH));
-    }];
+    CGFloat detailVY = CGRectGetMaxY(_topV.frame);
+    CGFloat detailVH = 47 * 0.5 * IPHONE6_H_SCALE + detailH;
+    _detailV.frame = CGRectMake(0, detailVY, WIDTH, detailVH);
+//    [_detailV mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.equalTo(self.mas_left);
+//        make.right.equalTo(self.mas_right);
+//        make.top.equalTo(_topV.mas_bottom);
+//        make.height.equalTo(@(47 * 0.5 * IPHONE6_H_SCALE + detailH));
+//    }];
     
     [_flagLbl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.mas_left).offset(15 * IPHONE6_W_SCALE);

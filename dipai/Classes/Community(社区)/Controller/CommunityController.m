@@ -60,6 +60,7 @@
 #import "Masonry.h"
 
 #import "AFNetworking.h"
+#import "HttpTool.h"
 @interface CommunityController ()<UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate, HeaderViewInTalkingDelegate, GroupCellDelegate, PostCellDelegate>
 {
     UISegmentedControl *_segmented;
@@ -78,6 +79,44 @@
     
     NSString * _network;    // 有网络的标志
 }
+typedef NS_ENUM(NSUInteger, LSType) {
+    /** 资讯 */
+    LSTypeInfo = 2,
+    /** 图集 */
+    LSTypePictures = 4,
+    /** 赛事 */
+    LSTypeMatch = 5,
+    /** 赛事 详情页*/
+    LSTypeMatchDetail = 51,
+    /** 直播 */
+    LSTypeLive = 6,
+    /** 视频 */
+    LSTypeVideo = 11,
+    /** 帖子详情 */
+    LSTypePostDetail = 172,
+    
+    /** 视频专辑 */
+    LSTypeVideoList = 101,
+    /** 全部视频专辑 */
+    LSTypeAllVideo = 10,
+    /** 帖子列表 */
+    LSTypePostList = 171,
+    /** 名人堂*/
+    LSTypePokerStar = 151,
+    /** 名人主页*/
+    LSTypeStar = 153,
+    /** 名人堂列表 */
+    LSTypePokerStarList = 152,
+    /** 俱乐部详细页面 */
+    LSTypeClubDetail = 81,
+    /** 专题 */
+    LSTypeSpecial = 9,
+    /** 专题列表 */
+    LSTypeSpecialList = 18,
+    
+    // H5活动
+    LSTypeH5 = 201
+};
 // 热门讨论数据源
 @property (nonatomic, strong) NSMutableArray * dataSource1;
 // 数据源
@@ -93,6 +132,9 @@
 @property (nonatomic, strong) UIButton * loginBtn;
 // 没有关注的提示图
 @property (nonatomic, strong) UIImageView * noPayAttention;
+
+// 防止被再次点击的view
+@property (nonatomic, strong) UIView * backView;
 @end
 
 @implementation CommunityController
@@ -110,51 +152,41 @@
     }
     return _dataSource2;
 }
+- (UIView *)backView{
+    
+    if (_backView == nil) {
+        _backView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
+    }
+    return _backView;
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
-    
+    if (_backView) {
+        [_backView removeFromSuperview];
+    }
     // 如果登录了而且有关注就不进行刷新了
-    
     if (_imageV.hidden == YES && _noPayAttention.hidden == YES) {
         NSLog(@"不进行刷新");
     }else{
-        [self loadNewData2];
+        [self getData];
     }
-    
-    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
-    
-//    [MobClick endLogPageView:@"CommunityController"];
-    
-    //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    
-    self.view.backgroundColor = [UIColor blueColor];
-    self.navigationItem.title = @"";
     // 添加分段控件
     [self addSegmentControl];
-    
     // 添加滚动视图
     [self addScrollView];
-    
 }
 
 - (void)addSegmentControl{
@@ -171,11 +203,17 @@
     // 正常情况下的字体颜色
     [_segmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:Font18} forState:UIControlStateNormal];
     
-    _segmented.frame=CGRectMake( 0 , 0, 160 * IPHONE6_W_SCALE , 44 );
+//    _segmented.frame=CGRectMake( 0 , 0, 160 * IPHONE6_W_SCALE , 44 );
 //    _segmented.backgroundColor = [UIColor yellowColor];
     // 为分段控件添加点事件
     [_segmented addTarget:self action:@selector(segmentedClick:) forControlEvents:UIControlEventValueChanged];
-    self.navigationItem.titleView = _segmented;
+    [self.naviBar addSubview:_segmented];
+    [_segmented mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.naviBar.mas_centerX);
+        make.width.equalTo(@(160 * IPHONE6_W_SCALE));
+        make.top.equalTo(self.naviBar.mas_top).offset(20);
+        make.height.equalTo(@(44));
+    }];
 }
 #pragma mark --- 分段控件的点击事件
 -(void)segmentedClick:(UISegmentedControl*)seg{
@@ -189,10 +227,7 @@
 }
 
 - (void)addScrollView {
-    
-//    NSLog(@"%f", HEIGHT);
-    
-    _sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, WIDTH , HEIGHT-64)];
+    _sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 64, WIDTH , HEIGHT-64)];
     _sc.contentSize=CGSizeMake(WIDTH * 2 , HEIGHT);
     _sc.scrollEnabled = NO; // 禁止活动
     _sc.scrollsToTop = NO;
@@ -201,7 +236,6 @@
     _sc.pagingEnabled=YES;
     _sc.backgroundColor = [UIColor redColor];
     [self.view addSubview:_sc];
-    
     // 在滚动视图上添加tableView
     [self addTableView];
 }
@@ -288,7 +322,7 @@
     _tableView1.scrollsToTop = NO;
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData2)];
+        MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(getData)];
         [header setTitle:@"正在玩命加载中..." forState:MJRefreshStateRefreshing];
         header.stateLabel.font = [UIFont systemFontOfSize:14];
         header.stateLabel.textColor = [UIColor lightGrayColor];
@@ -421,7 +455,7 @@
     
 }
 #pragma mark --- 圈子获取数据
-- (void)loadNewData2{
+- (void)getData{
 //    NSLog(@"加载关注数据...");
     
 //    NSLog(@"%@", _network);
@@ -639,43 +673,84 @@
 
 #pragma mark --- 单元格的点击事件
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{    
-    if (tableView == _tableView2) { // 圈子页的点击事件
+    if (tableView == _tableView2) { // 关注页的点击事件
+        [self.view addSubview:_backView];
         NSLog(@"...");
-        // 跳转到帖子详细页面
-        PostDetailVC * postDetailVC = [[PostDetailVC alloc] init];
+//        PostDetailVC * postDetailVC = [[PostDetailVC alloc] init];
         GroupModel * model = self.dataSource2[indexPath.row];
-                
-        // 资讯页  视频页
-        DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
-        VideoViewController * videoVC = [[VideoViewController alloc] init];
         // 页面跳转有两种情况：1.跳转到帖子详情页   2.跳转到一个网页详情或视频详情
 //        NSLog(@"wapurl---%@", model.wapurl);
 //        NSLog(@"type----%@", model.type);
-        if ([model.wapurl rangeOfString:@"art/view/2"].location != NSNotFound || [model.wapurl rangeOfString:@"art/view/4"].location != NSNotFound) {   // 跳到网页详情页
-            NSLog(@"资讯");
-            detailVC.hidesBottomBarWhenPushed = YES;
-            detailVC.url = model.wapurl;
-            [self.navigationController pushViewController:detailVC animated:YES];
-        }else if ([model.wapurl rangeOfString:@"art/view/11"].location != NSNotFound){  // 跳到视频详情页
-            NSLog(@"视频");
-            videoVC.hidesBottomBarWhenPushed = YES;
-            videoVC.url = model.wapurl;
-            [self.navigationController pushViewController:videoVC animated:YES];
-        } else if([model.wapurl rangeOfString:@"forum/view"].location != NSNotFound){    // 跳到帖子详情页
-            postDetailVC.hidesBottomBarWhenPushed = YES;
-            postDetailVC.wapurl = model.wapurl;
-            [self.navigationController pushViewController:postDetailVC animated:YES];
-        }else if ([model.wapurl rangeOfString:@"club/view/5"].location != NSNotFound){ // 跳转到赛事详情页页面
+        NSString * url = model.wapurl;
+        AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+        //设置监听
+        [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+            if (status == AFNetworkReachabilityStatusNotReachable) {
+                NSLog(@"没有网络");
+                [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+            }else{
+            }
+        }];
+        [manager startMonitoring];
+        [HttpTool GET:url parameters:nil success:^(id responseObject) {
             
-            // 赛事详情页分为两种情况：1.有直播  2.没有直播
-            MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
-            detailVC.wapurl = model.wapurl;
-            [self.navigationController pushViewController:detailVC animated:YES];
+            NSString * type = responseObject[@"type"];
+            NSInteger num = [type integerValue];
+            NSLog(@"type:%lu", num);
+            if (num == LSTypeInfo || num == LSTypePictures) {
+                // 跳转到资讯页面或图集页面
+                DetailWebViewController * detailVC = [[DetailWebViewController alloc] init];
+                detailVC.url = url;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            } else if (num == LSTypeVideo){ // 如果是视频
+                // 跳转到视频专辑页
+                VideoViewController * videoVC = [[VideoViewController alloc] init];
+                videoVC.url = url;
+                videoVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:videoVC animated:YES];
+            } else if (num == LSTypeMatchDetail){  // 如果是赛事详情页
+                MatchDetailVC * detailVC = [[MatchDetailVC alloc] init];
+                detailVC.wapurl = url;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            }else if (num == LSTypePostDetail){ // 如果是帖子详情页
+                PostDetailVC * postDetail =[[PostDetailVC alloc] init];
+                postDetail.wapurl = url;
+                postDetail.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:postDetail animated:YES];
+            }else if (num == LSTypePokerStar){  // 扑克名人堂页面
+                
+            }else if (num == LSTypePokerStarList){  // 扑克名人堂列表
+                
+            }else if (num == LSTypePostList){   // 帖子列表
+                
+            }else if (num == LSTypeVideoList){  // 视频专辑
+                
+            }else if (num == LSTypeClubDetail){ // 俱乐部详情页
+                
+            }else if (num == LSTypeSpecial){    // 专题
+                
+            }else if (num == LSTypeSpecialList){    // 专题列表
+                
+            }else if (num == LSTypeAllVideo){   // 全部视频专辑
+                
+            }else if (num == LSTypeStar){   // 名人主页
+                
+            }
+            else if(num == LSTypeH5){  // 如果是内部H5页面
+                
+            }
+            else{   // 未识别type
+                NSLog(@"---%@",url);
+                
+            }
+            [SVProgressHUD dismiss];
+        } failure:^(NSError *error) {
             
-        }
-        else{
-            NSLog(@"%@", model.wapurl);
-        }
+            NSLog(@"出错：%@",error);
+        }];
+        
 
     }else{  // 热门讨论的点击事件
         PostDetailVC * postDetailVC = [[PostDetailVC alloc] init];
@@ -686,6 +761,7 @@
         postDetailVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:postDetailVC animated:YES];
     }
+    [_backView removeFromSuperview];
 }
 
 - (void)didReceiveMemoryWarning {

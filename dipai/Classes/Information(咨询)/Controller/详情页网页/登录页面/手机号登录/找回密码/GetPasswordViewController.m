@@ -199,7 +199,8 @@
     dic[@"phone"] = _phoneNum.text;
     _phone = _phoneNum.text;
     [DataTool postWithStr:SecurityCodeURL parameters:dic success:^(id responseObject) {
-        
+//        NSLog(@"%@", responseObject);
+//        NSLog(@"%@", responseObject[@"content"]);
         if ([responseObject[@"content"] isEqualToString:@"success"]) {
             NSLog(@"获取验证码成功...");
             [SVProgressHUD showSuccessWithStatus:@"获取成功"];
@@ -250,29 +251,46 @@
 
 #pragma mark --- 下一步事件
 - (void)nextAction{
-    NSString * url = verityURL;
-//    NSString * url = @"http://dpapp.replays.net/sign/app_verify";
-    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-    dic[@"verify"] = _code.text;
-    [DataTool postWithStr:url parameters:dic success:^(id responseObject) {
-        
-        NSLog(@"验证验证码成功:%@", responseObject);
-        NSLog(@"content:%@", responseObject[@"content"]);
-        NSString * content = responseObject[@"content"];
-        if ([content isEqualToString:@"success"]) { // 验证码正确
-            ResetPasswordViewController * resetPasswordVC = [[ResetPasswordViewController alloc] init];
-            resetPasswordVC.phone = _phone;
-            resetPasswordVC.codeStr = _code.text;
-            [self.navigationController pushViewController:resetPasswordVC animated:YES];
-        }else{
-            NSLog(@"输入的验证码错误");
-        }
-    } failure:^(NSError * error) {
-        
-        NSLog(@"验证验证码出错：%@", error);
-    }];
     
+    // 先验证手机号是否合法
+    BOOL yes = [self verifyMobile:_phoneNum.text];
+    if (yes) {
+        NSString * url = verityURL;
+        //    NSString * url = @"http://dpapp.replays.net/sign/app_verify";
+        NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+        dic[@"verify"] = _code.text;
+        [DataTool postWithStr:url parameters:dic success:^(id responseObject) {
+            
+            NSLog(@"验证验证码成功:%@", responseObject);
+            NSLog(@"content:%@", responseObject[@"content"]);
+            NSString * content = responseObject[@"content"];
+            if ([content isEqualToString:@"success"]) { // 验证码正确
+                ResetPasswordViewController * resetPasswordVC = [[ResetPasswordViewController alloc] init];
+                resetPasswordVC.phone = _phone;
+                resetPasswordVC.codeStr = _code.text;
+                [self.navigationController pushViewController:resetPasswordVC animated:YES];
+            }else{
+                [SVProgressHUD showErrorWithStatus:content];
+                NSLog(@"输入的验证码错误");
+            }
+        } failure:^(NSError * error) {
+            
+            NSLog(@"验证验证码出错：%@", error);
+        }];
+    }else{
+        
+        [SVProgressHUD showErrorWithStatus:@"手机号不合法"];
+    }
 
+    
+}
+
+#pragma mark --- 验证手机号是否合法
+- (BOOL)verifyMobile:(NSString *)mobilePhone{
+    NSString *express = @"^0{0,1}(13[0-9]|15[0-9]|18[0-9]|14[0-9])[0-9]{8}$";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF matches %@", express];
+    BOOL boo = [pred evaluateWithObject:mobilePhone];
+    return boo;
 }
 
 #pragma mark --- 隐藏键盘

@@ -24,4 +24,8 @@
 @property (nonatomic, copy) NSString * datetime;
 @property (nonatomic, copy) NSString * content;
 
+// 额外属性
+// 单元格的高度
+@property (nonatomic, assign) CGFloat cellHeight;
+
 @end

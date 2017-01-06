@@ -12,6 +12,8 @@
 
 @property (nonatomic, strong) NavigationBarV * naviBar;
 
-
+// 返回事件
 - (void)popAction;
+// 没有异地登录的处理
+- (void)noLoginInOtherPhone;
 @end
