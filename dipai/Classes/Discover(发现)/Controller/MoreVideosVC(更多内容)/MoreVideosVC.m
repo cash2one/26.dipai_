@@ -47,35 +47,32 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    //    NSLog(@"传递过来的接口%@", self.moreURL);
-     self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
+    [self setUpNavigationBar];
     [self createCollectionView];
     // 添加刷新和记载的效果
     [self addRefreshing];
-    
-    
 }
-
-- (void)pop{
-    [self.navigationController popViewControllerAnimated:YES];
+- (void)setUpNavigationBar
+{
+    self.naviBar.titleStr = @"";
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark --- 创建collectionView
 - (void)createCollectionView{
     
     UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc]init];
-    
     layout.minimumInteritemSpacing = 0;
     // 间距
     layout.minimumLineSpacing = 28/2 * IPHONE6_H_SCALE;
-    
     layout.scrollDirection = UICollectionViewScrollDirectionVertical;
-    
-    self.collection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, WIDTH , HEIGHT - 64) collectionViewLayout:layout];
+    self.collection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, WIDTH , HEIGHT - 64) collectionViewLayout:layout];
     self.collection.backgroundColor = [UIColor whiteColor];
     [self.collection registerClass:[MoreVideosCell class] forCellWithReuseIdentifier:@"MoreCollection"];
-    
     self.collection.delegate = self;
     self.collection.dataSource = self;
     [self.view addSubview:self.collection];

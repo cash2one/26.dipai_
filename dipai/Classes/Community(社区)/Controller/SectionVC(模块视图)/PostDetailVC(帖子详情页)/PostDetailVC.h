@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface PostDetailVC : UIViewController
+#import "NavigationHiddenVC.h"
+@interface PostDetailVC : NavigationHiddenVC
 /**
  *  详情页接口
  */

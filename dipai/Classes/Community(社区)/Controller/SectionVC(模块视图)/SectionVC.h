@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NavigationHiddenVC.h"
 @class SectionModel;
-@interface SectionVC : UIViewController
+@interface SectionVC : NavigationHiddenVC
 /**
  *  传递过来的链接
  */

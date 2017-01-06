@@ -56,7 +56,8 @@
 @property (nonatomic, strong) SBModel * sbModel;
 // 没有收藏的图片提示
 @property (nonatomic, strong) UIImageView * imageV;
-
+// 自定义编辑按钮
+@property (nonatomic, strong) UIButton * editBtn;
 @end
 
 @implementation MyCollectionViewController
@@ -78,36 +79,52 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
-    
     // 设置导航栏
     [self setNavigationBar];
-    
     [self addTableView];
     [self loadNewData];
 
 }
 #pragma mark --- 设置导航条
 - (void)setNavigationBar {
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+    // 自定义编辑按钮
+    UIButton * editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [editBtn setTitle:@"编辑" forState:UIControlStateNormal];
+    [editBtn setTitle:@"完成" forState:UIControlStateSelected];
+    editBtn.titleLabel.textColor = [UIColor blackColor];
+    editBtn.backgroundColor = [UIColor clearColor];
+    editBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    [editBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [editBtn addTarget:self action:@selector(edit) forControlEvents:UIControlEventTouchUpInside];
+    [self.naviBar addSubview:editBtn];
+    [editBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.naviBar.mas_right).offset(-20);
+        make.top.equalTo(self.naviBar.mas_top).offset(20);
+        make.width.equalTo(@(100));
+        make.height.equalTo(@(44));
+    }];
+    editBtn.hidden = YES;
+    _editBtn = editBtn;
     
-    // 左侧按钮
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
-    // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:38/2];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"我的收藏";
-    self.navigationItem.titleView = titleLabel;
+    self.naviBar.titleStr = @"我的收藏";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
     
-//    self.editButtonItem.title = @"";
-    
-    self.editButtonItem.tintColor = [UIColor whiteColor];
-    self.navigationItem.rightBarButtonItem = self.editButtonItem;
-
 }
-// 开启可编辑功能
+// 自定义编辑按钮的编辑事件
+- (void)edit{
+    _editBtn.selected = !_editBtn.selected;
+    if ([_editBtn isSelected]) {
+        [self.tableView setEditing:YES animated:YES];
+    }else{
+        [self.tableView setEditing:NO animated:YES];
+    }
+}
 
+// 开启可编辑功能
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return YES;
@@ -116,19 +133,7 @@
 - (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPat{
     return @"警告：删除";
 }
-// 点击编辑按钮调用的方法
-- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
-    [super setEditing:editing animated:animated];
-        [self.tableView setEditing:editing animated:YES];
-        if (self.editing) {
-            self.editButtonItem.title = @"完成";
-//            self.navigationItem.rightBarButtonItem.title = @"完成";
-        } else {
-            self.editButtonItem.title = @"编辑";
-            self.editButtonItem.tintColor = [UIColor blackColor];
-        }
-    
-}
+
 
 //完成编辑的触发事件  左滑显示删除按钮
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
@@ -172,8 +177,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView
            editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //UITableViewCellEditingStyleInsert
-    //    return UITableViewCellEditingStyleNone;
     return UITableViewCellEditingStyleDelete;
 }
 
@@ -183,10 +186,9 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 - (void)addTableView{
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT - 64 ) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 64 , WIDTH , HEIGHT - 64 ) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:self.tableView];
     
@@ -225,7 +227,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     [DataTool getCollectionDataWithStr:MyCollectionURL parameters:nil success:^(id responseObject) {
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
-        
 //        NSLog(@"%@", responseObject);
         if ([responseObject isKindOfClass:[NSString class]]) {  // 数据为空的情况
             NSLog(@"responseObject为空");
@@ -241,11 +242,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
                 self.editButtonItem.tintColor = [UIColor whiteColor];
             }
         }
-//        NSMutableArray * arr = responseObject;
-//        self.dataSource = [arr objectAtIndex:0];
-//        NSString * page = [arr objectAtIndex:1];
-//        _page = page;
-        
+
         [self.tableView reloadData];
     } failure:^(NSError * error) {
         NSLog(@"获取我的收藏失败：%@", error);
@@ -273,7 +270,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
                 self.editButtonItem.tintColor = [UIColor whiteColor];
             }
         }
-        
         [self.tableView reloadData];
         NSLog(@"%@", responseObject);
     } failure:^(NSError * error) {
@@ -282,7 +278,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         [self.tableView.footer endRefreshing];
     }];
     
-
 }
 
 
@@ -297,6 +292,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (self.dataSource.count > 0) {
+        _editBtn.hidden = NO;
+    }else{
+        _editBtn.hidden = YES;
+    }
     return self.dataSource.count;
 }
 
@@ -312,7 +312,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     NSLog(@"%lu", indexPath.row);
     MyCollectionModel * collectModel = self.dataSource[indexPath.row];
     if ([collectModel.type isEqualToString:@"2"] || [collectModel.type isEqualToString:@"4"]) { // 跳到网页详情页

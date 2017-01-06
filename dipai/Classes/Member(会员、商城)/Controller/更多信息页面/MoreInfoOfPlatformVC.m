@@ -69,11 +69,12 @@
     [request addValue:cookieValue forHTTPHeaderField:@"Cookie"];
     NSLog(@"添加cookie");
     [self.webView loadRequest:request];
-//    }else{  // 假数据
-//        [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://dpapp.replays.net/html/liyu.html"]]];
-        // http://dipaiapp.replays.net/html/zp/index.html
-        //    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://dipaiapp.replays.net/html/zp/index.html"]]];
-//    }
+    if ([self.stype isEqualToString:@"1"]) {
+        [self.webView loadRequest:request];
+    }else{
+         [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://dpapp.replays.net/html/liyu.html"]]];
+    }
+
 }
 
 

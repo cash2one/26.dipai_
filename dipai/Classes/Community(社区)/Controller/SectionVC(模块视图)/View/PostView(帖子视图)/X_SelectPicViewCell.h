@@ -15,9 +15,9 @@ typedef void (^Action)(void);
 @property (nonatomic, copy) Action btnAction;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIImage *icon;
-@property (nonatomic, strong) UIButton *btn;
-@property (nonatomic, strong) UIImageView *imgV;
-@property (nonatomic, strong) UIButton *imgV0;
+@property (nonatomic, strong) UIButton *btn;                            //删除键
+@property (nonatomic, strong) UIImageView *imgV;                  //图片view
+@property (nonatomic, strong) UIButton *imgV0;                       //加号
 @property (nonatomic, assign) BOOL res;
 
 @end

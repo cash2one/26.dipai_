@@ -39,45 +39,41 @@
 
 @implementation ResetNameVC
 
-
+- (void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor colorWithRed:244 / 255.0 green:244 / 255.0 blue:244 / 255.0 alpha:1];
-    
     // 设置导航栏内容
     [self setUpNavigationBar];
-    
     // 设置UI
     [self setUpUI];
-    
     // 对UITextField添加监听
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textFieldChanged) name:UITextFieldTextDidChangeNotification object:nil];
 }
 
 #pragma mark --- 设置导航栏内容
 - (void)setUpNavigationBar{
-    
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
-    
-    // 左侧按钮
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(cancelRegister) forControlEvents:UIControlEventTouchUpInside];
-    // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:38/2];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"修改昵称";
-    self.navigationItem.titleView = titleLabel;
+    self.naviBar.titleStr = @"修改昵称";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.titleLbl.textColor = [UIColor blackColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark --- 设置UI
 - (void)setUpUI{
     // 新昵称
     CGFloat numX = Margin40 * IPHONE6_W_SCALE;
-    CGFloat numY = Margin60 * IPHONE6_H_SCALE;
+    CGFloat numY = Margin60 * IPHONE6_H_SCALE + 64;
     CGFloat numW = WIDTH - 2 * numX;
     CGFloat numH = Margin100 * IPHONE6_H_SCALE;
     LSTextField * phoneNum = [[LSTextField alloc] initWithFrame:CGRectMake(numX, numY, numW, numH)];
@@ -98,7 +94,6 @@
     CGFloat warX = 25 * IPHONE6_W_SCALE;
     CGFloat warY = CGRectGetMaxY(phoneNum.frame) + 9 * IPHONE6_H_SCALE;
     CGFloat warW = WIDTH - 2 * warX;
-    
     NSMutableDictionary * warDic = [NSMutableDictionary dictionary];
     warDic[NSFontAttributeName] = Font11;
     CGRect warRect = [warLbl.text boundingRectWithSize:CGSizeMake(warW, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:warDic context:nil];
@@ -117,11 +112,6 @@
     sureBtn.userInteractionEnabled = NO;
     [self.view addSubview:sureBtn];
     _sureBtn = sureBtn;
-}
-
-#pragma mark --- 取消注册事件
-- (void)cancelRegister{
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark --- 获取验证码的事件
@@ -143,7 +133,6 @@
         _phoneNum.hidePlaceHolder = NO;
         _length1.hidden = NO;
     }
-
     
     if (_phoneNum.text.length ) {
 //        [_sureBtn setImage:[UIImage imageNamed:@"queren_xuanzhong"] forState:UIControlStateNormal];
@@ -161,7 +150,6 @@
 #pragma mark --- 下一步事件
 - (void)sureAction{
     // 确认按钮的点击事件  进行昵称的修改
-    
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     
     NSString * str = _phoneNum.text;

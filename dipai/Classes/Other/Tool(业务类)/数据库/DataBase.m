@@ -30,8 +30,6 @@
     news.commentNumber = model.commentNumber;
     news.covers = model.covers;
     news.url = model.url;
-    
-   
     // 存储
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }

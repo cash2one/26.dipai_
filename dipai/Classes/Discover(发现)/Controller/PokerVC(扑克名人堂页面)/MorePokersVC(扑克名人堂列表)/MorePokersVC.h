@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface MorePokersVC : UIViewController
+#import "NavigationHiddenVC.h"
+@interface MorePokersVC : NavigationHiddenVC
 /**
  *  标题
  */

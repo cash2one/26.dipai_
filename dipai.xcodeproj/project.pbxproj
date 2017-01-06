@@ -78,7 +78,6 @@
 		C1248F161D1FB9930016B2F9 /* PostHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1248F151D1FB9930016B2F9 /* PostHeaderView.m */; };
 		C1248F1F1D1FBF230016B2F9 /* X_FlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = C1248F181D1FBF230016B2F9 /* X_FlowLayout.m */; };
 		C1248F201D1FBF230016B2F9 /* X_SelectPicHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1248F1A1D1FBF230016B2F9 /* X_SelectPicHeaderView.m */; };
-		C1248F211D1FBF230016B2F9 /* X_SelectPicView.m in Sources */ = {isa = PBXBuildFile; fileRef = C1248F1C1D1FBF230016B2F9 /* X_SelectPicView.m */; };
 		C1248F221D1FBF230016B2F9 /* X_SelectPicViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C1248F1E1D1FBF230016B2F9 /* X_SelectPicViewCell.m */; };
 		C1248F4E1D1FBF700016B2F9 /* UIImage+LNImage.m in Sources */ = {isa = PBXBuildFile; fileRef = C1248F271D1FBF700016B2F9 /* UIImage+LNImage.m */; };
 		C1248F4F1D1FBF700016B2F9 /* LNTouchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = C1248F2A1D1FBF700016B2F9 /* LNTouchComponent.m */; };
@@ -221,6 +220,7 @@
 		C16AEE2E1CEDBE6300173A1C /* LSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = C16AEE2D1CEDBE6300173A1C /* LSTextView.m */; };
 		C16AEE311CEDBE9200173A1C /* UIView+Frame.m in Sources */ = {isa = PBXBuildFile; fileRef = C16AEE301CEDBE9200173A1C /* UIView+Frame.m */; };
 		C16AEE351CEDC1A800173A1C /* BackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = C16AEE341CEDC1A800173A1C /* BackgroundView.m */; };
+		C17A59B91E16674400FBB57D /* X_SelectPicView.m in Sources */ = {isa = PBXBuildFile; fileRef = C17A59B81E16674400FBB57D /* X_SelectPicView.m */; };
 		C181F4F11D506F93008DFDCE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C181F4F01D506F93008DFDCE /* JavaScriptCore.framework */; };
 		C18F4DA41D27AAF500A4EEB1 /* ShowPicView.m in Sources */ = {isa = PBXBuildFile; fileRef = C18F4DA31D27AAF500A4EEB1 /* ShowPicView.m */; };
 		C18F4DA81D27B43000A4EEB1 /* FooterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C18F4DA71D27B43000A4EEB1 /* FooterCell.m */; };
@@ -631,8 +631,6 @@
 		C1248F181D1FBF230016B2F9 /* X_FlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X_FlowLayout.m; sourceTree = "<group>"; };
 		C1248F191D1FBF230016B2F9 /* X_SelectPicHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X_SelectPicHeaderView.h; sourceTree = "<group>"; };
 		C1248F1A1D1FBF230016B2F9 /* X_SelectPicHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X_SelectPicHeaderView.m; sourceTree = "<group>"; };
-		C1248F1B1D1FBF230016B2F9 /* X_SelectPicView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X_SelectPicView.h; sourceTree = "<group>"; };
-		C1248F1C1D1FBF230016B2F9 /* X_SelectPicView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X_SelectPicView.m; sourceTree = "<group>"; };
 		C1248F1D1D1FBF230016B2F9 /* X_SelectPicViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X_SelectPicViewCell.h; sourceTree = "<group>"; };
 		C1248F1E1D1FBF230016B2F9 /* X_SelectPicViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X_SelectPicViewCell.m; sourceTree = "<group>"; };
 		C1248F261D1FBF700016B2F9 /* UIImage+LNImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+LNImage.h"; sourceTree = "<group>"; };
@@ -913,6 +911,8 @@
 		C16AEE301CEDBE9200173A1C /* UIView+Frame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Frame.m"; sourceTree = "<group>"; };
 		C16AEE331CEDC1A800173A1C /* BackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundView.h; sourceTree = "<group>"; };
 		C16AEE341CEDC1A800173A1C /* BackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundView.m; sourceTree = "<group>"; };
+		C17A59B71E16674400FBB57D /* X_SelectPicView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X_SelectPicView.h; sourceTree = "<group>"; };
+		C17A59B81E16674400FBB57D /* X_SelectPicView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X_SelectPicView.m; sourceTree = "<group>"; };
 		C181F4F01D506F93008DFDCE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		C18F4DA21D27AAF500A4EEB1 /* ShowPicView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowPicView.h; sourceTree = "<group>"; };
 		C18F4DA31D27AAF500A4EEB1 /* ShowPicView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowPicView.m; sourceTree = "<group>"; };
@@ -3170,6 +3170,15 @@
 			path = "灰色的背景图";
 			sourceTree = "<group>";
 		};
+		C17A59B61E16674400FBB57D /* 选择图片和牌谱的视图 */ = {
+			isa = PBXGroup;
+			children = (
+				C17A59B71E16674400FBB57D /* X_SelectPicView.h */,
+				C17A59B81E16674400FBB57D /* X_SelectPicView.m */,
+			);
+			path = "选择图片和牌谱的视图";
+			sourceTree = "<group>";
+		};
 		C18F4DA11D27AADC00A4EEB1 /* ShowPicView(名人图片展示) */ = {
 			isa = PBXGroup;
 			children = (
@@ -3740,8 +3749,7 @@
 				C1248F181D1FBF230016B2F9 /* X_FlowLayout.m */,
 				C1248F191D1FBF230016B2F9 /* X_SelectPicHeaderView.h */,
 				C1248F1A1D1FBF230016B2F9 /* X_SelectPicHeaderView.m */,
-				C1248F1B1D1FBF230016B2F9 /* X_SelectPicView.h */,
-				C1248F1C1D1FBF230016B2F9 /* X_SelectPicView.m */,
+				C17A59B61E16674400FBB57D /* 选择图片和牌谱的视图 */,
 				C1248F1D1D1FBF230016B2F9 /* X_SelectPicViewCell.h */,
 				C1248F1E1D1FBF230016B2F9 /* X_SelectPicViewCell.m */,
 				C1D467EC1D1D22EC00570475 /* PostCell.h */,
@@ -5383,7 +5391,6 @@
 				C157598B1D12C222002B7670 /* InfoModel.m in Sources */,
 				C1E465151DC1D3B4008A2791 /* NotifationCell.m in Sources */,
 				C1F72FBE1DD1BA3F004E8CA2 /* MoreInfoOfPlatformVC.m in Sources */,
-				C1248F211D1FBF230016B2F9 /* X_SelectPicView.m in Sources */,
 				C12F9D681CD9CDF8003CC7FC /* HttpTool.m in Sources */,
 				C1FDFCEB1CD35F0A0078F3DE /* MASViewAttribute.m in Sources */,
 				C12F9E3F1CDA031D003CC7FC /* MKAnnotationView+WebCache.m in Sources */,
@@ -5572,6 +5579,7 @@
 				C14DB5921CF2A7BD007F69CA /* NewsList+CoreDataProperties.m in Sources */,
 				C1D97E181D11710C00A8DA64 /* ClubRecommendVC.m in Sources */,
 				C1E355391E0D08C1002EA3CC /* DPWebView.m in Sources */,
+				C17A59B91E16674400FBB57D /* X_SelectPicView.m in Sources */,
 				C1E5F80F1CEC5667008A8A97 /* MJRefreshAutoGifFooter.m in Sources */,
 				C12F9E551CDA111C003CC7FC /* PhotoModel.m in Sources */,
 				C1C0497B1CFC3D6400389E7D /* SettingViewController.m in Sources */,

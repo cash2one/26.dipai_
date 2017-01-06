@@ -131,11 +131,11 @@
 {
     [super viewWillAppear:YES];
 
-    self.navigationController.navigationBarHidden = NO;
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBarHidden = NO;
+//    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+//    
+//    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -145,19 +145,28 @@
     //    [MobClick endLogPageView:@"DiscoverController"];
     
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+}
+
+- (void)setNavigationBar{
+    
+    self.naviBar.titleStr = @"发现";
+    self.naviBar.popV.hidden = YES;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    
+    [self setNavigationBar];
     self.view.backgroundColor = [UIColor whiteColor];
+    [self setUpUI];
+
+}
+- (void)setUpUI{
     
-//    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT - 49 - 64) style:UITableViewStylePlain];
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT  - 64) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT-64) style:UITableViewStylePlain];
     //    self.tableView.backgroundColor = [UIColor blackColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.delegate = self;
@@ -169,16 +178,17 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     // 添加轮播页
     [self addBannerView];
-     UIView *footerV = [[UIView alloc] init];
+    UIView *footerV = [[UIView alloc] init];
     footerV.frame = CGRectMake(0, 0, WIDTH, 49);
-//    footerV.backgroundColor = [UIColor redColor];
+    //    footerV.backgroundColor = [UIColor redColor];
     self.tableView.tableFooterView = footerV;
     // 添加CollectionView
-//    [self addCollectionView];
+    //    [self addCollectionView];
     
     // 添加下拉刷新和上拉加载
     [self addRefresh];
 }
+
 #pragma mark --- 添加下拉刷新和上拉加载
 - (void)addRefresh{
     // 添加下拉刷新控件

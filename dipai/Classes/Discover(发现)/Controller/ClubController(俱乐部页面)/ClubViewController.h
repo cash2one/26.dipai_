@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface ClubViewController : UIViewController
+#import "NavigationHiddenVC.h"
+@interface ClubViewController : NavigationHiddenVC
 
 /**
  *  传递过来的接口

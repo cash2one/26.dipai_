@@ -24,15 +24,15 @@
     if (![URLString hasPrefix:@"http"]) {
         URLString = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, URLString];
     }
-    [mgr GET:URLString parameters:parameters success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+    AFHTTPRequestOperation * ope ;
+    ope = [mgr GET:URLString parameters:parameters success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         NSLog(@"%@", URLString);
-        NSLog(@"获取数据：%@", responseObject);
+//        NSLog(@"获取数据：%@", responseObject);
         NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
         NSString * cookieName = [defaults objectForKey:Cookie];
         NSDictionary * wxData = [defaults objectForKey:WXUser];
         if (cookieName || wxData) { // 如果已经登录
             if (responseObject[@"state"] && [responseObject[@"state"] isEqualToString:@"96"]) { // 如果异地登录
-                
                 if (success) {
                     success(responseObject);
                 }
@@ -68,14 +68,12 @@
                     success(responseObject);
                 }
             }
-          
         }else{  // 如果未登录
             NSLog(@"没有登录");
             if (success) {
                 success(responseObject);
             }
         }
-        
     } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
         
         if (failure) {
@@ -91,8 +89,8 @@
     }
     AFHTTPRequestOperationManager *mgr = [AFHTTPRequestOperationManager manager];
     mgr.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
-    [mgr POST:URLString parameters:parameters success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-        
+    AFHTTPRequestOperation * ope ;
+   ope =  [mgr POST:URLString parameters:parameters success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
 //        NSString * message = responseObject[@"content"];
         NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
         NSString * cookieName = [defaults objectForKey:Cookie];
@@ -143,10 +141,26 @@
 }
 
 + (void)endRequest{
-    
     AFHTTPRequestOperationManager *mgr = [AFHTTPRequestOperationManager manager];
     mgr.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
     [mgr.operationQueue cancelAllOperations];
+}
+// 停止数据请求
++(void)pauseWithURL:(NSString *)URLString{
+    
+    // 创建请求管理者
+    AFHTTPRequestOperationManager *mgr = [AFHTTPRequestOperationManager manager];
+    mgr.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
+    if (![URLString hasPrefix:@"http"]) {
+        URLString = [NSString stringWithFormat:@"%@%@", DipaiBaseURL, URLString];
+    }
+    AFHTTPRequestOperation * ope ;
+    ope = [mgr GET:URLString parameters:nil success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        
+    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+        
+    }];
+    [ope pause];
 }
 
 

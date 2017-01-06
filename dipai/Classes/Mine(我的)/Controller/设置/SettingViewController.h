@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface SettingViewController : UIViewController
+#import "NavigationHiddenVC.h"
+@interface SettingViewController : NavigationHiddenVC
 
 @end

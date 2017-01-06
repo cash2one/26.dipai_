@@ -27,6 +27,7 @@
 #import "ClubDetailViewController.h"
 
 #import "SVProgressHUD.h"
+#import "Masonry.h"
 @interface ClubViewController ()<UITableViewDataSource, UITableViewDelegate>
 /**
  *  城市模型数组
@@ -130,16 +131,16 @@
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
 }
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:YES];
@@ -149,18 +150,10 @@
 #pragma mark --- 设置导航栏内容
 - (void)setUpNavigationBar
 {
-    [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui_baise"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-    
-    
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:17];
-    titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"俱乐部";
-    self.navigationItem.titleView = titleLabel;
-    
+    self.naviBar.titleStr = @"俱乐部";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui_baise"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
     // 创建城市按钮
     [self createCityBtn];
 }
@@ -169,15 +162,16 @@
     // 左上角选择城市的按钮
     _cityBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     // 这个按钮有点大，便于放label和imageView
-    
-    _cityBtn.backgroundColor = [UIColor clearColor];
 //    _cityBtn.backgroundColor = [UIColor redColor];
-    
     [_cityBtn addTarget:self action:@selector(buttonClickSelect:) forControlEvents:UIControlEventTouchUpInside];
-
-    _cityBtn.frame = CGRectMake(0, 0, 60, 50);
-    
-    
+     [self.naviBar addSubview:_cityBtn];
+    [_cityBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.naviBar.mas_right).offset(-20);
+        make.top.equalTo(self.naviBar.mas_top).offset(20);
+        make.width.equalTo(@(60 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(50 * IPHONE6_W_SCALE));
+    }];
+//    _cityBtn.frame = CGRectMake(0, 0, 60, 50);
     _cityLb = [[UILabel alloc] initWithFrame:CGRectMake( 3 , 15 , 10, 20)];
     _cityLb.textAlignment = NSTextAlignmentRight;
     // 默认显示全部
@@ -192,10 +186,7 @@
     _arrowImg.image = [UIImage imageNamed:@"xiala2"];
     _arrowImg.userInteractionEnabled = YES;
     [_cityBtn addSubview:_arrowImg];
-    
-//    [self.navigationController.navigationBar addSubview:_cityBtn];
-    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_cityBtn];
+   
 }
 
 #pragma mark --- 添加城市选择视图
@@ -210,7 +201,7 @@
     _backView = backView;
     
     // 添加城市选择视图，但并不显示出来
-    CityView * cityView = [[CityView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 0)];
+    CityView * cityView = [[CityView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 0)];
     cityView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:cityView];
     _cityView = cityView;
@@ -228,7 +219,7 @@
     _arrowImg.image = [UIImage imageNamed:@"xiala2"];
     
     // 隐藏背景图
-    _backView.frame = CGRectMake(0, 0, WIDTH, 0);
+    _backView.frame = CGRectMake(0, 64, WIDTH, 0);
     
     // 隐藏城市选择视图
     [UIView animateWithDuration:0.5 animations:^{
@@ -244,10 +235,10 @@
         _arrowImg.image = [UIImage imageNamed:@"shouqi2"];
         
         // 显示背景图
-        _backView.frame = CGRectMake(0, 0, WIDTH, HEIGHT);
+        _backView.frame = CGRectMake(0, 64, WIDTH, HEIGHT-64);
 
         CGFloat cityX = 0;
-        CGFloat cityY = 0;
+        CGFloat cityY = 64;
         CGFloat cityW = WIDTH;
         // 这个高度是会变的
         CGFloat cityH = _cityViewH;
@@ -287,12 +278,9 @@
     [SVProgressHUD showWithStatus:@"加载中..."];
     // 获取所有的城市
     [DataTool  getCitysDataWithStr:CityURL parameters:nil success:^(id responseObject) {
-        
         [SVProgressHUD dismiss];
-        
         // 创建俱乐部的tableView
         [self createTableView];
-        
         // 添加城市选择视图
         [self addCityView];
 //        NSLog(@"获取城市数据:%@", responseObject);
@@ -433,12 +421,10 @@
 
 #pragma mark - 创建俱乐部的tableView
 - (void)createTableView{
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0 , 0 , WIDTH , HEIGHT - 64)];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0 , 64 , WIDTH , HEIGHT - 64)];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    
     [self.view addSubview:_tableView];
 }
 

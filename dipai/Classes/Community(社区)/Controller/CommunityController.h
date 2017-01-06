@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
-@interface CommunityController : BaseViewController
+#import "NavigationHiddenVC.h"
+@interface CommunityController : NavigationHiddenVC
 
 @end

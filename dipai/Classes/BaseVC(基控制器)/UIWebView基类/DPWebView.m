@@ -28,7 +28,11 @@
     [super viewWillAppear:YES];
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
-
+- (void)viewDidAppear:(BOOL)animated{
+    
+    [super viewDidAppear:YES];
+//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+}
 - (void)setUpUI{
     UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 64)];
     webView.delegate = self;

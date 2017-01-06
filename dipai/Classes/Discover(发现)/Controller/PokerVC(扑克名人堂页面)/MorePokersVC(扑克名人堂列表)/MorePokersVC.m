@@ -70,15 +70,14 @@
     
     // 设置导航栏
     [self setUpNavigationBar];
-    
     // 添加表格
     [self addTableView];
-    
     [self addRefreshing];
 }
 #pragma mark --- 设置导航栏
 - (void)setUpNavigationBar
 {
+    /*
     self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
     //    titleLabel.backgroundColor = [UIColor redColor];
@@ -91,24 +90,26 @@
     if (self.titleStr) {
         titleLabel.text = self.titleStr;
     }
-    
-}
-#pragma mark --- 返回上一个视图控制器
-- (void)pop
-{
-    [self.navigationController popViewControllerAnimated:YES];
+    */
+    self.naviBar.titleStr = @"名人堂成员";
+    if (self.titleStr) {
+        self.naviBar.titleStr = self.titleStr;
+    }
+    self.naviBar.titleLbl.textColor = [UIColor blackColor];
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark --- 添加表格
 - (void)addTableView{
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT-64) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 64 , WIDTH , HEIGHT-64) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     [self.view addSubview:self.tableView];
-    
 }
 #pragma mark --- UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{

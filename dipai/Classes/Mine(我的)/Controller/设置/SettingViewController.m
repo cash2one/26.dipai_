@@ -28,12 +28,10 @@
     [super viewWillAppear:YES];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
     [self getDataOfLogin];
 }
 
 - (void)getDataOfLogin{
-    
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     NSString * name = [defaults objectForKey:Cookie];
 //    NSDictionary * dataDic = [defaults objectForKey:User];
@@ -41,7 +39,6 @@
     if (name || wxData) {
         _outBtn.hidden = NO;
     }else{
-        
         _outBtn.hidden = YES;
     }
 }
@@ -51,35 +48,24 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor colorWithRed:240 / 255.0 green:239 / 255.0 blue:245 / 255.0 alpha:1];
-    
     [self setNavigationBar];
-    
     [self setUpUI];
 }
 #pragma mark --- 设置导航条
 - (void)setNavigationBar {
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
-    
-    // 左侧按钮
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
-    // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:38/2];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"设置";
-    self.navigationItem.titleView = titleLabel;
-}
-#pragma mark --- 返回
-- (void)returnBack{
-    [self.navigationController popViewControllerAnimated:YES];
+    self.naviBar.titleStr = @"设置";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark --- 搭建界面
 - (void)setUpUI{
     // 关于底牌
     CGFloat abountX = 0;
-    CGFloat abountY = 18 / 2 * IPHONE6_H_SCALE;
+    CGFloat abountY = 18 / 2 * IPHONE6_H_SCALE + 64;
     CGFloat abountW = WIDTH;
     CGFloat abountH = 99 / 2 * IPHONE6_H_SCALE;
     SettingCell * AbountCell = [[SettingCell alloc] initWithFrame:CGRectMake(abountX, abountY, abountW, abountH)];
@@ -88,7 +74,6 @@
     AbountCell.btn.tag = 1;
     [AbountCell.btn addTarget:self action:@selector(clickAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:AbountCell];
-    
     
     // 评分
     SettingCell * AppStoreCell = [[SettingCell alloc] init];

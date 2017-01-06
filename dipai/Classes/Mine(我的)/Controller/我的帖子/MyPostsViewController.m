@@ -150,37 +150,27 @@ typedef NS_ENUM(NSUInteger, LSType) {
 
 #pragma mark --- 设置导航条
 - (void)setNavigationBar {
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+    self.naviBar.titleStr = @"我的帖子";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.titleLbl.textColor = [UIColor blackColor];
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
     
-    // 左侧按钮
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(returnBack) forControlEvents:UIControlEventTouchUpInside];
-    // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200 * IPHONE6_W_SCALE, 44)];
-    //    titleLabel.backgroundColor = [UIColor redColor];
-    titleLabel.font = [UIFont systemFontOfSize:38/2];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"我的帖子";
-    self.navigationItem.titleView = titleLabel;
-    
-}
-#pragma mark --- 返回
-- (void)returnBack{
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark --- 设置UI
 - (void)setUpUI{
-    
     // 添加分割条
     UIView * separateView = [[UIView alloc] init];
     [self.view addSubview:separateView];
     separateView.backgroundColor = [UIColor colorWithRed:240 / 255.0 green:239 / 255.0 blue:245 / 255.0 alpha:1];
-    separateView.frame = CGRectMake(0, 81 * 0.5 * IPHONE6_H_SCALE, WIDTH, 20 * IPHONE6_H_SCALE);
-    
+    separateView.frame = CGRectMake(0, 81 * 0.5 * IPHONE6_H_SCALE+64, WIDTH, 20 * IPHONE6_H_SCALE);
     
     UIView * topView = [[UIView alloc] init];
     topView.backgroundColor = [UIColor whiteColor];
-    topView.frame = CGRectMake(0, 0, WIDTH, 81 * 0.5 * IPHONE6_H_SCALE);
+    topView.frame = CGRectMake(0, 64, WIDTH, 81 * 0.5 * IPHONE6_H_SCALE);
     [self.view addSubview:topView];
     
     // 添加我的发帖和我的回复两个标题
@@ -250,7 +240,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
     _replyLbl.textColor = Color102;
     
     [UIView animateWithDuration:0.25 animations:^{
-        
         CGFloat x = CGRectGetMinX(_postsLbl.frame) - 9 * IPHONE6_W_SCALE;
         CGFloat y = CGRectGetMaxY(_postsLbl.frame) - 2*IPHONE6_H_SCALE;
         CGFloat w = 158 * 0.5 * IPHONE6_W_SCALE;
@@ -286,8 +275,8 @@ typedef NS_ENUM(NSUInteger, LSType) {
 #pragma mark --- 添加滚动视图
 - (void)addScrollView {
     
-    CGFloat scY = 121 * 0.5 * IPHONE6_H_SCALE;
-    self.sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, scY, WIDTH , HEIGHT - 64- scY)];
+    CGFloat scY = 121 * 0.5 * IPHONE6_H_SCALE+64;
+    self.sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, scY, WIDTH , HEIGHT - scY)];
     self.sc.contentSize=CGSizeMake(WIDTH * 2 , HEIGHT - 64-scY);
     self.sc.delegate=self;
     self.sc.bounces=NO;
@@ -303,10 +292,9 @@ typedef NS_ENUM(NSUInteger, LSType) {
 #pragma mark --- 添加tableView
 - (void)addTableView{
     CGFloat scY = 121 * 0.5 * IPHONE6_H_SCALE;
-    _tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT - 64 - scY) style:UITableViewStylePlain];
+    _tableView1 = [[UITableView alloc]initWithFrame:self.sc.bounds style:UITableViewStylePlain];
     _tableView1.delegate = self;
     _tableView1.dataSource = self;
-    _tableView1.showsVerticalScrollIndicator = NO;
     _tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_sc addSubview:_tableView1];
     
@@ -325,7 +313,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
     _tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT - 64 - scY) style:UITableViewStylePlain];
     _tableView2.delegate=self;
     _tableView2.dataSource=self;
-    _tableView2.showsVerticalScrollIndicator=NO;
     _tableView2.separatorStyle=UITableViewCellSeparatorStyleNone;
     [self.sc addSubview:_tableView2];
 

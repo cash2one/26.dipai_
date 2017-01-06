@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface ResetNameVC : UIViewController
+#import "NavigationHiddenVC.h"
+@interface ResetNameVC : NavigationHiddenVC
 /**
  *  用户昵称
  */

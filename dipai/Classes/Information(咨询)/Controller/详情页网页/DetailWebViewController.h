@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "NavigationHiddenVC.h"
 @class NewsListModel;
-@interface DetailWebViewController : UIViewController
+@interface DetailWebViewController : NavigationHiddenVC
 /**
  *  传递过来的一个模型
  */
@@ -19,5 +19,9 @@
  *  传递过来的跳转链接
  */
 @property (nonatomic, copy) NSString * url;
+// 加载网页链接
+@property (nonatomic, copy) NSString * weburl;
+// 传递过来的请求数据
+@property (nonatomic, strong) NSDictionary * responseObject;
 
 @end

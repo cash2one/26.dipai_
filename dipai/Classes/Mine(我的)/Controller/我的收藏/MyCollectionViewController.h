@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface MyCollectionViewController : UIViewController
+#import "NavigationHiddenVC.h"
+@interface MyCollectionViewController : NavigationHiddenVC
 
 @end

@@ -39,7 +39,7 @@
     
 //    NSLog(@"%s", __func__);
     [MobClick beginLogPageView:NSStringFromClass([self class])];
-    
+    [MobClick setLogEnabled:NO];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(push) name:@"pushNoti" object:nil];
 }
 

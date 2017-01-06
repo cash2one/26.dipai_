@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface MatchVC : UIViewController
+#import "NavigationHiddenVC.h"
+@interface MatchVC : NavigationHiddenVC
 
 @end

@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NavigationHiddenVC.h"
 @class UserModel;
-@interface MyPostsViewController : UIViewController
+@interface MyPostsViewController : NavigationHiddenVC
 
 /**
  *  用户模型

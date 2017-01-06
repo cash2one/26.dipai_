@@ -190,16 +190,16 @@
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
     //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -208,18 +208,14 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     NSLog(@"%@", self.wapurl);
-    
     // 设置导航栏
     [self setUpNavigationBar];
-    
     // 添加头视图
     [self addHeaderView];
     // 对键盘添加监听
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardChanged:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    
     // 监听通知  选择赛事按钮一旦被点击
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleanValueAction:) name:@"cleanValueNotification" object:nil];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeShareURL:) name:@"changeShareURL" object:nil];
     [self addCustomShareBtn];
 }
@@ -282,25 +278,22 @@
 
 #pragma mark --- 设置导航栏
 - (void)setUpNavigationBar{
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui_baise"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-    
+    self.naviBar.titleStr = @"";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui_baise"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
-- (void)pop{
-    [self.navigationController popViewControllerAnimated:YES];
-}
+
 #pragma mark --- 添加头视图
 - (void)addHeaderView{
-    
     // 获取数据
     [self getData];
-    
-    
 }
 #pragma mark --- 添加头视图的子视图
 // 有直播的头视图
 - (void)addHeaderView1{
     
-    MatchingHeader * headerView = [[MatchingHeader alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 326 * 0.5 * IPHONE6_H_SCALE)];
+    MatchingHeader * headerView = [[MatchingHeader alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 326 * 0.5 * IPHONE6_H_SCALE)];
     
     // 设置数据
     headerView.titleLbl.text = _matchingModel.title;
@@ -475,7 +468,7 @@
 - (void)addHeaderView2{
     
     // 只有即将开始的页面是固定的
-    HeaderViewInMatch * headerView = [[HeaderViewInMatch alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 290 * 0.5 * IPHONE6_H_SCALE)];
+    HeaderViewInMatch * headerView = [[HeaderViewInMatch alloc] initWithFrame:CGRectMake(0, 64, WIDTH, 290 * 0.5 * IPHONE6_H_SCALE)];
     headerView.matchModel = _matchingModel;
     [self.view addSubview:headerView];
 }
@@ -499,19 +492,15 @@
     // 正常情况下的字体颜色
     [_segmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:Font13} forState:UIControlStateNormal];
     
-    _segmented.frame=CGRectMake(0, height , WIDTH, 40 * IPHONE6_H_SCALE);
-    
+    _segmented.frame=CGRectMake(0, height+64, WIDTH, 40 * IPHONE6_H_SCALE);
     if (height == 290*0.5*IPHONE6_H_SCALE) {    // 没有直播
         _segmented.selectedSegmentIndex = 2;
     } else{ // 有直播
         _segmented.selectedSegmentIndex = 0;
     }
-    
     // 为分段控件添加点事件
     [_segmented addTarget:self action:@selector(segmentedClick:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:_segmented];
-    
-    
     // 添加滚动视图
     [self addScrollView];
 }
@@ -531,33 +520,29 @@
 #pragma mark --- 添加滚动视图
 - (void)addScrollView {
     CGFloat scH = CGRectGetMaxY(_segmented.frame);
-    _sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, scH, WIDTH , HEIGHT - 64 - scH)];
+    _sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, scH, WIDTH , HEIGHT  - scH)];
     _sc.contentSize=CGSizeMake(WIDTH * 3 , HEIGHT - 64 - scH);
     _sc.delegate=self;
     _sc.bounces=NO;
     _sc.pagingEnabled=YES;
-    _sc.backgroundColor = [UIColor redColor];
-    
+//    _sc.backgroundColor = [UIColor redColor];
     if (_segmented.selectedSegmentIndex == 0) {
         _sc.contentOffset = CGPointMake(0, 0);
     }
     if (_segmented.selectedSegmentIndex == 2) {
         _sc.contentOffset=CGPointMake( WIDTH * 2, 0);
     }
-    
     // 添加滚动视图
     [self.view addSubview:_sc];
-    
     // 在滚动视图上添加tableView
     [self addTableView];
 }
 #pragma mark --- 添加tableView
 - (void)addTableView{
     CGFloat scH = CGRectGetMaxY(_segmented.frame);
-    _tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT - 64-scH) style:UITableViewStylePlain];
+    _tableView1 = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT -scH) style:UITableViewStylePlain];
     _tableView1.delegate = self;
     _tableView1.dataSource = self;
-    _tableView1.showsVerticalScrollIndicator = NO;
     _tableView1.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     if (!_matchingModel.app_live.count > 0) {
@@ -568,10 +553,9 @@
         [_sc addSubview:_tableView1];
     }
     
-    _tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT - 64-scH) style:UITableViewStylePlain];
+    _tableView2=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH, 0, WIDTH , HEIGHT -scH) style:UITableViewStylePlain];
     _tableView2.delegate=self;
     _tableView2.dataSource=self;
-    _tableView2.showsVerticalScrollIndicator=NO;
     _tableView2.separatorStyle=UITableViewCellSeparatorStyleNone;
     [_sc addSubview:_tableView2];
     UIImageView * commentV = [[UIImageView alloc] init];
@@ -586,10 +570,9 @@
     _commentV = commentV;
     _commentV.hidden = YES;
     
-    _tableView3=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH * 2, 0, WIDTH, HEIGHT - 64-scH) style:UITableViewStylePlain];
+    _tableView3=[[UITableView alloc]initWithFrame:CGRectMake(WIDTH * 2, 0, WIDTH, HEIGHT -scH) style:UITableViewStylePlain];
     _tableView3.delegate=self;
     _tableView3.dataSource=self;
-    _tableView3.showsVerticalScrollIndicator=NO;
     _tableView3.separatorStyle=UITableViewCellSeparatorStyleNone;
     [_sc addSubview:_tableView3];
     
@@ -620,7 +603,7 @@
     bottomView.backgroundColor = [UIColor whiteColor];
     CGFloat bottomX= WIDTH;
     CGFloat bottomH = 92 * 0.5 * IPHONE6_H_SCALE;
-    CGFloat bottomY = HEIGHT - 64-scH - bottomH;
+    CGFloat bottomY = HEIGHT-scH - bottomH;
     CGFloat bottomW = WIDTH;
     bottomView.frame = CGRectMake(bottomX, bottomY, bottomW, bottomH);
     [_sc addSubview:bottomView];

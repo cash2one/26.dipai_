@@ -252,10 +252,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
             
         }];
     }
-    
-//    if (_webURL.length > 0) {
-//        [self loadWebViewAgain];
-//    }
 
 }
 
@@ -281,7 +277,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
         NSArray *args = [JSContext currentArguments];
         // 数组中装数组
         [self.picsArr addObject:args];
-        NSLog(@"self.picsArr.count:%lu", self.picsArr.count);
+//        NSLog(@"self.picsArr.count:%lu", self.picsArr.count);
     };
     
     context[@"image_show_i"] = ^() {
@@ -331,31 +327,34 @@ typedef NS_ENUM(NSUInteger, LSType) {
     
     [_leftBtn removeFromSuperview];
     [SVProgressHUD dismiss];
+    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
+    // 设置导航栏
+    [self setNavigationBar];
     NSLog(@"跳转到网页详情页的接口：%@", self.url);
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    // 请求数据
-    [self getData];
+    NSLog(@"%@", self.weburl);
     // 添加底部评论框
     [self addBottomView];
-    // 设置导航栏
-    [self setUpNavigationBar];
-    // 添加评论视图
-//    [self addCommentView];
-    
-    
+    // 请求数据
+    [self getData];
     // 在分享中添加自定义按钮
     [self addCustomShareBtn];
-    
     // 对键盘添加监听
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardChanged:) name:UIKeyboardWillChangeFrameNotification object:nil];
+}
+
+- (void)setNavigationBar{
+    
+    self.naviBar.titleStr = @"";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)dealloc{
@@ -443,7 +442,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
     BottomView * bottomView = [[BottomView alloc] init];
     bottomView.delegate = self;
     CGFloat x = 0;
-    CGFloat y = HEIGHT - Margin92 * IPHONE6_H_SCALE - 64;
+    CGFloat y = HEIGHT - Margin92 * IPHONE6_H_SCALE;
     CGFloat w = WIDTH;
     CGFloat h = Margin92 * IPHONE6_H_SCALE;
     bottomView.frame = CGRectMake(x, y, w, h);
@@ -453,59 +452,61 @@ typedef NS_ENUM(NSUInteger, LSType) {
 
 - (void)getData
 {
-    [DataTool getDataInWebViewWithStr:self.url parameters:nil success:^(NSArray * array) {
-        
-        WebDetailModel * model = array[0];
-        NSString * type = array[1];
+    NSLog(@"开始请求数据...");
+    if (self.responseObject) {  // 如果是上个页面传递过来的数据
+        NSDictionary * contentDic = self.responseObject[@"content"];
+        // 字典转模型
+        WebDetailModel * model = [WebDetailModel objectWithKeyValues:contentDic];
+        NSString * type = self.responseObject[@"type"];
+        NSLog(@"%@", model.is_collection);
         _model = model;
-        
+        NSLog(@"%@", _model.is_collection);
         _type = type;
         _wapurl = model.wapurl;
-        // 设置数据
-        [self setData];
-        
         // 设置网页内容
-        [self setUpView:_wapurl];
-    } failure:^(NSError * error) {
-        
-        NSLog(@"错误信息：%@", error);
-    }];
+        if (!self.weburl) {
+            [self setUpView:_wapurl];
+        }else{
+            [self setUpView:self.weburl];
+        }
+        // 设置数据
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self setData];
+//            });
+    }else{
+        [DataTool getDataInWebViewWithStr:self.url parameters:nil success:^(NSArray * array) {
+            WebDetailModel * model = array[0];
+            NSString * type = array[1];
+            _model = model;
+            _type = type;
+            _wapurl = model.wapurl;
+            // 设置数据
+            [self setData];
+            // 设置网页内容
+            [self setUpView:_wapurl];
+        } failure:^(NSError * error) {
+            NSLog(@"错误信息：%@", error);
+        }];
+    }
 }
 
 #pragma mark --- 设置数据
 - (void)setData{
-    
     // 设置评论数
     NSInteger commentNum = _model.commentNumber.integerValue;
-//    NSLog(@"%lu", commentNum);
+    NSLog(@"%lu", commentNum);
     if (commentNum > 0) {
-        
         _bottomView.commentsLbl.hidden = NO;
         if (commentNum >= 100) {
-             _bottomView.commentsLbl.text = @"99+";
+            _bottomView.commentsLbl.text = @"99+";
         }else{
-            
-             _bottomView.commentsLbl.text = _model.commentNumber;
+            _bottomView.commentsLbl.text = _model.commentNumber;
         }
     }else{
-    
         _bottomView.commentsLbl.hidden = YES;
     }
-//    if ([_model.commentNumber integerValue] >= 100) {
-//        _botomView.hidden = NO;
-//        _bottomView.commentsLbl.text = @"99+";
-//    } else{
-//        if ([_model.commentNumber integerValue] == 0) {
-//            _bottomView.commentsLbl.hidden = YES;
-//        }else{
-//            _botomView.hidden = NO;
-//            _bottomView.commentsLbl.text = _model.commentNumber;
-//        }
-//        
-//    }
     // 判断收藏按钮的状态
-    
-//    NSLog(@"---收藏的状态---%@", _model.is_collection);
+    NSLog(@"---收藏的状态---%@", _model.is_collection);
     if ([_model.is_collection isEqualToString:@"1"]) {
         _bottomView.collectionBtn.selected = YES;
     } else{
@@ -517,7 +518,8 @@ typedef NS_ENUM(NSUInteger, LSType) {
 - (void)setUpView:(NSString *)url
 {
     _webURL = url;
-    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
+    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT - 64 - Margin92*IPHONE6_H_SCALE)];
+//    webView.backgroundColor = [UIColor redColor];
     webView.delegate = self;
     webView.scalesPageToFit = YES;
     [self.view addSubview:webView];
@@ -536,7 +538,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
         NSArray *args = [JSContext currentArguments];
         // 数组中装数组
         [self.picsArr addObject:args];
-        NSLog(@"self.picsArr.count:%lu", self.picsArr.count);
+//        NSLog(@"self.picsArr.count:%lu", self.picsArr.count);
     };
     
     context[@"image_show_i"] = ^() {
@@ -583,7 +585,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
     }];
     [manager startMonitoring];
     [HttpTool GET:url parameters:nil success:^(id responseObject) {
-        
         NSString * type = responseObject[@"type"];
         NSInteger num = [type integerValue];
         if (num == LSTypeInfo || num == LSTypePictures) {

@@ -13,10 +13,8 @@
 #import "SendVC.h"
 // 帖子详情页
 #import "PostDetailVC.h"
-
 #import "MJChiBaoZiFooter2.h"
 #import "MJChiBaoZiHeader.h"
-
 // 版块模型
 #import "SectionModel.h"
 // 帖子模型 
@@ -40,6 +38,7 @@
 #import "SBModel.h"
 
 #import "DataTool.h"
+#import "Masonry.h"
 @interface SectionVC ()<UITableViewDataSource, UITableViewDelegate, LSAlertViewDeleagte, PostCellDelegate>
 {
     NSString * _pop;
@@ -65,14 +64,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
-    //    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0 / 255.0 green:0 / 255.0 blue:0 / 255.0 alpha:1]];
-    
-//    [MobClick beginLogPageView:@"SectionVC"];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
     
     // 如果是POP回来的就不进行刷新   第一次进来的时候也不用刷新
     if (_pop) {
@@ -86,12 +79,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
-    
-//    [MobClick endLogPageView:@"SectionVC"];
-    
-    //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
+
 }
 
 - (NSMutableArray *)dataSource{
@@ -104,27 +92,31 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     self.view.backgroundColor = [UIColor whiteColor];
-//    self.navigationItem.title = self.titleStr;
     [self setUpNavigationBar];
-    
     NSLog(@"%@", self.wapurl);
-    
     // 添加表格
     [self addTableView];
 }
 #pragma mark --- 设置导航栏
 - (void)setUpNavigationBar{
+    self.naviBar.titleStr = self.titleStr;
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui_baise"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
     
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui_baise"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-    
-    self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"bianji"] target:self action:@selector(writeAction) forControlEvents:UIControlEventTouchUpInside];
-    
+    UIButton * editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [editBtn setImage:[UIImage imageNamed:@"bianji"] forState:UIControlStateNormal];
+    [editBtn addTarget:self action:@selector(writeAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.naviBar addSubview:editBtn];
+    [editBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.naviBar.mas_right).offset(-20);
+        make.top.equalTo(self.naviBar.mas_top).offset(33);
+        make.width.equalTo(@(19 * IPHONE6_W_SCALE));
+        make.height.equalTo(@(18 * IPHONE6_W_SCALE));
+    }];
 }
-- (void)pop{
-    [self.navigationController popViewControllerAnimated:YES];
-}
+
 #pragma mark ---编辑事件
 - (void)writeAction{
     
@@ -192,7 +184,7 @@
 }
 #pragma mark --- 添加表格
 - (void)addTableView{
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 0 , WIDTH , HEIGHT -64) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake( 0 , 64 , WIDTH , HEIGHT -64) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.showsVerticalScrollIndicator = NO;

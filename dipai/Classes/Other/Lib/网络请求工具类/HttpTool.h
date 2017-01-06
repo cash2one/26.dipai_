@@ -20,5 +20,7 @@
     failure:(void (^)(NSError *error))failure;
 // 停止请求
 +(void)endRequest;
+// 停止数据请求
++(void)pauseWithURL:(NSString *)URLString;
 
 @end

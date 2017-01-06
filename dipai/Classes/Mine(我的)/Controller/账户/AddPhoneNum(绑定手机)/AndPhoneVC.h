@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface AndPhoneVC : UIViewController
+#import "NavigationHiddenVC.h"
+@interface AndPhoneVC : NavigationHiddenVC
 
 @end

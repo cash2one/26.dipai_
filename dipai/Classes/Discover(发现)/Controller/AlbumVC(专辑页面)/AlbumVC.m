@@ -70,28 +70,27 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
-     self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-    
+    [self setUpNavigationBar];
     self.view.backgroundColor = [UIColor whiteColor];
-    
     // 获取网络数据
     [self getData];
-    
 }
-
-- (void)pop{
-    [self.navigationController popViewControllerAnimated:YES];
+- (void)setUpNavigationBar
+{
+    self.naviBar.titleStr = @"俱乐部";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
-
 
 #pragma mark --- 设置UI
 - (void)setUpUI{
     // 头部图片
     UIImageView * picView = [[UIImageView alloc] init];
     CGFloat picX = Margin30 * IPHONE6_W_SCALE;
-    CGFloat picY = 28 / 2 * IPHONE6_H_SCALE;
+    CGFloat picY = 28 / 2 * IPHONE6_H_SCALE +64;
     CGFloat picW = 222 / 2 * IPHONE6_W_SCALE;
     CGFloat picH = 252 / 2 * IPHONE6_W_SCALE;
     picView.frame = CGRectMake(picX, picY, picW, picH);
@@ -113,7 +112,7 @@
     // 播放按钮
     UIButton * playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGFloat playBtnX = titleX;
-    CGFloat playBtnY = 230 / 2 * IPHONE6_H_SCALE;
+    CGFloat playBtnY = 230 / 2 * IPHONE6_H_SCALE + 64;
     CGFloat playBtnW = 154 / 2 * IPHONE6_W_SCALE;
     CGFloat playBtnH = 50 / 2 * IPHONE6_H_SCALE;
     playBtn.backgroundColor = [UIColor redColor];
@@ -128,7 +127,7 @@
     // 分割线
     UIView * separateView = [[UIView alloc] init];
     separateView.backgroundColor = [UIColor colorWithRed:240 / 255.0 green:239 / 255.0 blue:245 / 255.0 alpha:1];
-    separateView.frame = CGRectMake(0, 308 / 2 * IPHONE6_H_SCALE, WIDTH, Margin20 * IPHONE6_H_SCALE);
+    separateView.frame = CGRectMake(0, 308 / 2 * IPHONE6_H_SCALE+64, WIDTH, Margin20 * IPHONE6_H_SCALE);
     [self.view addSubview:separateView];
     _separateView = separateView;
     
@@ -147,25 +146,20 @@
 #pragma mark --- 添加collectionView
 - (void)addCollectionView{
     UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc]init];
-    
     layout.minimumInteritemSpacing = 0;
     // 间距
     layout.minimumLineSpacing = 28 * 0.5 * IPHONE6_H_SCALE;
-    
     layout.scrollDirection = UICollectionViewScrollDirectionVertical;
-    
     CGFloat collectionY = CGRectGetMaxY(_separateView.frame);
-    self.collection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, collectionY, WIDTH , HEIGHT - collectionY - 64) collectionViewLayout:layout];
+    self.collection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, collectionY, WIDTH , HEIGHT - collectionY) collectionViewLayout:layout];
     self.collection.backgroundColor = [UIColor whiteColor];
     [self.collection registerClass:[MoreVideosCell class] forCellWithReuseIdentifier:@"MoreCollection"];
-    
     self.collection.delegate = self;
     self.collection.dataSource = self;
     [self.view addSubview:self.collection];
 }
 #pragma mark --- 添加刷新和加载的效果
 - (void)addRefreshing{
-    
     //往上拉加载数据.
     MJChiBaoZiFooter2 *footer = [MJChiBaoZiFooter2 footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
     // 设置文字
@@ -180,7 +174,6 @@
 - (void)loadMoreData{
    self.collection.footer.state = MJRefreshStateNoMoreData;
 //    [self.collection.footer endRefreshing];
-    
 }
 
 // 单元格的个数
@@ -238,15 +231,12 @@
         // 传过来的是一个模型
         self.albumModel = [[AlbumVideoModel alloc] init];
         self.albumModel = responseObject;
-        
         // 设置UI
         [self setUpUI];
-        
         // 添加collectionView
         [self addCollectionView];
         // 添加刷新和记载的效果
         [self addRefreshing];
-        
         // 设置数据
         [self setData];
         
@@ -271,7 +261,7 @@
     // 设置标题
     NSString * titleStr = albumDic[@"title"];
     CGFloat titleX = CGRectGetMaxX(_picView.frame) + 28 / 2 * IPHONE6_W_SCALE;
-    CGFloat titleY = 28 / 2 * IPHONE6_H_SCALE;
+    CGFloat titleY = 28 / 2 * IPHONE6_H_SCALE + 64;
     CGFloat titleW = WIDTH - titleX -46 / 2 * IPHONE6_W_SCALE;
     CGFloat titleH = 15;
     _titleLbl.font = Font15;

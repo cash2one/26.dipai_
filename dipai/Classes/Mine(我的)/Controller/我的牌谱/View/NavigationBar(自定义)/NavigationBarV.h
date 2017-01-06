@@ -21,6 +21,8 @@
 @property (nonatomic, strong) UILabel * leftLbl;
 
 @property (nonatomic, strong) UIImageView * popV;
+// 返回按钮image
+@property (nonatomic, strong) UIImage * popImage;
 
 @property (nonatomic, copy) NSString * rightStr;
 @property (nonatomic, copy) NSString * leftStr;
@@ -29,5 +31,7 @@
 @property (nonatomic, strong) UIColor * color;
 
 @property (nonatomic, strong) UILabel * titleLbl;
+// 分割线
+@property (nonatomic, strong) UIView * bottomLine;
 
 @end

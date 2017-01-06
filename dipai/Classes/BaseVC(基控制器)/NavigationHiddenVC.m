@@ -35,6 +35,7 @@
     [self.view addSubview:naviBar];
     naviBar.backgroundColor = [UIColor blackColor];
     self.naviBar = naviBar;
+    
 }
 - (void)popAction{
      [self.navigationController popViewControllerAnimated:YES];

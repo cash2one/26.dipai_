@@ -87,7 +87,6 @@
     [super viewWillAppear:YES];
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
     BOOL yes = self.navigationController.navigationBarHidden;
     NSLog(@"%d", yes);
     _barHidden = yes;
@@ -104,20 +103,13 @@
 - (void)viewWillDisappear:(BOOL)animated{
     
     [super viewWillDisappear:YES];
-//    [MobClick endLogPageView:@"PostDetailVC"];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
-     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
     self.view.backgroundColor = [UIColor whiteColor];
-    
     // 设置导航栏
     [self setUpNavigationBar];
-    
     // 添加表格
     [self addTableView];
     // 添加底部评论框
@@ -159,14 +151,14 @@
 #pragma mark --- 设置导航栏内容
 - (void)setUpNavigationBar
 {
-    self.navigationItem.leftBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"houtui"] target:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
-    
+    self.naviBar.titleStr = @"";
+    self.naviBar.popV.hidden = NO;
+    self.naviBar.backgroundColor = [UIColor whiteColor];
+    self.naviBar.bottomLine.hidden = NO;
+    self.naviBar.popImage = [UIImage imageNamed:@"houtui"];
+    [self.naviBar.popBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
 }
-#pragma mark --- 返回上一个视图控制器
-- (void)pop
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
+
 #pragma mark --- 添加底部评论框
 - (void)addBottomView
 {
@@ -237,13 +229,7 @@
 - (void)shareAction{
     
     PostDaraModel * dataModel = [PostDaraModel objectWithKeyValues:_detailModel.data];
-//    NSString *st = dataModel.imgs[0];
-//    NSURL *url = [NSURL URLWithString:st];
-//    NSData *data = [NSData dataWithContentsOfURL:url];
-//    UIImage *img = [UIImage imageWithData:data];
-    
     UIImage * img = [UIImage imageNamed:@"shareLogo"];
-    
     NSString * wapurl = dataModel.wapurl;
     
     [UMSocialData defaultData].extConfig.title = dataModel.title;
@@ -355,23 +341,19 @@
 
 #pragma mark --- 添加标题
 - (void)addTableView{
-//    if (self.heightStr.length>0) {
-//         self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
-//    }else{
-//        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
-//    }
+    /*
     BOOL translucent =  self.navigationController.navigationBar.translucent;
     if (translucent == YES) {
         self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
     }else{
         self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT-64 - 88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
     }
-    
+    */
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH, HEIGHT-64 - 88*0.5*IPHONE6_H_SCALE) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.automaticallyAdjustsScrollViewInsets = NO;
     [self.view addSubview:self.tableView];
     
     MJChiBaoZiHeader *header = [MJChiBaoZiHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
@@ -393,16 +375,7 @@
 }
 
 - (void)viewDidLayoutSubviews{
-    
-    NSLog(@"contentInset.top:------%f", self.tableView.contentInset.top);
-    NSLog(@"%d", self.height);
-//    if (self.heightStr.length  > 0) {
-//        
-//        self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
-//    }else{
-//        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-//    }
-
+    /*
     NSLog(@"透明度：%d", self.navigationController.navigationBar.translucent);
     BOOL translucent =  self.navigationController.navigationBar.translucent;
     if (translucent == YES) {
@@ -410,8 +383,7 @@
     }else{
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
     }
-    NSLog(@"contentInset.top:------%f", self.tableView.contentInset.top);
-    
+    */
 }
 
 - (void)loadNewData{
@@ -419,8 +391,6 @@
     if (self.tableView.footer.state == MJRefreshStateRefreshing) return;
     NSLog(@"开始请求数据....");
     
-//    [self.tableView.header endRefreshing];
-//    [HttpTool endRequest];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         [DataTool getPostDetailDataWithStr:self.wapurl parameters:nil success:^(id responseObject) {
@@ -431,7 +401,6 @@
             _detailModel = detailModel;
             // 字典转模型
             PostDaraModel * dataModel = [PostDaraModel objectWithKeyValues:_detailModel.data];
-            
             NSArray * commentArr = dataModel.comment;
             NSMutableArray * arr = [NSMutableArray array];
             for (ReplyModel * model in commentArr) {
@@ -455,7 +424,6 @@
            [NSTimer scheduledTimerWithTimeInterval:6.5 target:self selector:@selector(errorWithRefresh) userInfo:nil repeats:NO];
            NSLog(@"／／／／");
            
-          
        });
     });
     
@@ -540,14 +508,11 @@
     // 添加表格的头视图
 //    PostHeaderView * headerView = [[PostHeaderView alloc] initWithArray:dataModel.imgs];
     PostHeaderView * headerView = [[PostHeaderView alloc] init];
-    
-//    headerView.backgroundColor = [UIColor redColor];
     headerView.delegate = self;
     headerView.dataModel = dataModel;
     self.tableView.tableHeaderView = headerView;
     
     _headerView = headerView;
-    
     // 在分享中添加自定义按钮
     [self addCustomShareBtn];
     

@@ -164,49 +164,29 @@ typedef NS_ENUM(NSUInteger, LSType) {
 {
     [super viewWillAppear:YES];
     
-    self.navigationController.navigationBarHidden = NO;
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_beijingditu"] forBarMetrics:UIBarMetricsDefault];
-    
     if (_backView) {
         [_backView removeFromSuperview];
     }
-    
     // 如果登录了而且有关注就不进行刷新了
-    
     if (_imageV.hidden == YES && _noPayAttention.hidden == YES) {
         NSLog(@"不进行刷新");
     }else{
         [self getData];
     }
-    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
-    
-//    [MobClick endLogPageView:@"CommunityController"];
-    
-    //    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"daohanglan_baise"] forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    
-    self.view.backgroundColor = [UIColor blueColor];
-    self.navigationItem.title = @"";
     // 添加分段控件
     [self addSegmentControl];
-    
     // 添加滚动视图
     [self addScrollView];
-    
 }
 
 - (void)addSegmentControl{
@@ -223,11 +203,17 @@ typedef NS_ENUM(NSUInteger, LSType) {
     // 正常情况下的字体颜色
     [_segmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:Font18} forState:UIControlStateNormal];
     
-    _segmented.frame=CGRectMake( 0 , 0, 160 * IPHONE6_W_SCALE , 44 );
+//    _segmented.frame=CGRectMake( 0 , 0, 160 * IPHONE6_W_SCALE , 44 );
 //    _segmented.backgroundColor = [UIColor yellowColor];
     // 为分段控件添加点事件
     [_segmented addTarget:self action:@selector(segmentedClick:) forControlEvents:UIControlEventValueChanged];
-    self.navigationItem.titleView = _segmented;
+    [self.naviBar addSubview:_segmented];
+    [_segmented mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.naviBar.mas_centerX);
+        make.width.equalTo(@(160 * IPHONE6_W_SCALE));
+        make.top.equalTo(self.naviBar.mas_top).offset(20);
+        make.height.equalTo(@(44));
+    }];
 }
 #pragma mark --- 分段控件的点击事件
 -(void)segmentedClick:(UISegmentedControl*)seg{
@@ -241,10 +227,7 @@ typedef NS_ENUM(NSUInteger, LSType) {
 }
 
 - (void)addScrollView {
-    
-//    NSLog(@"%f", HEIGHT);
-    
-    _sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, WIDTH , HEIGHT-64)];
+    _sc=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 64, WIDTH , HEIGHT-64)];
     _sc.contentSize=CGSizeMake(WIDTH * 2 , HEIGHT);
     _sc.scrollEnabled = NO; // 禁止活动
     _sc.scrollsToTop = NO;
@@ -253,7 +236,6 @@ typedef NS_ENUM(NSUInteger, LSType) {
     _sc.pagingEnabled=YES;
     _sc.backgroundColor = [UIColor redColor];
     [self.view addSubview:_sc];
-    
     // 在滚动视图上添加tableView
     [self addTableView];
 }
