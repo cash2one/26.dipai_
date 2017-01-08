@@ -364,11 +364,6 @@
 
 #pragma mark --- 评论按钮的点击事件
 - (void)commentAction{
-    
-    NSLog(@"点击写评论按钮...");
-    NSLog(@"_reply---%@", _reply);
-    [_replyView removeFromSuperview];
-    
     UIView * backView = [[BackgroundView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, HEIGHT)];
     backView.backgroundColor = ColorBlack60;
     
@@ -381,7 +376,7 @@
     CommentView * commentView = [[CommentView alloc] initWithFrame:CGRectMake(0, HEIGHT, WIDTH, Margin242 * IPHONE6_H_SCALE)];
     commentView.delegate = self;
     
-    if (_reply && _reply.length > 0) {   // 如果点击了回复
+    if (_reply) {   // 如果点击了回复
         commentView.placeholder = [NSString stringWithFormat:@"回复%@:", _replyName];
     }
     
@@ -409,8 +404,6 @@
     [_backView removeFromSuperview];
     // 移除评论视图
     [_commentView removeFromSuperview];
-    
-    _reply = nil;
     //    [_commentView.textView resignFirstResponder];
 }
 
@@ -537,7 +530,6 @@
 #pragma mark --- 点击单元格中的评论或回复视图
 - (void)tableViewCell:(CommentsTableViewCell *)cell didClickedContentWithID:(NSString *)ID andModel:(CommentsModel *)model{
     
-    NSLog(@"进行回复或查看主页");
     _model = model;
     
     [DataTool getSBDataWithStr:_model.wapurl parameters:nil success:^(id responseObject) {
@@ -587,6 +579,8 @@
     [checkBtn addTarget:self action:@selector(checkAction) forControlEvents:UIControlEventTouchUpInside];
     [replyView addSubview:checkBtn];
     
+    _reply = @"yes";
+    
     _replyName = model.username;
 }
 #pragma mark --- 点击单元格中的用户头像
@@ -600,10 +594,8 @@
 #pragma mark ---- 回复事件
 - (void)replyAction{
     NSLog(@"回复....");
-    _reply = @"yes";
     [_replyView removeFromSuperview];
     [self commentAction];
-//    _reply = nil;
     // 对某个评论进行回复
 //    [self sendMessageWithTypes:@"1" andID:_replyID];
 }

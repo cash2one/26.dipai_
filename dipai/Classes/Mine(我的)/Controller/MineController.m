@@ -215,11 +215,6 @@
                 _attentionNum.text = model.row;
                 _loginLbl.text = model.username;
                 _userName = model.username;
-                
-                // 将用户名存储起来以便创建牌谱的时候使用（在论坛中创建牌谱）
-                [[NSUserDefaults standardUserDefaults] setObject:_userName forKey:pokerMaker];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-                
                 //            NSLog(@"%@", model.face);
                 if (model.face && model.face.length > 0) {
                     NSURL * url = [NSURL URLWithString:model.face];

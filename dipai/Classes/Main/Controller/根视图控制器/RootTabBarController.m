@@ -41,7 +41,6 @@
 
 - (void)setTabBar
 {
-    // 设置tabBar的背景图片
      [self.tabBar setBackgroundImage:[UIImage imageNamed:@"biaoqianlan_beijingtu"]];
     
     NSArray * selectImg = @[@"zixun_xuanzhong", @"faxian_xuanzhong",@"shuiditubiao_xuanzhong", @"shequ_xuanzhong", @"wode_xuanzhong"];
@@ -57,7 +56,6 @@
         
         // item上选中的图片和未被选中的图片
         UIImage *selectImage = [UIImage imageNamed:selectImg[i]];
-        // 代码解决图片渲染问题
         selectImage = [selectImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         
         UIImage *unSelectImage = [UIImage imageNamed:normarl[i]];
@@ -74,7 +72,6 @@
     }
 }
 
-// 注意：可能会多次调用
 + (void)initialize
 {
     // appearanceWhenContainedIn：获取当前类下的所有外观

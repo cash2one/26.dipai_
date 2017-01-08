@@ -132,6 +132,10 @@
 - (void)outLogin{
     
     [self deleteCookie];
+<<<<<<< HEAD
+=======
+    
+>>>>>>> parent of 187adb3... 评论列表的回复问题
     [self.navigationController popViewControllerAnimated:YES];
     
 }

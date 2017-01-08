@@ -103,12 +103,19 @@
         // 9张图片以内显示上传的所有图片
         if (i < _picArr.count) {
             imageView.hidden = NO;
+<<<<<<< HEAD
             if (picArr.count > 0) {
                 SDWebImageOptions options = SDWebImageRetryFailed | SDWebImageLowPriority;
                 [imageView sd_setImageWithURL:_picArr[i] placeholderImage:[UIImage imageNamed:@"placeholder"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                     
                 }];
             }
+=======
+//            if (picArr.count > 0) {
+//                [imageView sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"123"]];
+//            }
+
+>>>>>>> parent of 187adb3... 评论列表的回复问题
         }else
         {
             // 隐藏
@@ -155,6 +162,11 @@
                 imageV.frame = CGRectMake(0, 0 + height, WIDTH - 30 * IPHONE6_W_SCALE, h);
             }
             height = height + h + 8*IPHONE6_H_SCALE;
+<<<<<<< HEAD
+=======
+//            imageV.backgroundColor = [UIColor redColor];
+            [imageV sd_setImageWithURL:[NSURL URLWithString:_picArr[i]] placeholderImage:[UIImage imageNamed:@"placeholder"]];
+>>>>>>> parent of 187adb3... 评论列表的回复问题
             
         }
     }

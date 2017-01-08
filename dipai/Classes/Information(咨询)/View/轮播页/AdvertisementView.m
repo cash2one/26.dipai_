@@ -82,8 +82,7 @@
         
         bannerModel * bannnerM = [[bannerModel alloc] init];
         bannnerM = _modelArr[i];
-        SDWebImageOptions options = SDWebImageRetryFailed | SDWebImageLowPriority;
-        [picView sd_setImageWithURL:[NSURL URLWithString:bannnerM.cover] placeholderImage:[UIImage imageNamed:@"123"] options:options];
+        [picView sd_setImageWithURL:[NSURL URLWithString:bannnerM.cover] placeholderImage:[UIImage imageNamed:@"123"]];
         
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
         btn.frame = _scroll.bounds;
@@ -173,7 +172,10 @@
 - (void)startTimer
 {
     self.timer = [NSTimer timerWithTimeInterval:5.0 target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
+<<<<<<< HEAD
     
+=======
+>>>>>>> parent of 187adb3... 评论列表的回复问题
     // 添加到运行循环
     [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
 }

@@ -306,12 +306,13 @@
     NSString * str1 = [live.blind substringFromIndex:index+1];
     
     NSInteger index1 = [str1 rangeOfString:@"/"].location;
-    
+    NSString * str2 = [live.blind substringToIndex:index1 + 1 + index + 1];
+    NSString * str3 = [live.blind substringFromIndex:index1 + 1 + index + 1];
 //    NSLog(@"str1:%@", str1);
+//    NSLog(@"str2:%@", str2);
+//    NSLog(@"str3:%@", str3);
 
     if (index1 != NSNotFound) { // 有ante
-        NSString * str2 = [live.blind substringToIndex:index1 + 1 + index + 1];
-        NSString * str3 = [live.blind substringFromIndex:index1 + 1 + index + 1];
         headerView.blindNum.text = str2;
         headerView.anteLbl.text = str3;
     }else{

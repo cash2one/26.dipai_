@@ -210,8 +210,12 @@
 //    NSLog(@"dic:%@", dic);
     [DataTool postWithStr:LoginURL parameters:dic success:^(id responseObject) {
         NSString * content = [responseObject objectForKey:@"content"];
+<<<<<<< HEAD
         NSString * state = responseObject[@"state"];
         NSDictionary * dataDic = responseObject[@"data"];
+=======
+        
+>>>>>>> parent of 187adb3... 评论列表的回复问题
         NSLog(@"登录获取的数据%@", responseObject);
         if ([state isEqualToString:@"1"] && dataDic.count > 0) {
             [SVProgressHUD showSuccessWithStatus:@"登录成功"];
